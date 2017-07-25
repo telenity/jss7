@@ -142,6 +142,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 			// TODO : Should we silently drop DUNA?
 
 			// ASPACTIVE_ACK is unexpected in this state
+			logger.error(String.format("Rx : DUNA =%s But AppServer Functionality is not As. Sending back ErrorCode.Unexpected_Message",duna));
+
 			ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory.createErrorCode(ErrorCode.Unexpected_Message);
 			sendError(rcObj, errorCodeObj);
 		}
@@ -219,8 +221,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 						int[] affectedPcs = affectedPcObjs.getPointCodes();
 
 						for (int i = 0; i < affectedPcs.length; i++) {
-							Mtp3PausePrimitive mtpPausePrimi = new Mtp3PausePrimitive(affectedPcs[i]);
-							((AsImpl)aspImpl.getAs()).getM3UAManagement().sendPauseMessageToLocalUser(mtpPausePrimi);
+							Mtp3ResumePrimitive mtpResumePrimi = new Mtp3ResumePrimitive(affectedPcs[i]);
+							((AsImpl)aspImpl.getAs()).getM3UAManagement().sendResumeMessageToLocalUser(mtpResumePrimi);
 						}
 					} else {
 						logger.error(String.format("Rx : DAVA for RoutingContext=%d. But ASP State=%s. Message=%s",
@@ -233,6 +235,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 			// TODO : Should we silently drop DUNA?
 
 			// ASPACTIVE_ACK is unexpected in this state
+			logger.error(String.format("Rx : DAVA =%s But AppServer Functionality is not As. Sending back ErrorCode.Unexpected_Message",dava));
+
 			ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory.createErrorCode(ErrorCode.Unexpected_Message);
 			sendError(rcObj, errorCodeObj);
 		}
@@ -246,6 +250,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 			// TODO : Should we silently drop DUNA?
 
 			// ASPACTIVE_ACK is unexpected in this state
+			logger.error(String.format("Rx : DAUD =%s But AppServer Functionality is not SGW. Sending back ErrorCode.Unexpected_Message",daud));
+
 			ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory.createErrorCode(ErrorCode.Unexpected_Message);
 			sendError(rcObj, errorCodeObj);
 		}
@@ -354,6 +360,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 			// TODO : Should we silently drop DUNA?
 
 			// SCON is unexpected in this state
+			logger.error(String.format("Rx : SCON =%s But AppServer Functionality is not AS or IPSP. Sending back ErrorCode.Unexpected_Message",scon));
+
 			ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory.createErrorCode(ErrorCode.Unexpected_Message);
 			sendError(rcObj, errorCodeObj);
 		}
@@ -454,6 +462,8 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 			// TODO : Should we silently drop DUNA?
 
 			// ASPACTIVE_ACK is unexpected in this state
+			logger.error(String.format("Rx : DUPU =%s But AppServer Functionality is not AS. Sending back ErrorCode.Unexpected_Message",dupu));
+
 			ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory.createErrorCode(ErrorCode.Unexpected_Message);
 			sendError(rcObj, errorCodeObj);
 		}
