@@ -24,7 +24,7 @@ package org.mobicents.protocols.ss7.m3ua.impl.scheduler;
 
 public abstract class M3UATask {
 
-    protected boolean canceled = false;
+    protected volatile boolean canceled = false;
     protected int index;
     protected M3UAScheduler scheduler;
 
@@ -49,5 +49,9 @@ public abstract class M3UATask {
         // scheduler.tasks.length)) {
         // scheduler.tasks[index] = null;
         // }
+    }
+
+    public void start() {
+        this.canceled = false;
     }
 }

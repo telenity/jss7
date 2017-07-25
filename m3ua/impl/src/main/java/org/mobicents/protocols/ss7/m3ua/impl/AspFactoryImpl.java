@@ -186,7 +186,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		if (this.association == null)
 			return;
 
-		if (this.isHeartBeatEnabled) {
+		if (this.isHeartBeatEnabled()) {
 			this.heartBeatTimer.cancel();
 		}
 
@@ -540,7 +540,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	private void handleCommDown() {
 
-		if (this.isHeartBeatEnabled) {
+		if (this.isHeartBeatEnabled()) {
 			this.heartBeatTimer.cancel();
 		}
 
@@ -590,7 +590,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	private void handleCommUp() {
 
-		if (this.isHeartBeatEnabled) {
+		if (this.isHeartBeatEnabled()) {
 			this.heartBeatTimer.reset();
 			this.m3UAManagementImpl.m3uaScheduler.execute(this.heartBeatTimer);
 		}
@@ -716,7 +716,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		if (association.getIpChannelType() == IpChannelType.SCTP) {
 			// TODO where is streamNumber stored?
 			m3UAMessage = this.messageFactory.createSctpMessage(m3uadata);
-			if (this.isHeartBeatEnabled) {
+			if (this.isHeartBeatEnabled()) {
 				this.heartBeatTimer.reset();
 			}
 			this.read(m3UAMessage);
@@ -727,7 +727,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 				if (m3UAMessage == null)
 					break;
 
-				if (this.isHeartBeatEnabled) {
+				if (this.isHeartBeatEnabled()) {
 					this.heartBeatTimer.reset();
 				}
 				this.read(m3UAMessage);
@@ -752,7 +752,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	public void show(StringBuffer sb) {
 		sb.append(M3UAOAMMessages.SHOW_ASP_NAME).append(this.name).append(M3UAOAMMessages.SHOW_ASPID)
 				.append(this.aspid.getAspId()).append(M3UAOAMMessages.SHOW_HEARTBEAT_ENABLED)
-				.append(this.isHeartBeatEnabled).append(M3UAOAMMessages.SHOW_SCTP_ASSOC).append(this.associationName)
+				.append(this.isHeartBeatEnabled()).append(M3UAOAMMessages.SHOW_SCTP_ASSOC).append(this.associationName)
 				.append(M3UAOAMMessages.SHOW_STARTED).append(this.started);
 
 		sb.append(M3UAOAMMessages.NEW_LINE);
