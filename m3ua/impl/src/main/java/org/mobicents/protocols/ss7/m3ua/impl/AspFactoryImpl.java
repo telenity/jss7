@@ -671,8 +671,22 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	@Override
 	public void onCommunicationRestart(Association association) {
-		// TODO Auto-generated method stub
+		logger.warn(String.format("Communication channel restart for AspFactroy=%s Association=%s", this.name,
+				association.getName()));
 
+		try {
+			this.transportManagement.stopAssociation(this.associationName);
+		} catch (Exception e) {
+			logger.warn(String.format("Error while trying to stop underlying Association for AspFactpry=%s",
+					this.getName()), e);
+		}
+
+		try {
+			this.transportManagement.startAssociation(this.associationName);
+		} catch (Exception e) {
+			logger.error(String.format("Error while trying to start underlying Association for AspFactpry=%s",
+					this.getName()), e);
+		}
 	}
 
 	@Override
