@@ -241,9 +241,10 @@ public class SccpManagement {
 		}
 
 		try {
-			this.sccpRoutingControl.sendMessageToMtp(msg);
-		} catch (IOException e) {
-			logger.error(String.format("Exception while trying to send SSP message=%s", msg), e);
+			msg.setOutgoingDpc(msg.getCalledPartyAddress().getSignalingPointCode());
+			this.sccpRoutingControl.sendManagementMessage(msg);
+		} catch (Exception e) {
+			logger.error(String.format("Exception while trying to send management message=%s", msg), e);
 		}
 	}
 
