@@ -75,11 +75,11 @@ import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 
 /**
- * 
+ *
  * @author amit bhayani
  * @author baranowb
  * @author sergey vetyutnev
- * 
+ *
  */
 public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	private final Logger logger;
@@ -227,7 +227,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	public void setRemoveSpc(boolean removeSpc) {
 		this.removeSpc = removeSpc;
-		
+
 		this.store();
 	}
 
@@ -238,7 +238,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (sstTimerDuration_Min > 10000)
 			sstTimerDuration_Min = 10000;
 		this.sstTimerDuration_Min = sstTimerDuration_Min;
-		
+
 		this.store();
 	}
 
@@ -249,7 +249,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (sstTimerDuration_Max > 1200000)
 			sstTimerDuration_Max = 1200000;
 		this.sstTimerDuration_Max = sstTimerDuration_Max;
-		
+
 		this.store();
 	}
 
@@ -260,7 +260,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (sstTimerDuration_IncreaseFactor > 4)
 			sstTimerDuration_IncreaseFactor = 4;
 		this.sstTimerDuration_IncreaseFactor = sstTimerDuration_IncreaseFactor;
-		
+
 		this.store();
 	}
 
@@ -291,7 +291,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (zMarginXudtMessage > 255)
 			zMarginXudtMessage = 255;
 		this.zMarginXudtMessage = zMarginXudtMessage;
-		
+
 		this.store();
 	}
 
@@ -306,7 +306,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (maxDataMessage > 3952)
 			maxDataMessage = 3952;
 		this.maxDataMessage = maxDataMessage;
-		
+
 		this.store();
 	}
 
@@ -321,7 +321,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (reassemblyTimerDelay > 20000)
 			reassemblyTimerDelay = 20000;
 		this.reassemblyTimerDelay = reassemblyTimerDelay;
-		
+
 		this.store();
 	}
 
@@ -453,7 +453,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 			this.timerExecutors.shutdownNow();
 			reassemplyCache.clear();
 		}
-		
+
 		this.store();
 
 		// }finally
@@ -482,7 +482,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	}
 
 	public int calculateXudtFieldsLengthWithoutData(int calledPartyLen, int callingPartyLen, boolean segmented,
-			boolean importancePresense) {
+													boolean importancePresense) {
 		// 10 = 3 (fixed fields length) + 4 (variable fields pointers) + 3
 		// (variable fields lengths)
 		int res = 10 + calledPartyLen + callingPartyLen;
@@ -496,10 +496,13 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		return res;
 	}
 
-	public int calculateLudtFieldsLengthWithoutData(int calledPartyLen, int callingPartyLen, boolean segmented,
-			boolean importancePresense) {
-		// 15 = 3 (fixed fields length) + 8 (variable fields pointers) + 4
-		// (variable fields lengths)
+	public int calculateXudtFieldsLengthWithoutData2(int calledPartyLen, int callingPartyLen) {
+		int res = 254 - (3 + calledPartyLen + callingPartyLen);
+		return res;
+	}
+
+	public int calculateLudtFieldsLengthWithoutData(int calledPartyLen, int callingPartyLen, boolean segmented, boolean importancePresense) {
+		// 15 = 3 (fixed fields length) + 8 (variable fields pointers) + 4 (variable fields lengths)
 		int res = 15 + calledPartyLen + callingPartyLen;
 		if (segmented || importancePresense)
 			res++; // optional part present - adding End of optional parameters
@@ -582,16 +585,19 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 			byte[] cdp = SccpAddressCodec.encode(calledPartyAddress, this.isRemoveSpc());
 			byte[] cnp = SccpAddressCodec.encode(callingPartyAddress, this.isRemoveSpc());
 			switch (lmrt) {
-			case LongMessagesForbidden:
-				fieldsLen = this.calculateUdtFieldsLengthWithoutData(cdp.length, cnp.length);
-				break;
-			case LudtEnabled:
-			case LudtEnabled_WithSegmentationField:
-				fieldsLen = this.calculateLudtFieldsLengthWithoutData(cdp.length, cnp.length, true, true);
-				break;
-			case XudtEnabled:
-				fieldsLen = this.calculateXudtFieldsLengthWithoutData(cdp.length, cnp.length, true, true);
-				break;
+				case LongMessagesForbidden:
+					fieldsLen = this.calculateUdtFieldsLengthWithoutData(cdp.length, cnp.length);
+					break;
+				case LudtEnabled:
+				case LudtEnabled_WithSegmentationField:
+					fieldsLen = this.calculateLudtFieldsLengthWithoutData(cdp.length, cnp.length, true, true);
+					break;
+				case XudtEnabled:
+					fieldsLen = this.calculateXudtFieldsLengthWithoutData(cdp.length, cnp.length, true, true);
+					int fieldsLen2 = this.calculateXudtFieldsLengthWithoutData2(cdp.length, cnp.length);
+					if (fieldsLen > fieldsLen2)
+						fieldsLen = fieldsLen2;
+					break;
 			}
 
 			int availLen = mup.getMaxUserDataLength(dpc) - fieldsLen;
@@ -956,7 +962,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	/**
 	 * Load and create LinkSets and Link from persisted file
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	private void load() throws FileNotFoundException {

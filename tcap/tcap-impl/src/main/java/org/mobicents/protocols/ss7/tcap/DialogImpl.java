@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -101,7 +101,7 @@ import org.mobicents.protocols.ss7.tcap.tc.dialog.events.TCUserAbortIndicationIm
  * @author baranowb
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public class DialogImpl implements Dialog {
 
@@ -164,19 +164,19 @@ public class DialogImpl implements Dialog {
 	private boolean previewMode = false;
 	protected PrevewDialogData prevewDialogData;
 
-	private static final int getIndexFromInvokeId(Long l) {
+	private static int getIndexFromInvokeId(Long l) {
 		int tmp = l.intValue();
 		return tmp + _INVOKE_TABLE_SHIFT;
 	}
 
-	private static final Long getInvokeIdFromIndex(int index) {
+	private static Long getInvokeIdFromIndex(int index) {
 		int tmp = index - _INVOKE_TABLE_SHIFT;
 		return new Long(tmp);
 	}
 
 	/**
 	 * Creating a Dialog for normal mode
-	 * 
+	 *
 	 * @param localAddress
 	 * @param remoteAddress
 	 * @param origTransactionId
@@ -212,7 +212,7 @@ public class DialogImpl implements Dialog {
 
 	/**
 	 * Create a Dialog for previewMode
-	 * 
+	 *
 	 * @param dialogId
 	 * @param localAddress
 	 * @param remoteAddress
@@ -222,11 +222,12 @@ public class DialogImpl implements Dialog {
 	 * @param pdd
 	 * @param sideB
 	 */
-	protected DialogImpl(long dialogId, SccpAddress localAddress, SccpAddress remoteAddress, int seqControl, ScheduledExecutorService executor,
-			TCAPProviderImpl provider, PrevewDialogData pdd, boolean sideB) {
+	protected DialogImpl(SccpAddress localAddress, SccpAddress remoteAddress, int seqControl,
+						 ScheduledExecutorService executor, TCAPProviderImpl provider, PrevewDialogData pdd, boolean sideB) {
 		this.localAddress = localAddress;
 		this.remoteAddress = remoteAddress;
-		this.localTransactionId = dialogId;
+		this.localTransactionIdObject = pdd.getDialogId();
+		this.localTransactionId = pdd.getDialogId();
 		this.executor = executor;
 		this.provider = provider;
 		this.structured = true;
@@ -274,17 +275,17 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#getDialogId()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#getDialogId()
+     */
 	public Long getLocalDialogId() {
 
 		return localTransactionIdObject;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Long getRemoteDialogId() {
 		if (this.remoteTransactionId != null && this.remoteTransactionIdObject == null) {
@@ -295,11 +296,11 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#getNewInvokeId()
-	 */
+     */
 	public Long getNewInvokeId() throws TCAPException {
 		try {
 			this.dialogLock.lock();
@@ -326,12 +327,12 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#cancelInvocation
 	 * (java.lang.Long)
-	 */
+     */
 	public boolean cancelInvocation(Long invokeId) throws TCAPException {
 		if (this.previewMode)
 			return false;
@@ -376,49 +377,52 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#getRemoteAddress()
-	 */
+     */
 	public SccpAddress getRemoteAddress() {
 
 		return this.remoteAddress;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#getLocalAddress()
-	 */
+     */
 	public SccpAddress getLocalAddress() {
 
 		return this.localAddress;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#isEstabilished()
-	 */
+     */
 	public boolean isEstabilished() {
 
 		return this.state == TRPseudoState.Active;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#isStructured()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#isStructured()
+     */
 	public boolean isStructured() {
 
 		return this.structured;
 	}
 
 	public void keepAlive() {
+		if (this.previewMode)
+			return;
+
 		try {
 			this.dialogLock.lock();
 			if (this.idleTimerInvoked) {
@@ -451,7 +455,7 @@ public class DialogImpl implements Dialog {
 	}
 	/**
 	 * Adding the new incoming invokeId into incomingInvokeList list
-	 * 
+	 *
 	 * @param invokeId
 	 * @return false: failure - this invokeId already present in the list
 	 */
@@ -473,12 +477,12 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#send(org.mobicents
-	 * .protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest)
-	 */
+     * .protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest)
+     */
 	public void send(TCBeginRequest event) throws TCAPSendException {
 
 		if (this.previewMode)
@@ -544,12 +548,12 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#send(org.mobicents
-	 * .protocols.ss7.tcap.api.tc.dialog.events.TCContinueRequest)
-	 */
+     * .protocols.ss7.tcap.api.tc.dialog.events.TCContinueRequest)
+     */
 	public void send(TCContinueRequest event) throws TCAPSendException {
 
 		if (this.previewMode)
@@ -653,12 +657,12 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#send(org.mobicents
-	 * .protocols.ss7.tcap.api.tc.dialog.events.TCEndRequest)
-	 */
+     * .protocols.ss7.tcap.api.tc.dialog.events.TCEndRequest)
+     */
 	public void send(TCEndRequest event) throws TCAPSendException {
 
 		if (this.previewMode)
@@ -774,10 +778,10 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#sendUni()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#sendUni()
+     */
 	public void send(TCUniRequest event) throws TCAPSendException {
 
 		if (this.previewMode)
@@ -930,12 +934,12 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#sendComponent(org
-	 * .mobicents.protocols.ss7.tcap.api.tc.component.ComponentRequest)
-	 */
+     * .mobicents.protocols.ss7.tcap.api.tc.component.ComponentRequest)
+     */
 	public void sendComponent(Component componentRequest) throws TCAPSendException {
 
 		if (this.previewMode)
@@ -1215,53 +1219,41 @@ public class DialogImpl implements Dialog {
 
 	void processUni(TCUniMessage msg, SccpAddress localAddress, SccpAddress remoteAddress) {
 
-		// TCUniIndicationImpl tcUniIndication = null;
 		try {
 			this.dialogLock.lock();
-			// this is invoked ONLY for server.
-			// if (state != TRPseudoState.Idle) {
-			// // should we terminate dialog here?
-			// if (logger.isEnabledFor(Level.ERROR)) {
-			// logger.error("Received Uni primitive, but state is not: " +
-			// TRPseudoState.Idle + ". Dialog: " + this);
-			// }
-			// return;
-			// // throw new
-			// TCAPException("Received Uni primitive, but state is not: " +
-			// TRPseudoState.Idle + ". Dialog: " + this);
-			// }
-			// lets setup
-			this.setRemoteAddress(remoteAddress);
-			this.setLocalAddress(localAddress);
 
-			// no dialog portion!
-			// convert to indications
-			TCUniIndicationImpl tcUniIndication = (TCUniIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
-					.getDialogPrimitiveFactory()).createUniIndication(this);
+			try {
+				this.setRemoteAddress(remoteAddress);
+				this.setLocalAddress(localAddress);
 
-			tcUniIndication.setDestinationAddress(localAddress);
-			tcUniIndication.setOriginatingAddress(remoteAddress);
-			// now comps
-			Component[] comps = msg.getComponent();
-			tcUniIndication.setComponents(comps);
+				// no dialog portion!
+				// convert to indications
+				TCUniIndicationImpl tcUniIndication = (TCUniIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider.getDialogPrimitiveFactory())
+						.createUniIndication(this);
 
-			if (msg.getDialogPortion() != null) {
-				// it should be dialog req?
-				DialogPortion dp = msg.getDialogPortion();
-				DialogUniAPDU apdu = (DialogUniAPDU) dp.getDialogAPDU();
-				this.lastACN = apdu.getApplicationContextName();
-				this.lastUI = apdu.getUserInformation();
-				tcUniIndication.setApplicationContextName(this.lastACN);
-				tcUniIndication.setUserInformation(this.lastUI);
+				tcUniIndication.setDestinationAddress(localAddress);
+				tcUniIndication.setOriginatingAddress(remoteAddress);
+				// now comps
+				Component[] comps = msg.getComponent();
+				tcUniIndication.setComponents(comps);
+
+				if (msg.getDialogPortion() != null) {
+					// it should be dialog req?
+					DialogPortion dp = msg.getDialogPortion();
+					DialogUniAPDU apdu = (DialogUniAPDU) dp.getDialogAPDU();
+					this.lastACN = apdu.getApplicationContextName();
+					this.lastUI = apdu.getUserInformation();
+					tcUniIndication.setApplicationContextName(this.lastACN);
+					tcUniIndication.setUserInformation(this.lastUI);
+				}
+
+				// lets deliver to provider, this MUST not throw anything
+				this.provider.deliver(this, tcUniIndication);
+
+			} finally {
+				this.release();
 			}
-
-			// lets deliver to provider, this MUST not throw anything
-			this.provider.deliver(this, tcUniIndication);
-			// schedule removal
-			// this.release();
-
 		} finally {
-			this.release();
 			this.dialogLock.unlock();
 		}
 	}
@@ -1665,7 +1657,7 @@ public class DialogImpl implements Dialog {
 				tcAbortIndication = (TCPAbortIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
 						.getDialogPrimitiveFactory()).createPAbortIndication(this);
 				tcAbortIndication.setPAbortCause(PAbortCauseType.AbnormalDialogue);
-//				tcAbortIndication.setLocalProviderOriginated(true);
+				// tcAbortIndication.setLocalProviderOriginated(true);
 
 				this.provider.deliver(this, tcAbortIndication);
 			} finally {
@@ -1677,35 +1669,35 @@ public class DialogImpl implements Dialog {
 		}
 	}
 
-//	protected void sendProviderAbort(PAbortCauseType pAbortCause) {
-//
-//		if (this.previewMode)
-//			return;
-//
-//		TCPAbortIndicationImpl tcAbortIndication = null;
-//		try {
-//			this.dialogLock.lock();
-//
-//			try {
-//				// sending to the remote side
-//				this.provider.sendProviderAbort(pAbortCause, this.remoteTransactionId, this.remoteAddress,
-//						this.localAddress, this.seqControl);
-//
-//				// sending to the local side
-//				tcAbortIndication = (TCPAbortIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
-//						.getDialogPrimitiveFactory()).createPAbortIndication(this);
-//				tcAbortIndication.setPAbortCause(pAbortCause);
-//				tcAbortIndication.setLocalProviderOriginated(true);
-//
-//				this.provider.deliver(this, tcAbortIndication);
-//			} finally {
-//				this.release();
-//				// this.scheduledComponentList.clear();
-//			}
-//		} finally {
-//			this.dialogLock.unlock();
-//		}
-//	}
+	// protected void sendProviderAbort(PAbortCauseType pAbortCause) {
+	//
+	// if (this.previewMode)
+	// return;
+	//
+	// TCPAbortIndicationImpl tcAbortIndication = null;
+	// try {
+	// this.dialogLock.lock();
+	//
+	// try {
+	// // sending to the remote side
+	// this.provider.sendProviderAbort(pAbortCause, this.remoteTransactionId, this.remoteAddress,
+	// this.localAddress, this.seqControl);
+	//
+	// // sending to the local side
+	// tcAbortIndication = (TCPAbortIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
+	// .getDialogPrimitiveFactory()).createPAbortIndication(this);
+	// tcAbortIndication.setPAbortCause(pAbortCause);
+	// tcAbortIndication.setLocalProviderOriginated(true);
+	//
+	// this.provider.deliver(this, tcAbortIndication);
+	// } finally {
+	// this.release();
+	// // this.scheduledComponentList.clear();
+	// }
+	// } finally {
+	// this.dialogLock.unlock();
+	// }
+	// }
 
 	protected Component[] processOperationsState(Component[] components) {
 		if (components == null) {
@@ -1718,7 +1710,7 @@ public class DialogImpl implements Dialog {
 			if (ci.getType() == ComponentType.Invoke)
 				invokeId = ((InvokeImpl) ci).getLinkedId();
 			else
-				invokeId = ci.getInvokeId();			
+				invokeId = ci.getInvokeId();
 			InvokeImpl invoke = null;
 			int index = 0;
 			if (invokeId != null) {
@@ -1728,131 +1720,131 @@ public class DialogImpl implements Dialog {
 
 			switch (ci.getType()) {
 
-			case Invoke:
-				if (invokeId != null && invoke == null) {
-					logger.error(String.format("Rx : %s but no sent Invoke for linkedId exists", ci));
+				case Invoke:
+					if (invokeId != null && invoke == null) {
+						logger.error(String.format("Rx : %s but no sent Invoke for linkedId exists", ci));
 
-					Problem p = new ProblemImpl();
-					p.setInvokeProblemType(InvokeProblemType.UnrechognizedLinkedID);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else {
-					if (invoke != null) {
-						((InvokeImpl) ci).setLinkedInvoke(invoke);
-					}
-
-					if (this.previewMode) {
-						resultingIndications.add(ci);
-						index = getIndexFromInvokeId(ci.getInvokeId());
-						this.operationsSentA[index] = (InvokeImpl) ci;
-						((InvokeImpl) ci).setDialog(this);
-						((InvokeImpl) ci).setState(OperationState.Sent);
+						Problem p = new ProblemImpl();
+						p.setInvokeProblemType(InvokeProblemType.UnrechognizedLinkedID);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
 					} else {
-						if (!this.addIncomingInvokeId(ci.getInvokeId())) {
-							logger.error(String.format("Rx : %s but there is already Invoke with this invokeId", ci));
+						if (invoke != null) {
+							((InvokeImpl) ci).setLinkedInvoke(invoke);
+						}
 
-							Problem p = new ProblemImpl();
-							p.setInvokeProblemType(InvokeProblemType.DuplicateInvokeID);
-							this.addReject(resultingIndications, ci.getInvokeId(), p);
+						if (this.previewMode) {
+							resultingIndications.add(ci);
+							index = getIndexFromInvokeId(ci.getInvokeId());
+							this.operationsSentA[index] = (InvokeImpl) ci;
+							((InvokeImpl) ci).setDialog(this);
+							((InvokeImpl) ci).setState(OperationState.Sent);
 						} else {
+							if (!this.addIncomingInvokeId(ci.getInvokeId())) {
+								logger.error(String.format("Rx : %s but there is already Invoke with this invokeId", ci));
+
+								Problem p = new ProblemImpl();
+								p.setInvokeProblemType(InvokeProblemType.DuplicateInvokeID);
+								this.addReject(resultingIndications, ci.getInvokeId(), p);
+							} else {
+								resultingIndications.add(ci);
+							}
+						}
+					}
+					break;
+
+				case ReturnResult:
+
+					if (invoke == null) {
+						logger.error(String.format("Rx : %s but there is no corresponding Invoke", ci));
+
+						Problem p = new ProblemImpl();
+						p.setReturnResultProblemType(ReturnResultProblemType.UnrecognizedInvokeID);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
+					} else if (invoke.getInvokeClass() != InvokeClass.Class1 && invoke.getInvokeClass() != InvokeClass.Class3) {
+						logger.error(String.format("Rx : %s but Invoke class is not 1 or 3", ci));
+
+						Problem p = new ProblemImpl();
+						p.setReturnResultProblemType(ReturnResultProblemType.ReturnResultUnexpected);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
+					} else {
+						resultingIndications.add(ci);
+						ReturnResultImpl rri = (ReturnResultImpl) ci;
+						if (rri.getOperationCode() == null)
+							rri.setOperationCode(invoke.getOperationCode());
+					}
+					break;
+
+				case ReturnResultLast:
+
+					if (invoke == null) {
+						logger.error(String.format("Rx : %s but there is no corresponding Invoke", ci));
+
+						Problem p = new ProblemImpl();
+						p.setType(ProblemType.ReturnResult);
+						p.setReturnResultProblemType(ReturnResultProblemType.UnrecognizedInvokeID);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
+					} else if (invoke.getInvokeClass() != InvokeClass.Class1 && invoke.getInvokeClass() != InvokeClass.Class3) {
+						logger.error(String.format("Rx : %s but Invoke class is not 1 or 3", ci));
+
+						Problem p = new ProblemImpl();
+						p.setReturnResultProblemType(ReturnResultProblemType.ReturnResultUnexpected);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
+					} else {
+						invoke.onReturnResultLast();
+						if (invoke.isSuccessReported()) {
+							resultingIndications.add(ci);
+						}
+						ReturnResultLastImpl rri = (ReturnResultLastImpl) ci;
+						if (rri.getOperationCode() == null)
+							rri.setOperationCode(invoke.getOperationCode());
+					}
+					break;
+
+				case ReturnError:
+					if (invoke == null) {
+						logger.error(String.format("Rx : %s but there is no corresponding Invoke", ci));
+
+						Problem p = new ProblemImpl();
+						p.setReturnErrorProblemType(ReturnErrorProblemType.UnrecognizedInvokeID);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
+					} else if (invoke.getInvokeClass() != InvokeClass.Class1 && invoke.getInvokeClass() != InvokeClass.Class2) {
+						logger.error(String.format("Rx : %s but Invoke class is not 1 or 2", ci));
+
+						Problem p = new ProblemImpl();
+						p.setReturnErrorProblemType(ReturnErrorProblemType.ReturnErrorUnexpected);
+						this.addReject(resultingIndications, ci.getInvokeId(), p);
+					} else {
+						invoke.onError();
+						if (invoke.isErrorReported()) {
 							resultingIndications.add(ci);
 						}
 					}
-				}
-				break;
+					break;
 
-			case ReturnResult:
-
-				if (invoke == null) {
-					logger.error(String.format("Rx : %s but there is no corresponding Invoke", ci));
-
-					Problem p = new ProblemImpl();
-					p.setReturnResultProblemType(ReturnResultProblemType.UnrecognizedInvokeID);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else if (invoke.getInvokeClass() != InvokeClass.Class1 && invoke.getInvokeClass() != InvokeClass.Class3) {
-					logger.error(String.format("Rx : %s but Invoke class is not 1 or 3", ci));
-
-					Problem p = new ProblemImpl();
-					p.setReturnResultProblemType(ReturnResultProblemType.ReturnResultUnexpected);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else {
+				case Reject:
+					Reject rej = (Reject) ci;
+					if (invoke != null) {
+						// If the Reject Problem is the InvokeProblemType we
+						// should move the invoke to the idle state
+						Problem problem = rej.getProblem();
+						if (!rej.isLocalOriginated() && problem.getInvokeProblemType() != null)
+							invoke.onReject();
+					}
+					if (rej.isLocalOriginated() && this.isStructured()) {
+						try {
+							// this is a local originated Reject - we are rejecting an incoming component
+							// we need to send a Reject also to a peer
+							this.sendComponent(rej);
+						} catch (TCAPSendException e) {
+							logger.error("TCAPSendException when sending Reject component : Dialog: " + this, e);
+						}
+					}
 					resultingIndications.add(ci);
-					ReturnResultImpl rri = (ReturnResultImpl) ci;
-					if (rri.getOperationCode() == null)
-						rri.setOperationCode(invoke.getOperationCode());
-				}
-				break;
+					break;
 
-			case ReturnResultLast:
-
-				if (invoke == null) {
-					logger.error(String.format("Rx : %s but there is no corresponding Invoke", ci));
-
-					Problem p = new ProblemImpl();
-					p.setType(ProblemType.ReturnResult);
-					p.setReturnResultProblemType(ReturnResultProblemType.UnrecognizedInvokeID);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else if (invoke.getInvokeClass() != InvokeClass.Class1 && invoke.getInvokeClass() != InvokeClass.Class3) {
-					logger.error(String.format("Rx : %s but Invoke class is not 1 or 3", ci));
-
-					Problem p = new ProblemImpl();
-					p.setReturnResultProblemType(ReturnResultProblemType.ReturnResultUnexpected);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else {
-					invoke.onReturnResultLast();
-					if (invoke.isSuccessReported()) {
-						resultingIndications.add(ci);
-					}
-					ReturnResultLastImpl rri = (ReturnResultLastImpl) ci;
-					if (rri.getOperationCode() == null)
-						rri.setOperationCode(invoke.getOperationCode());
-				}
-				break;
-
-			case ReturnError:
-				if (invoke == null) {
-					logger.error(String.format("Rx : %s but there is no corresponding Invoke", ci));
-
-					Problem p = new ProblemImpl();
-					p.setReturnErrorProblemType(ReturnErrorProblemType.UnrecognizedInvokeID);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else if (invoke.getInvokeClass() != InvokeClass.Class1 && invoke.getInvokeClass() != InvokeClass.Class2) {
-					logger.error(String.format("Rx : %s but Invoke class is not 1 or 2", ci));
-
-					Problem p = new ProblemImpl();
-					p.setReturnErrorProblemType(ReturnErrorProblemType.ReturnErrorUnexpected);
-					this.addReject(resultingIndications, ci.getInvokeId(), p);
-				} else {
-					invoke.onError();
-					if (invoke.isErrorReported()) {
-						resultingIndications.add(ci);
-					}
-				}
-				break;
-
-			case Reject:
-				Reject rej = (Reject) ci;
-				if (invoke != null) {
-					// If the Reject Problem is the InvokeProblemType we
-					// should move the invoke to the idle state
-					Problem problem = rej.getProblem();
-					if (!rej.isLocalOriginated() && problem.getInvokeProblemType() != null)
-						invoke.onReject();
-				}
-				if (rej.isLocalOriginated() && this.isStructured()) {
-					try {
-						// this is a local originated Reject - we are rejecting an incoming component
-						// we need to send a Reject also to a peer
-						this.sendComponent(rej);
-					} catch (TCAPSendException e) {
-						logger.error("TCAPSendException when sending Reject component : Dialog: " + this, e);
-					}
-				}
-				resultingIndications.add(ci);
-				break;
-
-			default:
-				resultingIndications.add(ci);
-				break;
+				default:
+					resultingIndications.add(ci);
+					break;
 			}
 
 		}
@@ -1983,12 +1975,12 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#operationEnded(
-	 * org.mobicents.protocols.ss7.tcap.tc.component.TCInvokeRequestImpl)
-	 */
+     * org.mobicents.protocols.ss7.tcap.tc.component.TCInvokeRequestImpl)
+     */
 	public void operationTimedOut(InvokeImpl invoke) {
 		// this op died cause of timeout, TC-L-CANCEL!
 		try {
@@ -2041,10 +2033,10 @@ public class DialogImpl implements Dialog {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
 	@Override
 	public String toString() {
 

@@ -46,7 +46,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
  * @author baranowb
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public class InvokeImpl implements Invoke {
 
@@ -60,10 +60,10 @@ public class InvokeImpl implements Invoke {
 	private DialogImpl dialog;
 
 	public InvokeImpl() {
-		//Set Default Class
+		// Set Default Class
 		this.invokeClass = InvokeClass.Class1;
 	}
-	
+
 	public InvokeImpl(InvokeClass invokeClass) {
 		if (invokeClass == null) {
 			this.invokeClass = InvokeClass.Class1;
@@ -86,61 +86,61 @@ public class InvokeImpl implements Invoke {
 	private Parameter parameter;
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getInvokeId()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getInvokeId()
+     */
 	public Long getInvokeId() {
 
 		return this.invokeId;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getLinkedId()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getLinkedId()
+     */
 	public Long getLinkedId() {
 
 		return this.linkedId;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getLinkedInvoke()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getLinkedInvoke()
+     */
 	public Invoke getLinkedInvoke() {
 		return linkedInvoke;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getOperationCode()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getOperationCode()
+     */
 	public OperationCode getOperationCode() {
 
 		return this.operationCode;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getParameteR()
-	 */
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getParameteR()
+     */
 	public Parameter getParameter() {
 
 		return this.parameter;
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#setInvokeId(java.lang
 	 * .Integer)
-	 */
+     */
 	public void setInvokeId(Long i) {
 		if ((i == null) || (i < -128 || i > 127)) {
 			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
@@ -150,12 +150,12 @@ public class InvokeImpl implements Invoke {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#setLinkedId(java.lang
 	 * .Integer)
-	 */
+     */
 	public void setLinkedId(Long i) {
 		if ((i == null) || (i < -128 || i > 127)) {
 			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
@@ -168,24 +168,24 @@ public class InvokeImpl implements Invoke {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#setOperationCode(org
-	 * .mobicents.protocols.ss7.tcap.asn.comp.OperationCode)
-	 */
+     * .mobicents.protocols.ss7.tcap.asn.comp.OperationCode)
+     */
 	public void setOperationCode(OperationCode i) {
 		this.operationCode = i;
 
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#setParameter(org.mobicents
 	 * .protocols.ss7.tcap.asn.comp.Parameter)
-	 */
+     */
 	public void setParameter(Parameter p) {
 		this.parameter = p;
 
@@ -203,17 +203,17 @@ public class InvokeImpl implements Invoke {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols
 	 * .asn.AsnInputStream)
-	 */
+     */
 	public void decode(AsnInputStream ais) throws ParseException {
 
 		try {
 			AsnInputStream localAis = ais.readSequenceStream();
-			
+
 			// invokeId
 			int tag = localAis.readTag();
 			if (tag != _TAG_IID || localAis.getTagClass() != Tag.CLASS_UNIVERSAL) {
@@ -253,12 +253,12 @@ public class InvokeImpl implements Invoke {
 	}
 
 	/*
-	 * (non-Javadoc)
-	 * 
+     * (non-Javadoc)
+     *
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols
 	 * .asn.AsnOutputStream)
-	 */
+     */
 	public void encode(AsnOutputStream aos) throws EncodeException {
 		if (this.invokeId == null)
 			throw new EncodeException("Invoke ID not set!");
@@ -276,9 +276,9 @@ public class InvokeImpl implements Invoke {
 
 			if (this.parameter != null)
 				this.parameter.encode(aos);
-			
+
 			aos.FinalizeContent(pos);
-			
+
 		} catch (IOException e) {
 			throw new EncodeException("IOException while encoding Invoke: " + e.getMessage(), e);
 		} catch (AsnException e) {
@@ -351,10 +351,9 @@ public class InvokeImpl implements Invoke {
 	}
 
 	/**
-	 * @param state
-	 *            the state to set
+	 * @param state the state to set
 	 */
-	public synchronized void setState(OperationState state) {
+	public void setState(OperationState state) {
 		if (this.dialog == null) {
 			// bad call on server side.
 			return;
@@ -364,14 +363,14 @@ public class InvokeImpl implements Invoke {
 		if (old != state) {
 
 			switch (state) {
-			case Sent:
-				// start timer
-				this.startTimer();
-				break;
-			case Idle:
-			case Reject_W:
-				this.stopTimer();
-				dialog.operationEnded(this);
+				case Sent:
+					// start timer
+					this.startTimer();
+					break;
+				case Idle:
+				case Reject_W:
+					this.stopTimer();
+					dialog.operationEnded(this);
 			}
 			if (state == OperationState.Sent) {
 
@@ -438,12 +437,18 @@ public class InvokeImpl implements Invoke {
 		}
 
 		public void run() {
-	
+
+			try {
+				dialog.getDialogLock().lock();
+
 				// op failed, we must delete it from dialog and notify!
 				timerFuture = null;
 				setState(OperationState.Idle);
 				// TC-L-CANCEL
 				((DialogImpl) invoke.dialog).operationTimedOut(invoke);
+			} finally {
+				dialog.getDialogLock().unlock();
+			}
 		}
 
 	}

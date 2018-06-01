@@ -40,10 +40,11 @@ public interface TCAPStack {
 	public void stop();
 	/**
 	 * Start stack and transport layer(SCCP)
-	 * @throws IllegalStateException - if stack is already running or not configured
-	 * @throws StartFailedException
+	 * @throws Exception - if stack is already running or not configured
 	 */
-	public void start() throws IllegalStateException;
+	public void start() throws Exception;
+
+	public boolean isStarted();
 
 	/**
 	 * Sets millisecond value for dialog timeout. It specifies how long dialog
