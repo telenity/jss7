@@ -4,14 +4,14 @@
 	<parent>
 		<artifactId>ss7-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7</groupId>
-		<version>2.0.0.CR2</version>
+		<version>2.0.0.1</version>
 	</parent>
 
 	<groupId>org.mobicents.protocols.ss7.hardware</groupId>
 	<artifactId>mobicents-hardware</artifactId>
 
 	<name>
-		Mobicents SS7 :: Hardware :: Parent :: ${pom.artifactId}
+		Mobicents SS7 :: Hardware :: Parent :: ${project.artifactId}
 	</name>
 	<packaging>pom</packaging>
 
@@ -21,9 +21,6 @@
 	</properties>
 
 	<modules>
-		<module>linkset</module>
-		<module>cli</module>
-		<module>dahdi</module>
 		<module>dialogic</module>
 	</modules>
 
@@ -31,15 +28,13 @@
 		<profile>
 			<id>maven-release</id>
 			<modules>
-				<!-- -->
-				<module>dahdi</module>
 				<module>dialogic</module>
 			</modules>
 		</profile>
 	</profiles>
 
 	<build>
-		<finalName>${pom.artifactId}-${pom.version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-eclipse-plugin</artifactId>

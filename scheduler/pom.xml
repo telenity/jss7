@@ -6,12 +6,12 @@
 	<parent>
 		<artifactId>ss7-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7</groupId>
-		<version>2.0.0.CR2</version>
+		<version>2.0.0.1</version>
 	</parent>
 
 	<groupId>org.mobicents.protocols.ss7.scheduler</groupId>
 	<artifactId>scheduler</artifactId>
-	<name>Mobicents SS7 :: Scheduler :: ${pom.artifactId}</name>
+	<name>Mobicents SS7 :: Scheduler :: ${project.artifactId}</name>
 
 	<dependencies>
                 <!-- non mobicents -->
@@ -55,7 +55,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>mobicents-scheduler-${pom.version}</finalName>
+		<finalName>mobicents-scheduler-${project.version}</finalName>
 	</build>
 
 </project>

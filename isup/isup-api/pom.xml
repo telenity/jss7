@@ -4,12 +4,12 @@
 	<parent>
 		<artifactId>isup-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7.isup</groupId>
-		<version>2.0.0.CR2</version>
+		<version>2.0.0.1</version>
 	</parent>
 
 	<artifactId>isup-api</artifactId>
 
-	<name>Mobicents SS7 :: ISUP :: Api :: ${pom.artifactId}</name>
+	<name>Mobicents SS7 :: ISUP :: Api :: ${project.artifactId}</name>
 
 	<dependencies>
 		<!--
@@ -32,6 +32,6 @@
 	</dependencies>
 
 	<build>
-		<finalName>${pom.artifactId}-${pom.version}</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 	</build>
 </project>

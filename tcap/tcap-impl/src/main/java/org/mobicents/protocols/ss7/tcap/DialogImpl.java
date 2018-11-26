@@ -1946,7 +1946,7 @@ public class DialogImpl implements Dialog {
 				if (d.idleTimerActionTaken) {
 					startIdleTimer();
 				} else {
-					d.release();
+                    sendAbnormalDialog();
 				}
 
 			} finally {

@@ -33,19 +33,28 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
 /**
  * @author baranowb
  * @author sergey vetyutnev
- * 
+ * @author alerant appngin
+ *
  */
 public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	private ApplicationContextName acn;
 	private UserInformation ui;
 	private ProtocolVersion protocolVersion = new ProtocolVersionImpl();
+	private boolean doNotSendProtocolVersion = false;
+	private boolean malformedUserInformation = false;
+
+	public DialogRequestAPDUImpl() {
+	}
+
+	public void setDoNotSendProtocolVersion(boolean val) {
+		doNotSendProtocolVersion = val;
+	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#
-	 * getApplicationContextName()
+	 *
+	 * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU# getApplicationContextName()
 	 */
 	public ApplicationContextName getApplicationContextName() {
 		return acn;
@@ -53,7 +62,7 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#getProtocolVersion ()
 	 */
 	public ProtocolVersion getProtocolVersion() {
@@ -63,7 +72,7 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#getUserInformation ()
 	 */
 	public UserInformation getUserInformation() {
@@ -72,9 +81,8 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#
-	 * setApplicationContextName
+	 *
+	 * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU# setApplicationContextName
 	 * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
 	 */
 	public void setApplicationContextName(ApplicationContextName acn) {
@@ -84,9 +92,9 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#setUserInformation
-	 *      (org.mobicents.protocols.ss7.tcap.asn.UserInformation[])
+	 * (org.mobicents.protocols.ss7.tcap.asn.UserInformation[])
 	 */
 	public void setUserInformation(UserInformation ui) {
 		this.ui = ui;
@@ -95,7 +103,7 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogAPDU#getType()
 	 */
 	public DialogAPDUType getType() {
@@ -104,7 +112,7 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogAPDU#isUniDirectional()
 	 */
 	public boolean isUniDirectional() {
@@ -112,21 +120,28 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 		return false;
 	}
 
-	
+	/**
+	 * Return true if the decoded request contained malformed User Information element
+	 *
+	 * @return true if the decoded request contained malformed User Information element
+	 */
+	public boolean isMalformedUserInformation() {
+		return malformedUserInformation;
+	}
+
 	public String toString() {
-		return "DialogRequestAPDU[acn=" + acn + ", ui=" + ui + "]";
+		return "DialogRequestAPDU[acn=" + acn + ", ui=" + (malformedUserInformation ? "<MALFORMED>" : ui) + "]";
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols
-	 *      .asn.AsnInputStream)
+	 *
+	 * @see org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols .asn.AsnInputStream)
 	 */
 	public void decode(AsnInputStream ais) throws ParseException {
 		try {
 			AsnInputStream localAis = ais.readSequenceStream();
-			
+
 			int tag = localAis.readTag();
 			// optional protocol version
 			if (tag == ProtocolVersion._TAG_PROTOCOL_VERSION && localAis.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
@@ -139,8 +154,8 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 			// now there is mandatory part
 			if (tag != ApplicationContextName._TAG || localAis.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC)
 				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-						"Error decoding DialogRequestAPDU.application-context-name: bad tag or tagClass, found tag=" + tag + ", tagClass="
-								+ localAis.getTagClass());
+						"Error decoding DialogRequestAPDU.application-context-name: bad tag or tagClass, found tag=" + tag
+								+ ", tagClass=" + localAis.getTagClass());
 			this.acn = TcapFactory.createApplicationContextName(localAis);
 
 			// optional sequence.
@@ -150,38 +165,52 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 				tag = localAis.readTag();
 				if (tag != UserInformation._TAG || localAis.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC)
 					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-							"Error decoding DialogRequestAPDU.user-information: bad tag or tagClass, found tag=" + tag + ", tagClass=" + localAis.getTagClass());
-				this.ui = TcapFactory.createUserInformation(localAis);
+							"Error decoding DialogRequestAPDU.user-information: bad tag or tagClass, found tag=" + tag
+									+ ", tagClass=" + localAis.getTagClass());
+				// Ensure all data is read even in case of malformed user information content.
+				// Don't throw exception, as user info is not necessary to establish the dialog;
+				// if TC-User requires ui to be present, it can always send TC-U-Abort.
+				int uiPos = localAis.position();
+				try {
+					this.ui = TcapFactory.createUserInformation(localAis);
+				} catch (ParseException uiEx) {
+					this.ui = null;
+					malformedUserInformation = true;
+					localAis.position(uiPos); // "reset"
+					localAis.advanceElement(); // advance without parsing the element
+				}
 			}
 		} catch (IOException e) {
-			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException while decoding DialogRequestAPDU: " + e.getMessage(), e);
+			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null,
+					"IOException while decoding DialogRequestAPDU: " + e.getMessage(), e);
 		} catch (AsnException e) {
-			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "AsnException while decoding DialogRequestAPDU: " + e.getMessage(), e);
+			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null,
+					"AsnException while decoding DialogRequestAPDU: " + e.getMessage(), e);
 		}
 
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols
-	 *      .asn.AsnOutputStream)
+	 *
+	 * @see org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols .asn.AsnOutputStream)
 	 */
 	public void encode(AsnOutputStream aos) throws EncodeException {
 
 		if (acn == null)
 			throw new EncodeException("Error encoding DialogRequestAPDU: Application Context Name must not be null");
-		
+
 		try {
 			aos.writeTag(Tag.CLASS_APPLICATION, false, _TAG_REQUEST);
 			int pos = aos.StartContentDefiniteLength();
 
-			this.protocolVersion.encode(aos);
+			if (!doNotSendProtocolVersion)
+				this.protocolVersion.encode(aos);
 			this.acn.encode(aos);
-			
+
 			if (ui != null)
 				ui.encode(aos);
-			
+
 			aos.FinalizeContent(pos);
 
 		} catch (AsnException e) {
@@ -190,4 +219,3 @@ public class DialogRequestAPDUImpl implements DialogRequestAPDU {
 
 	}
 }
-
