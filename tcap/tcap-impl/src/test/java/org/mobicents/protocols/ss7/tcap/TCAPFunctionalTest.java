@@ -100,13 +100,13 @@ public class TCAPFunctionalTest extends SccpHarness {
         
         this.tcapListenerWrapper = new TCAPListenerWrapper();
         this.tcapStack1.getProvider().addTCListener(tcapListenerWrapper);
-        
-        this.tcapStack1.setInvokeTimeout(0);
-        this.tcapStack2.setInvokeTimeout(0);
-        
-       
+
         this.tcapStack1.start();
         this.tcapStack2.start();
+
+        this.tcapStack1.setInvokeTimeout(0);
+        this.tcapStack2.setInvokeTimeout(0);
+
         //create test classes
         this.client = new Client(this.tcapStack1, peer1Address, peer2Address);
         this.server = new Server(this.tcapStack2, peer2Address, peer1Address);
@@ -124,49 +124,51 @@ public class TCAPFunctionalTest extends SccpHarness {
     }
 
 	@Test(groups = { "functional.flow"})
-    public void simpleTCWithDialogTest() throws Exception{
+    public void simpleTCWithDialogTest() throws Exception {
 
         long stamp = System.currentTimeMillis();
         List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
-        TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0,stamp);
+        TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp);
         clientExpectedEvents.add(te);
-        te = TestEvent.createReceivedEvent(EventType.Continue, null, 1,stamp+WAIT_TIME);
+        te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + WAIT_TIME);
         clientExpectedEvents.add(te);
-        te = TestEvent.createSentEvent(EventType.End, null, 2,stamp+WAIT_TIME*2);
+        te = TestEvent.createSentEvent(EventType.End, null, 2, stamp + WAIT_TIME * 2);
         clientExpectedEvents.add(te);
-//        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3,stamp+WAIT_TIME*2+_WAIT_REMOVE);
-        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3,stamp+WAIT_TIME*2);
+        // te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3,stamp+WAIT_TIME*2+_WAIT_REMOVE);
+        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + WAIT_TIME * 2);
         clientExpectedEvents.add(te);
-        
+
         List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
-        te = TestEvent.createReceivedEvent(EventType.Begin, null, 0,stamp);
+        te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
         serverExpectedEvents.add(te);
-        te = TestEvent.createSentEvent(EventType.Continue, null, 1,stamp+WAIT_TIME);
+        te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + WAIT_TIME);
         serverExpectedEvents.add(te);
-        te = TestEvent.createReceivedEvent(EventType.End, null, 2,stamp+WAIT_TIME*2);
+        te = TestEvent.createReceivedEvent(EventType.End, null, 2, stamp + WAIT_TIME * 2);
         serverExpectedEvents.add(te);
-//        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3,stamp+WAIT_TIME*2+_WAIT_REMOVE);
-        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3,stamp+WAIT_TIME*2);
+        // te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3,stamp+WAIT_TIME*2+_WAIT_REMOVE);
+        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + WAIT_TIME * 2);
         serverExpectedEvents.add(te);
 
-    	client.startClientDialog();
-    	assertNotNull(client.dialog.getLocalAddress());
-    	assertNull(client.dialog.getRemoteDialogId());
-    	
+//        this.saveTrafficInFile();
+
+        client.startClientDialog();
+        assertNotNull(client.dialog.getLocalAddress());
+        assertNull(client.dialog.getRemoteDialogId());
+
         client.sendBegin();
         client.waitFor(WAIT_TIME);
-        
+
         server.sendContinue();
         assertNotNull(server.dialog.getLocalAddress());
-    	assertNotNull(server.dialog.getRemoteDialogId());
-    	
+        assertNotNull(server.dialog.getRemoteDialogId());
+
         client.waitFor(WAIT_TIME);
         client.sendEnd(TerminationType.Basic);
-    	assertNotNull(client.dialog.getLocalAddress());
-    	assertNotNull(client.dialog.getRemoteDialogId());
-    	
+        assertNotNull(client.dialog.getLocalAddress());
+        assertNotNull(client.dialog.getRemoteDialogId());
+
         client.waitFor(WAIT_TIME);
-//        waitForEnd();
+        // waitForEnd();
 
         client.compareEvents(clientExpectedEvents);
         server.compareEvents(serverExpectedEvents);
@@ -220,26 +222,26 @@ public class TCAPFunctionalTest extends SccpHarness {
 			
 		}
 
-		@Override
-		public void onTCContinue(TCContinueIndication ind) {
-			assertEquals(ind.getComponents().length, 2);
-			ReturnResultLast rrl = (ReturnResultLast)ind.getComponents()[0];
-			Invoke inv = (Invoke)ind.getComponents()[1];
+        @Override
+        public void onTCContinue(TCContinueIndication ind) {
+            assertEquals(ind.getComponents().length, 2);
+            ReturnResultLast rrl = (ReturnResultLast) ind.getComponents()[0];
+            Invoke inv = (Invoke) ind.getComponents()[1];
 
-			// operationCode is not sent via ReturnResultLast because it does not contain a Parameter
-			// so operationCode is taken from a sent Invoke 
-			assertEquals((long)rrl.getInvokeId(), 1);
-			assertEquals((long)rrl.getOperationCode().getLocalOperationCode(), 12);
+            // operationCode is not sent via ReturnResultLast because it does not contain a Parameter
+            // so operationCode is taken from a sent Invoke
+            assertEquals((long) rrl.getInvokeId(), 0);
+            assertEquals((long) rrl.getOperationCode().getLocalOperationCode(), 12);
 
-			// second Invoke has its own operationCode and it has linkedId to the second sent Invoke
-			assertEquals((long)inv.getInvokeId(), 1);
-			assertEquals((long)inv.getOperationCode().getLocalOperationCode(), 14);
-			assertEquals((long)inv.getLinkedId(), 2);
+            // second Invoke has its own operationCode and it has linkedId to the second sent Invoke
+            assertEquals((long) inv.getInvokeId(), 0);
+            assertEquals((long) inv.getOperationCode().getLocalOperationCode(), 14);
+            assertEquals((long) inv.getLinkedId(), 1);
 
-			// we should see operationCode of the second sent Invoke
-			Invoke linkedInv = inv.getLinkedInvoke();
-			assertEquals((long)linkedInv.getOperationCode().getLocalOperationCode(), 13);
-		}
+            // we should see operationCode of the second sent Invoke
+            Invoke linkedInv = inv.getLinkedInvoke();
+            assertEquals((long) linkedInv.getOperationCode().getLocalOperationCode(), 13);
+        }
 
 		@Override
 		public void onTCEnd(TCEndIndication ind) {

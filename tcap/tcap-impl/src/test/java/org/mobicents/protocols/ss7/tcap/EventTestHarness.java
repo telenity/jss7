@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -22,9 +22,13 @@
 
 package org.mobicents.protocols.ss7.tcap;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.ComponentPrimitiveFactory;
 import org.mobicents.protocols.ss7.tcap.api.TCAPException;
@@ -55,16 +59,15 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
 
 /**
- * Super class for event based tests. Has capabilities for testing if events are
- * received and if so, if they were received in proper order.
- * 
+ * Super class for event based tests. Has capabilities for testing if events are received and if so, if they were received in
+ * proper order.
+ *
  * @author baranowb
- * 
+ *
  */
 public abstract class EventTestHarness implements TCListener {
 	public static final long[] _ACN_ = new long[] { 0, 4, 0, 0, 1, 0, 19, 2 };
 	protected List<TestEvent> observerdEvents = new ArrayList<TestEvent>();
-	
 
 	protected Dialog dialog;
 	protected TCAPStack stack;
@@ -72,14 +75,13 @@ public abstract class EventTestHarness implements TCListener {
 	protected SccpAddress remoteAddress;
 
 	protected TCAPProvider tcapProvider;
-
 	protected int sequence = 0;
 
 	protected ApplicationContextName acn;
 	protected UserInformation ui;
 
 	protected PAbortCauseType pAbortCauseType;
-	
+
 	/**
 	 * @param stack
 	 * @param thisAddress
@@ -101,6 +103,13 @@ public abstract class EventTestHarness implements TCListener {
 		dialog = this.tcapProvider.getNewDialog(thisAddress, remoteAddress);
 	}
 
+	public void startClientDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException {
+		if (dialog != null) {
+			throw new IllegalStateException("Dialog exists...");
+		}
+		dialog = this.tcapProvider.getNewDialog(localAddress, remoteAddress);
+	}
+
 	public void startUniDialog() throws TCAPException {
 		if (dialog != null) {
 			throw new IllegalStateException("Dialog exists...");
@@ -109,7 +118,7 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void sendBegin() throws TCAPException, TCAPSendException {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]send BEGIN");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]send BEGIN");
 		ApplicationContextName acn = this.tcapProvider.getDialogPrimitiveFactory().createApplicationContextName(_ACN_);
 		// UI is optional!
 		TCBeginRequest tcbr = this.tcapProvider.getDialogPrimitiveFactory().createBegin(this.dialog);
@@ -119,7 +128,7 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void sendContinue() throws TCAPSendException, TCAPException {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]send CONTINUE");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]send CONTINUE");
 		// send end
 		TCContinueRequest con = this.tcapProvider.getDialogPrimitiveFactory().createContinue(dialog);
 		if (acn != null) {
@@ -136,7 +145,7 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void sendEnd(TerminationType terminationType) throws TCAPSendException {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]send END");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]send END");
 		// send end
 		TCEndRequest end = this.tcapProvider.getDialogPrimitiveFactory().createEnd(dialog);
 		end.setTermination(terminationType);
@@ -172,16 +181,16 @@ public abstract class EventTestHarness implements TCListener {
 	public void sendUni() throws TCAPException, TCAPSendException {
 		ComponentPrimitiveFactory cpFactory = this.tcapProvider.getComponentPrimitiveFactory();
 
-		//create some INVOKE
+		// create some INVOKE
 		Invoke invoke = cpFactory.createTCInvokeRequest(InvokeClass.Class4);
 		invoke.setInvokeId(this.dialog.getNewInvokeId());
 		OperationCode oc = cpFactory.createOperationCode();
 		oc.setLocalOperationCode(new Long(12));
 		invoke.setOperationCode(oc);
-		//no parameter
+		// no parameter
 		this.dialog.sendComponent(invoke);
 
-		System.err.println(this+" T["+System.currentTimeMillis()+"]send UNI");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]send UNI");
 		ApplicationContextName acn = this.tcapProvider.getDialogPrimitiveFactory().createApplicationContextName(_ACN_);
 		TCUniRequest tcur = this.tcapProvider.getDialogPrimitiveFactory().createUni(this.dialog);
 		tcur.setApplicationContextName(acn);
@@ -190,14 +199,14 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void onTCUni(TCUniIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onUni");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onUni");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.Uni, ind, sequence++);
 		this.observerdEvents.add(te);
 		this.dialog = ind.getDialog();
 	}
 
 	public void onTCBegin(TCBeginIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onBegin");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onBegin");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.Begin, ind, sequence++);
 		this.observerdEvents.add(te);
 		this.dialog = ind.getDialog();
@@ -212,7 +221,7 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void onTCContinue(TCContinueIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onContinue");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onContinue");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.Continue, ind, sequence++);
 		this.observerdEvents.add(te);
 		if (ind.getApplicationContextName() != null) {
@@ -225,20 +234,20 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void onTCEnd(TCEndIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onEnd");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onEnd");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.End, ind, sequence++);
 		this.observerdEvents.add(te);
 
 	}
 
 	public void onTCUserAbort(TCUserAbortIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onUAbort");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onUAbort");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.UAbort, ind, sequence++);
 		this.observerdEvents.add(te);
 	}
 
 	public void onTCPAbort(TCPAbortIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onPAbort");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onPAbort");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.PAbort, ind, sequence++);
 		this.observerdEvents.add(te);
 
@@ -246,28 +255,28 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void onDialogReleased(Dialog d) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onDialogReleased");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onDialogReleased");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.DialogRelease, d, sequence++);
 		this.observerdEvents.add(te);
 
 	}
 
 	public void onInvokeTimeout(Invoke tcInvokeRequest) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onInvokeTimeout");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onInvokeTimeout");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.InvokeTimeout, tcInvokeRequest, sequence++);
 		this.observerdEvents.add(te);
 
 	}
 
 	public void onDialogTimeout(Dialog d) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onDialogTimeout");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onDialogTimeout");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.DialogTimeout, d, sequence++);
 		this.observerdEvents.add(te);
 
 	}
 
 	public void onTCNotice(TCNoticeIndication ind) {
-		System.err.println(this+" T["+System.currentTimeMillis()+"]onNotice");
+		System.err.println(this + " T[" + System.currentTimeMillis() + "]onNotice");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.Notice, ind, sequence++);
 		this.observerdEvents.add(te);
 	}
@@ -283,12 +292,13 @@ public abstract class EventTestHarness implements TCListener {
 	public static void doCompareEvents(List<TestEvent> observerdEvents, List<TestEvent> expectedEvents) {
 
 		if (expectedEvents.size() != observerdEvents.size()) {
-			fail("Size of received events: " + observerdEvents.size() + ", does not equal expected events: " + expectedEvents.size() + "\n"
-					+ doStringCompare(expectedEvents, observerdEvents));
+			fail("Size of received events: " + observerdEvents.size() + ", does not equal expected events: "
+					+ expectedEvents.size() + "\n" + doStringCompare(expectedEvents, observerdEvents));
 		}
 
 		for (int index = 0; index < expectedEvents.size(); index++) {
-			assertEquals(observerdEvents.get(index), expectedEvents.get(index),"Received event does not match, index[" + index + "]");
+			assertEquals(observerdEvents.get(index), expectedEvents.get(index), "Received event does not match, index[" + index
+					+ "]");
 		}
 	}
 

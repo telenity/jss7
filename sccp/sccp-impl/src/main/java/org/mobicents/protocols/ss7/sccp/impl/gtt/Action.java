@@ -20,38 +20,52 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.mobicents.protocols.ss7.sccp.parameter;
+package org.mobicents.protocols.ss7.sccp.impl.gtt;
+
+import java.io.Serializable;
 
 /**
- * Protocol class (contains class data (0-3) and "return message on error" option for connectionless classes)
- * 
- * The "protocol class" parameter field is a one-octet parameter and is structured as follows:
- * Bits 1-4 indicating protocol class are coded as follows:
- * 4321
- * 0000 class 0
- * 0001 class 1
- * 0010 class 2
- * 0011 class 3
- * 
- * @author baranowb
+ *
  * @author kulikov
  */
-public interface ProtocolClass extends Parameter{
-
-	public static final int PARAMETER_CODE = 0x05;
-
-	public static final int HANDLING_RET_ERR = 0x08;
-    /**
-     * The value of protocol class.
-     * 
-     * @return protocol class code
-     */
-    public int getProtocolClass();
-
-    /**
-     * Gets a "return message on error" flag
-     * 
-     * @return
-     */
-    public boolean getReturnMessageOnError();
+public abstract class Action implements Serializable  {
+    
+    private Object[] args;
+    
+    /** Creates a new instance of Action */
+    public Action() {
+    }
+    
+    public Action(Object[] args) {
+        this.args = args;
+    }
+    
+    public static Action getInstance(String name, Object[] args) {
+        if (name.equals("rem")) {
+            return new Remove(args);
+        } else if (name.equals("ins")) {
+            return new Insert(args);
+        }
+        return null;
+    }
+    
+    public abstract String doExecute(String[] args);
+    
+    public String execute() {
+        String argv[] = new String[args.length];
+        int i = 0;
+        if (args[0] instanceof Action) {
+           argv[0] = ((Action)args[0]).execute();
+           i++;
+        }
+        
+        while (i < args.length) {
+            argv[i] = (String)args[i];
+            i++;
+        }
+        
+        return doExecute(argv);
+    }
+    
 }
+

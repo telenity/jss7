@@ -28,12 +28,11 @@ package org.mobicents.protocols.ss7.sccp;
  * 
  */
 public enum RuleType {
-	Solitary("Solitary"), Dominant("Dominant"), Loadshared("Loadshared"), Broadcast("Broadcast");
+	Solitary("Solitary"), Dominant("Dominant"), Loadshared("Loadshared");
 
 	private static final String SOLITARY = "Solitary";
 	private static final String DOMINANT = "Dominant";
 	private static final String LOADSHARED = "Loadshared";
-	private static final String BROADCAST = "Broadcast";
 
 	private final String type;
 
@@ -48,8 +47,6 @@ public enum RuleType {
 			return Dominant;
 		} else if (LOADSHARED.equalsIgnoreCase(type)) {
 			return Loadshared;
-		} else if (BROADCAST.equalsIgnoreCase(type)) {
-			return Broadcast;
 		}
 
 		return null;

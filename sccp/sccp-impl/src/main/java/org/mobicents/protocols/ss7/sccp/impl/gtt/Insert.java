@@ -1,6 +1,6 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
- * and individual contributors
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -20,40 +20,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.mobicents.protocols.ss7.sccp;
+package org.mobicents.protocols.ss7.sccp.impl.gtt;
 
 /**
  *
- * @author sergey vetyutnev
- * 
+ * @author kulikov
  */
-public enum OriginationType {
-	LocalOriginated("LocalOriginated"), RemoteOriginated("RemoteOriginated"), All("All");
+public class Insert extends Action {
+    
+    /** Creates a new instance of InsertOperation */
+    public Insert() {
+    }
+    
+    public Insert(Object[] args) {
+        super(args);
+    }
 
-	private static final String LOCAL_ORIGINATED = "LocalOriginated";
-	private static final String REMOTE_ORIGINATED = "RemoteOriginated";
-	private static final String ALL = "All";
-
-	private final String type;
-
-	private OriginationType(String type) {
-		this.type = type;
-	}
-
-	public static OriginationType getInstance(String type) {
-		if (LOCAL_ORIGINATED.equalsIgnoreCase(type)) {
-			return LocalOriginated;
-		} else if (REMOTE_ORIGINATED.equalsIgnoreCase(type)) {
-			return RemoteOriginated;
-		} else if (ALL.equalsIgnoreCase(type)) {
-			return All;
-		}
-
-		return null;
-	}
-	
-	public String getType(){
-		return this.type;
-	}
-
+    public String doExecute(String[] args) {
+        String subj = args[0];
+        int pos = Integer.parseInt(args[1]);
+        String exp = args[2];
+        
+        String left = subj.substring(0, pos);
+        String right = subj.substring(pos);
+        
+        return left + exp + right;
+    }
+    
 }
+

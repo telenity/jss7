@@ -91,9 +91,6 @@ public class SccpNoticeMessageImpl extends SccpDataNoticeTemplateMessageImpl imp
 		return false;
 	}
 
-	public void clearReturnMessageOnError() {
-	}
-
 	public boolean getSccpCreatesSls() {
 		return true;
 	}

@@ -36,7 +36,4 @@ public class TCAPProviderImplWrapper extends TCAPProviderImpl {
 		super(sccpProvider, stack, ssn);
 	}
 
-	public Map<PrevewDialogDataKey, PrevewDialogData> getDialogPreviewList() {
-		return dialogPreviewList;
-	}
 }

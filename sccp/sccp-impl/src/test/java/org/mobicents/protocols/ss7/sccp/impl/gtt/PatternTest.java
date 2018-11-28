@@ -20,38 +20,58 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.mobicents.protocols.ss7.sccp.parameter;
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package org.mobicents.protocols.ss7.sccp.impl.gtt;
+
+import org.testng.annotations.*;
+import static org.testng.Assert.*;
 
 /**
- * Protocol class (contains class data (0-3) and "return message on error" option for connectionless classes)
- * 
- * The "protocol class" parameter field is a one-octet parameter and is structured as follows:
- * Bits 1-4 indicating protocol class are coded as follows:
- * 4321
- * 0000 class 0
- * 0001 class 1
- * 0010 class 2
- * 0011 class 3
- * 
- * @author baranowb
+ *
  * @author kulikov
  */
-public interface ProtocolClass extends Parameter{
+public class PatternTest {
 
-	public static final int PARAMETER_CODE = 0x05;
+    public PatternTest() {
+    }
 
-	public static final int HANDLING_RET_ERR = 0x08;
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @BeforeMethod
+    public void setUp() {
+    }
+
+    @AfterMethod
+    public void tearDown() {
+    }
+
     /**
-     * The value of protocol class.
-     * 
-     * @return protocol class code
+     * Test of getResult method, of class Pattern.
      */
-    public int getProtocolClass();
+    @Test(groups = { "gtt"})
+    public void testGetResult() {
+        Pattern pattern = new Pattern("1101/rem 0,4/ins 0,9023629581");
+        String result = pattern.getResult("1101");
+        assertEquals( result,"9023629581");
+    }
 
     /**
-     * Gets a "return message on error" flag
-     * 
-     * @return
+     * Test of matches method, of class Pattern.
      */
-    public boolean getReturnMessageOnError();
+    @Test(groups = { "gtt"})
+    public void testMatches() {
+        Pattern pattern = new Pattern("1101/rem 0,4/ins 0,9023629581");
+        assertTrue(pattern.matches("1101"));
+    }
+
 }

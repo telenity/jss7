@@ -27,13 +27,10 @@ import static org.testng.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LongMessageRuleType;
-import org.mobicents.protocols.ss7.sccp.SccpStack;
 import org.mobicents.protocols.ss7.sccp.impl.SccpHarness;
-import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.impl.SccpStackImplProxy;
 import org.mobicents.protocols.ss7.sccp.impl.User;
 import org.mobicents.protocols.ss7.sccp.impl.message.MessageSegmentationTest;
@@ -63,33 +60,23 @@ public class MessageTransferTest extends SccpHarness {
 
 	@BeforeClass
 	public void setUpClass() throws Exception {
-		this.sccpStack1Name = "sspTestSccpStack1";
-		this.sccpStack2Name = "sspTestSccpStack2";
+		this.sccpStack1Name = "MessageTransferTestSccpStack1";
+		this.sccpStack2Name = "MessageTransferTestSccpStack2";
 	}
 
 	@AfterClass
 	public void tearDownClass() throws Exception {
 	}
 
-    protected void createStack1() {
-        sccpStack1 = createStack(sccpStack1Name);
-        sccpProvider1 = sccpStack1.getSccpProvider();
-    }
+	protected void createStack1() {
+		sccpStack1 = new SccpStackImplProxy("sspTestSccpStack1");
+		sccpProvider1 = sccpStack1.getSccpProvider();
+	}
 
-    protected void createStack2() {
-        sccpStack2 = createStack(sccpStack2Name);
-        sccpProvider2 = sccpStack2.getSccpProvider();
-    }
-    
-    @Override
-    protected SccpStackImpl createStack(String name) {
-        SccpStackImpl stack = new SccpStackImplProxy(name);
-        final String dir = Util.getTmpTestDir();
-        if(dir!=null){
-            stack.setPersistDir(dir);
-        }
-        return stack;
-    }
+	protected void createStack2() {
+		sccpStack2 = new SccpStackImplProxy("sspTestSccpStack2");
+		sccpProvider2 = sccpStack2.getSccpProvider();
+	}
 
 	@BeforeMethod
 	public void setUp() throws Exception {
@@ -188,6 +175,25 @@ public class MessageTransferTest extends SccpHarness {
 		nMsg = (SccpNoticeMessage) u1.getMessages().get(3);
 		assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
 		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.SCCP_FAILURE);
+
+		// ....................
+		// attempt to transfer a UDT message: U1 -> U2(unregistered ssn at U2,
+		// but this ssn is registered at U1 as remoteSsn) ->
+		// error + SSP
+		// message =
+		// this.sccpProvider1.getMessageFactory().createDataMessageClass1(a2_1,
+		// a1, getDataSrc(), 0, 8, true, null, null);
+		// resource1.addRemoteSsn(18, new RemoteSubSystem(getStack2PC(), 18, 0,
+		// false));
+		// sccpProvider1.send(message);
+		// Thread.sleep(100);
+		// assertEquals(u1.getMessages().size(), 6);
+		// assertEquals(u2.getMessages().size(), 1);
+		// nMsg = (SccpNoticeMessage) u1.getMessages().get(3);
+		// assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
+		// assertEquals(nMsg.getReturnCause().getValue(),
+		// ReturnCauseValue.SCCP_FAILURE);
+		// ....................
 
 		// transfer a splitted XUDT message: U1 -> U2 - success
 		sccpStack1.getRouter().removeLongMessageRule(1);

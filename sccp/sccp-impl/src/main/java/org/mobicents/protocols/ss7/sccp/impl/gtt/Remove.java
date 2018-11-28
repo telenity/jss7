@@ -1,6 +1,6 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
- * and individual contributors
+ * JBoss, Home of Professional Open Source
+ * Copyright 2011, Red Hat, Inc. and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
  *
@@ -20,31 +20,32 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.mobicents.protocols.ss7.sccp;
+package org.mobicents.protocols.ss7.sccp.impl.gtt;
 
 /**
- * 
- * @author sergey vetyutnev
  *
+ * @author kulikov
  */
-public interface SccpManagementEventListener {
+public class Remove extends Action {
+    
+    /** Creates a new instance of RemoveOperation */
+    public Remove() {
+    }
 
-	public void onServiceStarted();
+    public Remove(Object[] args) {
+        super(args);
+    }
 
-	public void onServiceStopped();
-
-	public void onRemoveAllResources();
-
-	public void onRemoteSubSystemUp(RemoteSubSystem rss);
-
-	public void onRemoteSubSystemDown(RemoteSubSystem rss);
-
-	public void onRemoteSpcUp(RemoteSignalingPointCode remoteSpc);
-
-	public void onRemoteSpcDown(RemoteSignalingPointCode remoteSpc);
-
-	public void onRemoteSccpUp(RemoteSignalingPointCode remoteSpc);
-
-	public void onRemoteSccpDown(RemoteSignalingPointCode remoteSpc);
-
+    public String doExecute(String[] args) {
+        String subj = args[0];
+        int pos = Integer.parseInt(args[1]);
+        int len = Integer.parseInt(args[2]);
+        
+        String left = subj.substring(0, pos);
+        String right = subj.substring(pos);
+        
+        return left + right.substring(len);
+    }
+    
 }
+

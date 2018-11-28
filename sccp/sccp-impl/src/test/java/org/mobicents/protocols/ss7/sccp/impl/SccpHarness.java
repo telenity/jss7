@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -22,18 +22,17 @@
 
 package org.mobicents.protocols.ss7.sccp.impl;
 
-import java.io.File;
 import java.io.FileOutputStream;
 
 import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.sccp.Router;
 import org.mobicents.protocols.ss7.sccp.SccpProvider;
 import org.mobicents.protocols.ss7.sccp.SccpResource;
-import org.mobicents.protocols.ss7.sccp.SccpStack;
+import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public abstract class SccpHarness {
 
@@ -56,7 +55,7 @@ public abstract class SccpHarness {
 	protected SccpResource resource2 = null;
 
 	/**
-	 * 
+	 *
 	 */
 	public SccpHarness() {
 		mtp3UserPart1.setOtherPart(mtp3UserPart2);
@@ -65,21 +64,22 @@ public abstract class SccpHarness {
 
 	protected void createStack1() {
 		sccpStack1 = createStack(sccpStack1Name);
-		
-	}
-	
-	protected void createStack2() {
-        sccpStack2 = createStack(sccpStack2Name);
-    }
 
-	protected SccpStackImpl createStack(final String name){
-	    SccpStackImpl stack = new SccpStackImpl(name);
-	    final String dir = Util.getTmpTestDir();
-	    if(dir!=null){
-	        stack.setPersistDir(dir);
-	    }
-	    return stack;
 	}
+
+	protected void createStack2() {
+		sccpStack2 = createStack(sccpStack2Name);
+	}
+
+	protected SccpStackImpl createStack(final String name) {
+		SccpStackImpl stack = new SccpStackImpl(name);
+		final String dir = Util.getTmpTestDir();
+		if (dir != null) {
+			stack.setPersistDir(dir);
+		}
+		return stack;
+	}
+
 	protected void setUpStack1() throws Exception {
 		createStack1();
 
@@ -99,8 +99,6 @@ public abstract class SccpHarness {
 		resource1.addRemoteSsn(1, getStack2PC(), getSSN(), 0, false);
 
 	}
-
-	
 
 	protected void setUpStack2() throws Exception {
 		createStack2();
@@ -155,16 +153,21 @@ public abstract class SccpHarness {
 	}
 
 	/**
-	 * After this method invoking all MTP traffic will be save into the file
-	 * "MsgLog.txt" file format: [message][message]...[message] [message] ::= {
-	 * byte-length low byte, byte-length high byte, byte[] message }
+	 * After this method invoking all MTP traffic will be save into the file "MsgLog.txt" file format:
+	 * [message][message]...[message] [message] ::= { byte-length low byte, byte-length high byte, byte[] message }
 	 */
 	public void saveTrafficInFile() {
 		((Mtp3UserPartImpl) this.mtp3UserPart1).saveTrafficInFile = true;
 		((Mtp3UserPartImpl) this.mtp3UserPart2).saveTrafficInFile = true;
 
 		try {
-			FileOutputStream fs = new FileOutputStream(Util.getTmpTestDir()+File.separator+"MsgLog.pcap", false);
+//            String tmpDir = Util.getTmpTestDir();
+//            if (tmpDir != null)
+//                tmpDir = tmpDir + File.separator;
+//            else
+//                tmpDir = "";
+//            FileOutputStream fs = new FileOutputStream(tmpDir + "MsgLog.pcap", false);
+			FileOutputStream fs = new FileOutputStream("MsgLog.pcap", false);
 
 			// pcap global header
 			fs.write(0xd4);
@@ -194,6 +197,7 @@ public abstract class SccpHarness {
 			fs.write(0);
 			fs.write(0);
 			fs.write(0);
+
 			fs.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

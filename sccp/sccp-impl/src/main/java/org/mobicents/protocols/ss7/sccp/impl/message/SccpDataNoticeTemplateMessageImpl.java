@@ -43,18 +43,18 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.sccp.parameter.Segmentation;
 
 /**
- *
+ * 
  * @author Oleg Kulikov
  * @author baranowb
  * @author sergey vetyutnev
- *
+ * 
  */
 public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableMessageImpl {
 
 	protected ImportanceImpl importance;
 
 	protected SccpDataNoticeTemplateMessageImpl(SccpStackImpl sccpStackImpl, int type, int outgoingSls, int localSsn, SccpAddress calledParty,
-												SccpAddress callingParty, byte[] data, HopCounter hopCounter, Importance importance) {
+			SccpAddress callingParty, byte[] data, HopCounter hopCounter, Importance importance) {
 		super(sccpStackImpl, type, outgoingSls, localSsn, calledParty, callingParty, data, hopCounter);
 
 		this.importance = (ImportanceImpl) importance;
@@ -83,194 +83,194 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 	@Override
 	public void decode(InputStream in) throws IOException {
 		switch (this.type) {
-			case SccpMessage.MESSAGE_TYPE_UDT:
-			case SccpMessage.MESSAGE_TYPE_UDTS: {
-				this.setSecondParamaterData(in.read());
+		case SccpMessage.MESSAGE_TYPE_UDT:
+		case SccpMessage.MESSAGE_TYPE_UDTS: {
+			this.setSecondParamaterData(in.read());
 
-				int cpaPointer = in.read() & 0xff;
-				in.mark(in.available());
+			int cpaPointer = in.read() & 0xff;
+			in.mark(in.available());
 
-				in.skip(cpaPointer - 1);
-				int len = in.read() & 0xff;
+			in.skip(cpaPointer - 1);
+			int len = in.read() & 0xff;
 
-				byte[] buffer = new byte[len];
-				in.read(buffer);
+			byte[] buffer = new byte[len];
+			in.read(buffer);
 
-				calledParty = SccpAddressCodec.decode(buffer);
+			calledParty = SccpAddressCodec.decode(buffer);
 
-				in.reset();
-				cpaPointer = in.read() & 0xff;
-				in.mark(in.available());
+			in.reset();
+			cpaPointer = in.read() & 0xff;
+			in.mark(in.available());
 
-				in.skip(cpaPointer - 1);
-				len = in.read() & 0xff;
+			in.skip(cpaPointer - 1);
+			len = in.read() & 0xff;
 
-				buffer = new byte[len];
-				in.read(buffer);
+			buffer = new byte[len];
+			in.read(buffer);
 
-				callingParty = SccpAddressCodec.decode(buffer);
+			callingParty = SccpAddressCodec.decode(buffer);
 
-				in.reset();
-				cpaPointer = in.read() & 0xff;
+			in.reset();
+			cpaPointer = in.read() & 0xff;
 
-				in.skip(cpaPointer - 1);
-				len = in.read() & 0xff;
+			in.skip(cpaPointer - 1);
+			len = in.read() & 0xff;
 
-				data = new byte[len];
-				in.read(data);
+			data = new byte[len];
+			in.read(data);
+		}
+		break;
+
+		case SccpMessage.MESSAGE_TYPE_XUDT:
+		case SccpMessage.MESSAGE_TYPE_XUDTS: {
+			this.setSecondParamaterData(in.read());
+
+			this.hopCounter = new HopCounterImpl((byte) in.read());
+			if (this.hopCounter.getValue() > HopCounter.COUNT_HIGH || this.hopCounter.getValue() <= HopCounter.COUNT_LOW) {
+				throw new IOException("Hop Counter must be between 1 and 15, it is: " + this.hopCounter);
 			}
-			break;
 
-			case SccpMessage.MESSAGE_TYPE_XUDT:
-			case SccpMessage.MESSAGE_TYPE_XUDTS: {
-				this.setSecondParamaterData(in.read());
-
-				this.hopCounter = new HopCounterImpl((byte) in.read());
-				if (this.hopCounter.getValue() > HopCounter.COUNT_HIGH || this.hopCounter.getValue() <= HopCounter.COUNT_LOW) {
-					throw new IOException("Hop Counter must be between 1 and 15, it is: " + this.hopCounter);
-				}
-
-				int pointer = in.read() & 0xff;
-				in.mark(in.available());
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-				int len = in.read() & 0xff;
-
-				byte[] buffer = new byte[len];
-				in.read(buffer);
-
-				calledParty = SccpAddressCodec.decode(buffer);
-
-				in.reset();
-
-				pointer = in.read() & 0xff;
-
-				in.mark(in.available());
-
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-				len = in.read() & 0xff;
-
-				buffer = new byte[len];
-				in.read(buffer);
-
-				callingParty = SccpAddressCodec.decode(buffer);
-
-				in.reset();
-				pointer = in.read() & 0xff;
-				in.mark(in.available());
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-				len = in.read() & 0xff;
-
-				data = new byte[len];
-				in.read(data);
-
-				in.reset();
-				pointer = in.read() & 0xff;
-				in.mark(in.available());
-
-				if (pointer == 0) {
-					// we are done
-					return;
-				}
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-
-				int paramCode = 0;
-				// EOP
-				while ((paramCode = in.read() & 0xFF) != 0) {
-					len = in.read() & 0xff;
-					buffer = new byte[len];
-					in.read(buffer);
-					this.decodeOptional(paramCode, buffer);
-				}
+			int pointer = in.read() & 0xff;
+			in.mark(in.available());
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
 			}
-			break;
+			int len = in.read() & 0xff;
 
-			case SccpMessage.MESSAGE_TYPE_LUDT:
-			case SccpMessage.MESSAGE_TYPE_LUDTS: {
-				this.setSecondParamaterData(in.read());
+			byte[] buffer = new byte[len];
+			in.read(buffer);
 
-				this.hopCounter = new HopCounterImpl((byte) in.read());
-				if (this.hopCounter.getValue() > HopCounter.COUNT_HIGH || this.hopCounter.getValue() <= HopCounter.COUNT_LOW) {
-					throw new IOException("Hop Counter must be between 1 and 15, it is: " + this.hopCounter);
-				}
+			calledParty = SccpAddressCodec.decode(buffer);
 
-				int pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
-				in.mark(in.available());
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-				int len = in.read() & 0xff;
-				byte[] buffer = new byte[len];
-				in.read(buffer);
-				calledParty = SccpAddressCodec.decode(buffer);
+			in.reset();
 
-				in.reset();
-				pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
-				in.mark(in.available());
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
+			pointer = in.read() & 0xff;
+
+			in.mark(in.available());
+
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+			len = in.read() & 0xff;
+
+			buffer = new byte[len];
+			in.read(buffer);
+
+			callingParty = SccpAddressCodec.decode(buffer);
+
+			in.reset();
+			pointer = in.read() & 0xff;
+			in.mark(in.available());
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+			len = in.read() & 0xff;
+
+			data = new byte[len];
+			in.read(data);
+
+			in.reset();
+			pointer = in.read() & 0xff;
+			in.mark(in.available());
+
+			if (pointer == 0) {
+				// we are done
+				return;
+			}
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+
+			int paramCode = 0;
+			// EOP
+			while ((paramCode = in.read() & 0xFF) != 0) {
 				len = in.read() & 0xff;
 				buffer = new byte[len];
 				in.read(buffer);
-				callingParty = SccpAddressCodec.decode(buffer);
-
-				in.reset();
-				pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
-				in.mark(in.available());
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-				len = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
-				data = new byte[len];
-				in.read(data);
-
-				in.reset();
-				pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
-				in.mark(in.available());
-
-				if (pointer == 0) {
-					// we are done
-					return;
-				}
-				if (pointer - 1 != in.skip(pointer - 1)) {
-					throw new IOException("Not enough data in buffer");
-				}
-
-				int paramCode = 0;
-				// EOP
-				while ((paramCode = in.read() & 0xFF) != 0) {
-					len = in.read() & 0xff;
-					buffer = new byte[len];
-					in.read(buffer);
-					this.decodeOptional(paramCode, buffer);
-				}
+				this.decodeOptional(paramCode, buffer);
 			}
-			break;
+		}
+		break;
+
+		case SccpMessage.MESSAGE_TYPE_LUDT:
+		case SccpMessage.MESSAGE_TYPE_LUDTS: {
+			this.setSecondParamaterData(in.read());
+
+			this.hopCounter = new HopCounterImpl((byte) in.read());
+			if (this.hopCounter.getValue() > HopCounter.COUNT_HIGH || this.hopCounter.getValue() <= HopCounter.COUNT_LOW) {
+				throw new IOException("Hop Counter must be between 1 and 15, it is: " + this.hopCounter);
+			}
+
+			int pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
+			in.mark(in.available());
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+			int len = in.read() & 0xff;
+			byte[] buffer = new byte[len];
+			in.read(buffer);
+			calledParty = SccpAddressCodec.decode(buffer);
+
+			in.reset();
+			pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
+			in.mark(in.available());
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+			len = in.read() & 0xff;
+			buffer = new byte[len];
+			in.read(buffer);
+			callingParty = SccpAddressCodec.decode(buffer);
+
+			in.reset();
+			pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
+			in.mark(in.available());
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+			len = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
+			data = new byte[len];
+			in.read(data);
+
+			in.reset();
+			pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
+			in.mark(in.available());
+
+			if (pointer == 0) {
+				// we are done
+				return;
+			}
+			if (pointer - 1 != in.skip(pointer - 1)) {
+				throw new IOException("Not enough data in buffer");
+			}
+
+			int paramCode = 0;
+			// EOP
+			while ((paramCode = in.read() & 0xFF) != 0) {
+				len = in.read() & 0xff;
+				buffer = new byte[len];
+				in.read(buffer);
+				this.decodeOptional(paramCode, buffer);
+			}
+		}
+		break;
 		}
 	}
 
 	private void decodeOptional(int code, byte[] buffer) throws IOException {
 
 		switch (code) {
-			case Segmentation.PARAMETER_CODE:
-				this.segmentation = new SegmentationImpl();
-				this.segmentation.decode(buffer);
-				break;
-			case Importance.PARAMETER_CODE:
-				this.importance = new ImportanceImpl();
-				this.importance.decode(buffer);
-				break;
+		case Segmentation.PARAMETER_CODE:
+			this.segmentation = new SegmentationImpl();
+			this.segmentation.decode(buffer);
+			break;
+		case Importance.PARAMETER_CODE:
+			this.importance = new ImportanceImpl();
+			this.importance.decode(buffer);
+			break;
 
-			default:
-				throw new IOException("Uknown optional parameter code: " + code);
+		default:
+			throw new IOException("Uknown optional parameter code: " + code);
 		}
 	}
 
@@ -452,7 +452,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 				if (importance != null) {
 					importanceBuf = importance.encode();
 				}
-
+				
 				ArrayList<byte[]> res = new ArrayList<byte[]>();
 				for (int num = 0; num < segmCount; num++) {
 					int fst = num * segmLen;

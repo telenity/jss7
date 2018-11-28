@@ -197,7 +197,7 @@ public class TCAPStackImpl implements TCAPStack {
 	}
 
 	public void setPreviewMode(boolean val) {
-		previewMode = val;
+		previewMode = false; // no preview mode
 	}
 
 	public boolean getPreviewMode() {
