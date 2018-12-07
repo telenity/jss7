@@ -1856,6 +1856,6 @@ public class DialogImpl implements Dialog {
 	public String toString() {
 
 		return super.toString() + ": Local[" + this.getLocalDialogId() + "] Remote[" + this.getRemoteDialogId()
-				+ "], LocalAddress[" + localAddress + "] RemoteAddress[" + this.remoteAddress + "]";
+				+ "], LocalAddress[" + localAddress + "] RemoteAddress[" + this.remoteAddress + "] State[" + this.state + "]";
 	}
 }

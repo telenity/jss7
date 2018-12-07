@@ -161,7 +161,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	}
 
 	// some help methods... crude but will work for first impl.
-	private Long getAvailableTxId() throws TCAPException {
+	private synchronized Long getAvailableTxId() throws TCAPException {
 		if (this.dialogs.size() >= this.stack.getMaxDialogs())
 			throw new TCAPException("Current dialog count exceeds its maximum value");
 
@@ -269,6 +269,10 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 		}
 	}
 
+	public int getCurrentDialogsCount() {
+		return this.dialogs.size();
+	}
+
 	public void send(byte[] data, boolean returnMessageOnError, SccpAddress destinationAddress, SccpAddress originatingAddress,
 					 int seqControl) throws IOException {
 
@@ -373,9 +377,9 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	public void release(DialogImpl d) {
 		Long did = d.getLocalDialogId();
 
-		this.dialogs.remove(did);
+        this.doRelease(d);
 
-		this.doRelease(d);
+        this.dialogs.remove(did);
 	}
 
 	private void doRelease(DialogImpl d) {

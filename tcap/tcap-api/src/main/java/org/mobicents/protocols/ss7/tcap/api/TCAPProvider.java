@@ -66,4 +66,10 @@ public interface TCAPProvider extends Serializable {
 	public void removeTCListener(TCListener lst);
 
 	public boolean getPreviewMode();
+
+	/**
+	 * @return current count of active TCAP dialogs
+	 */
+	int getCurrentDialogsCount();
+
 }
