@@ -86,6 +86,10 @@ public class SccpDataMessageTest {
 		return new byte[] { 9, 0x00, 0x03, 0x05, 0x09, 0x02, 0x42, 0x01, 0x04, 0x43, 0x01, 0x00, 0x01, 0x05, 0x03, 0x08, 0x02, 0x00, 0x00 };
 	}
 
+	public byte[] getDataUdt2() {
+		return new byte[] { 9, (byte) 129, 0x03, 0x05, 0x09, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15 };
+	}
+
 	public byte[] getDataUdtSrc1() {
 		return new byte[] { 0x03, 0x08, 0x02, 0x00, 0x00 };
 	}
@@ -395,7 +399,7 @@ public class SccpDataMessageTest {
 		
 		res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertTrue(Arrays.equals(res.getSolidData(), getDataXudt2()));
+		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt2()));
 
 		// ---- XUDT without segm & importance
 		calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);
@@ -405,7 +409,7 @@ public class SccpDataMessageTest {
 		
 		res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertTrue(Arrays.equals(res.getSolidData(), getDataXudt3()));
+		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt2()));
 
 		// ---- LUDT all param
 		calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);

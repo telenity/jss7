@@ -179,9 +179,8 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	// get next Seq Control value available
 	private synchronized int getNextSeqControl() {
 		seqControl++;
-		if (seqControl > 255) {
+		if (seqControl > this.stack.getMaxSeqControl()) {
 			seqControl = 0;
-
 		}
 		return seqControl;
 	}
@@ -674,7 +673,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	private void unrecognizedPackageType(SccpDataMessage message, SccpAddress localAddress, SccpAddress remoteAddress, AsnInputStream ais, int tag)
 			throws ParseException {
 
-		logger.error(String.format("Rx unidentified tag=%s, tagClass=. SccpMessage=%s", tag, ais.getTagClass(), message));
+		logger.error(String.format("Rx unidentified tag=%s, tagClass=%s. SccpMessage=%s", tag, ais.getTagClass(), message));
 		TCUnidentifiedMessage tcUnidentified = new TCUnidentifiedMessage();
 		tcUnidentified.decode(ais);
 

@@ -40,6 +40,7 @@ import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
 import org.mobicents.protocols.ss7.indicator.NumberingPlan;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
+import org.mobicents.protocols.ss7.sccp.OriginationType;
 import org.mobicents.protocols.ss7.sccp.RuleType;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0100;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
@@ -86,12 +87,12 @@ public class RuleTest {
 		SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "123456789"), 0);
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 123, GlobalTitle.getInstance("-"), 8);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "R");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "123456789"), 0);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
 
@@ -111,12 +112,12 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "333/---/4"), 0);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "R/K/R");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R/K/R");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "1234567"), 0);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
 
@@ -136,12 +137,12 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance("-/-"), 8);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "R/K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R/K");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "4414257897897"), 0);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
 
@@ -160,12 +161,12 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 123, GlobalTitle.getInstance("-"), 8);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "4414257897897"), 0);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
 
@@ -185,13 +186,13 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 6045, GlobalTitle.getInstance("-"), 6);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(0, NumberingPlan.valueOf(1),
 				NatureOfAddress.valueOf(4), "4414257897897"), 6);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
 
@@ -216,12 +217,12 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "-"), 0);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "1234567"), 8);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
 
@@ -240,13 +241,13 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "-"), 0);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "55"), 8);
 
 		// TODO: the exception is here
-		assertFalse(rule.matches(address));
+		assertFalse(rule.matches(address, false));
 	}
 
 	@Test(groups = { "router", "functional.translate" })
@@ -257,12 +258,12 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "-/-"), 0);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "K/K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K/K");
 		rule.setPrimaryAddressId(1);
 
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "222"), 8);
 
-		assertTrue(rule.matches(address));
+		assertTrue(rule.matches(address, false));
 
 		// TODO: the exception is here
 		SccpAddress translatedAddress = rule.translate(address, primaryAddress);
@@ -280,7 +281,7 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance("-/-"), 8);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "R/K");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R/K");
 		rule.setPrimaryAddressId(1);
 
 		// Writes
@@ -310,7 +311,7 @@ public class RuleTest {
 
 		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "333/---/4"), 0);
 
-		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, pattern, "R/K/R");
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R/K/R");
 		rule.setPrimaryAddressId(1);
 		rule.setSecondaryAddressId(2);
 

@@ -278,7 +278,7 @@ public class SccpRoutingControl {
 
 		if (translationAddress == null) {
 			if (logger.isEnabledFor(Level.WARN)) {
-				logger.warn(String.format("Received SccpMessage=% for Translation but no matching %s Address defined for Rule=%s for routing", msg, destName,
+				logger.warn(String.format("Received SccpMessage=%s for Translation but no matching %s Address defined for Rule=%s for routing", msg, destName,
 						rule));
 			}
 			return TranslationAddressCheckingResult.translationFailure;
@@ -363,7 +363,7 @@ public class SccpRoutingControl {
 
 		SccpAddress calledPartyAddress = msg.getCalledPartyAddress();
 
-		Rule rule = this.sccpStackImpl.router.findRule(calledPartyAddress);
+		Rule rule = this.sccpStackImpl.router.findRule(calledPartyAddress, msg.getIsMtpOriginated());
 		if (rule == null) {
 			if (logger.isEnabledFor(Level.WARN)) {
 				logger.warn(String.format("Received SccpMessage for Translation but no matching Rule found for local routing\nSccpMessage=%s", msg));

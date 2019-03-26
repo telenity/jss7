@@ -36,14 +36,10 @@ import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
-import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
+import org.mobicents.protocols.ss7.sccp.*;
 import org.mobicents.protocols.ss7.sccp.LongMessageRule;
 import org.mobicents.protocols.ss7.sccp.LongMessageRuleType;
 import org.mobicents.protocols.ss7.sccp.Mtp3ServiceAccessPoint;
-import org.mobicents.protocols.ss7.sccp.Router;
-import org.mobicents.protocols.ss7.sccp.Rule;
-import org.mobicents.protocols.ss7.sccp.RuleType;
-import org.mobicents.protocols.ss7.sccp.SccpStack;
 import org.mobicents.protocols.ss7.sccp.impl.oam.SccpOAMMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0001;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0010;
@@ -279,11 +275,11 @@ public class RouterImpl implements Router {
 	 *            called party address
 	 * @return the rule with match to the called party address
 	 */
-	public Rule findRule(SccpAddress calledParty) {
+	public Rule findRule(SccpAddress calledParty, boolean isMtpOriginated) {
 
 		for (FastMap.Entry<Integer, Rule> e = this.rulesMap.head(), end = this.rulesMap.tail(); (e = e.getNext()) != end;) {
 			Rule rule = e.getValue();
-			if (rule.matches(calledParty)) {
+			if (rule.matches(calledParty, isMtpOriginated)) {
 				return rule;
 			}
 		}
@@ -363,8 +359,8 @@ public class RouterImpl implements Router {
 		return saps.unmodifiable();
 	}
 
-	public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, SccpAddress pattern, String mask,
-			int pAddressId, int sAddressId) throws Exception {
+	public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+						SccpAddress pattern, String mask, int pAddressId, int sAddressId) throws Exception {
 
 		Rule ruleTmp = this.getRule(id);
 
@@ -406,7 +402,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			RuleImpl rule = new RuleImpl(ruleType, algo, pattern, mask);
+			RuleImpl rule = new RuleImpl(ruleType, algo, originationType, pattern, mask);
 			rule.setPrimaryAddressId(pAddressId);
 			rule.setSecondaryAddressId(sAddressId);
 
@@ -437,8 +433,8 @@ public class RouterImpl implements Router {
 		}
 	}
 
-	public void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, SccpAddress pattern, String mask,
-			int pAddressId, int sAddressId) throws Exception {
+	public void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+						   SccpAddress pattern, String mask, int pAddressId, int sAddressId) throws Exception {
 		Rule ruleTmp = this.getRule(id);
 
 		if (ruleTmp == null) {
@@ -477,7 +473,7 @@ public class RouterImpl implements Router {
 			throw new Exception(SccpOAMMessage.RULETYPE_NOT_SOLI_SEC_ADD_MANDATORY);
 		}
 		synchronized (this) {
-			RuleImpl rule = new RuleImpl(ruleType, algo, pattern, mask);
+			RuleImpl rule = new RuleImpl(ruleType, algo, originationType, pattern, mask);
 			rule.setPrimaryAddressId(pAddressId);
 			rule.setSecondaryAddressId(sAddressId);
 

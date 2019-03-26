@@ -60,6 +60,8 @@ public class TCAPStackImpl implements TCAPStack {
 	private long dialogIdRangeEnd = Integer.MAX_VALUE;
 	private boolean previewMode = false;
 
+	private int maxSeqControl = 255;
+
     public TCAPStackImpl() {
         super();
 
@@ -202,6 +204,14 @@ public class TCAPStackImpl implements TCAPStack {
 
 	public boolean getPreviewMode() {
 		return previewMode;
+	}
+
+	public int getMaxSeqControl() {
+		return maxSeqControl;
+	}
+
+	public void setMaxSeqControl(int maxSeqControl) {
+		this.maxSeqControl = maxSeqControl;
 	}
 
 }

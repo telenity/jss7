@@ -63,9 +63,7 @@ public class Pattern implements Serializable {
             
             Object[] argv = new Object[args.length + 1];
             argv[0] = expression;
-            for (int j = 0; j < args.length; j++ ) {
-                argv[j+1] = args[j];
-            }
+            System.arraycopy(args, 0, argv, 1, args.length);
             expression = Action.getInstance(name, argv);
             i++;
         }

@@ -304,12 +304,19 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 		if (this instanceof SccpDataMessageImpl)
 			isServiceMessage = false;
 
-		if (longMessageRuleType == LongMessageRuleType.LongMessagesForbidden) {
+		int fieldsLen = this.sccpStackImpl.calculateUdtFieldsLengthWithoutData(cdp.length, cnp.length);
+		int availLen = maxMtp3UserDataLength - fieldsLen;
+		if (availLen > 254)
+			availLen = 254;
+
+		Boolean useShortMessage=false;
+		if (longMessageRuleType == LongMessageRuleType.LongMessagesForbidden)
+			useShortMessage=true;
+		else if(longMessageRuleType == LongMessageRuleType.XudtEnabled && bf.length <= availLen)
+			useShortMessage=true;
+
+		if (useShortMessage) {
 			// use UDT / UDTS
-			int fieldsLen = this.sccpStackImpl.calculateUdtFieldsLengthWithoutData(cdp.length, cnp.length);
-			int availLen = maxMtp3UserDataLength - fieldsLen;
-			if (availLen > 254)
-				availLen = 254;
 			if (bf.length > availLen) { // message is too long to encode UDT
 				if (logger.isEnabledFor(Level.WARN)) {
 					logger.warn(String.format("Failure when sending a UDT message: message is too long. SccpMessageSegment=%s", this));
@@ -526,7 +533,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			}
 			int fieldsLenL = this.sccpStackImpl
 					.calculateLudtFieldsLengthWithoutData(cdp.length, cnp.length, this.segmentation != null, this.importance != null);
-			int availLen = maxMtp3UserDataLength - fieldsLenL;
+			availLen = maxMtp3UserDataLength - fieldsLenL;
 			if (bf.length > availLen) { // message is too long to encode LUDT
 				if (logger.isEnabledFor(Level.WARN)) {
 					logger.warn(String.format("Failure when sending a LUDT message: message is too long. SccpMessageSegment=%s", this));

@@ -28,18 +28,7 @@ import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.indicator.AddressIndicator;
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
 import org.mobicents.protocols.ss7.indicator.NumberingPlan;
-import org.mobicents.protocols.ss7.sccp.ConcernedSignalingPointCode;
-import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
-import org.mobicents.protocols.ss7.sccp.LongMessageRule;
-import org.mobicents.protocols.ss7.sccp.LongMessageRuleType;
-import org.mobicents.protocols.ss7.sccp.Mtp3Destination;
-import org.mobicents.protocols.ss7.sccp.Mtp3ServiceAccessPoint;
-import org.mobicents.protocols.ss7.sccp.RemoteSignalingPointCode;
-import org.mobicents.protocols.ss7.sccp.RemoteSubSystem;
-import org.mobicents.protocols.ss7.sccp.Router;
-import org.mobicents.protocols.ss7.sccp.Rule;
-import org.mobicents.protocols.ss7.sccp.RuleType;
-import org.mobicents.protocols.ss7.sccp.SccpResource;
+import org.mobicents.protocols.ss7.sccp.*;
 import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
@@ -488,7 +477,7 @@ public class SccpExecutor implements ShellExecutor {
 	 * @throws Exception
 	 */
 	private String createRule(String[] options) throws Exception {
-		// Minimum is 13
+		// Minimum is 14
 		if (options.length < 14) {
 			return SccpOAMMessage.INVALID_COMMAND;
 		}
@@ -498,14 +487,18 @@ public class SccpExecutor implements ShellExecutor {
 			return SccpOAMMessage.INVALID_MASK;
 		}
 
+		int posOfOrigination = 14;
+
 		RuleType ruleType;
 		String s1 = options[12].toLowerCase();
 		if (s1.equals("solitary")) {
 			ruleType = RuleType.Solitary;
 		} else if (s1.equals("dominant")) {
 			ruleType = RuleType.Dominant;
+			posOfOrigination += 1; // 15
 		} else if (s1.equals("loadshared")) {
 			ruleType = RuleType.Loadshared;
+			posOfOrigination += 2; // 16
 		} else {
 			return SccpOAMMessage.INVALID_COMMAND;
 		}
@@ -542,9 +535,15 @@ public class SccpExecutor implements ShellExecutor {
 			}
 		}
 
+		OriginationType originationType = OriginationType.ALL;
+
+		if (options.length == posOfOrigination + 1) {
+			originationType = OriginationType.getInstance(options[posOfOrigination]);
+		}
+
 		SccpAddress pattern = this.createAddress(options, 5);
 
-		this.router.addRule(ruleId, ruleType, algo, pattern, mask, pAddressId, sAddressId);
+		this.router.addRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
 		return SccpOAMMessage.RULE_SUCCESSFULLY_ADDED;
 	}
 
@@ -561,14 +560,18 @@ public class SccpExecutor implements ShellExecutor {
 			return SccpOAMMessage.INVALID_MASK;
 		}
 
+		int posOfOrigination = 14;
+
 		RuleType ruleType;
 		String s1 = options[12].toLowerCase();
 		if (s1.equals("solitary")) {
 			ruleType = RuleType.Solitary;
 		} else if (s1.equals("dominant")) {
 			ruleType = RuleType.Dominant;
+			posOfOrigination += 1; // 15
 		} else if (s1.equals("loadshared")) {
 			ruleType = RuleType.Loadshared;
+			posOfOrigination += 2; // 16
 		} else {
 			return SccpOAMMessage.INVALID_COMMAND;
 		}
@@ -595,8 +598,15 @@ public class SccpExecutor implements ShellExecutor {
 			}
 		}
 
+		OriginationType originationType = OriginationType.ALL;
+
+		if (options.length == posOfOrigination + 1) {
+			originationType = OriginationType.getInstance(options[posOfOrigination]);
+		}
+
 		SccpAddress pattern = this.createAddress(options, 5);
-		this.router.modifyRule(ruleId, ruleType, algo, pattern, mask, pAddressId, sAddressId);
+
+		this.router.modifyRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
 		return SccpOAMMessage.RULE_SUCCESSFULLY_MODIFIED;
 	}
 

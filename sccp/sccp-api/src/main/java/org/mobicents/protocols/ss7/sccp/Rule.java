@@ -35,6 +35,8 @@ public interface Rule {
 	public RuleType getRuleType();
 	
 	public LoadSharingAlgorithm getLoadSharingAlgorithm();
+
+	public OriginationType getOriginationType();
 	
 	public SccpAddress getPattern();
 	
@@ -42,7 +44,7 @@ public interface Rule {
 	
 	public int getSecondaryAddressId();
 	
-	public boolean matches(SccpAddress address);
+	public boolean matches(SccpAddress address, boolean isMtpOriginated);
 	
 	public SccpAddress translate(SccpAddress address, SccpAddress ruleAddress);
 

@@ -96,6 +96,10 @@ public class SccpNoticeMessageTest {
 		return new byte[] { 18, 1, 15, 4, 6, 10, 15, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15, 18, 1, 7, 0 };
 	}
 
+	public byte[] getDataUdt() {
+		return new byte[] { 10, 1, 3, 5, 9, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15 };
+	}
+
 	public byte[] getDataXudt1Src() {
 		return new byte[] { 11, 12, 13, 14, 15 };
 	}
@@ -212,7 +216,7 @@ public class SccpNoticeMessageTest {
 
 		res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertTrue(Arrays.equals(res.getSolidData(), getDataXudt1()));
+		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
 
 		// ---- LUDT without segm
 		calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);

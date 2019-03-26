@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.indicator.GlobalTitleIndicator;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
+import org.mobicents.protocols.ss7.sccp.OriginationType;
 import org.mobicents.protocols.ss7.sccp.Rule;
 import org.mobicents.protocols.ss7.sccp.RuleType;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0001;
@@ -65,6 +66,7 @@ public class RuleImpl implements Rule, Serializable {
 	private static final long serialVersionUID = 2147449454267320237L;
 
 	private static final String RULETYPE = "ruleType";
+	private static final String ORIGINATING_TYPE = "originatingType";
 	private static final String LS_ALGO = "loadSharingAlgo";
 	private static final String PATTERN = "patternSccpAddress";
 	private static final String OPEN_BRACKET = "(";
@@ -77,6 +79,7 @@ public class RuleImpl implements Rule, Serializable {
 
 	private RuleType ruleType = RuleType.Solitary;
 	private LoadSharingAlgorithm loadSharingAlgo = LoadSharingAlgorithm.Undefined;
+	private OriginationType originationType = OriginationType.ALL;
 
 	/** Pattern used for selecting rule */
 	private SccpAddress pattern;
@@ -108,11 +111,12 @@ public class RuleImpl implements Rule, Serializable {
 	 * @param mtpInfo
 	 *            MTP routing info
 	 */
-	public RuleImpl(RuleType ruleType, LoadSharingAlgorithm loadSharingAlgo, SccpAddress pattern, String mask) {
+	public RuleImpl(RuleType ruleType, LoadSharingAlgorithm loadSharingAlgo, OriginationType originationType, SccpAddress pattern, String mask) {
 		this.ruleType = ruleType;
 		this.pattern = pattern;
 		this.mask = mask;
 		this.setLoadSharingAlgorithm(loadSharingAlgo);
+		this.setOriginationType(originationType);
 
 		configure();
 	}
@@ -156,6 +160,14 @@ public class RuleImpl implements Rule, Serializable {
 			this.loadSharingAlgo = LoadSharingAlgorithm.Undefined;
 		else
 			this.loadSharingAlgo = loadSharingAlgo;
+	}
+
+	public OriginationType getOriginationType() {
+		return originationType;
+	}
+
+	public void setOriginationType(OriginationType originationType) {
+		this.originationType = originationType;
 	}
 
 	public SccpAddress getPattern() {
@@ -203,7 +215,7 @@ public class RuleImpl implements Rule, Serializable {
 		// step #2. translate global title
 		GlobalTitle gt = null;
 
-		if (translatedDigits != null && !translatedDigits.equals("")) {
+		if (translatedDigits != null && !translatedDigits.isEmpty()) {
 			GlobalTitleIndicator gti = ruleAddress.getAddressIndicator().getGlobalTitleIndicator();
 			GlobalTitle primaryGt = ruleAddress.getGlobalTitle();
 			gt = createNewGT(gti, primaryGt, translatedDigits);
@@ -247,7 +259,7 @@ public class RuleImpl implements Rule, Serializable {
 		return gt;
 	}
 
-	public boolean matches(SccpAddress address) {
+	public boolean matches(SccpAddress address, boolean isMtpOriginated) {
 
 		// Rule is for GTT only
 		if (address.getAddressIndicator().getRoutingIndicator() == RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN) {
@@ -256,6 +268,12 @@ public class RuleImpl implements Rule, Serializable {
 			}
 			return false;
 		}
+
+		// checking firstly about rule OriginationType
+		if (this.getOriginationType() == OriginationType.LOCAL && isMtpOriginated)
+			return false;
+		if (this.getOriginationType() == OriginationType.REMOTE && !isMtpOriginated)
+			return false;
 
 		// Routing on GTT
 		GlobalTitleIndicator gti = address.getAddressIndicator().getGlobalTitleIndicator();
@@ -488,6 +506,7 @@ public class RuleImpl implements Rule, Serializable {
 		public void read(javolution.xml.XMLFormat.InputElement xml, RuleImpl rule) throws XMLStreamException {
 			rule.ruleType = RuleType.getInstance(xml.getAttribute(RULETYPE, RuleType.Solitary.getType()));
 			rule.loadSharingAlgo = LoadSharingAlgorithm.getInstance(xml.getAttribute(LS_ALGO, LoadSharingAlgorithm.Undefined.getAlgo()));
+			rule.originationType = OriginationType.getInstance(xml.getAttribute(ORIGINATING_TYPE, OriginationType.ALL.getValue()));
 			rule.mask = xml.getAttribute(MASK).toString();
 			rule.primaryAddressId = xml.getAttribute(PRIMARY_ADDRESS).toInt();
 			rule.secondaryAddressId = xml.getAttribute(SECONDARY_ADDRESS).toInt();
@@ -498,6 +517,7 @@ public class RuleImpl implements Rule, Serializable {
 		public void write(RuleImpl rule, javolution.xml.XMLFormat.OutputElement xml) throws XMLStreamException {
 			xml.setAttribute(RULETYPE, rule.ruleType.toString());
 			xml.setAttribute(LS_ALGO, rule.loadSharingAlgo.toString());
+			xml.setAttribute(ORIGINATING_TYPE, rule.originationType.getValue());
 			xml.setAttribute(MASK, rule.mask);
 			xml.setAttribute(PRIMARY_ADDRESS, rule.primaryAddressId);
 			xml.setAttribute(SECONDARY_ADDRESS, rule.secondaryAddressId);
@@ -520,6 +540,12 @@ public class RuleImpl implements Rule, Serializable {
 			buff.append(CLOSE_BRACKET);
 			buff.append(SEPARATOR);
 		}
+
+		buff.append(ORIGINATING_TYPE);
+		buff.append(OPEN_BRACKET);
+		buff.append(this.originationType.getValue());
+		buff.append(CLOSE_BRACKET);
+		buff.append(SEPARATOR);
 
 		buff.append(PATTERN);
 		buff.append(OPEN_BRACKET);

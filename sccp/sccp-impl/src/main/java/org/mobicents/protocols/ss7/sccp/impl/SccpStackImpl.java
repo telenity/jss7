@@ -528,7 +528,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	private int getMaxUserDataLengthForGT(SccpAddress calledPartyAddress, SccpAddress callingPartyAddress) {
 
-		Rule rule = this.router.findRule(calledPartyAddress);
+		Rule rule = this.router.findRule(calledPartyAddress, false);
 		if (rule == null) {
 			return 0;
 		}
@@ -749,7 +749,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 				// TODO: implement non-addresses message processing (these are
 				// connected-oriented messages in the connected phase)
 				logger.warn(String
-						.format("Rx SCCP message which is not instance of SccpAddressedMessage or SccpSegmentableMessage. Will be dropped. Message=",
+						.format("Rx SCCP message which is not instance of SccpAddressedMessage or SccpSegmentableMessage. Will be dropped. Message=%s",
 								msg));
 			}
 		} catch (IOException e) {
