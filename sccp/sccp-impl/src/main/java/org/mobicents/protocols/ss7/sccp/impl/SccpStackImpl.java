@@ -124,6 +124,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	private volatile int slsCounter = 0;
 	private volatile int selectorCounter = 0;
 
+	private boolean rspProhibitedByDefault;
+
 	public SccpStackImpl(String name) {
 		this.name = name;
 		this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName()+"-"+this.name);
@@ -294,6 +296,14 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		return (this.selectorCounter == 1);
 	}
 
+	public boolean isRspProhibitedByDefault() {
+		return rspProhibitedByDefault;
+	}
+
+	public void setRspProhibitedByDefault(boolean rspProhibitedByDefault) {
+		this.rspProhibitedByDefault = rspProhibitedByDefault;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -316,7 +326,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		this.router.setPersistDir(this.persistDir);
 		this.router.start();
 		
-		this.sccpResource = new SccpResourceImpl(this.name);
+		this.sccpResource = new SccpResourceImpl(this.name, this.rspProhibitedByDefault);
 		this.sccpResource.setPersistDir(this.persistDir);
 		this.sccpResource.start();
 

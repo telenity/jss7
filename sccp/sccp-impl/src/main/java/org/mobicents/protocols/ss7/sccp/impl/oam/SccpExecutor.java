@@ -506,7 +506,7 @@ public class SccpExecutor implements ShellExecutor {
 		int pAddressId = Integer.parseInt(options[13]);
 
 		int sAddressId = -1;
-		if (options.length > 14) {
+		if (ruleType != RuleType.Solitary && options.length > 14) {
 			sAddressId = Integer.parseInt(options[14]);
 			SccpAddress sAddress = this.router.getBackupAddress(sAddressId);
 			if (sAddress == null) {
@@ -579,7 +579,7 @@ public class SccpExecutor implements ShellExecutor {
 		int pAddressId = Integer.parseInt(options[13]);
 
 		int sAddressId = -1;
-		if (options.length > 14) {
+		if (ruleType != RuleType.Solitary && options.length > 14) {
 			sAddressId = Integer.parseInt(options[14]);
 		}
 

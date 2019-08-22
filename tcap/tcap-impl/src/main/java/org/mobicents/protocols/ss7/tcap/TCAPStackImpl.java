@@ -61,6 +61,7 @@ public class TCAPStackImpl implements TCAPStack {
 	private boolean previewMode = false;
 
 	private int maxSeqControl = 255;
+	private int corePoolSize = 4;
 
     public TCAPStackImpl() {
         super();
@@ -214,5 +215,12 @@ public class TCAPStackImpl implements TCAPStack {
 		this.maxSeqControl = maxSeqControl;
 	}
 
+	public int getCorePoolSize() {
+		return corePoolSize;
+	}
+
+	public void setCorePoolSize(int corePoolSize) {
+		this.corePoolSize = corePoolSize;
+	}
 }
 

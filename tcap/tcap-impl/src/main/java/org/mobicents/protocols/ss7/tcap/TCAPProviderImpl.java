@@ -106,9 +106,9 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	// explicitly...
 	private transient Map<Long, DialogImpl> dialogs = new ConcurrentHashMap<Long, DialogImpl>();
 
-	private int seqControl = 0;
+	private int seqControl;
 	private int ssn;
-	private long curDialogId = 0;
+	private long curDialogId;
 
 
 	protected TCAPProviderImpl(SccpProvider sccpProvider, TCAPStackImpl stack, int ssn) {
@@ -436,7 +436,9 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	void start() {
 		logger.info("Starting TCAP Provider");
 
-		this._EXECUTOR = Executors.newScheduledThreadPool(4);
+		ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(stack.getCorePoolSize());
+		executor.setRemoveOnCancelPolicy(true);
+		this._EXECUTOR = executor;
 		this.sccpProvider.registerSccpListener(ssn, this);
 		logger.info("Registered SCCP listener with address " + ssn);
 	}
@@ -665,7 +667,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 					break;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(String.format("Error while decoding Rx SccpMessage=%s", message), e);
 		}
 	}
@@ -710,7 +711,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 				dialog = this.dialogs.get(otid);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error(String.format("Error while decoding Rx SccpNoticeMessage=%s", msg), e);
 		}
 
@@ -722,7 +722,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
 		if (dialog != null) {
 			try {
-				dialog.dialogLock.lock();
+			dialog.dialogLock.lock();
 
 				this.deliver(dialog, ind);
 

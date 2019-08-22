@@ -117,10 +117,8 @@ public class OperationCodeImpl implements OperationCode {
 				throw new ParseException(null, GeneralProblemType.MistypedComponent);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while parsing OperationCode: " + e.getMessage(), e);
 		} catch (AsnException e) {
-			e.printStackTrace();
 			throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while parsing OperationCode: " + e.getMessage(), e);
 		}
 	}

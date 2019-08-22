@@ -104,10 +104,8 @@ public class ErrorCodeImpl implements ErrorCode {
 				throw new ParseException(null, GeneralProblemType.MistypedComponent);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while parsing ErrorCode: " + e.getMessage(), e);
 		} catch (AsnException e) {
-			e.printStackTrace();
 			throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while parsing ErrorCode: " + e.getMessage(), e);
 		}
 	}

@@ -71,8 +71,15 @@ public class SccpResourceImpl implements SccpResource {
 
 	private final String name;
 
+	private final boolean rspProhibitedByDefault;
+
 	public SccpResourceImpl(String name) {
+		this(name, false);
+	}
+
+	public SccpResourceImpl(String name, boolean rspProhibitedByDefault) {
 		this.name = name;
+		this.rspProhibitedByDefault = rspProhibitedByDefault;
 		binding.setClassAttribute(CLASS_ATTRIBUTE);
 		binding.setAlias(RemoteSubSystemImpl.class, "remoteSubSystem");
 	}
@@ -194,7 +201,7 @@ public class SccpResourceImpl implements SccpResource {
 			throw new Exception(SccpOAMMessage.RSPC_ALREADY_EXIST);
 		}
 
-		RemoteSignalingPointCodeImpl rspcObj = new RemoteSignalingPointCodeImpl(remoteSpc, remoteSpcFlag, mask);
+		RemoteSignalingPointCodeImpl rspcObj = new RemoteSignalingPointCodeImpl(remoteSpc, remoteSpcFlag, mask, rspProhibitedByDefault);
 
 		synchronized (this) {
 			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();

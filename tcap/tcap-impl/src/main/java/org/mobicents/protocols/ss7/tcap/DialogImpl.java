@@ -248,7 +248,7 @@ public class DialogImpl implements Dialog {
      */
 	public Long getNewInvokeId() throws TCAPException {
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			if (this.freeCount == 0) {
 				throw new TCAPException("No free invokeId");
 			}
@@ -281,7 +281,7 @@ public class DialogImpl implements Dialog {
 	public boolean cancelInvocation(Long invokeId) throws TCAPException {
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			int index = getIndexFromInvokeId(invokeId);
 			if (index < 0 || index >= this.operationsSent.length) {
 				throw new TCAPException("Wrong invoke id passed.");
@@ -309,7 +309,7 @@ public class DialogImpl implements Dialog {
 
 	private void freeInvokeId(Long l) {
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			int index = getIndexFromInvokeId(l);
 			if (this.invokeIDTable[index] == _INVOKEID_TAKEN)
 				this.freeCount++;
@@ -365,7 +365,7 @@ public class DialogImpl implements Dialog {
 	public void keepAlive() {
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			if (this.idleTimerInvoked) {
 				this.idleTimerActionTaken = true;
 			}
@@ -434,7 +434,7 @@ public class DialogImpl implements Dialog {
 			throw new TCAPSendException("Unstructured dialogs do not use Begin");
 		}
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			this.idleTimerActionTaken = true;
 			restartIdleTimer();
 			TCBeginMessageImpl tcbm = (TCBeginMessageImpl) TcapFactory.createTCBeginMessage();
@@ -498,7 +498,7 @@ public class DialogImpl implements Dialog {
 			throw new TCAPSendException("Unstructured dialogs do not use Continue");
 		}
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			if (this.state == TRPseudoState.InitialReceived) {
 				this.idleTimerActionTaken = true;
 				restartIdleTimer();
@@ -605,7 +605,7 @@ public class DialogImpl implements Dialog {
 		}
 
 		try {
-			dialogLock.lock();
+		dialogLock.lock();
 			TCEndMessageImpl tcbm = null;
 
 			if (state == TRPseudoState.InitialReceived) {
@@ -723,7 +723,7 @@ public class DialogImpl implements Dialog {
 		}
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			TCUniMessageImpl msg = (TCUniMessageImpl) TcapFactory.createTCUniMessage();
 
 			if (event.getApplicationContextName() != null) {
@@ -773,7 +773,7 @@ public class DialogImpl implements Dialog {
 		}
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			if (this.state == TRPseudoState.InitialReceived || this.state == TRPseudoState.InitialSent
 					|| this.state == TRPseudoState.Active) {
@@ -848,7 +848,6 @@ public class DialogImpl implements Dialog {
 				} catch (Exception e) {
 					// FIXME: remove freshly added invokes to free invoke ID??
 					if (logger.isEnabledFor(Level.ERROR)) {
-						e.printStackTrace();
 						logger.error("Failed to send message: ", e);
 					}
 					throw new TCAPSendException("Failed to send TC-U-Abort message: " + e.getMessage(), e);
@@ -871,7 +870,7 @@ public class DialogImpl implements Dialog {
 	public void sendComponent(Component componentRequest) throws TCAPSendException {
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			if (componentRequest.getType() == ComponentType.Invoke) {
 				InvokeImpl invoke = (InvokeImpl) componentRequest;
 
@@ -1141,7 +1140,7 @@ public class DialogImpl implements Dialog {
 	void processUni(TCUniMessage msg, SccpAddress localAddress, SccpAddress remoteAddress) {
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			try {
 				this.setRemoteAddress(remoteAddress);
@@ -1183,7 +1182,7 @@ public class DialogImpl implements Dialog {
 
 		TCBeginIndicationImpl tcBeginIndication = null;
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			// this is invoked ONLY for server.
 			if (state != TRPseudoState.Idle) {
@@ -1244,7 +1243,7 @@ public class DialogImpl implements Dialog {
 
 		TCContinueIndicationImpl tcContinueIndication = null;
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			if (state == TRPseudoState.InitialSent) {
 				restartIdleTimer();
@@ -1356,7 +1355,7 @@ public class DialogImpl implements Dialog {
 	protected void processEnd(TCEndMessage msg, SccpAddress localAddress, SccpAddress remoteAddress) {
 		TCEndIndicationImpl tcEndIndication = null;
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			try {
 				restartIdleTimer();
@@ -1402,7 +1401,7 @@ public class DialogImpl implements Dialog {
 	protected void processAbort(TCAbortMessage msg, SccpAddress localAddress2, SccpAddress remoteAddress2) {
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			try {
 				Boolean IsAareApdu = false;
@@ -1481,7 +1480,7 @@ public class DialogImpl implements Dialog {
 
 		TCPAbortIndicationImpl tcAbortIndication = null;
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 
 			try {
 				// sending to the remote side
@@ -1687,7 +1686,7 @@ public class DialogImpl implements Dialog {
 			if (this.isStructured())
 				this.sendComponent(rej);
 		} catch (TCAPSendException e) {
-			logger.error(String.format("Error sending Reject component", e));
+			logger.error("Error sending Reject component: ", e);
 		}
 	}
 
@@ -1714,7 +1713,7 @@ public class DialogImpl implements Dialog {
 			return;
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			if (this.idleTimerFuture != null) {
 				throw new IllegalStateException();
 			}
@@ -1733,7 +1732,7 @@ public class DialogImpl implements Dialog {
 			return;
 
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			if (this.idleTimerFuture != null) {
 				this.idleTimerFuture.cancel(false);
 				this.idleTimerFuture = null;
@@ -1754,7 +1753,7 @@ public class DialogImpl implements Dialog {
 
 		public void run() {
 			try {
-				dialogLock.lock();
+			dialogLock.lock();
 				d.idleTimerFuture = null;
 
 				d.idleTimerActionTaken = false;
@@ -1783,7 +1782,7 @@ public class DialogImpl implements Dialog {
 	// ///////////////////
 	public void operationEnded(InvokeImpl tcInvokeRequestImpl) {
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			// this op died cause of timeout, TC-L-CANCEL!
 			int index = getIndexFromInvokeId(tcInvokeRequestImpl.getInvokeId());
 			freeInvokeId(tcInvokeRequestImpl.getInvokeId());
@@ -1819,7 +1818,7 @@ public class DialogImpl implements Dialog {
 	// TC-TIMER-RESET
 	public void resetTimer(Long invokeId) throws TCAPException {
 		try {
-			this.dialogLock.lock();
+		this.dialogLock.lock();
 			int index = getIndexFromInvokeId(invokeId);
 			InvokeImpl invoke = operationsSent[index];
 			if (invoke == null) {

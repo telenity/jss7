@@ -644,8 +644,7 @@ public class SccpRoutingControl {
 			if (gt == null) {
 				// No DPC, and no GT. This is insufficient information
 				if (logger.isEnabledFor(Level.WARN)) {
-					logger.warn(String.format("Received SccpMessage=%s for routing from local SCCP user part but no pointcode and no GT or SSN included", msg,
-							dpc));
+					logger.warn(String.format("Received SccpMessage=%s for routing from local SCCP user part but no pointcode and no GT or SSN included", msg));
 				}
 				this.sendSccpError(msg, ReturnCauseValue.NO_TRANSLATION_FOR_NATURE);
 				return;

@@ -448,7 +448,7 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 
 		if (aspFactoryImpl.getFunctionality() == Functionality.AS) {
 			if (logger.isEnabledFor(Level.WARN)) {
-				logger.warn(String.format("Received DRST message for AS side. Not implemented yet", drst));
+				logger.warn(String.format("Received DRST %s message for AS side. Not implemented yet", drst));
 			}
 		} else {
 			// TODO log error
