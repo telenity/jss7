@@ -206,6 +206,10 @@ public class AsImpl implements XMLSerializable, As {
 				AsState.INACTIVE.toString());
 		this.peerFSM.createTransition(TransitionState.ASP_DOWN, AsState.DOWN.toString(), AsState.DOWN.toString());
 
+		// NTFY hack for Huawei
+		this.peerFSM.createTransition(TransitionState.OTHER_INSUFFICIENT_ASP, AsState.DOWN.toString(),
+				AsState.ACTIVE.toString()).setHandler(new THPeerAsInActToAct(this, this.peerFSM));
+
 		this.peerFSM.createTransition(TransitionState.AS_STATE_CHANGE_ACTIVE, AsState.DOWN.toString(),
 				AsState.ACTIVE.toString()).setHandler(new THPeerAsInActToAct(this, this.peerFSM));
 		// ******************************************************************/
