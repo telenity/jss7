@@ -60,6 +60,8 @@ public class ApplicationContextNameImpl implements ApplicationContextName {
 			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException while decoding ApplicationContextName: " + e.getMessage(), e);
 		} catch (AsnException e) {
 			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "AsnException while decoding ApplicationContextName: " + e.getMessage(), e);
+		} catch (Exception e) {
+			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "Exception while decoding ApplicationContextName: " + e.getMessage(), e);
 		}
 
 	}
