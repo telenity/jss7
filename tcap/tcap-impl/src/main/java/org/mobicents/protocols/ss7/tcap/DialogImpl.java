@@ -168,7 +168,7 @@ public class DialogImpl implements Dialog {
 
 	private static Long getInvokeIdFromIndex(int index) {
 		int tmp = index - _INVOKE_TABLE_SHIFT;
-		return new Long(tmp);
+		return Long.valueOf(tmp);
 	}
 
 	/**
