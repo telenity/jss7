@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.m3ua.message;
 
-import java.nio.ByteBuffer;
+import io.netty.buffer.ByteBuf;
 
 
 /**
@@ -41,11 +41,8 @@ public interface MessageFactory {
 	 *            type of the message
 	 * @return M3UA message.
 	 */
-	public M3UAMessage createMessage(int messageClass, int messageType);
+	M3UAMessage createMessage(int messageClass, int messageType);
 
-	public M3UAMessage createSctpMessage(byte[] buffer);
-
-	public M3UAMessage createMessage(ByteBuffer buffer);
-
+	M3UAMessage createMessage(ByteBuf buffer);
 }
 

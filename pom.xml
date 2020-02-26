@@ -4,7 +4,7 @@
 
     <artifactId>ss7-parent</artifactId>
     <groupId>org.mobicents.protocols.ss7</groupId>
-    <version>2.0.0.5</version>
+    <version>2.0.0.6</version>
 
     <packaging>pom</packaging>
 
@@ -25,13 +25,13 @@
         <!-- mobicents but not strictly ss7 -->
         <asn.version>2.0.2.FINAL</asn.version>
         <stream.version>1.0.0.FINAL</stream.version>
-        <sctp.version>1.4.0.FINAL</sctp.version>
+        <sctp.version>1.7.3</sctp.version>
         <commons.version>1.0.0.CR1</commons.version>
     </properties>
 
     <modules>
         <module>scheduler</module>
-        <!--<module>congestion</module>-->
+        <module>congestion</module>
         <module>management</module>
         <module>mtp</module>
         <module>m3ua</module>

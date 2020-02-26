@@ -104,6 +104,13 @@ public interface M3UAManagement {
 	public void setHeartbeatTime(int timeBetweenHeartbeat);
 
 	/**
+	 * Returns if an SCTP level supports netty.
+	 *
+	 * @return
+	 */
+	boolean isSctpLibNettySupport();
+
+	/**
 	 * Start M3UA stack
 	 * 
 	 * @throws Exception

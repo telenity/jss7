@@ -25,6 +25,7 @@
  */
 package org.mobicents.protocols.ss7.tcap.api.tc.dialog.events;
 
+import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 
@@ -37,6 +38,16 @@ public interface TCEndRequest extends DialogRequest {
 	public void setReturnMessageOnError(boolean val);
 
 	public boolean getReturnMessageOnError();
+
+	/**
+	 * Sets origin address. This parameter is used only in first TCEnd, sent as response to TCBegin. This parameter, if
+	 * set, changes local peer address(remote end will send request to value set by this method).
+	 *
+	 * @return
+	 */
+	SccpAddress getOriginatingAddress();
+
+	void setOriginatingAddress(SccpAddress dest);
 
 	/**
 	 * Application context name for this dialog.

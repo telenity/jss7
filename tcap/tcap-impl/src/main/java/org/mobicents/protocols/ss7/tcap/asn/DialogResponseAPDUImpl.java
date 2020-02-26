@@ -172,18 +172,24 @@ public class DialogResponseAPDUImpl implements DialogResponseAPDU {
 						"Error decoding DialogResponseAPDU.application-context-name: bad tag or tagClass, found tag=" + tag + ", tagClass="
 								+ localAis.getTagClass());
 			this.acn = TcapFactory.createApplicationContextName(localAis);
-			
-			tag = localAis.readTag();
-			if (tag != Result._TAG) {
-				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result tag, found: " + tag);
+
+			// optional sequence ?
+			if (localAis.available() > 0) {
+				tag = localAis.readTag();
+				if (tag != Result._TAG) {
+					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result tag, found: " + tag);
+				}
+				this.result = TcapFactory.createResult(localAis);
 			}
-			this.result = TcapFactory.createResult(localAis);
-			tag = localAis.readTag();
-			if (tag != ResultSourceDiagnostic._TAG) {
-				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result Source Diagnotstic tag, found: " + tag);
+
+			// optional sequence ?
+			if (localAis.available() > 0) {
+				tag = localAis.readTag();
+				if (tag != ResultSourceDiagnostic._TAG) {
+					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result Source Diagnotstic tag, found: " + tag);
+				}
+				this.diagnostic = TcapFactory.createResultSourceDiagnostic(localAis);
 			}
-			
-			this.diagnostic = TcapFactory.createResultSourceDiagnostic(localAis);
 			
 			// optional sequence.
 			if (localAis.available() > 0) {

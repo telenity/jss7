@@ -654,6 +654,10 @@ public class DialogImpl implements Dialog {
 					apdu.setResult(res);
 					tcbm.setDialogPortion(dp);
 				}
+				// local address may change, lets check it
+				if (event.getOriginatingAddress() != null && !event.getOriginatingAddress().equals(this.localAddress)) {
+					this.localAddress = event.getOriginatingAddress();
+				}
 
 			} else if (state == TRPseudoState.Active) {
 
@@ -1361,6 +1365,13 @@ public class DialogImpl implements Dialog {
 				restartIdleTimer();
 				tcEndIndication = (TCEndIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
 						.getDialogPrimitiveFactory()).createEndIndication(this);
+
+				if (state == TRPseudoState.InitialSent) {
+					// in end remote address MAY change be changed, so lets
+					// update!
+					this.setRemoteAddress(remoteAddress);
+					tcEndIndication.setOriginatingAddress(remoteAddress);
+				}
 
 				DialogPortion dialogPortion = msg.getDialogPortion();
 				if (dialogPortion != null) {

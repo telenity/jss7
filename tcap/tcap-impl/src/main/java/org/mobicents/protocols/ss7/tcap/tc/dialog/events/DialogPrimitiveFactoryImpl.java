@@ -106,6 +106,7 @@ public class DialogPrimitiveFactoryImpl implements DialogPrimitiveFactory {
 		}
 		TCEndRequestImpl tcer = new TCEndRequestImpl();
 		tcer.setDialog(d);
+		tcer.setOriginatingAddress(d.getLocalAddress());
 		// FIXME: add dialog portion fill
 		return tcer;
 	}

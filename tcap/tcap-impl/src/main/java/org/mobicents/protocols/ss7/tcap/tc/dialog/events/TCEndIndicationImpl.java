@@ -25,6 +25,7 @@
  */
 package org.mobicents.protocols.ss7.tcap.tc.dialog.events;
 
+import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.EventType;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCEndIndication;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TerminationType;
@@ -38,6 +39,7 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 public class TCEndIndicationImpl extends DialogIndicationImpl implements TCEndIndication {
 
 	private TerminationType terminationType;
+	private SccpAddress originatingAddress;
 
 	// fields
 	private ApplicationContextName applicationContextName;
@@ -57,6 +59,16 @@ public class TCEndIndicationImpl extends DialogIndicationImpl implements TCEndIn
 	 */
 	public ApplicationContextName getApplicationContextName() {
 		return applicationContextName;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest# getOriginatingAddress()
+	 */
+	public SccpAddress getOriginatingAddress() {
+
+		return this.originatingAddress;
 	}
 
 	/*
@@ -81,6 +93,17 @@ public class TCEndIndicationImpl extends DialogIndicationImpl implements TCEndIn
 	 */
 	public void setApplicationContextName(ApplicationContextName acn) {
 		this.applicationContextName = acn;
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest# setOriginatingAddress
+	 * (org.mobicents.protocols.ss7.sccp.parameter.SccpAddress)
+	 */
+	public void setOriginatingAddress(SccpAddress dest) {
+		this.originatingAddress = dest;
 
 	}
 

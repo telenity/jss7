@@ -24,6 +24,7 @@ package org.mobicents.protocols.ss7.m3ua.impl.message;
 
 import java.nio.ByteBuffer;
 
+import io.netty.buffer.ByteBuf;
 import javolution.text.TextBuilder;
 import javolution.util.FastMap;
 
@@ -59,47 +60,44 @@ public abstract class M3UAMessageImpl implements M3UAMessage {
 
 	protected abstract void encodeParams(ByteBuffer buffer);
 
-	public void encode(ByteBuffer buffer) {
+	public void encode(ByteBuf byteBuf) {
+		byteBuf.writeByte(1);
+		byteBuf.writeByte(0);
+		byteBuf.writeByte(messageClass);
+		byteBuf.writeByte(messageType);
 
-		initialPosition = buffer.position();
-
-		buffer.position(initialPosition + 8);
-
+		ByteBuffer buffer = ByteBuffer.allocate(4096);
 		encodeParams(buffer);
+		int length = buffer.position();
+		byte[] data = new byte[length];
+		buffer.flip();
+		buffer.get(data);
 
-		int length = buffer.position() - initialPosition;
-		// buffer.rewind();
-
-		buffer.put(initialPosition++, (byte) 1);
-		buffer.put(initialPosition++, (byte) 0);
-		buffer.put(initialPosition++, (byte) messageClass);
-		buffer.put(initialPosition++, (byte) messageType);
-		buffer.putInt(initialPosition++, length);
-
-		// buffer.position(length);
+		byteBuf.writeInt(length + 8);
+		byteBuf.writeBytes(data);
 	}
 
-	protected void decode(byte[] data) {
-		this.decode(data, 0);
-	}
+	protected void decode(ByteBuf data) {
+		while (data.readableBytes() >= 4) {
+			short tag = (short) ((data.readUnsignedByte() << 8) | (data.readUnsignedByte()));
+			short len = (short) ((data.readUnsignedByte() << 8) | (data.readUnsignedByte()));
 
-	protected void decode(byte[] data, int initialPos) {
-		int pos = initialPos;
-		while (pos < data.length) {
-			short tag = (short) ((data[pos] & 0xff) << 8 | (data[pos + 1] & 0xff));
-			short len = (short) ((data[pos + 2] & 0xff) << 8 | (data[pos + 3] & 0xff));
+			if (data.readableBytes() < len - 4) {
+				return;
+			}
 
 			byte[] value = new byte[len - 4];
-
-			System.arraycopy(data, pos + 4, value, 0, value.length);
-			pos += len;
+			data.readBytes(value);
 			parameters.put(tag, factory.createParameter(tag, value));
 
 			// The Parameter Length does not include any padding octets. We have
 			// to consider padding here
-			int padding = 4 - (pos % 4);
+			int padding = 4 - (len % 4);
 			if (padding < 4) {
-				pos += padding;
+				if (data.readableBytes() < padding)
+					return;
+				else
+					data.skipBytes(padding);
 			}
 		}
 	}

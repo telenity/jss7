@@ -26,6 +26,7 @@ import javolution.util.FastList;
 
 import org.apache.log4j.Logger;
 
+import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
 import org.testng.annotations.*;
 import static org.testng.Assert.*;
 
@@ -100,11 +101,9 @@ public class GatewayTest {
 		client = new Client();
 		server = new Server();
 
-		this.sctpManagement = new ManagementImpl("GatewayTest");
+		this.sctpManagement = new NettySctpManagementImpl("GatewayTest");
 		this.sctpManagement.setPersistDir(Util.getTmpTestDir());
 		this.sctpManagement.setSingleThread(true);
-		this.sctpManagement.setConnectDelay(1000 * 5);// setting connection
-														// delay to 5 secs
 		this.sctpManagement.start();
 		this.sctpManagement.removeAllResourses();
 
