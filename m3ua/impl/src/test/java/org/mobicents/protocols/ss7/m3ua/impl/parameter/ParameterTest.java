@@ -26,9 +26,10 @@ package org.mobicents.protocols.ss7.m3ua.impl.parameter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
@@ -56,7 +57,7 @@ import org.mobicents.protocols.ss7.m3ua.parameter.TrafficModeType;
 public class ParameterTest {
 
 	private ParameterFactoryImpl factory = new ParameterFactoryImpl();
-	private ByteBuffer out = null;
+	private ByteBuf out = null;
 
 	public ParameterTest() {
 	}
@@ -71,7 +72,7 @@ public class ParameterTest {
 
 	@BeforeMethod
 	public void setUp() {
-		out = ByteBuffer.allocate(8192);
+		out = Unpooled.buffer(8192);
 	}
 
 	@AfterMethod
@@ -157,7 +158,9 @@ public class ParameterTest {
 				3, 4 });
 		p1.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		ProtocolDataImpl p2 = (ProtocolDataImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -179,7 +182,9 @@ public class ParameterTest {
 		NetworkAppearanceImpl np = (NetworkAppearanceImpl) factory.createNetworkAppearance(123);
 		np.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		NetworkAppearanceImpl np2 = (NetworkAppearanceImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -207,7 +212,9 @@ public class ParameterTest {
 		RoutingContextImpl rc = (RoutingContextImpl) factory.createRoutingContext(new long[] { 4294967295l });
 		rc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		RoutingContextImpl rc2 = (RoutingContextImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -235,7 +242,9 @@ public class ParameterTest {
 		RoutingContextImpl rc = (RoutingContextImpl) factory.createRoutingContext(new long[] { 123l, 4294967295l });
 		rc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		RoutingContextImpl rc2 = (RoutingContextImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -263,7 +272,9 @@ public class ParameterTest {
 		CorrelationIdImpl crrId = (CorrelationIdImpl) factory.createCorrelationId(4294967295l);
 		crrId.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		CorrelationIdImpl crrId2 = (CorrelationIdImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -277,7 +288,9 @@ public class ParameterTest {
 				new short[] { 0 });
 		affectedPc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		AffectedPointCodeImpl affectedPc2 = (AffectedPointCodeImpl) factory.createParameter(getTag(data),
 				getValue(data));
@@ -292,7 +305,9 @@ public class ParameterTest {
 				new int[] { 123, 456 }, new short[] { 0, 1 });
 		affectedPc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		AffectedPointCodeImpl affectedPc2 = (AffectedPointCodeImpl) factory.createParameter(getTag(data),
 				getValue(data));
@@ -306,7 +321,9 @@ public class ParameterTest {
 		InfoStringImpl infoStr = (InfoStringImpl) factory.createInfoString("Hello World");
 		infoStr.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		InfoStringImpl infoStr2 = (InfoStringImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -319,7 +336,9 @@ public class ParameterTest {
 		ConcernedDPCImpl concernedDPC = (ConcernedDPCImpl) factory.createConcernedDPC(123);
 		concernedDPC.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		ConcernedDPCImpl concernedDPC2 = (ConcernedDPCImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -333,7 +352,9 @@ public class ParameterTest {
 				.createCongestedIndication(CongestionLevel.LEVEL2);
 		congIndImpl.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		CongestedIndicationImpl congIndImpl2 = (CongestedIndicationImpl) factory.createParameter(getTag(data),
 				getValue(data));
@@ -362,7 +383,9 @@ public class ParameterTest {
 		ASPIdentifierImpl rc = (ASPIdentifierImpl) factory.createASPIdentifier(12234445);
 		rc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		ASPIdentifierImpl rc2 = (ASPIdentifierImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -376,7 +399,9 @@ public class ParameterTest {
 				(short) 0);
 		affectedPc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		DestinationPointCodeImpl affectedPc2 = (DestinationPointCodeImpl) factory.createParameter(getTag(data),
 				getValue(data));
@@ -407,7 +432,9 @@ public class ParameterTest {
 		LocalRKIdentifierImpl crrId = (LocalRKIdentifierImpl) factory.createLocalRKIdentifier(4294967295l);
 		crrId.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		LocalRKIdentifierImpl crrId2 = (LocalRKIdentifierImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -435,7 +462,9 @@ public class ParameterTest {
 		OPCListImpl opcList = (OPCListImpl) factory.createOPCList(new int[] { 123, 456 }, new short[] { 0, 1 });
 		opcList.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		OPCListImpl opcList1 = (OPCListImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -466,7 +495,9 @@ public class ParameterTest {
 				.createServiceIndicators(new short[] { 1, 2, 3, 4 });
 		siList.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		ServiceIndicatorsImpl siList1 = (ServiceIndicatorsImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -494,7 +525,9 @@ public class ParameterTest {
 		TrafficModeTypeImpl rc = (TrafficModeTypeImpl) factory.createTrafficModeType(1);
 		rc.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		TrafficModeTypeImpl rc2 = (TrafficModeTypeImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -534,7 +567,9 @@ public class ParameterTest {
 				servInds, opcList);
 		routKey.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		RoutingKeyImpl routeKey2 = (RoutingKeyImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -577,7 +612,9 @@ public class ParameterTest {
 		RoutingKeyImpl routKey = (RoutingKeyImpl) factory.createRoutingKey(null, rc, trafMdTy, null, dpc, null, null);
 		routKey.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		RoutingKeyImpl routeKey2 = (RoutingKeyImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -609,7 +646,9 @@ public class ParameterTest {
 		RegistrationStatusImpl crrId = (RegistrationStatusImpl) factory.createRegistrationStatus(11);
 		crrId.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		RegistrationStatusImpl crrId2 = (RegistrationStatusImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -626,7 +665,9 @@ public class ParameterTest {
 				rc);
 		routKey.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		RegistrationResultImpl rc2 = (RegistrationResultImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -641,7 +682,9 @@ public class ParameterTest {
 		DeregistrationStatusImpl crrId = (DeregistrationStatusImpl) factory.createDeregistrationStatus(5);
 		crrId.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		DeregistrationStatusImpl crrId2 = (DeregistrationStatusImpl) factory.createParameter(getTag(data),
 				getValue(data));
@@ -657,7 +700,9 @@ public class ParameterTest {
 		DeregistrationResultImpl routKey = (DeregistrationResultImpl) factory.createDeregistrationResult(rc, status);
 		routKey.write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		DeregistrationResultImpl rc2 = (DeregistrationResultImpl) factory.createParameter(getTag(data), getValue(data));
 
@@ -672,7 +717,9 @@ public class ParameterTest {
 		Status routKey = (Status) factory.createStatus(1, 4);
 		((StatusImpl) routKey).write(out);
 
-		byte[] data = out.array();
+		int length = out.readableBytes();
+		byte[] data = new byte[length];
+		out.getBytes(out.readerIndex(), data);
 
 		StatusImpl rc2 = (StatusImpl) factory.createParameter(getTag(data), getValue(data));
 

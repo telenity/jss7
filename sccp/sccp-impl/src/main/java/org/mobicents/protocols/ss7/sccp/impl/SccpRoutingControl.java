@@ -312,16 +312,16 @@ public class SccpRoutingControl {
 		// Check if the DPC is prohibited
 		RemoteSignalingPointCode remoteSpc = this.sccpStackImpl.getSccpResource().getRemoteSpcByPC(translationAddress.getSignalingPointCode());
 		if (remoteSpc == null) {
-			if (logger.isEnabledFor(Level.WARN)) {
-				logger.warn(String.format("Received SccpMessage=%s for Translation but no %s Remote Signaling Pointcode = %d resource defined ", msg, destName,
+			if (logger.isEnabledFor(Level.INFO)) {
+				logger.info(String.format("Received SccpMessage=%s for Translation but no %s Remote Signaling Pointcode = %d resource defined ", msg, destName,
 						translationAddress.getSignalingPointCode()));
 			}
 			return TranslationAddressCheckingResult.translationFailure;
 		}
 		
 		if (remoteSpc.isRemoteSpcProhibited()) {
-			if (logger.isEnabledFor(Level.WARN)) {
-				logger.warn(String.format("Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg, destName,
+			if (logger.isEnabledFor(Level.INFO)) {
+				logger.info(String.format("Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg, destName,
 						translationAddress.getSignalingPointCode()));
 			}			
 			return TranslationAddressCheckingResult.destinationUnavailable_MtpFailure;

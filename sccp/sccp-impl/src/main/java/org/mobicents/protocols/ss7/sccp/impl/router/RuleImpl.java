@@ -275,6 +275,11 @@ public class RuleImpl implements Rule, Serializable {
 		if (this.getOriginationType() == OriginationType.REMOTE && !isMtpOriginated)
 			return false;
 
+		// SSN if present flag is set in pattern - must match address SSN & flag
+		if (!isSsnMatch(address, pattern)) {
+			return false;
+		}
+
 		// Routing on GTT
 		GlobalTitleIndicator gti = address.getAddressIndicator().getGlobalTitleIndicator();
 		GlobalTitle patternGT = pattern.getGlobalTitle();
@@ -423,6 +428,50 @@ public class RuleImpl implements Rule, Serializable {
 		default:
 			return false;
 		}
+	}
+
+	/**
+	 * Checks if SSN matches between rule address pattern and provided destination address. SSN is assumed to always match in
+	 * case it has insignificant value or pattern AI SSNPresent flag is set to false.
+	 *
+	 * @param address - a provided address to match
+	 * @param pattern - a rule pattern address
+	 * @return true if SSN is present in both pattern and received addresses and they are the same or pattern has SSN flag unset
+	 *         in AI (bit 7)(isSsnPresent = false for pattern) or pattern SSN value is insignificant
+	 */
+	private boolean isSsnMatch(SccpAddress address, SccpAddress pattern) {
+		if (!isSsnSignificant(pattern.getSubsystemNumber()) || !pattern.getAddressIndicator().ssnPresent()) {
+			if (logger.isTraceEnabled()) {
+				logger.trace(String.format("SSN is not present or insignificant [%s]. Assume SSN matches. Return True",
+						pattern.getSubsystemNumber()));
+			}
+			return true;
+		}
+		if (pattern.getAddressIndicator().ssnPresent() && address.getAddressIndicator().ssnPresent()) {
+			if (address.getSubsystemNumber() == pattern.getSubsystemNumber()) {
+				return true;
+			}
+		}
+
+		if (logger.isTraceEnabled()) {
+			logger.trace(String.format(
+					"SSN didn't match. Pattern: isSsnPresent=%s, SSN=%s Address: isSsnPresent=%s, SSN=%s Return  False",
+					pattern.getAddressIndicator().ssnPresent(), pattern.getSubsystemNumber(), address.getAddressIndicator()
+							.ssnPresent(), address.getSubsystemNumber()));
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if provided SSN value is a meaningful value = between 1 and 255. SSN=0 is for management messages and is not
+	 * perceived as significant value
+	 *
+	 * @param ssn SSN value to check
+	 * @return true if SSN value is within significant range
+	 */
+	private boolean isSsnSignificant(int ssn) {
+		return (1 <= ssn && ssn <= 255);
 	}
 
 	private String translateDigits(String digits, String[] masks, String[] patternDigits, String[] addressDigits) {

@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.impl.message.aspsm.ASPDownAckImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.message.aspsm.ASPDownImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.message.aspsm.ASPUpAckImpl;

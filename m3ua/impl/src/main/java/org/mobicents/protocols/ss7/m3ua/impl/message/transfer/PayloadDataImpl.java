@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message.transfer;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.CorrelationIdImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterImpl;
@@ -36,6 +34,8 @@ import org.mobicents.protocols.ss7.m3ua.parameter.NetworkAppearance;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 import org.mobicents.protocols.ss7.m3ua.parameter.ProtocolData;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * @author amit bhayani
@@ -91,7 +91,7 @@ public class PayloadDataImpl extends M3UAMessageImpl implements PayloadData {
 	}
 
 	@Override
-	protected void encodeParams(ByteBuffer buffer) {
+	protected void encodeParams(ByteBuf buffer) {
 		if (parameters.containsKey(Parameter.Network_Appearance)) {
 			((ParameterImpl) parameters.get(Parameter.Network_Appearance)).write(buffer);
 		}

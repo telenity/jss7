@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message.aspsm;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterImpl;
 import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
@@ -31,6 +29,8 @@ import org.mobicents.protocols.ss7.m3ua.message.MessageType;
 import org.mobicents.protocols.ss7.m3ua.message.aspsm.Heartbeat;
 import org.mobicents.protocols.ss7.m3ua.parameter.HeartbeatData;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * 
@@ -44,7 +44,7 @@ public class HeartbeatImpl extends M3UAMessageImpl implements Heartbeat {
 	}
 
 	@Override
-	protected void encodeParams(ByteBuffer buffer) {
+	protected void encodeParams(ByteBuf buffer) {
 		if (parameters.containsKey(Parameter.Heartbeat_Data)) {
 			((ParameterImpl) parameters.get(Parameter.Heartbeat_Data)).write(buffer);
 		}

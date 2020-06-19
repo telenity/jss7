@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message.ssnm;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterImpl;
 import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
@@ -35,6 +33,8 @@ import org.mobicents.protocols.ss7.m3ua.parameter.NetworkAppearance;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
 import org.mobicents.protocols.ss7.m3ua.parameter.UserCause;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * 
@@ -95,7 +95,7 @@ public class DestinationUPUnavailableImpl extends M3UAMessageImpl implements Des
 	}
 
 	@Override
-	protected void encodeParams(ByteBuffer buffer) {
+	protected void encodeParams(ByteBuf buffer) {
 		if (parameters.containsKey(Parameter.Network_Appearance)) {
 			((ParameterImpl) parameters.get(Parameter.Network_Appearance)).write(buffer);
 		}

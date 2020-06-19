@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message.asptm;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterImpl;
 import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
@@ -32,6 +30,8 @@ import org.mobicents.protocols.ss7.m3ua.message.asptm.ASPInactiveAck;
 import org.mobicents.protocols.ss7.m3ua.parameter.InfoString;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * 
@@ -45,7 +45,7 @@ public class ASPInactiveAckImpl extends M3UAMessageImpl implements ASPInactiveAc
 	}
 
 	@Override
-	protected void encodeParams(ByteBuffer buffer) {
+	protected void encodeParams(ByteBuf buffer) {
 
 		if (parameters.containsKey(Parameter.Routing_Context)) {
 			((ParameterImpl) parameters.get(Parameter.Routing_Context)).write(buffer);

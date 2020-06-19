@@ -22,12 +22,13 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.parameter;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.parameter.DeregistrationResult;
 import org.mobicents.protocols.ss7.m3ua.parameter.DeregistrationStatus;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 /**
  * 
@@ -41,7 +42,7 @@ public class DeregistrationResultImpl extends ParameterImpl implements
     private DeregistrationStatus status;
     private byte[] value;
 
-    private ByteBuffer buffer = ByteBuffer.allocate(16);
+    private ByteBuf buf = Unpooled.buffer(16);
 
     public DeregistrationResultImpl(RoutingContext rc,
             DeregistrationStatus status) {
@@ -83,9 +84,12 @@ public class DeregistrationResultImpl extends ParameterImpl implements
     }
 
     private void encode() {
-        ((RoutingContextImpl) this.rc).write(buffer);
-        ((DeregistrationStatusImpl) this.status).write(buffer);
-        value = buffer.array();
+        ((RoutingContextImpl) this.rc).write(buf);
+        ((DeregistrationStatusImpl) this.status).write(buf);
+
+        int length = buf.readableBytes();
+        value = new byte[length];
+        buf.getBytes(buf.readerIndex(), value);
     }
 
     @Override

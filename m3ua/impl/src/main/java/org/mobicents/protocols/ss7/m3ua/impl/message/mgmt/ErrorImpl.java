@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message.mgmt;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterImpl;
 import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
@@ -35,6 +33,8 @@ import org.mobicents.protocols.ss7.m3ua.parameter.ErrorCode;
 import org.mobicents.protocols.ss7.m3ua.parameter.NetworkAppearance;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * 
@@ -48,7 +48,7 @@ public class ErrorImpl extends M3UAMessageImpl implements Error {
 	}
 
 	@Override
-	protected void encodeParams(ByteBuffer buffer) {
+	protected void encodeParams(ByteBuf buffer) {
 		((ParameterImpl) parameters.get(Parameter.Error_Code)).write(buffer);
 
 		if (parameters.containsKey(Parameter.Routing_Context)) {

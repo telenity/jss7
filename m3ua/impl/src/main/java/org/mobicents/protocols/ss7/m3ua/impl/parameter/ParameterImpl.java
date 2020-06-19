@@ -22,9 +22,9 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.parameter;
 
-import java.nio.ByteBuffer;
-
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
+
+import io.netty.buffer.ByteBuf;
 
 /**
  * @author amit bhayani
@@ -41,40 +41,22 @@ public abstract class ParameterImpl implements Parameter {
 
 	protected abstract byte[] getValue();
 
-	// public void encode(OutputStream out) throws IOException {
-	// // obtain encoded value
-	// byte[] value = getValue();
-	//
-	// // encode tag
-	// out.write((byte) (tag >> 8));
-	// out.write((byte) (tag));
-	//
-	// // encode length including value, tag and length field itself
-	// length = (short) (value.length + 4);
-	//
-	// out.write((byte) (length >> 8));
-	// out.write((byte) (length));
-	//
-	// // encode value
-	// out.write(value);
-	// }
-
-	public void write(ByteBuffer buffer) {
+	public void write(ByteBuf buffer) {
 		// obtain encoded value
 		byte[] value = getValue();
 		
 		// encode tag
-		buffer.put((byte) (tag >> 8));
-		buffer.put((byte) (tag));
+		buffer.writeByte((byte) (tag >> 8));
+		buffer.writeByte((byte) (tag));
 
 		// encode length including value, tag and length field itself
 		length = (short) (value.length + 4);
 
-		buffer.put((byte) (length >> 8));
-		buffer.put((byte) (length));
+		buffer.writeByte((byte) (length >> 8));
+		buffer.writeByte((byte) (length));
 
 		// encode value
-		buffer.put(value);
+		buffer.writeBytes(value);
 
 		/*
 		 * The total length of a parameter (including Tag, Parameter Length, and
@@ -88,7 +70,7 @@ public abstract class ParameterImpl implements Parameter {
 		int remainder = (4 - length % 4);
 		if (remainder < 4) {
 			while (remainder > 0) {
-				buffer.put((byte) 0x00);
+				buffer.writeByte((byte) 0x00);
 				remainder--;
 			}
 		}

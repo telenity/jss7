@@ -1494,40 +1494,44 @@ public class DialogImpl implements Dialog {
 		this.dialogLock.lock();
 
 			try {
-				// sending to the remote side
-				DialogPortion dp = TcapFactory.createDialogPortion();
-				dp.setUnidirectional(false);
+				if (remoteTransactionId != null) {
+					// sending to the remote side
+					DialogPortion dp = TcapFactory.createDialogPortion();
+					dp.setUnidirectional(false);
 
-				DialogAbortAPDU dapdu = TcapFactory.createDialogAPDUAbort();
+					DialogAbortAPDU dapdu = TcapFactory.createDialogAPDUAbort();
 
-				AbortSource as = TcapFactory.createAbortSource();
-				as.setAbortSourceType(AbortSourceType.Provider);
+					AbortSource as = TcapFactory.createAbortSource();
+					as.setAbortSourceType(AbortSourceType.Provider);
 
-				dapdu.setAbortSource(as);
-				dp.setDialogAPDU(dapdu);
+					dapdu.setAbortSource(as);
+					dp.setDialogAPDU(dapdu);
 
-				TCAbortMessageImpl msg = (TCAbortMessageImpl) TcapFactory.createTCAbortMessage();
-				msg.setDestinationTransactionId(this.remoteTransactionId);
-				msg.setDialogPortion(dp);
+					TCAbortMessageImpl msg = (TCAbortMessageImpl) TcapFactory.createTCAbortMessage();
+					msg.setDestinationTransactionId(this.remoteTransactionId);
+					msg.setDialogPortion(dp);
 
-				AsnOutputStream aos = new AsnOutputStream();
-				try {
-					msg.encode(aos);
-					this.provider
-							.send(aos.toByteArray(), false, this.remoteAddress, this.localAddress, this.seqControl);
-				} catch (Exception e) {
-					if (logger.isEnabledFor(Level.ERROR)) {
-						logger.error("Failed to send message: ", e);
+					AsnOutputStream aos = new AsnOutputStream();
+					try {
+						msg.encode(aos);
+						this.provider.send(aos.toByteArray(), false, this.remoteAddress,
+								this.localAddress, this.seqControl);
+					} catch (Exception e) {
+						if (logger.isEnabledFor(Level.ERROR)) {
+							logger.error("Failed to send message: ", e);
+						}
 					}
 				}
 
 				// sending to the local side
-				tcAbortIndication = (TCPAbortIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
-						.getDialogPrimitiveFactory()).createPAbortIndication(this);
-				tcAbortIndication.setPAbortCause(PAbortCauseType.AbnormalDialogue);
-				// tcAbortIndication.setLocalProviderOriginated(true);
+				if (state != TRPseudoState.Idle) {
+					tcAbortIndication = (TCPAbortIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
+							.getDialogPrimitiveFactory()).createPAbortIndication(this);
+					tcAbortIndication.setPAbortCause(PAbortCauseType.ResourceLimitation);
+					// tcAbortIndication.setLocalProviderOriginated(true);
 
-				this.provider.deliver(this, tcAbortIndication);
+					this.provider.deliver(this, tcAbortIndication);
+				}
 			} finally {
 				this.release();
 				// this.scheduledComponentList.clear();
@@ -1774,10 +1778,7 @@ public class DialogImpl implements Dialog {
 				if (d.idleTimerActionTaken) {
 					startIdleTimer();
 				} else {
-					if (remoteTransactionId != null)
-						sendAbnormalDialog();
-					else
-						release();
+					sendAbnormalDialog();
 				}
 
 			} finally {
