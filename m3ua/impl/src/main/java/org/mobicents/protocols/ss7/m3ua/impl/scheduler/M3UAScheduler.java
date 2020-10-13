@@ -60,7 +60,7 @@ public class M3UAScheduler implements Runnable {
 					task.run(now);
 				} catch (Exception e) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Failuer on task run.", e);
+						logger.debug("Failure on task run.", e);
 					}
 				}
 				// check if its canceled after run;

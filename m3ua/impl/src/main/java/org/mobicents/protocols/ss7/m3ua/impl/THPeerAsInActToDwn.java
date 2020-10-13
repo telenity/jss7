@@ -36,7 +36,7 @@ import org.mobicents.protocols.ss7.m3ua.impl.fsm.TransitionHandler;
  */
 public class THPeerAsInActToDwn implements TransitionHandler {
 
-	private static final Logger logger = Logger.getLogger(THPeerAsActToPen.class);
+	private static final Logger logger = Logger.getLogger(THPeerAsInActToDwn.class);
 
 	private AsImpl asImpl = null;
 	private FSM fsm;

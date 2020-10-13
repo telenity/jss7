@@ -537,7 +537,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 					try {
 						tcm = TcapFactory.createTCContinueMessage(ais);
 					} catch (ParseException e) {
-						logger.error("ParseException when parsing TCContinueMessage: " + e.toString(), e);
+						logger.error("ParseException when parsing TCContinueMessage: ", e);
 
 						// parsing OriginatingTransactionId
 						ais = new AsnInputStream(data);
@@ -573,7 +573,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 					try {
 						tcb = TcapFactory.createTCBeginMessage(ais);
 					} catch (ParseException e) {
-						logger.error("ParseException when parsing TCBeginMessage: " + e.toString(), e);
+						logger.error("ParseException when parsing TCBeginMessage: ", e);
 
 						// parsing OriginatingTransactionId
 						ais = new AsnInputStream(data);
@@ -595,7 +595,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 							&& tcb.getDialogPortion().getDialogAPDU() instanceof DialogRequestAPDUImpl) {
 						DialogRequestAPDUImpl dlg = (DialogRequestAPDUImpl) tcb.getDialogPortion().getDialogAPDU();
 						if (dlg.getProtocolVersion() != null && !dlg.getProtocolVersion().isSupportedVersion()) {
-							logger.error("Unsupported protocol version of  has been received when parsing TCBeginMessage");
+							logger.error("Unsupported protocol version of has been received when parsing TCBeginMessage");
 							this.sendProviderAbort(DialogServiceProviderType.NoCommonDialogPortion, tcb.getOriginatingTransactionId(), remoteAddress, localAddress,
 									message.getSls(), dlg.getApplicationContextName());
 							return;
@@ -618,7 +618,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 					try {
 						teb = TcapFactory.createTCEndMessage(ais);
 					} catch (ParseException e) {
-						logger.error("ParseException when parsing TCEndMessage: " + e.toString(), e);
+						logger.error("ParseException when parsing TCEndMessage: ", e);
 						return;
 					}
 
@@ -636,7 +636,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 					try {
 						tub = TcapFactory.createTCAbortMessage(ais);
 					} catch (ParseException e) {
-						logger.error("ParseException when parsing TCAbortMessage: " + e.toString(), e);
+						logger.error("ParseException when parsing TCAbortMessage: ", e);
 						return;
 					}
 
@@ -654,7 +654,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 					try {
 						tcuni = TcapFactory.createTCUniMessage(ais);
 					} catch (ParseException e) {
-						logger.error("ParseException when parsing TCUniMessage: " + e.toString(), e);
+						logger.error("ParseException when parsing TCUniMessage: ", e);
 						return;
 					}
 

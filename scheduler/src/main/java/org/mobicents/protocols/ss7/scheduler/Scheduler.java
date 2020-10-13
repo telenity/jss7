@@ -95,7 +95,7 @@ public class Scheduler  {
     //flag indicating state of the scheduler
     private boolean isActive;
 
-    private Logger logger = Logger.getLogger(Scheduler.class) ;
+    private static final Logger logger = Logger.getLogger(Scheduler.class) ;
     
     /**
      * Creates new instance of scheduler.
