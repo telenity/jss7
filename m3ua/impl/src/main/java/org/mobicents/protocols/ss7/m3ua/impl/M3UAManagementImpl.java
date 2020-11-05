@@ -51,6 +51,7 @@ import org.mobicents.protocols.ss7.m3ua.AspFactory;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.IPSPType;
+import org.mobicents.protocols.ss7.m3ua.M3UACounterProvider;
 import org.mobicents.protocols.ss7.m3ua.M3UAManagement;
 import org.mobicents.protocols.ss7.m3ua.M3UAManagementEventListener;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
@@ -97,6 +98,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	protected FastList<AspFactory> aspfactories = new FastList<AspFactory>();
 
 	protected M3UAScheduler m3uaScheduler = new M3UAScheduler();
+	protected M3UACounterProviderImpl m3uaCounterProvider;
 
 	private final TextBuilder persistFile = TextBuilder.newInstance();
 
@@ -118,6 +120,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	private M3UARouteManagement routeManagement = null;
 
+	private boolean statisticsEnabled = false;
+
 	protected FastList<M3UAManagementEventListener> managementEventListeners = new FastList<M3UAManagementEventListener>();
 
 	/**
@@ -135,7 +139,6 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		binding.setAlias(AspImpl.class, "asp");
 
 		this.routeManagement = new M3UARouteManagement(this);
-
 	}
 
 	public String getName() {
@@ -1039,4 +1042,30 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		payload.setRoutingContext(asImpl.getRoutingContext());
 		asImpl.write(payload);
 	}
+
+	@Override
+	public M3UACounterProvider getCounterProvider() {
+		return m3uaCounterProvider;
+	}
+
+	public M3UACounterProviderImpl getCounterProviderImpl() {
+		return m3uaCounterProvider;
+	}
+
+	@Override
+	public void setStatisticsEnabled(boolean val) throws Exception {
+		if (!this.isStarted)
+			throw new Exception("StatisticsEnabled parameter can be updated only when M3UA management is running");
+
+		if (this.m3uaCounterProvider == null)
+			this.m3uaCounterProvider = new M3UACounterProviderImpl(this);
+
+		statisticsEnabled = val;
+	}
+
+	@Override
+	public boolean getStatisticsEnabled() {
+		return statisticsEnabled;
+	}
+
 }

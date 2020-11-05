@@ -116,7 +116,6 @@ public class DialogImpl implements Dialog {
 	protected ReentrantLock dialogLock = new ReentrantLock();
 
 	// values for timer timeouts
-	private long removeTaskTimeout = _REMOVE_TIMEOUT;
 	private long idleTaskTimeout;
 
 	// sent/received acn, holds last acn/ui.
@@ -136,7 +135,7 @@ public class DialogImpl implements Dialog {
 	private boolean idleTimerInvoked = false;
 	private TRPseudoState state = TRPseudoState.Idle;
 	private boolean structured = true;
-	// invokde ID space :)
+	// invoke ID space :)
 	private static final boolean _INVOKEID_TAKEN = true;
 	private static final boolean _INVOKEID_FREE = false;
 	private static final int _INVOKE_TABLE_SHIFT = 128;
@@ -535,7 +534,7 @@ public class DialogImpl implements Dialog {
 					tcbm.setComponent(componentsToSend);
 
 				}
-				// local address may change, lets check it;
+				// local address may change, lets check it
 				if (event.getOriginatingAddress() != null && !event.getOriginatingAddress().equals(this.localAddress)) {
 					this.localAddress = event.getOriginatingAddress();
 				}
@@ -879,7 +878,7 @@ public class DialogImpl implements Dialog {
 				InvokeImpl invoke = (InvokeImpl) componentRequest;
 
 				// check if its taken!
-				int invokeIndex = this.getIndexFromInvokeId(invoke.getInvokeId());
+				int invokeIndex = getIndexFromInvokeId(invoke.getInvokeId());
 				if (this.operationsSent[invokeIndex] != null) {
 					throw new TCAPSendException("There is already operation with such invoke id!");
 				}
@@ -918,7 +917,7 @@ public class DialogImpl implements Dialog {
 			if (cr.getType() == ComponentType.Invoke) {
 				InvokeImpl in = (InvokeImpl) cr;
 				// FIXME: check not null?
-				this.operationsSent[this.getIndexFromInvokeId(in.getInvokeId())] = in;
+				this.operationsSent[getIndexFromInvokeId(in.getInvokeId())] = in;
 				in.setState(OperationState.Sent);
 			}
 
@@ -1524,7 +1523,7 @@ public class DialogImpl implements Dialog {
 				}
 
 				// sending to the local side
-				if (state != TRPseudoState.Idle) {
+				if (state != TRPseudoState.Expunged) {
 					tcAbortIndication = (TCPAbortIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
 							.getDialogPrimitiveFactory()).createPAbortIndication(this);
 					tcAbortIndication.setPAbortCause(PAbortCauseType.ResourceLimitation);

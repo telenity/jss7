@@ -39,8 +39,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Invoke;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
-import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
-import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 
 /**
  * @author baranowb
@@ -372,12 +370,6 @@ public class InvokeImpl implements Invoke {
 					this.stopTimer();
 					dialog.operationEnded(this);
 			}
-			if (state == OperationState.Sent) {
-
-			} else if (state == OperationState.Idle || state == OperationState.Reject_W) {
-
-			}
-
 		}
 	}
 
@@ -445,7 +437,7 @@ public class InvokeImpl implements Invoke {
 				timerFuture = null;
 				setState(OperationState.Idle);
 				// TC-L-CANCEL
-				((DialogImpl) invoke.dialog).operationTimedOut(invoke);
+				invoke.dialog.operationTimedOut(invoke);
 			} finally {
 				dialog.getDialogLock().unlock();
 			}

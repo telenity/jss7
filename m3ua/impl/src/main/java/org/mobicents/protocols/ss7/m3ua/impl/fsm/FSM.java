@@ -32,7 +32,7 @@ import org.mobicents.protocols.ss7.m3ua.impl.scheduler.M3UATask;
  */
 public class FSM extends M3UATask {
 
-    static final protected Logger logger = Logger.getLogger(FSM.class);
+    protected static final Logger logger = Logger.getLogger(FSM.class);
 
     public static final String ATTRIBUTE_MESSAGE = "message";
 

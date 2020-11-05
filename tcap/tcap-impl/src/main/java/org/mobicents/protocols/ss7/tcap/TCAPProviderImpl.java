@@ -23,7 +23,6 @@
 package org.mobicents.protocols.ss7.tcap;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -40,7 +39,6 @@ import org.mobicents.protocols.ss7.sccp.SignallingPointStatus;
 import org.mobicents.protocols.ss7.sccp.message.MessageFactory;
 import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.message.SccpNoticeMessage;
-import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.ComponentPrimitiveFactory;
 import org.mobicents.protocols.ss7.tcap.api.DialogPrimitiveFactory;
@@ -99,7 +97,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	private transient SccpProvider sccpProvider;
 
 	private transient MessageFactory messageFactory;
-	private transient ParameterFactory parameterFactory;
 
 	private transient TCAPStackImpl stack; // originating TX id ~=Dialog, its direct
 	// mapping, but not described
@@ -116,7 +113,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 		this.sccpProvider = sccpProvider;
 		this.ssn = ssn;
 		messageFactory = sccpProvider.getMessageFactory();
-		parameterFactory = sccpProvider.getParameterFactory();
 		this.stack = stack;
 
 		this.componentPrimitiveFactory = new ComponentPrimitiveFactoryImpl(this);
@@ -136,8 +132,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
      */
 
 	public void addTCListener(TCListener lst) {
-		if (this.tcListeners.contains(lst)) {
-		} else {
+		if (!this.tcListeners.contains(lst)) {
 			this.tcListeners.add(lst);
 		}
 

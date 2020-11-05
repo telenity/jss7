@@ -176,8 +176,6 @@ public class DialogIdleEndTest extends SccpHarness {
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
-		te = TestEvent.createReceivedEvent(EventType.PAbort, null, 4, stamp + _WAIT + _DIALOG_TIMEOUT);
-		serverExpectedEvents.add(te);
 
 		client.startClientDialog();
 		client.waitFor(_WAIT);
@@ -244,8 +242,6 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createSentEvent(EventType.UAbort, null, 3, stamp + _WAIT * 2 + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + _WAIT * 2 + _DIALOG_TIMEOUT);
-		serverExpectedEvents.add(te);
-		te = TestEvent.createReceivedEvent(EventType.PAbort, null, 5, stamp + _WAIT * 2 + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 
 		client.startClientDialog();
@@ -320,8 +316,6 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createSentEvent(EventType.UAbort, null, 4, stamp + _WAIT * 3 + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 5, stamp + _WAIT * 3 + _DIALOG_TIMEOUT);
-		serverExpectedEvents.add(te);
-		te = TestEvent.createReceivedEvent(EventType.PAbort, null, 6, stamp + _WAIT * 3 + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 
 		client.startClientDialog();

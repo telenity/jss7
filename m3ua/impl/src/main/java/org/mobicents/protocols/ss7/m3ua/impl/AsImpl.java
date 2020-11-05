@@ -53,7 +53,6 @@ import org.mobicents.protocols.ss7.m3ua.parameter.NetworkAppearance;
 import org.mobicents.protocols.ss7.m3ua.parameter.ParameterFactory;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
 import org.mobicents.protocols.ss7.m3ua.parameter.TrafficModeType;
-import org.mobicents.protocols.ss7.mtp.RoutingLabelFormat;
 
 /**
  * 
@@ -363,8 +362,6 @@ public class AsImpl implements XMLSerializable, As {
 	protected void setM3UAManagement(M3UAManagementImpl m3uaManagement) {
 		this.m3UAManagementImpl = m3uaManagement;
 
-		RoutingLabelFormat routingLabelFormat = this.m3UAManagementImpl.getRoutingLabelFormat();
-
 		switch (this.m3UAManagementImpl.getMaxAsForRoute()) {
 		case 1:
 		case 2:
@@ -447,15 +444,6 @@ public class AsImpl implements XMLSerializable, As {
 	public List<Asp> getAspList() {
 		return this.appServerProcs.unmodifiable();
 	}
-
-	/**
-	 * Get the {@link AsState} of this As
-	 * 
-	 * @return
-	 */
-	// public AsState getState() {
-	// return AsState.getState(this.peerFSM.getState().getName());
-	// }
 
 	public FSM getPeerFSM() {
 		return peerFSM;

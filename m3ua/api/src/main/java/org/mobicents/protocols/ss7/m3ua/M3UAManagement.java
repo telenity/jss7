@@ -103,6 +103,12 @@ public interface M3UAManagement {
 	 */
 	public void setHeartbeatTime(int timeBetweenHeartbeat);
 
+	M3UACounterProvider getCounterProvider();
+
+	void setStatisticsEnabled(boolean val) throws Exception;
+
+	boolean getStatisticsEnabled();
+
 	/**
 	 * Returns if an SCTP level supports netty.
 	 *

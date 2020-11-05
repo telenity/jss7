@@ -40,6 +40,7 @@ import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.AssociationListener;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
+import org.mobicents.protocols.ss7.m3ua.As;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.AspFactory;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
@@ -131,6 +132,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	protected ExchangeType exchangeType = null;
 
 	private long aspupSentTime = 0l;
+	private long aspactiveSentTime = 0l;
 
 	private int maxSequenceNumber = M3UAManagementImpl.MAX_SEQUENCE_NUMBER;
 	private int[] slsTable = null;
@@ -347,6 +349,9 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		case MessageClass.TRANSFER_MESSAGES:
 			switch (message.getMessageType()) {
 			case MessageType.PAYLOAD:
+				if (m3UAManagementImpl.getStatisticsEnabled()) {
+					m3UAManagementImpl.getCounterProviderImpl().updatePacketsPerAssRx(association.getName());
+				}
 				PayloadData payload = (PayloadData) message;
 				this.transferMessageHandler.handlePayload(payload);
 				break;
@@ -471,6 +476,10 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 			org.mobicents.protocols.api.PayloadData payloadData = null;
 
+			if (m3UAManagementImpl.getStatisticsEnabled()) {
+				updateTxStatistic(message);
+			}
+
 			if (this.m3UAManagementImpl.isSctpLibNettySupport()) {
 				switch (message.getMessageClass()) {
 					case MessageClass.ASP_STATE_MAINTENANCE:
@@ -556,12 +565,16 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		return null;
 	}
 
-	protected void sendAspActive(AsImpl asImpl) {
-		ASPActive aspActive = (ASPActive) this.messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE,
-				MessageType.ASP_ACTIVE);
-		aspActive.setRoutingContext(asImpl.getRoutingContext());
-		aspActive.setTrafficModeType(asImpl.getTrafficModeType());
-		this.write(aspActive);
+	protected void sendAspActive(As asImpl) {
+		long now = System.currentTimeMillis();
+		if (aspactiveSentTime == 0 || (now - aspactiveSentTime) > 2000) {
+			ASPActive aspActive = (ASPActive) this.messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE,
+					MessageType.ASP_ACTIVE);
+			aspActive.setRoutingContext(asImpl.getRoutingContext());
+			aspActive.setTrafficModeType(asImpl.getTrafficModeType());
+			this.write(aspActive);
+			aspactiveSentTime = now;
+		}
 	}
 
 	protected static long generateId() {
@@ -616,8 +629,6 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		if ((now - aspupSentTime) > 2000) {
 			ASPUp aspUp = (ASPUp) this.messageFactory.createMessage(MessageClass.ASP_STATE_MAINTENANCE,
 					MessageType.ASP_UP);
-			// @NOTE: optional parameter, disabled because some vendors doesn't like it
-//			aspUp.setASPIdentifier(this.aspid);
 			this.write(aspUp);
 			aspupSentTime = now;
 		}
@@ -760,7 +771,6 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	@Override
 	public void onPayload(Association association, org.mobicents.protocols.api.PayloadData payloadData) {
 		try {
-			M3UAMessage m3UAMessage;
 			if (this.m3UAManagementImpl.sctpLibNettySupport) {
 				ByteBuf byteBuf = payloadData.getByteBuf();
 				processPayload(association.getIpChannelType(), byteBuf);
@@ -853,5 +863,18 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 			sb.append(M3UAOAMMessages.NEW_LINE);
 		}
 	}
+
+	private void updateTxStatistic(M3UAMessage message) {
+		switch (message.getMessageClass()) {
+			case MessageClass.TRANSFER_MESSAGES:
+				switch (message.getMessageType()) {
+					case MessageType.PAYLOAD:
+						m3UAManagementImpl.getCounterProviderImpl().updatePacketsPerAssTx(association.getName());
+						break;
+				}
+				break;
+		}
+	}
+
 
 }

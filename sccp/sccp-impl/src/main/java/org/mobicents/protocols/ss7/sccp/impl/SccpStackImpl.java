@@ -452,7 +452,6 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		} catch (IOException e) {
 			// log here Exceptions from MTP3 level
 			logger.error("IOException when sending the message to MTP3 level: " + e.getMessage(), e);
-			e.printStackTrace();
 			throw e;
 		}
 	}

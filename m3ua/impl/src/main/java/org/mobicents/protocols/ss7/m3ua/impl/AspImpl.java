@@ -173,8 +173,9 @@ public class AspImpl implements XMLSerializable, Asp {
 		// ******************************************************************/
 		// ACTIVE_SENT/
 		// ******************************************************************/
-		// TODO Keep sending ASP_ACTIVE ?
-		this.localFSM.createTimeoutTransition(AspState.ACTIVE_SENT.toString(), AspState.ACTIVE_SENT.toString(), 2000);
+		// Keep sending ASP_ACTIVE if timeout occurs.
+		this.localFSM.createTimeoutTransition(AspState.ACTIVE_SENT.toString(), AspState.ACTIVE_SENT.toString(), 2000)
+				.setHandler(new THLocalAspInactToAspActSnt(this, this.localFSM));
 
 		this.localFSM.createTransition(TransitionState.ASP_ACTIVE_ACK, AspState.ACTIVE_SENT.toString(),
 				AspState.ACTIVE.toString());
@@ -221,11 +222,18 @@ public class AspImpl implements XMLSerializable, Asp {
 		// TODO keep sending INACTIVE ASP ?
 		this.localFSM.createTimeoutTransition(AspState.INACTIVE_SENT.toString(), AspState.INACTIVE_SENT.toString(),
 				2000);
-		// TODO Take care of this .setHandler(new
-		// AspTransActToInactSnt(this,
-		// this.fsm));
+		// TODO Take care of this .setHandler(new AspTransActToInactSnt(this, this.fsm));
 
 		this.localFSM.createTransition(TransitionState.ASP_INACTIVE_ACK, AspState.INACTIVE_SENT.toString(),
+				AspState.INACTIVE.toString());
+
+		// RFC 4666 - 4.3.4.4.  ASP Inactive Procedures
+		//		If the ASP receives an ASP Inactive Ack without
+		//		having sent an ASP Inactive message, the ASP should now consider
+		//		itself to be in the ASP-INACTIVE state.  If the ASP was previously in
+		//		the ASP-ACTIVE state, the ASP should then initiate procedures to
+		//		return itself to its previous state.
+		this.localFSM.createTransition(TransitionState.ASP_INACTIVE_ACK, AspState.ACTIVE.toString(),
 				AspState.INACTIVE.toString());
 
 		this.localFSM.createTransition(TransitionState.ASP_DOWN_SENT, AspState.INACTIVE_SENT.toString(),
