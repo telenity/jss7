@@ -21,6 +21,8 @@
  */
 package org.mobicents.protocols.ss7.sccp;
 
+import java.util.List;
+
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 
 /**
@@ -43,6 +45,8 @@ public interface Rule {
 	public int getPrimaryAddressId();
 	
 	public int getSecondaryAddressId();
+
+	List<Integer> getLoadShareTable();
 	
 	public boolean matches(SccpAddress address, boolean isMtpOriginated);
 	

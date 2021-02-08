@@ -499,6 +499,9 @@ public class SccpExecutor implements ShellExecutor {
 		} else if (s1.equals("loadshared")) {
 			ruleType = RuleType.Loadshared;
 			posOfOrigination += 2; // 16
+		} else if (s1.equals("sgls")) {
+			ruleType = RuleType.Sgls;
+			posOfOrigination += 2; // 16
 		} else {
 			return SccpOAMMessage.INVALID_COMMAND;
 		}
@@ -571,6 +574,9 @@ public class SccpExecutor implements ShellExecutor {
 			posOfOrigination += 1; // 15
 		} else if (s1.equals("loadshared")) {
 			ruleType = RuleType.Loadshared;
+			posOfOrigination += 2; // 16
+		} else if (s1.equals("sgls")) {
+			ruleType = RuleType.Sgls;
 			posOfOrigination += 2; // 16
 		} else {
 			return SccpOAMMessage.INVALID_COMMAND;

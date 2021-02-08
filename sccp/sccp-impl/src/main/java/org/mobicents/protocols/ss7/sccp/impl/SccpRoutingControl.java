@@ -23,6 +23,8 @@
 package org.mobicents.protocols.ss7.sccp.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -370,6 +372,60 @@ public class SccpRoutingControl {
 			}
 			// Translation failed return error
 			this.sendSccpError(msg, ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+			return;
+		}
+
+		if (rule.getRuleType() == RuleType.Sgls) {
+			List<SccpAddress> availableAddresses = new ArrayList<SccpAddress>();
+			// primary
+			SccpAddress translationAddressPri = this.sccpStackImpl.router.getPrimaryAddress(rule.getPrimaryAddressId());
+			TranslationAddressCheckingResult resPri = this.checkTranslationAddress(msg, rule, translationAddressPri, "primary");
+			if (resPri == TranslationAddressCheckingResult.destinationAvailable) {
+				availableAddresses.add(translationAddressPri);
+			} else if (resPri == TranslationAddressCheckingResult.translationFailure) {
+				this.sendSccpError(msg, ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+				return;
+			}
+			// secondary
+			SccpAddress translationAddressSec = this.sccpStackImpl.router.getBackupAddress(rule.getSecondaryAddressId());
+			TranslationAddressCheckingResult resSec = this.checkTranslationAddress(msg, rule, translationAddressSec, "secondary");
+			if (resSec == TranslationAddressCheckingResult.destinationAvailable) {
+				availableAddresses.add(translationAddressSec);
+			} else if (resSec == TranslationAddressCheckingResult.translationFailure) {
+				this.sendSccpError(msg, ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+				return;
+			}
+			// others
+			for (Integer id : rule.getLoadShareTable()) {
+				SccpAddress sccpAddress = sccpStackImpl.router.getBackupAddress(id);
+				TranslationAddressCheckingResult res = checkTranslationAddress(msg, rule, sccpAddress, "sgls");
+				if (res == TranslationAddressCheckingResult.destinationAvailable) {
+					availableAddresses.add(sccpAddress);
+				}
+			}
+
+			SccpAddress translationAddress;
+			if (availableAddresses.size() > 0) { // good to go...
+				int id = msg.getSls() % availableAddresses.size();
+				translationAddress = availableAddresses.get(id);
+			}
+			else {
+				// nothing available
+				this.sendSccpError(msg, ReturnCauseValue.SCCP_FAILURE);
+				return;
+			}
+
+			// translate address
+			SccpAddress address = rule.translate(calledPartyAddress, translationAddress);
+			msg.setCalledPartyAddress(address);
+
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("CalledPartyAddress after translation = %s", address));
+			}
+
+			// routing procedures then continue's
+			this.route(msg);
+
 			return;
 		}
 

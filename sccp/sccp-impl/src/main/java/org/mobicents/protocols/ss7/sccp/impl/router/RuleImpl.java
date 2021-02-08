@@ -23,6 +23,10 @@
 package org.mobicents.protocols.ss7.sccp.impl.router;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
@@ -69,10 +73,9 @@ public class RuleImpl implements Rule, Serializable {
 	private static final String ORIGINATING_TYPE = "originatingType";
 	private static final String LS_ALGO = "loadSharingAlgo";
 	private static final String PATTERN = "patternSccpAddress";
-	private static final String OPEN_BRACKET = "(";
-	private static final String CLOSE_BRACKET = ")";
 	private static final String PRIMARY_ADDRESS = "paddress";
 	private static final String SECONDARY_ADDRESS = "saddress";
+	private static final String LS_TABLE = "alst";
 	private static final String MASK = "mask";
 
 	private final static String SEPARATOR = ";";
@@ -87,9 +90,11 @@ public class RuleImpl implements Rule, Serializable {
 	private int ruleId;
 
 	/** Translation method */
-	private int primaryAddressId = 0;
+	private int primaryAddressId;
 
-	private int secondaryAddressId = 0;
+	private int secondaryAddressId;
+
+	private List<Integer> loadShareTable;
 
 	private String mask = null;
 
@@ -194,6 +199,14 @@ public class RuleImpl implements Rule, Serializable {
 		this.secondaryAddressId = secondaryAddressId;
 	}
 
+	public List<Integer> getLoadShareTable() {
+		return loadShareTable;
+	}
+
+	public void setLoadShareTable(List<Integer> loadShareTable) {
+		this.loadShareTable = loadShareTable;
+	}
+
 	/**
 	 * Translate specified address according to the rule.
 	 * 
@@ -275,10 +288,11 @@ public class RuleImpl implements Rule, Serializable {
 		if (this.getOriginationType() == OriginationType.REMOTE && !isMtpOriginated)
 			return false;
 
-		// SSN if present flag is set in pattern - must match address SSN & flag
-		if (!isSsnMatch(address, pattern)) {
-			return false;
-		}
+//		// SSN if present flag is set in pattern - must match address SSN & flag
+//		// @TODO: disabled to avoid backward compatibility
+//		if (!isSsnMatch(address, pattern)) {
+//			return false;
+//		}
 
 		// Routing on GTT
 		GlobalTitleIndicator gti = address.getAddressIndicator().getGlobalTitleIndicator();
@@ -559,6 +573,17 @@ public class RuleImpl implements Rule, Serializable {
 			rule.mask = xml.getAttribute(MASK).toString();
 			rule.primaryAddressId = xml.getAttribute(PRIMARY_ADDRESS).toInt();
 			rule.secondaryAddressId = xml.getAttribute(SECONDARY_ADDRESS).toInt();
+
+			String alst = xml.getAttribute(LS_TABLE, "");
+			List<Integer> convertedList = new LinkedList<Integer>();
+			if (alst.length() > 0) {
+				String[] convertedArray = alst.split(",");
+				for (String number : convertedArray) {
+					convertedList.add(Integer.parseInt(number.trim()));
+				}
+			}
+			rule.loadShareTable = convertedList;
+
 			rule.pattern = xml.get(PATTERN, SccpAddress.class);
 			rule.configure();
 		}
@@ -570,55 +595,35 @@ public class RuleImpl implements Rule, Serializable {
 			xml.setAttribute(MASK, rule.mask);
 			xml.setAttribute(PRIMARY_ADDRESS, rule.primaryAddressId);
 			xml.setAttribute(SECONDARY_ADDRESS, rule.secondaryAddressId);
+
+			if (rule.loadShareTable != null && rule.loadShareTable.size() > 0) {
+				StringBuilder alst = new StringBuilder();
+				Iterator<Integer> iter = rule.loadShareTable.iterator();
+				while (iter.hasNext()) {
+					alst.append(iter.next());
+					if(iter.hasNext()) {
+						alst.append(',');
+					}
+				}
+				xml.setAttribute(LS_TABLE, alst);
+			}
+
 			xml.add(rule.pattern, PATTERN, SccpAddress.class);
 		}
 	};
 
+	@Override
 	public String toString() {
-		StringBuffer buff = new StringBuffer();
-		buff.append(RULETYPE);
-		buff.append(OPEN_BRACKET);
-		buff.append(ruleType.toString());
-		buff.append(CLOSE_BRACKET);
-		buff.append(SEPARATOR);
-
-		if (this.ruleType == RuleType.Loadshared) {
-			buff.append(LS_ALGO);
-			buff.append(OPEN_BRACKET);
-			buff.append(this.loadSharingAlgo.toString());
-			buff.append(CLOSE_BRACKET);
-			buff.append(SEPARATOR);
-		}
-
-		buff.append(ORIGINATING_TYPE);
-		buff.append(OPEN_BRACKET);
-		buff.append(this.originationType.getValue());
-		buff.append(CLOSE_BRACKET);
-		buff.append(SEPARATOR);
-
-		buff.append(PATTERN);
-		buff.append(OPEN_BRACKET);
-		buff.append(pattern.toString());
-		buff.append(CLOSE_BRACKET);
-		buff.append(SEPARATOR);
-
-		buff.append(PRIMARY_ADDRESS);
-		buff.append(OPEN_BRACKET);
-		buff.append(primaryAddressId);
-		buff.append(CLOSE_BRACKET);
-		buff.append(SEPARATOR);
-
-		buff.append(SECONDARY_ADDRESS);
-		buff.append(OPEN_BRACKET);
-		buff.append(secondaryAddressId);
-		buff.append(CLOSE_BRACKET);
-		buff.append(SEPARATOR);
-
-		buff.append(MASK);
-		buff.append(OPEN_BRACKET);
-		buff.append(this.mask);
-		buff.append(CLOSE_BRACKET);
-		buff.append("\n");
-		return buff.toString();
+		final StringBuilder sb = new StringBuilder("RuleImpl{");
+		sb.append("pattern=").append(pattern);
+		sb.append(", ruleId=").append(ruleId);
+		sb.append(", primaryAddressId=").append(primaryAddressId);
+		sb.append(", secondaryAddressId=").append(secondaryAddressId);
+		sb.append(", loadShareTable=").append(loadShareTable);
+		sb.append(", mask='").append(mask).append('\'');
+		sb.append(", maskPattern=").append(Arrays.toString(maskPattern));
+		sb.append('}');
+		return sb.toString();
 	}
+
 }

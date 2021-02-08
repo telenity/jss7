@@ -38,7 +38,6 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
  */
 public class TCEndIndicationImpl extends DialogIndicationImpl implements TCEndIndication {
 
-	private TerminationType terminationType;
 	private SccpAddress originatingAddress;
 
 	// fields
