@@ -20,24 +20,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-/**
- * The Java Call Control API for CAMEL 2
- *
- * The source code contained in this file is in in the public domain.
- * It can be used in any project or product without prior permission,
- * license or royalty payments. There is  NO WARRANTY OF ANY KIND,
- * EXPRESS, IMPLIED OR STATUTORY, INCLUDING, WITHOUT LIMITATION,
- * THE IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
- * AND DATA ACCURACY.  We do not warrant or make any representations
- * regarding the use of the software or the  results thereof, including
- * but not limited to the correctness, accuracy, reliability or
- * usefulness of the software.
- */
 package org.mobicents.protocols.ss7.utils;
 
-import java.net.DatagramPacket;
-
-
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class contains various static utility methods.
@@ -46,109 +32,103 @@ import java.net.DatagramPacket;
  *
  */
 public class Utils {
-    /**
-     * Construct a String containing a hex-dump of a byte array
-     * @param bytes the data to dump
-     * @return a string containing the hexdump
-     */
-    public static String hexDump(byte[] bytes) {
-        return hexDump(null, bytes);
+
+    private static String cTBCDSymbolString = "0123456789abcdef";
+    private static char[] cTBCDSymbols = cTBCDSymbolString.toCharArray();
+
+    public static String toBCD(InputStream in, boolean isOdd) throws IOException {
+        int b;
+
+        StringBuilder sb = new StringBuilder();
+
+        while (in.available() > 0) {
+            b = in.read() & 0xff;
+            sb.append(cTBCDSymbols[b & 0x0f]).append(cTBCDSymbols[(b & 0xf0) >> 4]);
+        }
+
+        String digits = sb.toString();
+
+        if (isOdd) {
+            digits = digits.substring(0, digits.length() - 1);
+        }
+
+        return digits;
     }
 
-    /**
-     * Construct a String containing a hex-dump of a byte array
-     * @param label the label of the hexdump or null
-     * @param bytes the data to dump
-     * @return a string containing the hexdump
+    public static byte[] parseTBCD(String tbcd) {
+        int length = (tbcd == null ? 0 : tbcd.length());
+        int size = (length + 1) / 2;
+        byte[] buffer = new byte[size];
+
+        for (int i = 0, i1 = 0, i2 = 1; i < size; ++i, i1 += 2, i2 += 2) {
+
+            char c = tbcd.charAt(i1);
+            int n2 = getTBCDNibble(c, i1);
+            int octet = 0;
+            int n1 = 0;
+            if (i2 < length) {
+                c = tbcd.charAt(i2);
+                n1 = getTBCDNibble(c, i2);
+            }
+            octet = (n1 << 4) + n2;
+            buffer[i] = (byte) (octet & 0xFF);
+        }
+
+        return buffer;
+    }
+
+    private static int getTBCDNibble(char c, int i1) {
+
+        int n = Character.digit(c, 10);
+
+        if (n < 0 || n > 9) {
+            switch (c) {
+                case 'a':
+                    n = 10;
+                    break;
+                case 'b':
+                    n = 11;
+                    break;
+                case 'c':
+                    n = 12;
+                    break;
+                case 'd':
+                    n = 13;
+                    break;
+                case 'e':
+                    n = 14;
+                    break;
+                case 'f':
+                    n = 15;
+                    break;
+                default:
+                    throw new NumberFormatException("Bad character '" + c
+                            + "' at position " + i1);
+            }
+        }
+        return n;
+    }
+
+    /* Hex chars */
+    private static final byte[] HEX_CHAR = new byte[]
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+    /*
+     * Helper function that dumps an array of bytes in the hexadecimal format.
      */
-    public static String hexDump(String label, byte[] bytes) {
-        final int modulo = 16;
-        final int brk = modulo / 2;
-        int indent = (label == null) ? 0 : label.length();
-
-        StringBuffer sb = new StringBuffer(indent + 1);
-
-        while (indent > 0) {
-            sb.append(" ");
-            indent--;
+    public static final String hexDump(byte[] buffer) {
+        if (buffer == null) {
+            return "";
         }
 
-        String ind = sb.toString();
+        StringBuilder sb = new StringBuilder();
 
-        if (bytes == null) {
-            return null;
-        }
-
-        sb = new StringBuffer(bytes.length * 4);
-
-        StringBuffer cb = new StringBuffer(16);
-        boolean nl = true;
-        int i = 0;
-
-        for (i = 1; i <= bytes.length; i++) {
-            // start of line?
-            if (nl) {
-                nl = false;
-
-                if (i > 1) {
-                    sb.append(ind);
-                } else if (label != null) {
-                    sb.append(label);
-                }
-
-                String ha = Integer.toHexString(i - 1);
-
-                for (int j = ha.length(); j <= 8; j++) {
-                    sb.append("0");
-                }
-
-                sb.append(ha).append(" ");
-            }
-
-            sb.append(" ");
-
-            int c = (bytes[i - 1] & 0xFF);
-            String hx = Integer.toHexString(c).toUpperCase();
-
-            if (hx.length() == 1) {
-                sb.append("0");
-            }
-
-            sb.append(hx);
-            cb.append((c < 0x21 || c > 0x7e )? '.' : (char) (c));
-
-            if ((i % brk) == 0) {
-                sb.append(" ");
-            }
-
-            if ((i % modulo) == 0) {
-                sb.append("|").append(cb).append("|\n");
-                nl = true;
-                cb = new StringBuffer(16);
-            }
-        }
-
-        int mod = i % modulo;
-
-        if (mod != 1) {
-            // Fill the rest of the line
-            while (mod <= modulo) {
-                sb.append("   ");
-
-                if ((mod % brk) == 0) {
-                    sb.append(" ");
-                }
-
-                mod++;
-            }
-
-            sb.append("|").append(cb).append("|\n");
+        for (int i = 0; i < buffer.length; i++) {
+            sb.append("0x").append((char) (HEX_CHAR[(buffer[i] & 0x00F0) >> 4])).append(
+                    (char) (HEX_CHAR[buffer[i] & 0x000F])).append(' ');
         }
 
         return sb.toString();
     }
 
-    public static Object hexDump(String string, DatagramPacket packet) {
-        return null;
-    }
 }
