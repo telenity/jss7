@@ -1414,8 +1414,8 @@ public class DialogImpl implements Dialog {
 		this.dialogLock.lock();
 
 			try {
-				Boolean IsAareApdu = false;
-				Boolean IsAbrtApdu = false;
+				boolean IsAareApdu = false;
+				boolean IsAbrtApdu = false;
 				ApplicationContextName acn = null;
 				Result result = null;
 				ResultSourceDiagnostic resultSourceDiagnostic = null;

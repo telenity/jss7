@@ -309,7 +309,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 		if (availLen > 254)
 			availLen = 254;
 
-		Boolean useShortMessage=false;
+		boolean useShortMessage=false;
 		if (longMessageRuleType == LongMessageRuleType.LongMessagesForbidden)
 			useShortMessage=true;
 		else if(longMessageRuleType == LongMessageRuleType.XudtEnabled && bf.length <= availLen)

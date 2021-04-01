@@ -35,60 +35,62 @@ import org.mobicents.protocols.asn.AsnOutputStream;
  */
 public final class Utils {
 
-
-	public static long readTransactionId(AsnInputStream ais) throws AsnException, IOException
-	{
-		//here  we have AIS, with txid - this is integer, but its coded as 
-		//octet string so no extra byte is added....
+	public static long readTransactionId(AsnInputStream ais) throws AsnException, IOException {
+		// here we have AIS, with txid - this is integer, but its coded as
+		// octet string so no extra byte is added...
 		byte[] data = ais.readOctetString();
 		byte[] longRep = new byte[8];
-		//copy data so longRep = {0,0,0,...,data};
-		System.arraycopy(data, 0, longRep, longRep.length-data.length, data.length);
+		// copy data so longRep = {0,0,0,...,data};
+		System.arraycopy(data, 0, longRep, 8 - data.length, data.length);
 		ByteBuffer bb = ByteBuffer.wrap(longRep);
 		return bb.getLong();
-		
 	}
 	
-	public static void writeTransactionId(AsnOutputStream aos,long txId, int tagClass, int tag) throws AsnException, IOException
-	{
-		//txId may only be up to 4 bytes, that is 0xFF FF FF FF
+	public static void writeTransactionId(AsnOutputStream aos, long txId, int tagClass, int tag) throws AsnException, IOException {
+		// txId may only be up to 4 bytes, that is 0xFF FF FF FF
 		byte[] data = new byte[4];
-//		long ll = txId.longValue();
-//		data[3] = (byte) ll;
-//		data[2] = (byte) (ll>> 8);
-//		data[1] = (byte) (ll>>16);
-//		data[0] = (byte) (ll >> 24);
 		data[3] = (byte) txId;
 		data[2] = (byte) (txId >> 8);
 		data[1] = (byte) (txId >> 16);
 		data[0] = (byte) (txId >> 24);
 		
 		aos.writeOctetString(tagClass, tag, data);
-		
 	}
 
 	public static long decodeTransactionId(byte[] data) {
 		byte[] longRep = new byte[8];
 		// copy data so longRep = {0,0,0,...,data};
-		System.arraycopy(data, 0, longRep, longRep.length - data.length, data.length);
+		System.arraycopy(data, 0, longRep, 8 - data.length, data.length);
 		ByteBuffer bb = ByteBuffer.wrap(longRep);
 		return bb.getLong();
-
 	}
 
 	public static byte[] encodeTransactionId(long txId) {
+		if (txId <= 0xff) {
+			byte[] data = new byte[1];
+			data[0] = (byte) txId;
+			return data;
+		}
+		if (txId <= 0xffff) {
+			byte[] data = new byte[2];
+			data[1] = (byte) txId;
+			data[0] = (byte) (txId >> 8);
+			return data;
+		}
+		if (txId <= 0xffffff) {
+			byte[] data = new byte[3];
+			data[2] = (byte) txId;
+			data[1] = (byte) (txId >> 8);
+			data[0] = (byte) (txId >> 16);
+			return data;
+		}
 		// txId may only be up to 4 bytes, that is 0xFF FF FF FF
 		byte[] data = new byte[4];
-		// long ll = txId.longValue();
-		// data[3] = (byte) ll;
-		// data[2] = (byte) (ll>> 8);
-		// data[1] = (byte) (ll>>16);
-		// data[0] = (byte) (ll >> 24);
 		data[3] = (byte) txId;
 		data[2] = (byte) (txId >> 8);
 		data[1] = (byte) (txId >> 16);
 		data[0] = (byte) (txId >> 24);
-
 		return data;
 	}
+
 }
