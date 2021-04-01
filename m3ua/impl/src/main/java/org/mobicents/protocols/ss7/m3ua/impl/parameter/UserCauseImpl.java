@@ -32,23 +32,23 @@ import org.mobicents.protocols.ss7.m3ua.parameter.UserCause;
  */
 public class UserCauseImpl extends ParameterImpl implements UserCause {
 
-    private int user = 0;
-    private int cause = 0;
+    private int user;
+    private int cause;
 
     private byte[] value;
 
     protected UserCauseImpl(byte[] value) {
         this.tag = Parameter.User_Cause;
 
-        this.user = 0;
-        this.user |= value[0] & 0xFF;
-        this.user <<= 8;
-        this.user |= value[1] & 0xFF;
-
         this.cause = 0;
-        this.cause |= value[2] & 0xFF;
+        this.cause |= value[0] & 0xFF;
         this.cause <<= 8;
-        this.cause |= value[3] & 0xFF;
+        this.cause |= value[1] & 0xFF;
+
+        this.user = 0;
+        this.user |= value[2] & 0xFF;
+        this.user <<= 8;
+        this.user |= value[3] & 0xFF;
 
         this.value = value;
     }
@@ -65,11 +65,11 @@ public class UserCauseImpl extends ParameterImpl implements UserCause {
         // indicators;
         this.value = new byte[4];
         // encode routing context
-        value[0] = (byte) (this.user >> 8);
-        value[1] = (byte) (this.user);
+        value[0] = (byte) (this.cause >> 8);
+        value[1] = (byte) (this.cause);
 
-        value[2] = (byte) (this.cause >> 8);
-        value[3] = (byte) (this.cause);
+        value[2] = (byte) (this.user >> 8);
+        value[3] = (byte) (this.user);
 
     }
 
@@ -88,8 +88,7 @@ public class UserCauseImpl extends ParameterImpl implements UserCause {
 
     @Override
     public String toString() {
-        return String.format("UserCause cause = %d user = %d", this.cause,
-                this.user);
+        return String.format("UserCause cause = %d user = %d", this.cause, this.user);
     }
 
 }
