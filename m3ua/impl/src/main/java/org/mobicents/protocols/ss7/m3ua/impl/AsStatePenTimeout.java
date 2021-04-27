@@ -25,8 +25,8 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 import javolution.util.FastList;
 import javolution.util.FastSet;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSMState;
@@ -70,7 +70,7 @@ public class AsStatePenTimeout implements FSMStateEventHandler {
 	 */
 	public void onEvent(FSMState state) {
 
-		if (logger.isEnabledFor(Priority.WARN)) {
+		if (logger.isEnabledFor(Level.WARN)) {
 			logger.warn(String.format("PENDING timedout for As=%s", this.asImpl.getName()));
 		}
 
