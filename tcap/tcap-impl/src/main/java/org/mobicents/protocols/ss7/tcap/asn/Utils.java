@@ -66,24 +66,6 @@ public final class Utils {
 	}
 
 	public static byte[] encodeTransactionId(long txId) {
-		if (txId <= 0xff) {
-			byte[] data = new byte[1];
-			data[0] = (byte) txId;
-			return data;
-		}
-		if (txId <= 0xffff) {
-			byte[] data = new byte[2];
-			data[1] = (byte) txId;
-			data[0] = (byte) (txId >> 8);
-			return data;
-		}
-		if (txId <= 0xffffff) {
-			byte[] data = new byte[3];
-			data[2] = (byte) txId;
-			data[1] = (byte) (txId >> 8);
-			data[0] = (byte) (txId >> 16);
-			return data;
-		}
 		// txId may only be up to 4 bytes, that is 0xFF FF FF FF
 		byte[] data = new byte[4];
 		data[3] = (byte) txId;

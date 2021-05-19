@@ -41,8 +41,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.TCContinueMessage;
  */
 public class TCContinueMessageImpl implements TCContinueMessage {
 
-	private static final String _OCTET_STRING_ENCODE = "US-ASCII";
-
 	// mandatory
 	private byte[] originatingTransactionId;
 	private byte[] destinationTransactionId;

@@ -41,7 +41,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.TCEndMessage;
  */
 public class TCEndMessageImpl implements TCEndMessage {
 
-	private static final String _OCTET_STRING_ENCODE = "US-ASCII";
 	// mandatory
 	private byte[] destinationTransactionId;
 	// opt

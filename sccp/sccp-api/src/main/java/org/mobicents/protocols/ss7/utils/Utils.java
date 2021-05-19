@@ -46,11 +46,11 @@ public class Utils {
             sb.append(cTBCDSymbols[b & 0x0f]).append(cTBCDSymbols[(b & 0xf0) >> 4]);
         }
 
-        String digits = sb.toString();
-
         if (isOdd) {
-            digits = digits.substring(0, digits.length() - 1);
+            sb.setLength(sb.length() - 1);
         }
+
+        String digits = sb.toString();
 
         return digits;
     }

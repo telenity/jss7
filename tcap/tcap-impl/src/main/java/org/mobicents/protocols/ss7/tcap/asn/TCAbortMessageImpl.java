@@ -39,8 +39,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.TCAbortMessage;
  */
 public class TCAbortMessageImpl implements TCAbortMessage {
 
-	private static final String _OCTET_STRING_ENCODE = "US-ASCII";
-
 	private byte[] destTxId;
 	private PAbortCauseType type;
 	private DialogPortion dp;

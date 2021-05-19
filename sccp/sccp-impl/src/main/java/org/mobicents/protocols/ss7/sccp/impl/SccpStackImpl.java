@@ -120,9 +120,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	
 	private String persistDir = null;
 	
-	private volatile int segmentationLocalRef = 0;
-	private volatile int slsCounter = 0;
-	private volatile int selectorCounter = 0;
+	private volatile int segmentationLocalRef;
+	private volatile int slsCounter;
+	private volatile int selectorCounter;
 
 	private boolean rspProhibitedByDefault;
 
@@ -353,13 +353,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	 */
 	public void stop() {
 		logger.info("Stopping ...");
-		// stateLock.lock();
-		// try
-		// {
+
 		this.state = State.IDLE;
-		// executor = null;
-		//
-		// layer3exec = null;
 
 		for (FastMap.Entry<Integer, Mtp3UserPart> e = this.mtp3UserParts.head(), end = this.mtp3UserParts.tail(); (e = e.getNext()) != end;) {
 			Mtp3UserPart mup = e.getValue();
@@ -380,11 +375,6 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 			this.timerExecutors.shutdownNow();
 			reassemplyCache.clear();
 		}
-
-		// }finally
-		// {
-		// stateLock.unlock();
-		// }
 		
 	}
 
@@ -568,7 +558,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		logger.warn(String.format("Rx : %s", msg));
 
 		if (this.state != State.RUNNING){
-			logger.error("Cannot consume MTP3 PASUE message as SCCP stack is not RUNNING");
+			logger.error("Cannot consume MTP3 PAUSE message as SCCP stack is not RUNNING");
 			return;
 		}
 		
