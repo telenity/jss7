@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -431,7 +432,8 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	void start() {
 		logger.info("Starting TCAP Provider");
 
-		ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(stack.getCorePoolSize());
+		ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(
+				stack.getCorePoolSize(), new DefaultThreadFactory("Tcap-Thread"));
 		executor.setRemoveOnCancelPolicy(true);
 		this._EXECUTOR = executor;
 		this.sccpProvider.registerSccpListener(ssn, this);
@@ -707,6 +709,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			logger.error(String.format("Error while decoding Rx SccpNoticeMessage=%s", msg), e);
+			return;
 		}
 
 		TCNoticeIndicationImpl ind = new TCNoticeIndicationImpl();

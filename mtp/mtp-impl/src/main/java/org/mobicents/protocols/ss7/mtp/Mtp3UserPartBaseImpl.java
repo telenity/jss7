@@ -25,6 +25,8 @@ package org.mobicents.protocols.ss7.mtp;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.apache.log4j.Logger;
 
 /**
@@ -44,7 +46,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 	// Mtp3UserPartListener's
 	// For single thread model this value should be equal 1
 	// TODO: make it configurable
-	protected int deliveryTransferMessageThreadCount = 1;
+	protected int deliveryTransferMessageThreadCount = 4;
 
 	protected boolean isStarted = false;
 
@@ -165,9 +167,11 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 
 		this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
 		for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
-			this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1);
+			this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
+					"Mtp3-DeliveryExecutor-" + i));
 		}
-		this.msgDeliveryExecutorSystem = Executors.newFixedThreadPool(1);
+		this.msgDeliveryExecutorSystem = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory(
+				"Mtp3-DeliveryExecutorSystem"));
 
 		this.isStarted = true;
 	}

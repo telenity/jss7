@@ -20,6 +20,7 @@
         <junit.version>3.8.2</junit.version>
         <testng.version>6.2.1</testng.version>
         <javolution.version>5.5.1</javolution.version>
+        <netty.version>4.0.56.Final</netty.version>
         <compiler.plugin.version>2.3.2</compiler.plugin.version>
         <compile.source>1.7</compile.source>
         <!-- mobicents but not strictly ss7 -->

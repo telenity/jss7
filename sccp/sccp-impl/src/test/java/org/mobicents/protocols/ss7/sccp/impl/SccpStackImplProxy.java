@@ -22,8 +22,10 @@
 
 package org.mobicents.protocols.ss7.sccp.impl;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.netty.util.concurrent.DefaultThreadFactory;
 import javolution.util.FastMap;
 
 import org.mobicents.protocols.ss7.mtp.Mtp3UserPart;
@@ -81,6 +83,16 @@ public class SccpStackImplProxy extends SccpStackImpl {
 			mup.addMtp3UserPartListener(this);
 		}
 //		this.mtp3UserPart.addMtp3UserPartListener(this);
+
+		int maxSls = 16;
+		slsFilter = 0x0f;
+		this.slsTable = new int[maxSls];
+		this.createSLSTable(maxSls, this.deliveryTransferMessageThreadCount);
+		this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
+		for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
+			this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
+					"SccpTransit-DeliveryExecutor-" + i));
+		}
 
 		this.state = State.RUNNING;
 	}

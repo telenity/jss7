@@ -26,11 +26,9 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
+import io.netty.util.concurrent.DefaultThreadFactory;
 import javolution.util.FastMap;
 
 import org.apache.log4j.Level;
@@ -96,6 +94,10 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	// TODO: make it configurable
 	protected double sstTimerDuration_IncreaseFactor = 1.5;
 
+	// The count of threads that will be used for message delivering to
+	// SccpListener's for SCCP user -> SCCP -> SCCP user transit (without MTP part)
+	protected int deliveryTransferMessageThreadCount = 4;
+
 	protected volatile State state = State.IDLE;
 	
 	// provider ref, this can be real provider or pipe, for tests.
@@ -113,9 +115,11 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	protected ScheduledExecutorService timerExecutors;
 	protected FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemplyCache = new FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl>();
 
-//	protected int localSpc;
-//	protected int ni = 2;
-	
+	// executors for delivering messages SCCP user -> SCCP -> SCCP user (for messages that are not from or to MTP part)
+	protected ExecutorService[] msgDeliveryExecutors;
+	protected int slsFilter = 0x0f;
+	protected int[] slsTable = null;
+
 	private final String name;
 	
 	private String persistDir = null;
@@ -196,6 +200,18 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	public void setRemoveSpc(boolean removeSpc){
 		this.removeSpc = removeSpc;
+	}
+
+	public int getDeliveryMessageThreadCount() {
+		return this.deliveryTransferMessageThreadCount;
+	}
+
+	public void setDeliveryMessageThreadCount(int deliveryMessageThreadCount) throws Exception {
+		if (this.isStarted())
+			throw new Exception("DeliveryMessageThreadCount parameter can be updated only when SCCP stack is NOT running");
+
+		if (deliveryMessageThreadCount > 0 && deliveryMessageThreadCount <= 100)
+			this.deliveryTransferMessageThreadCount = deliveryMessageThreadCount;
 	}
 
 	public void setSstTimerDuration_Min(int sstTimerDuration_Min) {
@@ -304,6 +320,16 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		this.rspProhibitedByDefault = rspProhibitedByDefault;
 	}
 
+	protected void createSLSTable(int maxSls, int minimumBoundThread) {
+		int stream = 0;
+		for (int i = 0; i < maxSls; i++) {
+			if (stream >= minimumBoundThread) {
+				stream = 0;
+			}
+			slsTable[i] = stream++;
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -338,6 +364,19 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 		this.timerExecutors = Executors.newScheduledThreadPool(1);
 
+		// initiating of SCCP delivery executors
+		// TODO: we do it for ITU standard, may be we may configure it for other standard's (different SLS count) maxSls and
+		// slsFilter values initiating
+		int maxSls = 16;
+		slsFilter = 0x0f;
+		this.slsTable = new int[maxSls];
+		this.createSLSTable(maxSls, this.deliveryTransferMessageThreadCount);
+		this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
+		for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
+			this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
+					"SccpTransit-DeliveryExecutor-" + i));
+		}
+
 		for (FastMap.Entry<Integer, Mtp3UserPart> e = this.mtp3UserParts.head(), end = this.mtp3UserParts.tail(); (e = e.getNext()) != end;) {
 			Mtp3UserPart mup = e.getValue();
 			mup.addMtp3UserPartListener(this);
@@ -355,6 +394,13 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		logger.info("Stopping ...");
 
 		this.state = State.IDLE;
+
+		if (this.msgDeliveryExecutors != null) {
+			for (ExecutorService es : this.msgDeliveryExecutors) {
+				es.shutdown();
+			}
+			this.msgDeliveryExecutors = null;
+		}
 
 		for (FastMap.Entry<Integer, Mtp3UserPart> e = this.mtp3UserParts.head(), end = this.mtp3UserParts.tail(); (e = e.getNext()) != end;) {
 			Mtp3UserPart mup = e.getValue();
@@ -376,6 +422,10 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 			reassemplyCache.clear();
 		}
 		
+	}
+
+	public boolean isStarted() {
+		return this.state == State.RUNNING;
 	}
 
 	public Router getRouter() {
@@ -428,7 +478,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	protected void send(SccpDataMessageImpl message) throws IOException {
 
-		if (this.state != State.RUNNING){
+		if (this.state != State.RUNNING) {
 			logger.error("Trying to send SCCP message from SCCP user but SCCP stack is not RUNNING");
 			return;
 		}
