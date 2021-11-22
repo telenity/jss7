@@ -116,7 +116,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	protected int maxAsForRoute = 2;
 	
-	protected int timeBetweenHeartbeat = 10000; //10 sec default
+	protected int timeBetweenHeartbeat = 5000; // 5 sec default
 
 	private M3UARouteManagement routeManagement = null;
 

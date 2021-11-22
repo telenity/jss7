@@ -637,6 +637,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	private void handleCommUp() {
 
 		if (this.isHeartBeatEnabled()) {
+			this.heartBeatTimer.start();
 			this.heartBeatTimer.reset();
 			this.m3UAManagementImpl.m3uaScheduler.execute(this.heartBeatTimer);
 		}
