@@ -22,7 +22,7 @@
         <javolution.version>5.5.1</javolution.version>
         <netty.version>4.0.56.Final</netty.version>
         <compiler.plugin.version>2.3.2</compiler.plugin.version>
-        <compile.source>1.7</compile.source>
+        <compile.source>1.6</compile.source>
         <!-- mobicents but not strictly ss7 -->
         <asn.version>2.0.2.FINAL</asn.version>
         <stream.version>1.0.0.FINAL</stream.version>
