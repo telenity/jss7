@@ -567,7 +567,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	protected void sendAspActive(As asImpl) {
 		long now = System.currentTimeMillis();
-		if (aspactiveSentTime == 0 || (now - aspactiveSentTime) > 2000) {
+		if ((now - aspactiveSentTime) > 2000) {
 			ASPActive aspActive = (ASPActive) this.messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE,
 					MessageType.ASP_ACTIVE);
 			aspActive.setRoutingContext(asImpl.getRoutingContext());

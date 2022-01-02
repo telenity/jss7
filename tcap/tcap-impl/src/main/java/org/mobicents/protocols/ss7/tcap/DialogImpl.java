@@ -472,7 +472,7 @@ public class DialogImpl implements Dialog {
 				this.scheduledComponentList.clear();
 			} catch (Throwable e) {
 				// FIXME: remove freshly added invokes to free invoke ID??
-				// TODO: should we release this dialog because TC-BEGIN sending has been failed
+				release();
 				if (logger.isEnabledFor(Level.ERROR)) {
 					logger.error("Failed to send message: ", e);
 				}
