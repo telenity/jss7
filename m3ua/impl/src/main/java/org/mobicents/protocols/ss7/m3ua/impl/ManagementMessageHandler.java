@@ -123,6 +123,16 @@ public class ManagementMessageHandler extends MessageHandler {
 
 	public void handleError(Error error) {
 		logger.error(error);
+
+		RoutingContext rc = error.getRoutingContext();
+
+		if (rc == null) {
+			AspImpl asp = this.getAspForNullRc();
+			if (asp != null) {
+				this.aspFactoryImpl.onCommunicationRestart(asp.aspFactoryImpl.association);
+			}
+		}
+		// TODO: rc != null
 	}
 
 }
