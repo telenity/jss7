@@ -455,8 +455,8 @@ public class RuleImpl implements Rule, Serializable {
 	 */
 	private boolean isSsnMatch(SccpAddress address, SccpAddress pattern) {
 		if (!isSsnSignificant(pattern.getSubsystemNumber()) || !pattern.getAddressIndicator().ssnPresent()) {
-			if (logger.isTraceEnabled()) {
-				logger.trace(String.format("SSN is not present or insignificant [%s]. Assume SSN matches. Return True",
+			if (logger.isDebugEnabled()) {
+				logger.debug(String.format("SSN is not present or insignificant [%s]. Assume SSN matches. Return True",
 						pattern.getSubsystemNumber()));
 			}
 			return true;
@@ -467,8 +467,8 @@ public class RuleImpl implements Rule, Serializable {
 			}
 		}
 
-		if (logger.isTraceEnabled()) {
-			logger.trace(String.format(
+		if (logger.isDebugEnabled()) {
+			logger.debug(String.format(
 					"SSN didn't match. Pattern: isSsnPresent=%s, SSN=%s Address: isSsnPresent=%s, SSN=%s Return  False",
 					pattern.getAddressIndicator().ssnPresent(), pattern.getSubsystemNumber(), address.getAddressIndicator()
 							.ssnPresent(), address.getSubsystemNumber()));

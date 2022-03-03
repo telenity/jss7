@@ -16,9 +16,9 @@
 	<dependencies>
                 <!-- non mobicents -->
                 <dependency>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                        <scope>provided</scope>
+					<groupId>ch.qos.reload4j</groupId>
+					<artifactId>reload4j</artifactId>
+					<scope>provided</scope>
                 </dependency>
 	</dependencies>
 
