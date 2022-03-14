@@ -152,4 +152,8 @@ public interface Parameter extends Encodable {
 
 	public void setSingleParameterInAsn();
 
+	public boolean isWithoutTagAndLength();
+
+	public void setWithoutTagAndLength(boolean withoutTagAndLength);
+
 }

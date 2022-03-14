@@ -32,8 +32,6 @@ import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
-import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
-import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 
 /**
  * @author baranowb
@@ -48,6 +46,7 @@ public class ParameterImpl implements Parameter {
 	private int tag;
 	private int tagClass;
 	private int encodingLength = -1;
+	private boolean withoutTagAndLength;
 
 	/*
 	 * (non-Javadoc)
@@ -186,7 +185,15 @@ public class ParameterImpl implements Parameter {
 	public void setSingleParameterInAsn() {
 		singleParameterInAsn = true;
 	}
-	
+
+	public boolean isWithoutTagAndLength() {
+		return withoutTagAndLength;
+	}
+
+	public void setWithoutTagAndLength(boolean withoutTagAndLength) {
+		this.withoutTagAndLength = withoutTagAndLength;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -227,21 +234,26 @@ public class ParameterImpl implements Parameter {
 		}
 
 		try {
-			aos.writeTag(tagClass, primitive, tag);
-			if (data == null) {
-
-				AsnOutputStream localAos = new AsnOutputStream();
-				for (Parameter p : this.parameters) {
-					p.encode(localAos);
-				}
-				data = localAos.toByteArray();
+			if (isWithoutTagAndLength()) {
+				aos.write(data);
 			}
+			else {
+				aos.writeTag(tagClass, primitive, tag);
+				if (data == null) {
 
-			if (this.encodingLength >= 0)
-				aos.writeLength(this.encodingLength);
-			else
-				aos.writeLength(data.length);
-			aos.write(data);
+					AsnOutputStream localAos = new AsnOutputStream();
+					for (Parameter p : this.parameters) {
+						p.encode(localAos);
+					}
+					data = localAos.toByteArray();
+				}
+
+				if (this.encodingLength >= 0)
+					aos.writeLength(this.encodingLength);
+				else
+					aos.writeLength(data.length);
+				aos.write(data);
+			}
 		} catch (IOException e) {
 			throw new EncodeException(e);
 		} catch (AsnException e) {
