@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.oam;
 
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.indicator.AddressIndicator;
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
@@ -33,6 +31,9 @@ import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.ss7.management.console.ShellExecutor;
+
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -183,12 +184,13 @@ public class SccpExecutor implements ShellExecutor {
 				return SccpOAMMessage.RSS_DOESNT_EXIST;
 			}
 
+			Map<Integer, RemoteSubSystem> idVsRemoteSsn = this.sccpResource.getRemoteSsns();
+
 			StringBuffer sb = new StringBuffer();
-			for (Map.Entry<Integer, RemoteSubSystem> e : this.sccpResource.getRemoteSsns().entrySet()) {
-				int key = e.getKey();
-				RemoteSubSystem rss = e.getValue();
+			for (Integer e : idVsRemoteSsn.keySet()) {
+				RemoteSubSystem rss = idVsRemoteSsn.get(e);
 				sb.append("key=");
-				sb.append(key);
+				sb.append(e);
 				sb.append("  ");
 				sb.append(rss);
 				sb.append("\n");
@@ -262,11 +264,12 @@ public class SccpExecutor implements ShellExecutor {
 			}
 
 			StringBuffer sb = new StringBuffer();
-			for (Map.Entry<Integer, RemoteSignalingPointCode> e : this.sccpResource.getRemoteSpcs().entrySet()) {
-				int key = e.getKey();
-				RemoteSignalingPointCode rsp = e.getValue();
+			Map<Integer, RemoteSignalingPointCode> idVsRspc = this.sccpResource.getRemoteSpcs();
+			Set<Integer> rspIds = idVsRspc.keySet();
+			for (Integer e : rspIds) {
+				RemoteSignalingPointCode rsp = idVsRspc.get(e);
 				sb.append("key=");
-				sb.append(key);
+				sb.append(e);
 				sb.append("  ");
 				sb.append(rsp);
 				sb.append("\n");
@@ -333,11 +336,11 @@ public class SccpExecutor implements ShellExecutor {
 
 			StringBuffer sb = new StringBuffer();
 
-			for (Map.Entry<Integer, SccpAddress> e : this.router.getPrimaryAddresses().entrySet()) {
-				int key = e.getKey();
-				SccpAddress address = e.getValue();
+			Map<Integer, SccpAddress> idVsPrimAdd = this.router.getPrimaryAddresses();
+			for (Integer e : idVsPrimAdd.keySet()) {
+				SccpAddress address = idVsPrimAdd.get(e);
 				sb.append("key=");
-				sb.append(key);
+				sb.append(e);
 				sb.append("  ");
 				sb.append(address);
 				sb.append("\n");
@@ -402,12 +405,12 @@ public class SccpExecutor implements ShellExecutor {
 
 			StringBuffer sb = new StringBuffer();
 
-			for (Map.Entry<Integer, SccpAddress> e : this.router.getBackupAddresses().entrySet()) {
-				int key = e.getKey();
-				SccpAddress address = e.getValue();
+			Map<Integer, SccpAddress> idVsBackupAdd = this.router.getBackupAddresses();
+			for (Integer e : idVsBackupAdd.keySet()) {
+				SccpAddress address = idVsBackupAdd.get(e);
 				sb.append("key=");
-				sb.append(key);
-				sb.append("  backup_add=");
+				sb.append(e);
+				sb.append("  ");
 				sb.append(address);
 				sb.append("\n");
 			}
@@ -669,12 +672,13 @@ public class SccpExecutor implements ShellExecutor {
 			return SccpOAMMessage.RULE_DOESNT_EXIST;
 		}
 
+		Map<Integer, Rule> idVsRule = this.router.getRules();
+
 		StringBuffer sb = new StringBuffer();
-		for (Map.Entry<Integer, Rule> e : this.router.getRules().entrySet()) {
-			int key = e.getKey();
-			Rule rule = e.getValue();
+		for (Integer e : idVsRule.keySet()) {
+			Rule rule = idVsRule.get(e);
 			sb.append("key=");
-			sb.append(key);
+			sb.append(e);
 			sb.append("  Rule=");
 			sb.append(rule);
 			sb.append("\n");
@@ -815,12 +819,13 @@ public class SccpExecutor implements ShellExecutor {
 				return SccpOAMMessage.LMR_DOESNT_EXIST;
 			}
 
+			Map<Integer, LongMessageRule> idVsLngmsgRule = this.router.getLongMessageRules();
+
 			StringBuffer sb = new StringBuffer();
-			for (Map.Entry<Integer, LongMessageRule> e : this.router.getLongMessageRules().entrySet()) {
-				int key = e.getKey();
-				LongMessageRule lmr = e.getValue();
+			for (Integer e : idVsLngmsgRule.keySet()) {
+				LongMessageRule lmr = idVsLngmsgRule.get(e);
 				sb.append("key=");
-				sb.append(key);
+				sb.append(e);
 				sb.append("  ");
 				sb.append(lmr);
 				sb.append("\n");
@@ -893,12 +898,12 @@ public class SccpExecutor implements ShellExecutor {
 				return SccpOAMMessage.SAP_DOESNT_EXIST;
 			}
 
+			Map<Integer, Mtp3ServiceAccessPoint> idVsMtp3SerAccPt = this.router.getMtp3ServiceAccessPoints();
 			StringBuffer sb = new StringBuffer();
-			for (Map.Entry<Integer, Mtp3ServiceAccessPoint> e : this.router.getMtp3ServiceAccessPoints().entrySet()) {
-				int key = e.getKey();
-				Mtp3ServiceAccessPoint sap = e.getValue();
+			for (Integer e : idVsMtp3SerAccPt.keySet()) {
+				Mtp3ServiceAccessPoint sap = idVsMtp3SerAccPt.get(e);
 				sb.append("key=");
-				sb.append(key);
+				sb.append(e);
 				sb.append("  ");
 				sb.append(sap);
 				sb.append("\n");
@@ -1052,11 +1057,11 @@ public class SccpExecutor implements ShellExecutor {
 
 			StringBuffer sb = new StringBuffer();
 
-			for (Map.Entry<Integer, ConcernedSignalingPointCode> e : this.sccpResource.getConcernedSpcs().entrySet()) {
-				int key = e.getKey();
-				ConcernedSignalingPointCode ConcSpc = e.getValue();
+			Map<Integer, ConcernedSignalingPointCode> idvsCsp = this.sccpResource.getConcernedSpcs();
+			for (Integer e : idvsCsp.keySet()) {
+				ConcernedSignalingPointCode ConcSpc = idvsCsp.get(e);
 				sb.append("key=");
-				sb.append(key);
+				sb.append(e);
 				sb.append("  ");
 				sb.append(ConcSpc);
 				sb.append("\n");
