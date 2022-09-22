@@ -22,6 +22,7 @@
 
 package org.mobicents.protocols.ss7.tcap.tc.dialog.events;
 
+import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.EventType;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCUserAbortRequest;
 import org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName;
@@ -38,6 +39,8 @@ public class TCUserAbortRequestImpl extends DialogRequestImpl implements TCUserA
 
 	private boolean returnMessageOnError;
 
+	private SccpAddress originatingAddress;
+
 	// fields
 	private ApplicationContextName applicationContextName;
 	private UserInformation userInformation;
@@ -48,24 +51,24 @@ public class TCUserAbortRequestImpl extends DialogRequestImpl implements TCUserA
 		super(EventType.UAbort);
 	}
 
-	// public External getAbortReason() {
-	// return this.abortReason;
-	// }
-
 	public ApplicationContextName getApplicationContextName() {
 		return this.applicationContextName;
+	}
+
+	public SccpAddress getOriginatingAddress() {
+		return this.originatingAddress;
 	}
 
 	public UserInformation getUserInformation() {
 		return this.userInformation;
 	}
 
-	// public void setAbortReason(External abortReason) {
-	// this.abortReason = abortReason;
-	// }
-
 	public void setApplicationContextName(ApplicationContextName acn) {
 		this.applicationContextName = acn;
+	}
+
+	public void setOriginatingAddress(SccpAddress dest) {
+		this.originatingAddress = dest;
 	}
 
 	public void setUserInformation(UserInformation userInformation) {

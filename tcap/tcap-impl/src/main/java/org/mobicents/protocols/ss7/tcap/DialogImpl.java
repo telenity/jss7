@@ -836,6 +836,13 @@ public class DialogImpl implements Dialog {
 					}
 				}
 
+				if (state == TRPseudoState.InitialReceived) {
+					// local address may change, lets check it
+					if (event.getOriginatingAddress() != null) {
+						this.localAddress = event.getOriginatingAddress();
+					}
+				}
+
 				TCAbortMessageImpl msg = (TCAbortMessageImpl) TcapFactory.createTCAbortMessage();
 				msg.setDestinationTransactionId(this.remoteTransactionId);
 				msg.setDialogPortion(dp);

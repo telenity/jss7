@@ -22,6 +22,7 @@
 
 package org.mobicents.protocols.ss7.tcap.api.tc.dialog.events;
 
+import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName;
 import org.mobicents.protocols.ss7.tcap.asn.DialogServiceUserType;
 import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
@@ -44,6 +45,10 @@ public interface TCUserAbortRequest extends DialogRequest {
 	public void setReturnMessageOnError(boolean val);
 
 	public boolean getReturnMessageOnError();
+
+	SccpAddress getOriginatingAddress();
+
+	void setOriginatingAddress(SccpAddress dest);
 
 	public ApplicationContextName getApplicationContextName();
 

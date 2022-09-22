@@ -124,6 +124,7 @@ public class DialogPrimitiveFactoryImpl implements DialogPrimitiveFactory {
 		}
 		TCUserAbortRequestImpl tcer = new TCUserAbortRequestImpl();
 		tcer.setDialog(d);
+		tcer.setOriginatingAddress(d.getLocalAddress());
 		// FIXME: add dialog portion fill
 		return tcer;
 	}
