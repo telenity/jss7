@@ -25,6 +25,7 @@ package org.mobicents.protocols.ss7.sccp.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -71,6 +72,8 @@ public class SccpRoutingControl {
 	private SccpManagement sccpManagement = null;
 
 	private MessageFactoryImpl messageFactory;
+
+	private ConcurrentHashMap<Integer, Long> prohibitedSpcs = new ConcurrentHashMap<Integer, Long>();
 
 	public SccpRoutingControl(SccpProviderImpl sccpProviderImpl, SccpStackImpl sccpStackImpl) {
 		this.messageFactory = sccpStackImpl.messageFactory;
@@ -320,12 +323,20 @@ public class SccpRoutingControl {
 			}
 			return TranslationAddressCheckingResult.translationFailure;
 		}
-		
+
 		if (remoteSpc.isRemoteSpcProhibited()) {
-			if (logger.isEnabledFor(Level.INFO)) {
-				logger.info(String.format("Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg, destName,
-						translationAddress.getSignalingPointCode()));
-			}			
+			if (logger.isEnabledFor(Level.WARN)) {
+				Long lastTimeLog = prohibitedSpcs.get(remoteSpc.getRemoteSpc());
+				// 1 log per minute
+				if (lastTimeLog == null || System.currentTimeMillis() - lastTimeLog > 60000) {
+					prohibitedSpcs.put(remoteSpc.getRemoteSpc(), System.currentTimeMillis());
+					if (logger.isEnabledFor(Level.WARN)) {
+						logger.warn(String.format(
+								"Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg,
+								destName, translationAddress.getSignalingPointCode()));
+					}
+				}
+			}
 			return TranslationAddressCheckingResult.destinationUnavailable_MtpFailure;
 		}			
 
