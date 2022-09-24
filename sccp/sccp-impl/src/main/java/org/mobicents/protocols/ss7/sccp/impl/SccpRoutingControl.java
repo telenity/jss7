@@ -325,16 +325,14 @@ public class SccpRoutingControl {
 		}
 
 		if (remoteSpc.isRemoteSpcProhibited()) {
-			if (logger.isEnabledFor(Level.WARN)) {
-				Long lastTimeLog = prohibitedSpcs.get(remoteSpc.getRemoteSpc());
-				// 1 log per minute
-				if (lastTimeLog == null || System.currentTimeMillis() - lastTimeLog > 60000) {
-					prohibitedSpcs.put(remoteSpc.getRemoteSpc(), System.currentTimeMillis());
-					if (logger.isEnabledFor(Level.WARN)) {
-						logger.warn(String.format(
-								"Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg,
-								destName, translationAddress.getSignalingPointCode()));
-					}
+			Long lastTimeLog = prohibitedSpcs.get(remoteSpc.getRemoteSpc());
+			// 1 log per minute
+			if (lastTimeLog == null || System.currentTimeMillis() - lastTimeLog > 60000) {
+				prohibitedSpcs.put(remoteSpc.getRemoteSpc(), System.currentTimeMillis());
+				if (logger.isEnabledFor(Level.WARN)) {
+					logger.warn(String.format(
+							"Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg,
+							destName, translationAddress.getSignalingPointCode()));
 				}
 			}
 			return TranslationAddressCheckingResult.destinationUnavailable_MtpFailure;
