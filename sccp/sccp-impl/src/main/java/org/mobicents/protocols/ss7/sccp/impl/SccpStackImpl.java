@@ -788,7 +788,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 				SccpAddress addr = msgAddr.getCallingPartyAddress();
 				if (addr != null && addr.getAddressIndicator().getRoutingIndicator() == RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN) {
 					if (!addr.getAddressIndicator().pcPresent()) {
-						msgAddr.setCallingPartyAddress(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, msgAddr.getIncomingOpc(), null, 
+						// fix: don't remove remote GT if present
+						msgAddr.setCallingPartyAddress(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, msgAddr.getIncomingOpc(), addr.getGlobalTitle(),
 								addr.getSubsystemNumber()));
 					}
 				}
