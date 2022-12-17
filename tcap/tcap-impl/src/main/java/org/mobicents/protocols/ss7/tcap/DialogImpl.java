@@ -445,6 +445,7 @@ public class DialogImpl implements Dialog {
 				DialogPortion dp = TcapFactory.createDialogPortion();
 				dp.setUnidirectional(false);
 				DialogRequestAPDU apdu = TcapFactory.createDialogAPDURequest();
+				apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 				dp.setDialogAPDU(apdu);
 				apdu.setApplicationContextName(event.getApplicationContextName());
 				this.lastACN = event.getApplicationContextName();
@@ -509,6 +510,7 @@ public class DialogImpl implements Dialog {
 					DialogPortion dp = TcapFactory.createDialogPortion();
 					dp.setUnidirectional(false);
 					DialogResponseAPDU apdu = TcapFactory.createDialogAPDUResponse();
+					apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 					dp.setDialogAPDU(apdu);
 					apdu.setApplicationContextName(event.getApplicationContextName());
 					if (event.getUserInformation() != null) {
@@ -636,6 +638,7 @@ public class DialogImpl implements Dialog {
 					DialogPortion dp = TcapFactory.createDialogPortion();
 					dp.setUnidirectional(false);
 					DialogResponseAPDU apdu = TcapFactory.createDialogAPDUResponse();
+					apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 					dp.setDialogAPDU(apdu);
 
 					apdu.setApplicationContextName(event.getApplicationContextName());
@@ -732,6 +735,7 @@ public class DialogImpl implements Dialog {
 			if (event.getApplicationContextName() != null) {
 				DialogPortion dp = TcapFactory.createDialogPortion();
 				DialogUniAPDU apdu = TcapFactory.createDialogAPDUUni();
+				apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 				apdu.setApplicationContextName(event.getApplicationContextName());
 				if (event.getUserInformation() != null) {
 					apdu.setUserInformation(event.getUserInformation());
@@ -793,6 +797,7 @@ public class DialogImpl implements Dialog {
 						// Abnormal
 						// procedures on page 13 and 14
 						DialogResponseAPDU apdu = TcapFactory.createDialogAPDUResponse();
+						apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 						apdu.setApplicationContextName(event.getApplicationContextName());
 						apdu.setUserInformation(event.getUserInformation());
 
@@ -945,6 +950,7 @@ public class DialogImpl implements Dialog {
 			DialogPortion dp = TcapFactory.createDialogPortion();
 			dp.setUnidirectional(false);
 			DialogRequestAPDU apdu = TcapFactory.createDialogAPDURequest();
+			apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 			dp.setDialogAPDU(apdu);
 			apdu.setApplicationContextName(event.getApplicationContextName());
 			if (event.getUserInformation() != null) {
@@ -985,6 +991,7 @@ public class DialogImpl implements Dialog {
 			DialogPortion dp = TcapFactory.createDialogPortion();
 			dp.setUnidirectional(false);
 			DialogResponseAPDU apdu = TcapFactory.createDialogAPDUResponse();
+			apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 			dp.setDialogAPDU(apdu);
 			apdu.setApplicationContextName(event.getApplicationContextName());
 			if (event.getUserInformation() != null) {
@@ -1048,6 +1055,7 @@ public class DialogImpl implements Dialog {
 				DialogPortion dp = TcapFactory.createDialogPortion();
 				dp.setUnidirectional(false);
 				DialogResponseAPDU apdu = TcapFactory.createDialogAPDUResponse();
+				apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 				dp.setDialogAPDU(apdu);
 
 				apdu.setApplicationContextName(event.getApplicationContextName());
@@ -1087,6 +1095,7 @@ public class DialogImpl implements Dialog {
 		if (event.getApplicationContextName() != null) {
 			DialogPortion dp = TcapFactory.createDialogPortion();
 			DialogUniAPDU apdu = TcapFactory.createDialogAPDUUni();
+			apdu.setDoNotSendProtocolVersion(this.provider.getStack().getDoNotSendProtocolVersion());
 			apdu.setApplicationContextName(event.getApplicationContextName());
 			if (event.getUserInformation() != null) {
 				apdu.setUserInformation(event.getUserInformation());

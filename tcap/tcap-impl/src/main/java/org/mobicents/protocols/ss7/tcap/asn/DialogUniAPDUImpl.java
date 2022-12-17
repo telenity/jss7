@@ -43,6 +43,11 @@ public class DialogUniAPDUImpl implements DialogUniAPDU {
 
 	private ApplicationContextName acn;
 	private UserInformation ui;
+	private boolean doNotSendProtocolVersion = false;
+
+	public void setDoNotSendProtocolVersion(boolean val) {
+		doNotSendProtocolVersion = val;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -186,8 +191,10 @@ public class DialogUniAPDUImpl implements DialogUniAPDU {
 			
 			// lets not omit protocol version, we check byte[] in tests, it
 			// screws them :)
-			ProtocolVersion pv = TcapFactory.createProtocolVersion();
-			pv.encode(aos);
+			if (!doNotSendProtocolVersion) {
+				ProtocolVersion pv = TcapFactory.createProtocolVersion();
+				pv.encode(aos);
+			}
 			this.acn.encode(aos);
 			
 			if (ui != null)

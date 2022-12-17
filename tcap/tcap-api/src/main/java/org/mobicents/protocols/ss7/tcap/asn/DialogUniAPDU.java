@@ -31,7 +31,7 @@ package org.mobicents.protocols.ss7.tcap.asn;
  */
 public interface DialogUniAPDU extends DialogAPDU {
 
-
+	void setDoNotSendProtocolVersion(boolean val);
 
 	//opt, default is 1(no other defined)
 	public int getProtocolVersion();

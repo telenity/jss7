@@ -63,7 +63,9 @@ public class TCAPStackImpl implements TCAPStack {
 	private int maxSeqControl = 255;
 	private int corePoolSize = 4;
 
-    public TCAPStackImpl() {
+	private boolean doNotSendProtocolVersion = false;
+
+	public TCAPStackImpl() {
         super();
 
     }
@@ -222,5 +224,16 @@ public class TCAPStackImpl implements TCAPStack {
 	public void setCorePoolSize(int corePoolSize) {
 		this.corePoolSize = corePoolSize;
 	}
+
+	@Override
+	public void setDoNotSendProtocolVersion(boolean val) {
+		doNotSendProtocolVersion = val;
+	}
+
+	@Override
+	public boolean getDoNotSendProtocolVersion() {
+		return doNotSendProtocolVersion;
+	}
+
 }
 

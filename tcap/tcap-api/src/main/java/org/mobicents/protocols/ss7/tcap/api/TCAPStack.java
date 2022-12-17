@@ -124,5 +124,9 @@ public interface TCAPStack {
 	* @return if areviewMode is active
 	*/
 	public boolean getPreviewMode();
+
+	void setDoNotSendProtocolVersion(boolean val);
+
+	boolean getDoNotSendProtocolVersion();
 	
 }

@@ -155,7 +155,7 @@ public class SccpRoutingControl {
 			break;
 		default:
 			// This can never happen
-			logger.error(String.format("Invalid Routing Indictaor received for message=%s from MTP3", msg));
+			logger.error(String.format("Invalid Routing Indicator received for message=%s from MTP3", msg));
 			break;
 		}
 	}
@@ -537,7 +537,7 @@ public class SccpRoutingControl {
 		} else {
 			// TODO: implement complicated algorithms for selecting a destination
 			// (CallingPartyAddress & SLS depended)
-			// Look at Q.815 8.1.3 - active loadsharing 
+			// Look at Q.715 8.1.3 - active loadsharing
 			return true;
 		}
 	}

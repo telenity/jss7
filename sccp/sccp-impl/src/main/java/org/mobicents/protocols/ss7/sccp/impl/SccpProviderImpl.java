@@ -91,7 +91,7 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
 			SccpListener existingListener = newListener.remove(ssn);
 			if (existingListener == null) {
 				if (logger.isEnabledFor(Level.WARN)) {
-					logger.warn(String.format("No existing SccpListnere=%s for SSN=%d", existingListener, ssn));
+					logger.warn(String.format("No existing SccpListener=%s for SSN=%d", existingListener, ssn));
 				}
 			}
 			ssnToListener = newListener;

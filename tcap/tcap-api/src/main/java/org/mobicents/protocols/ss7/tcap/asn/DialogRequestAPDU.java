@@ -32,6 +32,7 @@ package org.mobicents.protocols.ss7.tcap.asn;
  */
 public interface DialogRequestAPDU extends DialogAPDU {
 
+	void setDoNotSendProtocolVersion(boolean val);
 	public ProtocolVersion getProtocolVersion();
 	//mandatory
 	public ApplicationContextName getApplicationContextName();
