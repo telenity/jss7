@@ -253,7 +253,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + WAIT_TIME * 2);
 		serverExpectedEvents.add(te);
 
-		client.startClientDialog();
+		client.startClientDialog(0);
 		client.sendBegin();
 		Thread.sleep(WAIT_TIME);
 
@@ -304,7 +304,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + WAIT_TIME * 2);
 		serverExpectedEvents.add(te);
 
-		client.startClientDialog();
+		client.startClientDialog(0);
 		client.sendBegin();
 		Thread.sleep(WAIT_TIME);
 
@@ -352,7 +352,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + WAIT_TIME * 2);
 		serverExpectedEvents.add(te);
 
-		client.startClientDialog();
+		client.startClientDialog(0);
 		client.sendBegin();
 		Thread.sleep(WAIT_TIME);
 

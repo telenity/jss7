@@ -97,10 +97,14 @@ public abstract class EventTestHarness implements TCListener {
 	}
 
 	public void startClientDialog() throws TCAPException {
+		startClientDialog(1);
+	}
+
+	public void startClientDialog(int protocolClass) throws TCAPException {
 		if (dialog != null) {
 			throw new IllegalStateException("Dialog exists...");
 		}
-		dialog = this.tcapProvider.getNewDialog(thisAddress, remoteAddress);
+		dialog = this.tcapProvider.getNewDialog(thisAddress, remoteAddress, protocolClass);
 	}
 
 	public void startClientDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException {

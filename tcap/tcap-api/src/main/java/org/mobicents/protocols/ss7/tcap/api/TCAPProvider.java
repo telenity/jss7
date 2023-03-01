@@ -41,6 +41,16 @@ public interface TCAPProvider extends Serializable {
 	 * @return
 	 */
 	public Dialog getNewDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException;
+
+	/**
+	 * Create new structured dialog.
+	 * @param localAddress - desired local address
+	 * @param remoteAddress - initial remote address, it can change after first TCContinue.
+	 * @param protocolClass - protocol class (0 or 1)
+	 * @return
+	 */
+	public Dialog getNewDialog(SccpAddress localAddress, SccpAddress remoteAddress, int protocolClass) throws TCAPException;
+
 	/**
 	 * Create new unstructured dialog.
 	 * @param localAddress

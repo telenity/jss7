@@ -301,7 +301,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	}
 
 	public synchronized int newSls() {
-		if (++this.slsCounter > 255)
+		if (++this.slsCounter > 15)
 			this.slsCounter = 0;
 		return this.slsCounter;
 	}

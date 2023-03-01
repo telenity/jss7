@@ -156,6 +156,8 @@ public class DialogImpl implements Dialog {
 
 	private int seqControl;
 
+	private int protocolClass;
+
 	// If the Dialogue Portion is sent in TCBegin message, the first received
 	// Continue message should have the Dialogue Portion too
 	private boolean dpSentInBegin = false;
@@ -184,7 +186,7 @@ public class DialogImpl implements Dialog {
 	 */
 	protected DialogImpl(SccpAddress localAddress, SccpAddress remoteAddress, Long origTransactionId,
 			boolean structured, ScheduledExecutorService executor, TCAPProviderImpl provider, int seqControl,
-			boolean previewMode) {
+			boolean previewMode, int protocolClass) {
 		super();
 		this.localAddress = localAddress;
 		this.remoteAddress = remoteAddress;
@@ -469,7 +471,7 @@ public class DialogImpl implements Dialog {
 				tcbm.encode(aos);
 				this.setState(TRPseudoState.InitialSent);
 				this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
-						this.localAddress, this.seqControl);
+						this.localAddress, this.seqControl, this.protocolClass);
 				this.scheduledComponentList.clear();
 			} catch (Throwable e) {
 				// FIXME: remove freshly added invokes to free invoke ID??
@@ -544,7 +546,7 @@ public class DialogImpl implements Dialog {
 				try {
 					tcbm.encode(aos);
 					this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
-							this.localAddress, this.seqControl);
+							this.localAddress, this.seqControl, this.protocolClass);
 					this.setState(TRPseudoState.Active);
 					this.scheduledComponentList.clear();
 				} catch (Exception e) {
@@ -574,7 +576,7 @@ public class DialogImpl implements Dialog {
 				try {
 					tcbm.encode(aos);
 					this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
-							this.localAddress, this.seqControl);
+							this.localAddress, this.seqControl, this.protocolClass);
 					this.scheduledComponentList.clear();
 				} catch (Exception e) {
 					// FIXME: remove freshly added invokes to free invoke ID??
@@ -698,7 +700,7 @@ public class DialogImpl implements Dialog {
 			try {
 				tcbm.encode(aos);
 				this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
-						this.localAddress, this.seqControl);
+						this.localAddress, this.seqControl, this.protocolClass);
 
 				this.scheduledComponentList.clear();
 			} catch (Exception e) {
@@ -757,7 +759,7 @@ public class DialogImpl implements Dialog {
 			try {
 				msg.encode(aos);
 				this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
-						this.localAddress, this.seqControl);
+						this.localAddress, this.seqControl, this.protocolClass);
 				this.scheduledComponentList.clear();
 			} catch (Exception e) {
 				if (logger.isEnabledFor(Level.ERROR)) {
@@ -857,7 +859,7 @@ public class DialogImpl implements Dialog {
 				try {
 					msg.encode(aos);
 					this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
-							this.localAddress, this.seqControl);
+							this.localAddress, this.seqControl, this.protocolClass);
 
 					this.scheduledComponentList.clear();
 				} catch (Exception e) {
@@ -1530,7 +1532,7 @@ public class DialogImpl implements Dialog {
 					try {
 						msg.encode(aos);
 						this.provider.send(aos.toByteArray(), false, this.remoteAddress,
-								this.localAddress, this.seqControl);
+								this.localAddress, this.seqControl, this.protocolClass);
 					} catch (Exception e) {
 						if (logger.isEnabledFor(Level.ERROR)) {
 							logger.error("Failed to send message: ", e);

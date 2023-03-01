@@ -149,9 +149,9 @@ public class TCAPFunctionalTest extends SccpHarness {
         te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + WAIT_TIME * 2);
         serverExpectedEvents.add(te);
 
-//        this.saveTrafficInFile();
+        this.saveTrafficInFile();
 
-        client.startClientDialog();
+        client.startClientDialog(0);
         assertNotNull(client.dialog.getLocalAddress());
         assertNull(client.dialog.getRemoteDialogId());
 
