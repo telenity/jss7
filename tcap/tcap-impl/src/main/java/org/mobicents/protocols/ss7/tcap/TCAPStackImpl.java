@@ -60,7 +60,7 @@ public class TCAPStackImpl implements TCAPStack {
 	private long dialogIdRangeEnd = Integer.MAX_VALUE;
 	private boolean previewMode = false;
 
-	private int maxSeqControl = 255;
+	private int maxSeqControl = 15;
 	private int corePoolSize = 4;
 
 	private boolean doNotSendProtocolVersion = false;

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.apache.log4j.Level;
@@ -104,7 +105,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	// explicitly...
 	private transient Map<Long, DialogImpl> dialogs = new ConcurrentHashMap<Long, DialogImpl>();
 
-	private int seqControl;
+	private AtomicInteger seqControl = new AtomicInteger();
 	private int ssn;
 	private long curDialogId;
 
@@ -173,12 +174,9 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	}
 
 	// get next Seq Control value available
-	private synchronized int getNextSeqControl() {
-		seqControl++;
-		if (seqControl > this.stack.getMaxSeqControl()) {
-			seqControl = 0;
-		}
-		return seqControl;
+	private int getNextSeqControl() {
+		int res = seqControl.getAndIncrement();
+		return res & stack.getMaxSeqControl();
 	}
 
 	/*

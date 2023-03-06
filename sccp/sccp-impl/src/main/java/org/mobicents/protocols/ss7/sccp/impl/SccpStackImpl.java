@@ -27,6 +27,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 import javolution.util.FastMap;
@@ -123,9 +124,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	private final String name;
 	
 	private String persistDir = null;
-	
-	private volatile int segmentationLocalRef;
-	private volatile int slsCounter;
+
+	private AtomicInteger segmentationLocalRef = new AtomicInteger();
+	private AtomicInteger slsCounter = new AtomicInteger();
 	private volatile int selectorCounter;
 
 	private boolean rspProhibitedByDefault;
@@ -296,14 +297,13 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		this.reassemblyTimerDelay = reassemblyTimerDelay;
 	}
 
-	public synchronized int newSegmentationLocalRef() {
-		return ++this.segmentationLocalRef;
+	public int newSegmentationLocalRef() {
+		return segmentationLocalRef.incrementAndGet();
 	}
 
-	public synchronized int newSls() {
-		if (++this.slsCounter > 15)
-			this.slsCounter = 0;
-		return this.slsCounter;
+	public int newSls() {
+		int res = slsCounter.getAndIncrement();
+		return res & slsFilter; // sls (0-15) - ITU standard
 	}
 
 	public synchronized boolean newSelector() {
