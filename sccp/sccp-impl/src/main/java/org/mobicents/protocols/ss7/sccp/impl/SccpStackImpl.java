@@ -127,7 +127,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	private AtomicInteger segmentationLocalRef = new AtomicInteger();
 	private AtomicInteger slsCounter = new AtomicInteger();
-	private volatile int selectorCounter;
+	private AtomicInteger selectorCounter = new AtomicInteger();
 
 	private boolean rspProhibitedByDefault;
 
@@ -306,10 +306,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		return res & slsFilter; // sls (0-15) - ITU standard
 	}
 
-	public synchronized boolean newSelector() {
-		if (++this.selectorCounter > 1)
-			this.selectorCounter = 0;
-		return (this.selectorCounter == 1);
+	public boolean newSelector() {
+		return selectorCounter.getAndIncrement() % 2 == 0;
 	}
 
 	public boolean isRspProhibitedByDefault() {
