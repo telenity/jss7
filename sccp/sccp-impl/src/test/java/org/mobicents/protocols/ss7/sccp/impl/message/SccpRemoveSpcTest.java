@@ -187,7 +187,7 @@ public class SccpRemoveSpcTest {
 
 		EncodingResultData res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_GT_WithOutDpc()));
+		assertEquals(res.getSolidData(), this.getDataUdt_GT_WithOutDpc());
 
 		// ---- removeSpc off
 		this.stack.setRemoveSpc(false);
