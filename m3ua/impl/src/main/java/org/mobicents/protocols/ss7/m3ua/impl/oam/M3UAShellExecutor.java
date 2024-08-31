@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -44,9 +44,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.TrafficModeType;
 import org.mobicents.ss7.management.console.ShellExecutor;
 
 /**
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class M3UAShellExecutor implements ShellExecutor {
 
@@ -70,10 +70,10 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 	/**
 	 * m3ua as create <as-name> <AS | SGW | IPSP> mode <SE | DE> ipspType <
-	 * client | server > rc <routing-context> traffic-mode <traffic mode> min-asp 
+	 * client | server > rc <routing-context> traffic-mode <traffic mode> min-asp
 	 * <minimum asp active for TrafficModeType.Loadshare>
 	 * network-appearance <network appearance>
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 */
@@ -122,7 +122,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 				trafficModeType = getTrafficModeType(args[count++]);
 			} else if (key.equals("network-appearance")) {
 				na = parameterFactory.createNetworkAppearance(Long.parseLong(args[count++]));
-			} else if(key.equals("min-asp")){
+			} else if (key.equals("min-asp")) {
 				minAspActiveForLoadbalance = Integer.parseInt(args[count++]);
 			} else {
 				return M3UAOAMMessages.INVALID_COMMAND;
@@ -135,7 +135,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 	/**
 	 * m3ua as destroy <as-name>
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 * @throws Exception
@@ -157,7 +157,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 	/**
 	 * m3ua as add <as-name> <asp-name>
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 * @throws Exception
@@ -178,7 +178,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 	/**
 	 * m3ua as remove <as-name> <asp-name>
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 * @throws Exception
@@ -221,7 +221,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 		}
 		StringBuffer sb = new StringBuffer();
 		for (AspFactory aspFactory : aspfactories) {
-			AspFactoryImpl aspFactoryImpl = (AspFactoryImpl)aspFactory;
+			AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) aspFactory;
 			sb.append(M3UAOAMMessages.NEW_LINE);
 			aspFactoryImpl.show(sb);
 			sb.append(M3UAOAMMessages.NEW_LINE);
@@ -236,9 +236,9 @@ public class M3UAShellExecutor implements ShellExecutor {
 			return M3UAOAMMessages.NO_ROUTE_DEFINED_YET;
 		}
 		StringBuffer sb = new StringBuffer();
-		
+
 		Set<String> keys = route.keySet();
-		for(String key : keys){
+		for (String key : keys) {
 			As[] asList = route.get(key);
 
 			sb.append(M3UAOAMMessages.NEW_LINE);
@@ -263,7 +263,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 		}
 		StringBuffer sb = new StringBuffer();
 		for (As as : appServers) {
-			AsImpl asImpl = (AsImpl)as;
+			AsImpl asImpl = (AsImpl) as;
 			sb.append(M3UAOAMMessages.NEW_LINE);
 			asImpl.show(sb);
 			sb.append(M3UAOAMMessages.NEW_LINE);
@@ -330,7 +330,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 						factory = this.m3uaManagement.createAspFactory(aspname, assocName, false);
 					} else {
 						int count = 5;
-						long aspid = 0;
+						long aspid = -1;
 						boolean isHeartBeatEnabled = false;
 						while (count < args.length) {
 							String key = args[count++];
@@ -346,7 +346,11 @@ public class M3UAShellExecutor implements ShellExecutor {
 								return M3UAOAMMessages.INVALID_COMMAND;
 							}
 						}
-						factory = this.m3uaManagement.createAspFactory(aspname, assocName, aspid,isHeartBeatEnabled);
+						if(aspid == -1){
+							factory = this.m3uaManagement.createAspFactory(aspname, assocName, isHeartBeatEnabled);
+						} else {
+							factory = this.m3uaManagement.createAspFactory(aspname, assocName, aspid, isHeartBeatEnabled);
+						}
 					}
 					return String.format(M3UAOAMMessages.CREATE_ASP_SUCESSFULL, factory.getName());
 				} else if (raspCmd.equals("destroy")) {
@@ -451,7 +455,10 @@ public class M3UAShellExecutor implements ShellExecutor {
 			return M3UAOAMMessages.INVALID_COMMAND;
 		} catch (Exception e) {
 			logger.error(String.format("Error while executing comand %s", Arrays.toString(args)), e);
-			return e.getMessage();
+			return e.toString();
+		} catch (Throwable t) {
+			logger.error(String.format("Error while executing comand %s", Arrays.toString(args)), t);
+			return t.toString();
 		}
 	}
 
@@ -464,7 +471,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.mobicents.ss7.management.console.ShellExecutor#handles(java.lang.
 	 * String)

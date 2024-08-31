@@ -50,6 +50,7 @@ import org.mobicents.protocols.ss7.mtp.Mtp3StatusPrimitive;
 public class SignalingNetworkManagementHandler extends MessageHandler {
 
 	private static final Logger logger = Logger.getLogger(SignalingNetworkManagementHandler.class);
+	private static final String MTP_PAUSE_ON_DUNA_KEY = "ss7.m3ua.mtpPauseOnDuna";
 
 	public SignalingNetworkManagementHandler(AspFactoryImpl aspFactoryImpl) {
 		super(aspFactoryImpl);
@@ -88,8 +89,13 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 					int[] affectedPcs = affectedPcObjs.getPointCodes();
 
 					for (int i = 0; i < affectedPcs.length; i++) {
-						Mtp3PausePrimitive mtpPausePrimi = new Mtp3PausePrimitive(affectedPcs[i]);
-						((AsImpl)aspImpl.getAs()).getM3UAManagement().sendPauseMessageToLocalUser(mtpPausePrimi);
+						if (isMtpPauseOnDuna()) {
+							Mtp3PausePrimitive mtpPausePrimi = new Mtp3PausePrimitive(affectedPcs[i]);
+							((AsImpl) aspImpl.getAs()).getM3UAManagement().sendPauseMessageToLocalUser(mtpPausePrimi);
+						} else {
+							logger.warn(String.format("Rx : DUNA=%s for ASP=%s. DUNA effect is ignored for affected PC=%d!",
+									duna, this.aspFactoryImpl.getName(), affectedPcs[i]));
+						}
 					}
 				} else {
 					logger.error(String.format("Rx : DUNA for null RoutingContext. But ASP State=%s. Message=%s",
@@ -128,8 +134,13 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 						int[] affectedPcs = affectedPcObjs.getPointCodes();
 
 						for (int i = 0; i < affectedPcs.length; i++) {
-							Mtp3PausePrimitive mtpPausePrimi = new Mtp3PausePrimitive(affectedPcs[i]);
-							((AsImpl)aspImpl.getAs()).getM3UAManagement().sendPauseMessageToLocalUser(mtpPausePrimi);
+							if (isMtpPauseOnDuna()) {
+								Mtp3PausePrimitive mtpPausePrimi = new Mtp3PausePrimitive(affectedPcs[i]);
+								((AsImpl) aspImpl.getAs()).getM3UAManagement().sendPauseMessageToLocalUser(mtpPausePrimi);
+							} else {
+								logger.warn(String.format("Rx : DUNA=%s for ASP=%s. DUNA effect is ignored for affected RC=%d, PC=%d!",
+										duna, this.aspFactoryImpl.getName(), rcs[count], affectedPcs[i]));
+							}
 						}
 					} else {
 						logger.error(String.format("Rx : DUNA for RoutingContext=%d. But ASP State=%s. Message=%s",
@@ -453,6 +464,11 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 		} else {
 			// TODO log error
 		}
+	}
+
+	private boolean isMtpPauseOnDuna() {
+		String mtpPauseOnDunaString = System.getProperty(MTP_PAUSE_ON_DUNA_KEY, "false");
+		return Boolean.valueOf(mtpPauseOnDunaString);
 	}
 
 }

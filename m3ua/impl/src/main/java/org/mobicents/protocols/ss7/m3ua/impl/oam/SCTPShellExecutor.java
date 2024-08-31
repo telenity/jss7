@@ -35,8 +35,9 @@ public class SCTPShellExecutor implements ShellExecutor {
 		StringBuffer sb = new StringBuffer();
 		for (Server server : servers) {
 			sb.append(M3UAOAMMessages.NEW_LINE);
-			sb.append("SERVER ").append(server.getIpChannelType().getType()).append(" name=").append(server.getName()).append(" started=")
-					.append(server.isStarted()).append(" hostIp=").append(server.getHostAddress()).append(" hostPort=").append(server.getHostport());
+			sb.append("SERVER ").append(server.getIpChannelType().getType()).append(" name=").append(server.getName())
+					.append(" started=").append(server.isStarted()).append(" hostIp=").append(server.getHostAddress())
+					.append(" hostPort=").append(server.getHostport());
 
 			String[] secondaryHostAdd = server.getExtraHostAddresses();
 
@@ -69,8 +70,9 @@ public class SCTPShellExecutor implements ShellExecutor {
 		for (String s : associations.keySet()) {
 			Association asso = associations.get(s);
 			sb.append(M3UAOAMMessages.NEW_LINE);
-			sb.append("ASSOCIATION ").append(asso.getIpChannelType().getType()).append(" name=").append(asso.getName()).append(" started=")
-					.append(asso.isStarted()).append(" peerIp=").append(asso.getPeerAddress()).append(" peerPort=").append(asso.getPeerPort());
+			sb.append("ASSOCIATION ").append(asso.getIpChannelType().getType()).append(" name=").append(asso.getName())
+					.append(" started=").append(asso.isStarted()).append(" peerIp=").append(asso.getPeerAddress())
+					.append(" peerPort=").append(asso.getPeerPort());
 			if (asso.getAssociationType() == AssociationType.CLIENT) {
 				sb.append(" hostIp=").append(asso.getHostAddress()).append(" hostPort=").append(asso.getHostPort());
 			} else {
@@ -248,7 +250,8 @@ public class SCTPShellExecutor implements ShellExecutor {
 							ipChnnelType = IpChannelType.SCTP;
 						}
 
-						this.sctpManagement.addAssociation(primaryAddress, hostPort, peerIp, peerPort, assocName, ipChnnelType, secondaryAddresses);
+						this.sctpManagement.addAssociation(primaryAddress, hostPort, peerIp, peerPort, assocName, ipChnnelType,
+								secondaryAddresses);
 
 						return String.format(SCTPOAMMessages.ADD_CLIENT_ASSOCIATION_SUCCESS, assocName);
 					} else if (type.equals("SERVER")) {
@@ -297,16 +300,17 @@ public class SCTPShellExecutor implements ShellExecutor {
 			return M3UAOAMMessages.INVALID_COMMAND;
 		} catch (Exception e) {
 			logger.error(String.format("Error while executing comand %s", Arrays.toString(args)), e);
-			return e.getMessage();
+			return e.toString();
+		} catch (Throwable t) {
+			logger.error(String.format("Error while executing comand %s", Arrays.toString(args)), t);
+			return t.toString();
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.ss7.management.console.ShellExecutor#handles(java.lang.
-	 * String)
+	 *
+	 * @see org.mobicents.ss7.management.console.ShellExecutor#handles(java.lang. String)
 	 */
 	@Override
 	public boolean handles(String command) {
