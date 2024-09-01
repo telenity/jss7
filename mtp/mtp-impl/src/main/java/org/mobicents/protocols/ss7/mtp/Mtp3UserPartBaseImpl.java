@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -30,10 +30,10 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import org.apache.log4j.Logger;
 
 /**
- * 
+ *
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 
@@ -60,7 +60,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 	private RoutingLabelFormat routingLabelFormat = RoutingLabelFormat.ITU;
 
 	private Mtp3TransferPrimitiveFactory mtp3TransferPrimitiveFactory = null;
-	
+
 	private boolean useLsbForLinksetSelection = false;
 
 	public Mtp3UserPartBaseImpl() {
@@ -191,7 +191,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 
 	/**
 	 * Deliver an incoming message to the local user
-	 * 
+	 *
 	 * @param msg
 	 * @param effectiveSls
 	 *            For the thread selection (for message delivering)
@@ -266,7 +266,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 					for (Mtp3UserPartListener lsn : userListeners) {
 						lsn.onMtp3TransferMessage(this.msg);
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					logger.error("Exception while delivering a system messages to the MTP3-user: " + e.getMessage(), e);
 				}
 			} else {
@@ -296,7 +296,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 						if (this.msg.getType() == Mtp3Primitive.STATUS)
 							lsn.onMtp3StatusMessage((Mtp3StatusPrimitive)this.msg);
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					logger.error("Exception while delivering a payload messages to the MTP3-user: " + e.getMessage(), e);
 				}
 			} else {

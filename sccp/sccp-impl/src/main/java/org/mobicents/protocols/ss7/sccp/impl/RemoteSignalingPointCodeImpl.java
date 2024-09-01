@@ -40,8 +40,8 @@ public class RemoteSignalingPointCodeImpl implements XMLSerializable, RemoteSign
 	private int remoteSpc;
 	private int remoteSpcFlag;
 	private int mask;
-	private boolean remoteSpcProhibited = true;
-	private boolean remoteSccpProhibited = true;
+	private volatile boolean remoteSpcProhibited = true;
+	private volatile boolean remoteSccpProhibited = true;
 	
 	public RemoteSignalingPointCodeImpl() {
 	}

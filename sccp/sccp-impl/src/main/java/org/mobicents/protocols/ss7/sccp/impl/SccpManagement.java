@@ -118,7 +118,7 @@ public class SccpManagement {
 		int messgType = data[0] & 0xff;
 		int affectedSsn = data[1] & 0xff;
 		int affectedPc = (data[2] & 0xff) | ((data[3] & 0xff) << 8);
-		int subsystemMultiplicity = data[3] & 0xff;
+		int subsystemMultiplicity = data[4] & 0xff;
 
 		switch (messgType) {
 		case SSA:
