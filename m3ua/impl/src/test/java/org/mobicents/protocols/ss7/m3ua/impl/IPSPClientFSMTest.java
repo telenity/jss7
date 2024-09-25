@@ -308,11 +308,6 @@ public class IPSPClientFSMTest {
         }
 
         @Override
-        public int getCongestionLevel() {
-            return 0;
-        }
-
-        @Override
         public void setAssociationListener(AssociationListener associationListener) {
             this.associationListener = associationListener;
         }
@@ -457,66 +452,6 @@ public class IPSPClientFSMTest {
         @Override
         public void setSingleThread(boolean arg0) {
             // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public double getCongControl_DelayThreshold_1() {
-            return 0;
-        }
-
-        @Override
-        public double getCongControl_DelayThreshold_2() {
-            return 0;
-        }
-
-        @Override
-        public double getCongControl_DelayThreshold_3() {
-            return 0;
-        }
-
-        @Override
-        public void setCongControl_DelayThreshold_1(double v) throws Exception {
-
-        }
-
-        @Override
-        public void setCongControl_DelayThreshold_2(double v) throws Exception {
-
-        }
-
-        @Override
-        public void setCongControl_DelayThreshold_3(double v) throws Exception {
-
-        }
-
-        @Override
-        public double getCongControl_BackToNormalDelayThreshold_1() {
-            return 0;
-        }
-
-        @Override
-        public double getCongControl_BackToNormalDelayThreshold_2() {
-            return 0;
-        }
-
-        @Override
-        public double getCongControl_BackToNormalDelayThreshold_3() {
-            return 0;
-        }
-
-        @Override
-        public void setCongControl_BackToNormalDelayThreshold_1(double v) throws Exception {
-
-        }
-
-        @Override
-        public void setCongControl_BackToNormalDelayThreshold_2(double v) throws Exception {
-
-        }
-
-        @Override
-        public void setCongControl_BackToNormalDelayThreshold_3(double v) throws Exception {
 
         }
 

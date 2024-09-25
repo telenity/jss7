@@ -146,7 +146,6 @@ public class DialogImpl implements Dialog {
 
 	// only originating side keeps FSM, see: Q.771 - 3.1.5
 	protected InvokeImpl[] operationsSent = new InvokeImpl[invokeIDTable.length];
-	protected InvokeImpl[] operationsSentA = new InvokeImpl[invokeIDTable.length];
 	private Set<Long> incomingInvokeList = new HashSet<Long>();
 	private ScheduledExecutorService executor;
 
@@ -1365,8 +1364,7 @@ public class DialogImpl implements Dialog {
 							+ ", Dialog: " + this);
 				}
 				this.sendAbnormalDialog();
-				return;
-			}
+            }
 
 		} finally {
 			this.dialogLock.unlock();

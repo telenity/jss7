@@ -30,7 +30,7 @@ import org.mobicents.protocols.ss7.m3ua.impl.scheduler.M3UATask;
  */
 public class AspFactoryStopTimer extends M3UATask {
 
-	private static Logger logger = Logger.getLogger(AspFactoryStopTimer.class);
+	private static final Logger logger = Logger.getLogger(AspFactoryStopTimer.class);
 
 	private int STOP_TIMER_TIMEOUT = 3000;
 
