@@ -64,9 +64,9 @@ public interface Invoke extends Component {
 //	public void setInvokeTimeout(long invokeTimeout);
 
 	// optional
-	public void setLinkedId(Long i);
+	public void setLinkedId(Integer i);
 
-	public Long getLinkedId();
+	public Integer getLinkedId();
 
 	public Invoke getLinkedInvoke();
 

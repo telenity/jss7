@@ -31,8 +31,6 @@ import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ErrorCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ErrorCodeType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
-import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
-import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 
 /**
  * @author baranowb
@@ -78,7 +76,7 @@ public class ErrorCodeImpl implements ErrorCode {
 
 	public String toString() {
 		if (this.localErrorCode != null)
-			return "ErrorCode[errorType=Local, data=" + this.localErrorCode.toString() + "]";
+			return "ErrorCode[errorType=Local, data=" + this.localErrorCode + "]";
 		else if (this.globalErrorCode != null)
 			return "ErrorCode[errorType=Global, data=" + Arrays.toString(this.globalErrorCode) + "]";
 		else

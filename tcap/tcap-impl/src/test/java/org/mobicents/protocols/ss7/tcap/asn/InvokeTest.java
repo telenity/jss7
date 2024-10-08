@@ -72,7 +72,7 @@ public class InvokeTest  {
 		byte[] expected = this.getData();
 		
 		Invoke invoke = TcapFactory.createComponentInvoke();
-		invoke.setInvokeId(12l);
+		invoke.setInvokeId(12);
 		
 		OperationCode oc = TcapFactory.createOperationCode();
 		
@@ -107,8 +107,8 @@ public class InvokeTest  {
 		expected = this.getDataFull();
 		
 		invoke = TcapFactory.createComponentInvoke();
-		invoke.setInvokeId(-5L);
-		invoke.setLinkedId(2L);
+		invoke.setInvokeId(-5);
+		invoke.setLinkedId(2);
 		oc = TcapFactory.createOperationCode();
 		oc.setGlobalOperationCode(new long[] { 1, 0, 0, 1 });
 		invoke.setOperationCode(oc);

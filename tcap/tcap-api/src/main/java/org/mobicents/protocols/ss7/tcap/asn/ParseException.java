@@ -35,7 +35,7 @@ public class ParseException extends Exception {
 
 	private GeneralProblemType problem;
 	private PAbortCauseType pAbortCauseType;
-	private Long invokeId;
+	private Integer invokeId;
 
 	public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem) {
 		this.problem = problem;
@@ -68,11 +68,11 @@ public class ParseException extends Exception {
 		return pAbortCauseType;
 	}
 
-	public Long getInvokeId() {
+	public Integer getInvokeId() {
 		return invokeId;
 	}
 
-	public void setInvokeId(Long val) {
+	public void setInvokeId(Integer val) {
 		invokeId = val;
 	}
 

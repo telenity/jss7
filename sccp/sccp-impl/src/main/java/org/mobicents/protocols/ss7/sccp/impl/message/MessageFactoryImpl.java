@@ -55,13 +55,13 @@ public class MessageFactoryImpl implements MessageFactory {
 
 	public SccpDataMessage createDataMessageClass0(SccpAddress calledParty, SccpAddress callingParty, byte[] data, int localSsn, boolean returnMessageOnError,
 			HopCounter hopCounter, Importance importance) {
-		return new SccpDataMessageImpl(this.sccpStackImpl, new ProtocolClassImpl(0, returnMessageOnError), sccpStackImpl.newSls(), localSsn, calledParty,
+		return new SccpDataMessageImpl(this.sccpStackImpl.getMaxDataMessage(), new ProtocolClassImpl(0, returnMessageOnError), sccpStackImpl.newSls(), localSsn, calledParty,
 				callingParty, data, hopCounter, importance);
 	}
 
 	public SccpDataMessage createDataMessageClass1(SccpAddress calledParty, SccpAddress callingParty, byte[] data, int sls, int localSsn, boolean returnMessageOnError,
 			HopCounter hopCounter, Importance importance) {
-		return new SccpDataMessageImpl(this.sccpStackImpl, new ProtocolClassImpl(1, returnMessageOnError), sls, localSsn, calledParty, callingParty, data, hopCounter,
+		return new SccpDataMessageImpl(this.sccpStackImpl.getMaxDataMessage(), new ProtocolClassImpl(1, returnMessageOnError), sls, localSsn, calledParty, callingParty, data, hopCounter,
 				importance);
 	}
 
@@ -80,7 +80,7 @@ public class MessageFactoryImpl implements MessageFactory {
 			break;
 		}
 	
-		return new SccpNoticeMessageImpl(this.sccpStackImpl, type, returnCause, calledParty, callingParty, data, hopCounter, importance);
+		return new SccpNoticeMessageImpl(this.sccpStackImpl.getMaxDataMessage(), type, returnCause, calledParty, callingParty, data, hopCounter, importance);
 	}
 	
 	public SccpMessageImpl createMessage(int type, int opc, int dpc, int sls, InputStream in) throws IOException {
@@ -89,13 +89,13 @@ public class MessageFactoryImpl implements MessageFactory {
 		case SccpMessage.MESSAGE_TYPE_UDT:
 		case SccpMessage.MESSAGE_TYPE_XUDT:
 		case SccpMessage.MESSAGE_TYPE_LUDT:
-			msg = new SccpDataMessageImpl(this.sccpStackImpl, type, opc, dpc, sls);
+			msg = new SccpDataMessageImpl(this.sccpStackImpl.getMaxDataMessage(), type, opc, dpc, sls);
 			break;
 
 		case SccpMessage.MESSAGE_TYPE_UDTS:
 		case SccpMessage.MESSAGE_TYPE_XUDTS:
 		case SccpMessage.MESSAGE_TYPE_LUDTS:
-			msg = new SccpNoticeMessageImpl(this.sccpStackImpl, type, opc, dpc, sls);
+			msg = new SccpNoticeMessageImpl(this.sccpStackImpl.getMaxDataMessage(), type, opc, dpc, sls);
 			break;
 		}
 

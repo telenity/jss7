@@ -198,7 +198,7 @@ public class SccpNoticeMessageTest {
 		SccpNoticeMessageImpl msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_UDT, rc, calledAdd, callingAdd,
 				getDataUdtSSrc(), null, null);
 
-		EncodingResultData res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
+		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdtS()));
 
@@ -214,7 +214,7 @@ public class SccpNoticeMessageTest {
 		msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_XUDT, rc, calledAdd, callingAdd,
 				getDataXudt1Src(), hc, imp);
 
-		res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
 
@@ -226,7 +226,7 @@ public class SccpNoticeMessageTest {
 		msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_LUDT, rc, calledAdd, callingAdd,
 				getDataXudt1Src(), hc, null);
 
-		res = msg.encode(LongMessageRuleType.LudtEnabled, 2000, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt1()));
 	}

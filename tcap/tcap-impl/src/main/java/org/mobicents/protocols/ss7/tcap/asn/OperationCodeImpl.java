@@ -31,8 +31,6 @@ import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCodeType;
-import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
-import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 
 /**
  * @author baranowb
@@ -91,7 +89,7 @@ public class OperationCodeImpl implements OperationCode {
 	
 	public String toString() {
 		if (this.localOperationCode != null)
-			return "OperationCode[OperationType=Local, data=" + this.localOperationCode.toString() + "]";
+			return "OperationCode[OperationType=Local, data=" + this.localOperationCode + "]";
 		else if (this.globalOperationCode != null)
 			return "OperationCode[OperationType=Global, data=" + Arrays.toString(this.globalOperationCode) + "]";
 		else

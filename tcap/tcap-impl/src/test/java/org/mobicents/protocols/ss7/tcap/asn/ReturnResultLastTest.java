@@ -137,7 +137,7 @@ public class ReturnResultLastTest  {
 
 		byte[] expected = this.getLDataEmpty();
 		ReturnResultLast rrl = TcapFactory.createComponentReturnResultLast();
-		rrl.setInvokeId(0l);
+		rrl.setInvokeId(0);
 
 		AsnOutputStream asnos = new AsnOutputStream();
 		rrl.encode(asnos);
@@ -147,7 +147,7 @@ public class ReturnResultLastTest  {
 		
 		expected = this.getNLDataEmpty();
 		ReturnResult rr = TcapFactory.createComponentReturnResult();
-		rr.setInvokeId(0l);
+		rr.setInvokeId(0);
 
 		asnos = new AsnOutputStream();
 		rr.encode(asnos);
@@ -157,7 +157,7 @@ public class ReturnResultLastTest  {
 		
 		expected = this.getLDataCommon();
 		rrl = TcapFactory.createComponentReturnResultLast();
-		rrl.setInvokeId(1l);
+		rrl.setInvokeId(1);
 		OperationCode oc = TcapFactory.createOperationCode();
 		oc.setLocalOperationCode(45L);
 		rrl.setOperationCode(oc);
@@ -176,7 +176,7 @@ public class ReturnResultLastTest  {
 		
 		expected = this.getNLDataCommon();
 		rr = TcapFactory.createComponentReturnResult();
-		rr.setInvokeId(1l);
+		rr.setInvokeId(1);
 		oc = TcapFactory.createOperationCode();
 		oc.setLocalOperationCode(45L);
 		rr.setOperationCode(oc);

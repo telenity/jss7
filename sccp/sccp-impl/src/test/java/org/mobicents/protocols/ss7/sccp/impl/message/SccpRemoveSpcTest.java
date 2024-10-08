@@ -185,14 +185,14 @@ public class SccpRemoveSpcTest {
 		SccpAddress callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 1446, gt2, 8);
 		SccpDataMessageImpl msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getData(), 0, 8, false, null, null);
 
-		EncodingResultData res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
+		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertEquals(res.getSolidData(), this.getDataUdt_GT_WithOutDpc());
 
 		// ---- removeSpc off
 		this.stack.setRemoveSpc(false);
 
-		res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_GT_WithDpc()));
 
@@ -203,14 +203,14 @@ public class SccpRemoveSpcTest {
 		callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1446, null, 8);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getData(), 0, 8, false, null, null);
 
-		res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_DpcSsn()));
 
 		// ---- removeSpc off
 		this.stack.setRemoveSpc(false);
 
-		res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_DpcSsn()));
 	}

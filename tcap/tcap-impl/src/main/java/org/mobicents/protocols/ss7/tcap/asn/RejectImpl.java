@@ -44,7 +44,7 @@ public class RejectImpl implements Reject {
 	// all are mandatory
 
 	// this can actaully be null in this case.
-	private Long invokeId;
+	private Integer invokeId;
 	private boolean localOriginated = false;
 
 	private Problem problem;
@@ -57,7 +57,7 @@ public class RejectImpl implements Reject {
 	 * 
 	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Reject#getInvokeId()
 	 */
-	public Long getInvokeId() {
+	public Integer getInvokeId() {
 
 		return this.invokeId;
 	}
@@ -79,7 +79,7 @@ public class RejectImpl implements Reject {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Reject#setInvokeId(java.lang
 	 * .Long)
 	 */
-	public void setInvokeId(Long i) {
+	public void setInvokeId(Integer i) {
 		if (i != null && (i < -128 || i > 127)) {
 			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
 		}
@@ -141,7 +141,7 @@ public class RejectImpl implements Reject {
 			}
 			switch(tag) {
 			case _TAG_IID:
-				this.invokeId = localAis.readInteger();
+				this.invokeId = (int) localAis.readInteger();
 				break;
 			case Tag.NULL:
 				localAis.readNull();

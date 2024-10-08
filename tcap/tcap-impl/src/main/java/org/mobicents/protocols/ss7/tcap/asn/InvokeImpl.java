@@ -24,6 +24,7 @@ package org.mobicents.protocols.ss7.tcap.asn;
 
 import java.io.IOException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -49,13 +50,26 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
 public class InvokeImpl implements Invoke {
 
 	// local to stack
-	private InvokeClass invokeClass = InvokeClass.Class1;
+	private InvokeClass invokeClass;
 	private long invokeTimeout = TCAPStackImpl._EMPTY_INVOKE_TIMEOUT;
 	private OperationState state = OperationState.Idle;
-	private Future timerFuture;
+	private AtomicReference<Future<?>> timerFuture = new AtomicReference<>();
 	private OperationTimerTask operationTimerTask = new OperationTimerTask(this);
 	private TCAPProviderImpl provider;
 	private DialogImpl dialog;
+
+	// mandatory
+	private Integer invokeId;
+
+	// optional
+	private Integer linkedId;
+	private Invoke linkedInvoke;
+
+	// mandatory
+	private OperationCode operationCode;
+
+	// optional
+	private Parameter parameter;
 
 	public InvokeImpl() {
 		// Set Default Class
@@ -70,26 +84,12 @@ public class InvokeImpl implements Invoke {
 		}
 	}
 
-	// mandatory
-	private Long invokeId;
-
-	// optional
-	private Long linkedId;
-	private Invoke linkedInvoke;
-
-	// mandatory
-	private OperationCode operationCode;
-
-	// optional
-	private Parameter parameter;
-
 	/*
      * (non-Javadoc)
      *
      * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getInvokeId()
      */
-	public Long getInvokeId() {
-
+	public Integer getInvokeId() {
 		return this.invokeId;
 	}
 
@@ -98,8 +98,7 @@ public class InvokeImpl implements Invoke {
      *
      * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getLinkedId()
      */
-	public Long getLinkedId() {
-
+	public Integer getLinkedId() {
 		return this.linkedId;
 	}
 
@@ -118,7 +117,6 @@ public class InvokeImpl implements Invoke {
      * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getOperationCode()
      */
 	public OperationCode getOperationCode() {
-
 		return this.operationCode;
 	}
 
@@ -128,7 +126,6 @@ public class InvokeImpl implements Invoke {
      * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getParameteR()
      */
 	public Parameter getParameter() {
-
 		return this.parameter;
 	}
 
@@ -139,7 +136,7 @@ public class InvokeImpl implements Invoke {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#setInvokeId(java.lang
 	 * .Integer)
      */
-	public void setInvokeId(Long i) {
+	public void setInvokeId(Integer i) {
 		if ((i == null) || (i < -128 || i > 127)) {
 			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
 		}
@@ -154,7 +151,7 @@ public class InvokeImpl implements Invoke {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#setLinkedId(java.lang
 	 * .Integer)
      */
-	public void setLinkedId(Long i) {
+	public void setLinkedId(Integer i) {
 		if ((i == null) || (i < -128 || i > 127)) {
 			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
 		}
@@ -218,12 +215,12 @@ public class InvokeImpl implements Invoke {
 				throw new ParseException(null, GeneralProblemType.MistypedComponent, "Error while decoding Invoke: bad tag or tag class for InvokeID: tag="
 						+ tag + ", tagClass = " + localAis.getTagClass());
 			}
-			this.invokeId = localAis.readInteger();
+			this.invokeId = (int) localAis.readInteger();
 
 			tag = localAis.readTag();
 			if (tag == _TAG_LID && localAis.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
 				// linkedId - optional
-				this.linkedId = localAis.readInteger();
+				this.linkedId = (int) localAis.readInteger();
 				tag = localAis.readTag();
 			}
 
@@ -387,22 +384,20 @@ public class InvokeImpl implements Invoke {
 		this.setState(OperationState.Idle);
 	}
 
-	public synchronized void startTimer() {
-		if (this.dialog == null || this.dialog.getPreviewMode())
+	public void startTimer() {
+		if (this.dialog == null)
 			return;
 
 		this.stopTimer();
 		if (this.invokeTimeout > 0)
-			this.timerFuture = this.provider.createOperationTimer(this.operationTimerTask, this.invokeTimeout);
+			this.timerFuture.set(this.provider.createOperationTimer(this.operationTimerTask, this.invokeTimeout));
 	}
 
-	public synchronized void stopTimer() {
-
-		if (this.timerFuture != null) {
-			this.timerFuture.cancel(false);
-			this.timerFuture = null;
+	public void stopTimer() {
+		Future<?> curr = this.timerFuture.getAndSet(null);
+		if (curr != null) {
+			curr.cancel(false);
 		}
-
 	}
 
 	public boolean isErrorReported() {
@@ -434,10 +429,11 @@ public class InvokeImpl implements Invoke {
 				dialog.getDialogLock().lock();
 
 				// op failed, we must delete it from dialog and notify!
-				timerFuture = null;
+				timerFuture.set(null);
 				setState(OperationState.Idle);
 				// TC-L-CANCEL
-				invoke.dialog.operationTimedOut(invoke);
+				if (dialog != null)
+					dialog.operationTimedOut(invoke);
 			} finally {
 				dialog.getDialogLock().unlock();
 			}

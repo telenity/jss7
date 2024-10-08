@@ -224,9 +224,9 @@ public class TCAPFunctionalTest extends SccpHarness {
 
         @Override
         public void onTCContinue(TCContinueIndication ind) {
-            assertEquals(ind.getComponents().length, 2);
-            ReturnResultLast rrl = (ReturnResultLast) ind.getComponents()[0];
-            Invoke inv = (Invoke) ind.getComponents()[1];
+            assertEquals(ind.getComponents().size(), 2);
+            ReturnResultLast rrl = (ReturnResultLast) ind.getComponents().get(0);
+            Invoke inv = (Invoke) ind.getComponents().get(1);
 
             // operationCode is not sent via ReturnResultLast because it does not contain a Parameter
             // so operationCode is taken from a sent Invoke

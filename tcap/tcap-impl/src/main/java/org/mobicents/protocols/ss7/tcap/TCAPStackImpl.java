@@ -25,7 +25,6 @@ package org.mobicents.protocols.ss7.tcap;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.sccp.SccpProvider;
-import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.TCAPProvider;
 import org.mobicents.protocols.ss7.tcap.api.TCAPStack;
 
@@ -46,24 +45,22 @@ public class TCAPStackImpl implements TCAPStack {
 	// TCAP state data, it is used ONLY on client side
     protected TCAPProviderImpl tcapProvider;
     private SccpProvider sccpProvider;
-    private SccpAddress address;
 
-	private volatile boolean started = false;
+	private volatile boolean started;
     
 	private long dialogTimeout = _DIALOG_TIMEOUT;
 	private long invokeTimeout = _INVOKE_TIMEOUT;
-	// TODO: make this configurable
 	protected int maxDialogs = _MAX_DIALOGS;
 
 	// TODO: make this configurable
 	private long dialogIdRangeStart = 1;
 	private long dialogIdRangeEnd = Integer.MAX_VALUE;
-	private boolean previewMode = false;
+	private boolean previewMode;
 
 	private int maxSeqControl = 15;
 	private int corePoolSize = 4;
 
-	private boolean doNotSendProtocolVersion = false;
+	private boolean doNotSendProtocolVersion;
 
 	public TCAPStackImpl() {
         super();
@@ -78,16 +75,7 @@ public class TCAPStackImpl implements TCAPStack {
 	public void start() throws Exception {
 		logger.info("Starting ..." + tcapProvider);
 
-		if (this.getDialogIdRangeStart() >= this.getDialogIdRangeEnd())
-			throw new IllegalArgumentException("Range start value cannot be equal/greater than Range end value");
-		if (this.getDialogIdRangeStart() < 1)
-			throw new IllegalArgumentException("Range start value must be greater or equal 1");
-		if (this.getDialogIdRangeEnd() > Integer.MAX_VALUE)
-			throw new IllegalArgumentException("Range end value must be less or equal " + Integer.MAX_VALUE);
-		if ((this.getDialogIdRangeEnd() - this.getDialogIdRangeStart()) < 10000)
-			throw new IllegalArgumentException("Range \"end - start\" must has at least 10000 possible dialogs");
-		if ((this.getDialogIdRangeEnd() - this.getDialogIdRangeStart()) <= this.maxDialogs)
-			throw new IllegalArgumentException("MaxDialog must be less than DialogIdRange");
+		checkDialogIdRangeValues(this.dialogIdRangeStart, this.dialogIdRangeEnd);
 
 		if (this.dialogTimeout < 0) {
 			throw new IllegalArgumentException("DialogIdleTimeout value must be greater or equal to zero.");
@@ -104,6 +92,19 @@ public class TCAPStackImpl implements TCAPStack {
 		tcapProvider.start();
 
 		this.started = true;
+	}
+
+	private void checkDialogIdRangeValues(long rangeStart, long rangeEnd) {
+		if (rangeStart >= rangeEnd)
+			throw new IllegalArgumentException("Range start value cannot be equal/greater than Range end value");
+		if (rangeStart < 1)
+			throw new IllegalArgumentException("Range start value must be greater or equal 1");
+		if (rangeEnd > Integer.MAX_VALUE)
+			throw new IllegalArgumentException("Range end value must be less or equal " + Integer.MAX_VALUE);
+		if ((rangeEnd - rangeStart) < 10000)
+			throw new IllegalArgumentException("Range \"end - start\" must has at least 10000 possible dialogs");
+		if ((this.getDialogIdRangeEnd() - this.getDialogIdRangeStart()) <= this.maxDialogs)
+			throw new IllegalArgumentException("MaxDialog must be less than DialogIdRange");
 	}
 
     public void stop() {
@@ -180,17 +181,19 @@ public class TCAPStackImpl implements TCAPStack {
 
 		maxDialogs = v;
 	}
-	
+
 	public int getMaxDialogs() {
 		return maxDialogs;
 	}
 
-	public void setDialogIdRangeStart(long val){
+	public void setDialogIdRangeStart(long val) {
 		dialogIdRangeStart = val;
+		tcapProvider.resetDialogIdValueAfterRangeChange();
 	}
 
 	public void setDialogIdRangeEnd(long val) {
 		dialogIdRangeEnd = val;
+		tcapProvider.resetDialogIdValueAfterRangeChange();
 	}
 
 	public long getDialogIdRangeStart() {

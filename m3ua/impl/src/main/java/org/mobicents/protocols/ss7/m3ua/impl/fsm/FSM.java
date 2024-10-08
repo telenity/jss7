@@ -152,7 +152,7 @@ public class FSM extends M3UATask {
         // switch to next state
         currentState = currentState.signal(name);
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("%s Transition to=%s", toString(), name));
+            logger.debug(String.format("%s Transition to=%s", this, name));
         }
     }
 

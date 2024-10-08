@@ -146,17 +146,17 @@ public class TcEndTest  {
 	
 		//comp portion
 		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(2,tcm.getComponent().length,"Component count is wrong");
-		Component c = tcm.getComponent()[0];
+		assertEquals(2,tcm.getComponent().size(),"Component count is wrong");
+		Component c = tcm.getComponent().get(0);
 		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
 		Invoke i = (Invoke) c;
-		assertEquals(new Long(1), i.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
 		assertNull(i.getLinkedId(),"Linked ID is not null");
 		
-		c = tcm.getComponent()[1];
+		c = tcm.getComponent().get(1);
 		assertEquals(ComponentType.ReturnResultLast, c.getType(),"Wrong component type");
 		ReturnResultLast rrl = (ReturnResultLast) c;
-		assertEquals(new Long(2), rrl.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(2), rrl.getInvokeId(),"Wrong invoke ID");
 		assertNotNull( rrl.getOperationCode(),"Operation code should not be null");
 
 		
@@ -520,17 +520,17 @@ public class TcEndTest  {
 		
 		//comp portion
 		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(2,tcm.getComponent().length,"Component count is wrong");
-		Component c = tcm.getComponent()[0];
+		assertEquals(2,tcm.getComponent().size(),"Component count is wrong");
+		Component c = tcm.getComponent().get(0);
 		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
 		Invoke i = (Invoke) c;
-		assertEquals(new Long(1), i.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
 		assertNull(i.getLinkedId(),"Linked ID is not null");
 		
-		c = tcm.getComponent()[1];
+		c = tcm.getComponent().get(1);
 		assertEquals(ComponentType.ReturnResultLast, c.getType(),"Wrong component type");
 		ReturnResultLast rrl = (ReturnResultLast) c;
-		assertEquals(new Long(2), rrl.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(2), rrl.getInvokeId(),"Wrong invoke ID");
 		assertNotNull( rrl.getOperationCode(),"Operation code should not be null");
 
 		

@@ -42,7 +42,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.TCUniMessage;
 public class TCUniMessageImpl implements TCUniMessage {
 
 	private DialogPortion dp;
-	private Component[] component;
+	private List<Component> component;
 
 	/*
 	 * (non-Javadoc)
@@ -50,7 +50,7 @@ public class TCUniMessageImpl implements TCUniMessage {
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.TCUniMessage#getComponent()
 	 */
-	public Component[] getComponent() {
+	public List<Component> getComponent() {
 
 		return component;
 	}
@@ -73,7 +73,7 @@ public class TCUniMessageImpl implements TCUniMessage {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.TCUniMessage#setComponent(org
 	 * .mobicents.protocols.ss7.tcap.asn.comp.Component[])
 	 */
-	public void setComponent(Component[] c) {
+	public void setComponent(List<Component> c) {
 		this.component = c;
 
 	}
@@ -117,7 +117,7 @@ public class TCUniMessageImpl implements TCUniMessage {
 					
 				case Component._COMPONENT_TAG:
 					AsnInputStream compAis = localAis.readSequenceStream();
-					List<Component> cps = new ArrayList<Component>();
+					List<Component> cps = new ArrayList<>();
 					// its iterator :)
 					while (compAis.available() > 0) {
 						Component c = TcapFactory.createComponent(compAis);
@@ -127,9 +127,7 @@ public class TCUniMessageImpl implements TCUniMessage {
 						}
 						cps.add(c);
 					}
-
-					this.component = new Component[cps.size()];
-					this.component = cps.toArray(this.component);
+					setComponent(cps);
 					break;
 					
 				default:
@@ -154,7 +152,7 @@ public class TCUniMessageImpl implements TCUniMessage {
 	 */
 	public void encode(AsnOutputStream aos) throws EncodeException {
 		
-		if (this.component == null || this.component.length == 0)
+		if (this.component == null || this.component.size() == 0)
 			throw new EncodeException("Error encoding TC-Uni: Component portion is mandatory but not defined");
 		
 		try {

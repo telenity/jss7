@@ -127,8 +127,8 @@ public abstract class EventTestHarness implements TCListener {
 		// UI is optional!
 		TCBeginRequest tcbr = this.tcapProvider.getDialogPrimitiveFactory().createBegin(this.dialog);
 		tcbr.setApplicationContextName(acn);
-		this.dialog.send(tcbr);
 		this.observerdEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
+		this.dialog.send(tcbr);
 	}
 
 	public void sendContinue() throws TCAPSendException, TCAPException {

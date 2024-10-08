@@ -96,11 +96,11 @@ public class TcContinueTest  {
 		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }), "Destination transaction id does not match");
 		
 		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(1,tcm.getComponent().length,"Component count is wrong");
-		Component c = tcm.getComponent()[0];
+		assertEquals(1,tcm.getComponent().size(),"Component count is wrong");
+		Component c = tcm.getComponent().get(0);
 		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
 		Invoke i = (Invoke) c;
-		assertEquals(new Long(1), i.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
 		assertNull( i.getLinkedId(),"Linked ID is not null");
 		
 		assertNotNull(i.getOperationCode(),"Operation code is null");
@@ -227,11 +227,11 @@ public class TcContinueTest  {
 		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }), "Destination transaction id does not match");
 		
 		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(1,tcm.getComponent().length,"Component count is wrong");
-		Component c = tcm.getComponent()[0];
+		assertEquals(1,tcm.getComponent().size(),"Component count is wrong");
+		Component c = tcm.getComponent().get(0);
 		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
 		Invoke i = (Invoke) c;
-		assertEquals(new Long(2), i.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(2), i.getInvokeId(),"Wrong invoke ID");
 		assertNull( i.getLinkedId(),"Linked ID is not null");
 		
 		assertNotNull(i.getOperationCode(),"Operation code is null");
@@ -369,17 +369,17 @@ public class TcContinueTest  {
 		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }), "Destination transaction id does not match");
 		//comp portion
 		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(2,tcm.getComponent().length,"Component count is wrong");
-		Component c = tcm.getComponent()[0];
+		assertEquals(2,tcm.getComponent().size(),"Component count is wrong");
+		Component c = tcm.getComponent().get(0);
 		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
 		Invoke i = (Invoke) c;
-		assertEquals(new Long(1), i.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
 		assertNull( i.getLinkedId(),"Linked ID is not null");
 		
-		c = tcm.getComponent()[1];
+		c = tcm.getComponent().get(1);
 		assertEquals(ComponentType.ReturnResultLast, c.getType(),"Wrong component type");
 		ReturnResultLast rrl = (ReturnResultLast) c;
-		assertEquals(new Long(2), rrl.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(2), rrl.getInvokeId(),"Wrong invoke ID");
 		assertNotNull( rrl.getOperationCode(),"Operation code should not be null");
 		
 		OperationCode ocs = rrl.getOperationCode();
@@ -769,17 +769,17 @@ public class TcContinueTest  {
 		
 		//comp portion
 		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(2,tcm.getComponent().length,"Component count is wrong");
-		Component c = tcm.getComponent()[0];
+		assertEquals(2,tcm.getComponent().size(),"Component count is wrong");
+		Component c = tcm.getComponent().get(0);
 		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
 		Invoke i = (Invoke) c;
-		assertEquals(new Long(1), i.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
 		assertNull( i.getLinkedId(),"Linked ID is not null");
 		
-		c = tcm.getComponent()[1];
+		c = tcm.getComponent().get(1);
 		assertEquals(ComponentType.ReturnResultLast, c.getType(),"Wrong component type");
 		ReturnResultLast rrl = (ReturnResultLast) c;
-		assertEquals(new Long(2), rrl.getInvokeId(),"Wrong invoke ID");
+		assertEquals(new Integer(2), rrl.getInvokeId(),"Wrong invoke ID");
 		assertNotNull( rrl.getOperationCode(),"Operation code should not be null");
 
 		

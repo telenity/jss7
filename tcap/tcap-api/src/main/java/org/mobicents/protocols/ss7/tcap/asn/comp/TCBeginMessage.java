@@ -26,6 +26,8 @@ import org.mobicents.protocols.asn.Tag;
 import org.mobicents.protocols.ss7.tcap.asn.DialogPortion;
 import org.mobicents.protocols.ss7.tcap.asn.Encodable;
 
+import java.util.List;
+
 /**
  * @author baranowb
  *
@@ -48,7 +50,7 @@ public interface TCBeginMessage extends Encodable {
 	public DialogPortion getDialogPortion();
 	public void setDialogPortion(DialogPortion dp);
 	//opt
-	public Component[] getComponent();
-	public void setComponent(Component[] c);
+	public List<Component> getComponent();
+	public void setComponent(List<Component> c);
 	
 }

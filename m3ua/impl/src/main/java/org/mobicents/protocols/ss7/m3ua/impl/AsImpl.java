@@ -660,7 +660,7 @@ public class AsImpl implements XMLSerializable, As {
 			break;
 		case PENDING:
 			if (logger.isInfoEnabled()) {
-				logger.info(String.format("Adding the PayloadData=%s to PendingQueue for AS=%s", message.toString(),
+				logger.info(String.format("Adding the PayloadData=%s to PendingQueue for AS=%s", message,
 						this.name));
 			}
 			this.penQueue.add(message);

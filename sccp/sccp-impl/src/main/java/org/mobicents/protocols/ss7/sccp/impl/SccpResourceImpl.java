@@ -23,9 +23,9 @@
 package org.mobicents.protocols.ss7.sccp.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import javolution.text.TextBuilder;
@@ -63,7 +63,7 @@ public class SccpResourceImpl implements SccpResource {
 	private static final String TAB_INDENT = "\t";
 	private static final String CLASS_ATTRIBUTE = "type";
 
-	private String persistDir = null;
+	private String persistDir;
 
 	protected RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystem>();
 	private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();
@@ -103,11 +103,11 @@ public class SccpResourceImpl implements SccpResource {
 					.append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
 		}
 
-		logger.info(String.format("SCCP Resource configuration file path %s", persistFile.toString()));
+		logger.info(String.format("SCCP Resource configuration file path %s", persistFile));
 
 		try {
 			this.load();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			logger.warn(String.format("Failed to load the SS7 configuration file. \n%s", e.getMessage()));
 		}
 
@@ -353,7 +353,7 @@ public class SccpResourceImpl implements SccpResource {
 		// TODO : Should we keep reference to Objects rather than recreating
 		// everytime?
 		try {
-			XMLObjectWriter writer = XMLObjectWriter.newInstance(new FileOutputStream(persistFile.toString()));
+			XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
 			writer.setBinding(binding);
 			// Enables cross-references.
 			// writer.setReferenceResolver(new XMLReferenceResolver());
@@ -364,7 +364,7 @@ public class SccpResourceImpl implements SccpResource {
 
 			writer.close();
 		} catch (Exception e) {
-			this.logger.error("Error while persisting the Sccp Resource state in file", e);
+			logger.error("Error while persisting the Sccp Resource state in file", e);
 		}
 	}
 
@@ -373,11 +373,11 @@ public class SccpResourceImpl implements SccpResource {
 	 * 
 	 * @throws Exception
 	 */
-	private void load() throws FileNotFoundException {
+	private void load() throws IOException {
 
 		XMLObjectReader reader = null;
 		try {
-			reader = XMLObjectReader.newInstance(new FileInputStream(persistFile.toString()));
+			reader = XMLObjectReader.newInstance(Files.newInputStream(Paths.get(persistFile.toString())));
 
 			reader.setBinding(binding);
 			remoteSsns = reader.read(REMOTE_SSN, RemoteSubSystemMap.class);

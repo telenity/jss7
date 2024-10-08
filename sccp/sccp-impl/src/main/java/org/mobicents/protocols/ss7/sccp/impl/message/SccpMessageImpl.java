@@ -41,7 +41,7 @@ public abstract class SccpMessageImpl implements SccpMessage {
 	protected boolean isMtpOriginated;
 	protected int type;
 	protected int localOriginSsn = -1;
-	protected SccpStackImpl sccpStackImpl;
+	protected final int maxDataLen;
 
 	// These are MTP3 signaling information set when message is received from MTP3
 	protected int incomingOpc;
@@ -51,9 +51,9 @@ public abstract class SccpMessageImpl implements SccpMessage {
 	protected int outgoingDpc = -1;
 
 
-	protected SccpMessageImpl(SccpStackImpl sccpStackImpl, int type, int sls, int localSsn) {
+	protected SccpMessageImpl(int maxDataLen, int type, int sls, int localSsn) {
 		this.isMtpOriginated = false;
-		this.sccpStackImpl = sccpStackImpl;
+		this.maxDataLen = maxDataLen;
 		this.type = type;
 		this.localOriginSsn = localSsn;
 		this.incomingOpc = -1;
@@ -61,9 +61,9 @@ public abstract class SccpMessageImpl implements SccpMessage {
 		this.sls = sls; 
 	}
 
-	protected SccpMessageImpl(SccpStackImpl sccpStackImpl, int type, int incomingOpc, int incomingDpc, int incomingSls) {
+	protected SccpMessageImpl(int maxDataLen, int type, int incomingOpc, int incomingDpc, int incomingSls) {
 		this.isMtpOriginated = true;
-		this.sccpStackImpl = sccpStackImpl;
+		this.maxDataLen = maxDataLen;
 		this.type = type;
 		this.incomingOpc = incomingOpc;
 		this.incomingDpc = incomingDpc;
@@ -116,7 +116,7 @@ public abstract class SccpMessageImpl implements SccpMessage {
 
 	public abstract void decode(InputStream in) throws IOException;
 
-	public abstract EncodingResultData encode(LongMessageRuleType longMessageRuleType, int maxMtp3UserDataLength, Logger logger) throws IOException;
+	public abstract EncodingResultData encode(SccpStackImpl sccpStackImpl, LongMessageRuleType longMessageRuleType, int maxMtp3UserDataLength, Logger logger) throws IOException;
 	
 }
 

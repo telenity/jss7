@@ -40,8 +40,8 @@ public interface Component extends Encodable{
 	
 	
 	//this is doubled by each interface, 
-	public void setInvokeId(Long i);
-	public Long getInvokeId();
+	public void setInvokeId(Integer i);
+	public Integer getInvokeId();
 	
 	public ComponentType getType();
 	

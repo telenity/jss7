@@ -47,7 +47,7 @@ public class TCContinueMessageImpl implements TCContinueMessage {
 	// opt
 	private DialogPortion dp;
 	// opt
-	private Component[] component;
+	private List<Component> component;
 
 	/*
 	 * (non-Javadoc)
@@ -56,7 +56,7 @@ public class TCContinueMessageImpl implements TCContinueMessage {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.TCContinueMessage#getComponent
 	 * ()
 	 */
-	public Component[] getComponent() {
+	public List<Component> getComponent() {
 
 		return this.component;
 	}
@@ -102,7 +102,7 @@ public class TCContinueMessageImpl implements TCContinueMessage {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.TCContinueMessage#setComponent
 	 * (org.mobicents.protocols.ss7.tcap.asn.comp.Component[])
 	 */
-	public void setComponent(Component[] c) {
+	public void setComponent(List<Component> c) {
 
 		this.component = c;
 	}
@@ -183,7 +183,7 @@ public class TCContinueMessageImpl implements TCContinueMessage {
 
 				case Component._COMPONENT_TAG:
 					AsnInputStream compAis = localAis.readSequenceStream();
-					List<Component> cps = new ArrayList<Component>();
+					List<Component> cps = new ArrayList<>();
 					// its iterator :)
 					while (compAis.available() > 0) {
 						Component c = TcapFactory.createComponent(compAis);
@@ -192,9 +192,7 @@ public class TCContinueMessageImpl implements TCContinueMessage {
 						}
 						cps.add(c);
 					}
-
-					this.component = new Component[cps.size()];
-					this.component = cps.toArray(this.component);
+					setComponent(cps);
 					break;
 
 				default:

@@ -376,7 +376,7 @@ public class SccpDataMessageTest {
 		// SccpAddress calledParty, SccpAddress callingParty, byte[] data, int sls, int localSsn, boolean returnMessageOnError, 
 		// HopCounter hopCounter, Importance importance
 		
-		EncodingResultData res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
+		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
 
@@ -386,7 +386,7 @@ public class SccpDataMessageTest {
 		callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 1);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass0(calledAdd, callingAdd, getDataUdtSrc1(), 1, false, null, null);
 		
-		res = msg.encode(LongMessageRuleType.LongMessagesForbidden, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt1()));
 
@@ -397,7 +397,7 @@ public class SccpDataMessageTest {
 		Importance imp = new ImportanceImpl((byte)7);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, true, hc, imp);
 		
-		res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt2()));
 
@@ -407,7 +407,7 @@ public class SccpDataMessageTest {
 		hc = new HopCounterImpl(15);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, true, hc, null);
 		
-		res = msg.encode(LongMessageRuleType.XudtEnabled, 272, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt2()));
 
@@ -418,7 +418,7 @@ public class SccpDataMessageTest {
 		imp = new ImportanceImpl((byte)7);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, false, hc, imp);
 		
-		res = msg.encode(LongMessageRuleType.LudtEnabled_WithSegmentationField, 2000, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled_WithSegmentationField, 2000, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt1()));
 
@@ -428,7 +428,7 @@ public class SccpDataMessageTest {
 		hc = new HopCounterImpl(10);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, false, hc, null);
 		
-		res = msg.encode(LongMessageRuleType.LudtEnabled, 2000, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt2()));
 
@@ -439,7 +439,7 @@ public class SccpDataMessageTest {
 		imp = new ImportanceImpl((byte)7);
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataLudt3Src(), 5, 1, false, hc, imp);
 		
-		res = msg.encode(LongMessageRuleType.LudtEnabled, 2000, logger);
+		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
 		assertEquals(res.getEncodingResult(), EncodingResult.Success);
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt3()));
 		

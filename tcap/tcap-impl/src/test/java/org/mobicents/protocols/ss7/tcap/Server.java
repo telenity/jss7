@@ -34,13 +34,15 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.Invoke;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
+import java.util.List;
+
 /**
  * @author baranowb
  *
  */
 public class Server extends EventTestHarness {
 
-	private Component[] components;
+	private List<Component> components;
 
 	/**
 	 * @param stack
@@ -61,13 +63,10 @@ public class Server extends EventTestHarness {
 
 	@Override
 	public void sendContinue() throws TCAPSendException, TCAPException {
-
-	
-		Component[] comps = components;
-		if (comps == null || comps.length != 2) {
+		if (components == null || components.size() != 2) {
 			throw new TCAPSendException("Bad comps!");
 		}
-		Component c = comps[0];
+		Component c = components.get(0);
 		if(c.getType()!= ComponentType.Invoke)
 		{
 			throw new TCAPSendException("Bad type: "+c.getType());
@@ -80,7 +79,7 @@ public class Server extends EventTestHarness {
 //		rrlast.setOperationCode(invoke.getOperationCode());
 		super.dialog.sendComponent(rrlast);
 
-		c = comps[1];
+		c = components.get(1);
 		if(c.getType()!= ComponentType.Invoke)
 		{
 			throw new TCAPSendException("Bad type: "+c.getType());

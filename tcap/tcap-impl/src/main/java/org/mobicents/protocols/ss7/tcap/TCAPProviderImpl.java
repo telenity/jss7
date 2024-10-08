@@ -24,7 +24,6 @@ package org.mobicents.protocols.ss7.tcap;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -89,7 +88,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
 	private static final Logger logger = Logger.getLogger(TCAPProviderImpl.class);
 
-	private transient List<TCListener> tcListeners = new CopyOnWriteArrayList<TCListener>();
+	private transient List<TCListener> tcListeners = new CopyOnWriteArrayList<>();
 	protected transient ScheduledExecutorService _EXECUTOR;
 	// boundry for Uni directional dialogs :), tx id is always encoded
 	// on 4 octets, so this is its max value
@@ -103,7 +102,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	private transient TCAPStackImpl stack; // originating TX id ~=Dialog, its direct
 	// mapping, but not described
 	// explicitly...
-	private transient Map<Long, DialogImpl> dialogs = new ConcurrentHashMap<Long, DialogImpl>();
+	private transient ConcurrentMap<Long, DialogImpl> dialogs = new ConcurrentHashMap<>();
 
 	private AtomicInteger seqControl = new AtomicInteger();
 	private int ssn;
@@ -150,7 +149,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
 	}
 
-	private boolean checkAvailableTxId(Long id) {
+	protected boolean checkAvailableTxId(Long id) {
 		if (!this.dialogs.containsKey(id))
 			return true;
 		else
@@ -171,6 +170,14 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			if (checkAvailableTxId(id))
 				return id;
 		}
+	}
+
+	protected void resetDialogIdValueAfterRangeChange() {
+		if (this.curDialogId < this.stack.getDialogIdRangeStart())
+			this.curDialogId = this.stack.getDialogIdRangeStart();
+
+		if (this.curDialogId > this.stack.getDialogIdRangeEnd())
+			this.curDialogId = this.stack.getDialogIdRangeEnd() - 1;
 	}
 
 	// get next Seq Control value available
@@ -260,9 +267,8 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
 			return di;
 		} else {
-			DialogImpl di = new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this, seqControl,
+			return new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this, seqControl,
 					false, protocolClass);
-			return di;
 		}
 	}
 
@@ -585,7 +591,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
 						// parsing OriginatingTransactionId
 						ais = new AsnInputStream(data);
-						tag = ais.readTag();
+						ais.readTag();
 						TCUnidentifiedMessage tcUnidentified = new TCUnidentifiedMessage();
 						tcUnidentified.decode(ais);
 						if (tcUnidentified.getOriginatingTransactionId() != null) {
@@ -714,7 +720,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			AsnInputStream ais = new AsnInputStream(data);
 
 			// this should have TC message tag :)
-			int tag = ais.readTag();
+			ais.readTag();
 
 			TCUnidentifiedMessage tcUnidentified = new TCUnidentifiedMessage();
 			tcUnidentified.decode(ais);

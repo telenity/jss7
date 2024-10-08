@@ -33,8 +33,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ErrorCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ErrorCodeType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
-import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
-import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnError;
 
 /**
@@ -45,7 +43,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnError;
 public class ReturnErrorImpl implements ReturnError {
 
 	// mandatory
-	private Long invokeId;
+	private Integer invokeId;
 
 	// mandatory
 	private ErrorCode errorCode;
@@ -68,7 +66,7 @@ public class ReturnErrorImpl implements ReturnError {
 	 * 
 	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.ReturnError#getInvokeId()
 	 */
-	public Long getInvokeId() {
+	public Integer getInvokeId() {
 
 		return this.invokeId;
 	}
@@ -101,7 +99,7 @@ public class ReturnErrorImpl implements ReturnError {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.ReturnError#setInvokeId(java
 	 * .lang.Long)
 	 */
-	public void setInvokeId(Long i) {
+	public void setInvokeId(Integer i) {
 		this.invokeId = i;
 
 	}
@@ -146,7 +144,7 @@ public class ReturnErrorImpl implements ReturnError {
 				throw new ParseException(null, GeneralProblemType.MistypedComponent,
 						"Error while decoding ReturnError: bad tag or tag class for InvokeID: tag=" + tag + ", tagClass = " + localAis.getTagClass());
 			}
-			this.invokeId = localAis.readInteger();
+			this.invokeId = (int) localAis.readInteger();
 
 			if (localAis.available() == 0) {
 				// next parameter (errorCode) is mandatory but it sometimes absent in live trace

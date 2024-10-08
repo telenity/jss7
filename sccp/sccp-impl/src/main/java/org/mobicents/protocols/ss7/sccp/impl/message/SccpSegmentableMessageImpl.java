@@ -22,13 +22,14 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.impl.parameter.SegmentationImpl;
 import org.mobicents.protocols.ss7.sccp.parameter.HopCounter;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.sccp.parameter.Segmentation;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * 
@@ -48,16 +49,16 @@ public abstract class SccpSegmentableMessageImpl extends SccpAddressedMessageImp
 	
 	protected SccpStackImpl.MessageReassemblyProcess mrp;
 
-	protected SccpSegmentableMessageImpl(SccpStackImpl sccpStackImpl, int type, int outgoingSls, int localSsn, SccpAddress calledParty, SccpAddress callingParty,
+	protected SccpSegmentableMessageImpl(int maxDataLen, int type, int outgoingSls, int localSsn, SccpAddress calledParty, SccpAddress callingParty,
 			byte[] data, HopCounter hopCounter) {
-		super(sccpStackImpl, type, outgoingSls, localSsn, calledParty, callingParty, hopCounter);
+		super(maxDataLen, type, outgoingSls, localSsn, calledParty, callingParty, hopCounter);
 
 		this.data = data;
 		this.isFullyRecieved = true;
 	}
 
-	protected SccpSegmentableMessageImpl(SccpStackImpl sccpStackImpl, int type, int incomingOpc, int incomingDpc, int incomingSls) {
-		super(sccpStackImpl, type, incomingOpc, incomingDpc, incomingSls);
+	protected SccpSegmentableMessageImpl(int maxDataLen, int type, int incomingOpc, int incomingDpc, int incomingSls) {
+		super(maxDataLen, type, incomingOpc, incomingDpc, incomingSls);
 	}
 
 	public Segmentation getSegmentation() {

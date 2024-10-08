@@ -32,8 +32,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ComponentType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
-import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
-import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResult;
 
 /**
@@ -45,7 +43,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResult;
 public class ReturnResultImpl implements ReturnResult {
 
 	// mandatory
-	private Long invokeId;
+	private Integer invokeId;
 
 	
 	//This is sequence, both must be present
@@ -59,7 +57,7 @@ public class ReturnResultImpl implements ReturnResult {
 	 * 
 	 * @see org.mobicents.protocols.ss7.tcap.asn.comp.Return#getInvokeId()
 	 */
-	public Long getInvokeId() {
+	public Integer getInvokeId() {
 
 		return this.invokeId;
 	}
@@ -90,7 +88,7 @@ public class ReturnResultImpl implements ReturnResult {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.Return#setInvokeId(java.lang
 	 * .Long)
 	 */
-	public void setInvokeId(Long i) {
+	public void setInvokeId(Integer i) {
 		if ((i == null) || (i < -128 || i > 127)) {
 			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
 		}
@@ -149,7 +147,7 @@ public class ReturnResultImpl implements ReturnResult {
 						+ tag + ", tagClass = " + localAis.getTagClass());
 			}
 
-			this.invokeId = localAis.readInteger();
+			this.invokeId = (int) localAis.readInteger();
 
 			if (localAis.available() <= 0)
 				return;

@@ -59,9 +59,9 @@ public class SccpNoticeMessageImpl extends SccpDataNoticeTemplateMessageImpl imp
 	 * @param hopCounter
 	 * @param importance
 	 */
-	protected SccpNoticeMessageImpl(SccpStackImpl sccpStackImpl, int type, ReturnCause returnCause, SccpAddress calledParty, SccpAddress callingParty,
+	protected SccpNoticeMessageImpl(int maxDataLen, int type, ReturnCause returnCause, SccpAddress calledParty, SccpAddress callingParty,
 			byte[] data, HopCounter hopCounter, Importance importance) {
-		super(sccpStackImpl, type, 0, -1, calledParty, callingParty, data, hopCounter, importance);
+		super(maxDataLen, type, 0, -1, calledParty, callingParty, data, hopCounter, importance);
 
 		this.returnCause = returnCause;
 	}
@@ -75,8 +75,8 @@ public class SccpNoticeMessageImpl extends SccpDataNoticeTemplateMessageImpl imp
 	 * @param incomingDpc
 	 * @param incomingSls
 	 */
-	protected SccpNoticeMessageImpl(SccpStackImpl sccpStackImpl, int type, int incomingOpc, int incomingDpc, int incomingSls) {
-		super(sccpStackImpl, type, incomingOpc, incomingDpc, incomingSls);
+	protected SccpNoticeMessageImpl(int maxDataLen, int type, int incomingOpc, int incomingDpc, int incomingSls) {
+		super(maxDataLen, type, incomingOpc, incomingDpc, incomingSls);
 	}
 
 	public ReturnCause getReturnCause() {

@@ -78,7 +78,7 @@ public class RuleImpl implements Rule, Serializable {
 	private static final String LS_TABLE = "alst";
 	private static final String MASK = "mask";
 
-	private final static String SEPARATOR = ";";
+	private static final String SEPARATOR = ";";
 
 	private RuleType ruleType = RuleType.Solitary;
 	private LoadSharingAlgorithm loadSharingAlgo = LoadSharingAlgorithm.Undefined;
@@ -96,9 +96,9 @@ public class RuleImpl implements Rule, Serializable {
 
 	private List<Integer> loadShareTable;
 
-	private String mask = null;
+	private String mask;
 
-	private String[] maskPattern = null;
+	private String[] maskPattern;
 
 	public RuleImpl() {
 
@@ -494,7 +494,7 @@ public class RuleImpl implements Rule, Serializable {
 		int offset = 0;
 		for (int count = 0; count < patternDigits.length; count++) {
 			if (patternDigits[count].equals(WILD_CARD_ALL)) {
-				digitComponents[count] = digits.substring(offset, digits.length());
+				digitComponents[count] = digits.substring(offset);
 				break;
 			} else {
 				digitComponents[count] = digits.substring(offset, offset + patternDigits[count].length());
@@ -542,7 +542,6 @@ public class RuleImpl implements Rule, Serializable {
 				return true;
 			} else if (pattern[i] == CHAR_WILD_CARD_SINGLE) {
 				j++;
-				continue;
 			} else if (pattern[i] == CHAR_MASK_SEPARATOR) {
 				continue;
 			} else if (pattern[i] != digits[j]) {

@@ -112,7 +112,7 @@ public interface Dialog {
 	 * 
 	 * @return
 	 */
-	public Long getNewInvokeId() throws TCAPException;
+	public Integer getNewInvokeId() throws TCAPException;
 
 	/**
 	 * Cancels INVOKE pending to be sent. It is equivalent to TC-U-CANCEL.
@@ -125,7 +125,7 @@ public interface Dialog {
 	 * @throws TCAPException
 	 *             - thrown if passed invoke id is wrong
 	 */
-	public boolean cancelInvocation(Long invokeId) throws TCAPException;
+	public boolean cancelInvocation(Integer invokeId) throws TCAPException;
 
 	/**
 	 * 
@@ -166,7 +166,7 @@ public interface Dialog {
 	 * 
 	 * @param invokeId
 	 */
-	public void processInvokeWithoutAnswer(Long invokeId);
+	public void processInvokeWithoutAnswer(Integer invokeId);
 
 	/**
 	 * Send initial primitive for Structured dialog.
@@ -226,7 +226,7 @@ public interface Dialog {
 	 * @param invokeId
 	 * @throws TCAPException
 	 */
-	public void resetTimer(Long invokeId) throws TCAPException;
+	public void resetTimer(Integer invokeId) throws TCAPException;
 
 	/**
 	 * This method can be called on timeout of dialog, inside

@@ -105,15 +105,12 @@ import org.mobicents.protocols.ss7.tcap.tc.dialog.events.TCUserAbortIndicationIm
  */
 public class DialogImpl implements Dialog {
 
-	// timeout of remove task after TC_END
-	private static final int _REMOVE_TIMEOUT = 30000;
-
 	private static final Logger logger = Logger.getLogger(DialogImpl.class);
 
 	private Object userObject;
 
 	// lock... ech
-	protected ReentrantLock dialogLock = new ReentrantLock();
+	protected final ReentrantLock dialogLock = new ReentrantLock();
 
 	// values for timer timeouts
 	private long idleTaskTimeout;
@@ -123,7 +120,6 @@ public class DialogImpl implements Dialog {
 	private UserInformation lastUI; // optional
 
 	private Long localTransactionIdObject;
-	private long localTransactionId;
 	private byte[] remoteTransactionId;
 	private Long remoteTransactionIdObject;
 
@@ -131,8 +127,8 @@ public class DialogImpl implements Dialog {
 	private SccpAddress remoteAddress;
 
 	private Future idleTimerFuture;
-	private boolean idleTimerActionTaken = false;
-	private boolean idleTimerInvoked = false;
+	private boolean idleTimerActionTaken;
+	private boolean idleTimerInvoked;
 	private TRPseudoState state = TRPseudoState.Idle;
 	private boolean structured = true;
 	// invoke ID space :)
@@ -146,11 +142,11 @@ public class DialogImpl implements Dialog {
 
 	// only originating side keeps FSM, see: Q.771 - 3.1.5
 	protected InvokeImpl[] operationsSent = new InvokeImpl[invokeIDTable.length];
-	private Set<Long> incomingInvokeList = new HashSet<Long>();
-	private ScheduledExecutorService executor;
+	private Set<Integer> incomingInvokeList = new HashSet<>();
+	private final ScheduledExecutorService executor;
 
 	// scheduled components list
-	private List<Component> scheduledComponentList = new ArrayList<Component>();
+	private List<Component> scheduledComponentList;
 	private TCAPProviderImpl provider;
 
 	private int seqControl;
@@ -159,16 +155,22 @@ public class DialogImpl implements Dialog {
 
 	// If the Dialogue Portion is sent in TCBegin message, the first received
 	// Continue message should have the Dialogue Portion too
-	private boolean dpSentInBegin = false;
+	private boolean dpSentInBegin;
 
-	private static int getIndexFromInvokeId(Long l) {
+	private static int getIndexFromInvokeId(Integer l) {
 		int tmp = l.intValue();
 		return tmp + _INVOKE_TABLE_SHIFT;
 	}
 
-	private static Long getInvokeIdFromIndex(int index) {
-		int tmp = index - _INVOKE_TABLE_SHIFT;
-		return Long.valueOf(tmp);
+	private static Integer getInvokeIdFromIndex(int index) {
+		return index - _INVOKE_TABLE_SHIFT;
+	}
+
+	public List<Component> getScheduledComponentList() {
+		if (scheduledComponentList == null) {
+			scheduledComponentList = new ArrayList<>();
+		}
+		return scheduledComponentList;
 	}
 
 	/**
@@ -191,13 +193,13 @@ public class DialogImpl implements Dialog {
 		this.remoteAddress = remoteAddress;
 		if (origTransactionId != null) {
 			this.localTransactionIdObject = origTransactionId;
-			this.localTransactionId = origTransactionId;
 		}
 		this.executor = executor;
 		this.provider = provider;
 		this.structured = structured;
 
 		this.seqControl = seqControl;
+		this.protocolClass = protocolClass;
 
 		TCAPStack stack = this.provider.getStack();
 		this.idleTaskTimeout = stack.getDialogIdleTimeout();
@@ -207,14 +209,13 @@ public class DialogImpl implements Dialog {
 	}
 
 	public void release() {
-		for (int i = 0; i < this.operationsSent.length; i++) {
-			InvokeImpl invokeImpl = this.operationsSent[i];
-			if (invokeImpl != null) {
-				invokeImpl.setState(OperationState.Idle);
-				// TODO whether to call operationTimedOut or not is still not clear
-				// operationTimedOut(invokeImpl);
-			}
-		}
+        for (InvokeImpl invokeImpl : this.operationsSent) {
+            if (invokeImpl != null) {
+                invokeImpl.setState(OperationState.Idle);
+                // TODO whether to call operationTimedOut or not is still not clear
+                // operationTimedOut(invokeImpl);
+            }
+        }
 
 		this.setState(TRPseudoState.Expunged);
 	}
@@ -246,7 +247,7 @@ public class DialogImpl implements Dialog {
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#getNewInvokeId()
      */
-	public Long getNewInvokeId() throws TCAPException {
+	public Integer getNewInvokeId() throws TCAPException {
 		try {
 		this.dialogLock.lock();
 			if (this.freeCount == 0) {
@@ -278,7 +279,7 @@ public class DialogImpl implements Dialog {
 	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#cancelInvocation
 	 * (java.lang.Long)
      */
-	public boolean cancelInvocation(Long invokeId) throws TCAPException {
+	public boolean cancelInvocation(Integer invokeId) throws TCAPException {
 
 		try {
 		this.dialogLock.lock();
@@ -288,13 +289,13 @@ public class DialogImpl implements Dialog {
 			}
 
 			// lookup through send buffer.
-			for (index = 0; index < this.scheduledComponentList.size(); index++) {
-				Component cr = this.scheduledComponentList.get(index);
+			for (index = 0; index < this.getScheduledComponentList().size(); index++) {
+				Component cr = this.getScheduledComponentList().get(index);
 				if (cr.getType() == ComponentType.Invoke && cr.getInvokeId().equals(invokeId)) {
 					// lucky
 					// TCInvokeRequestImpl invoke = (TCInvokeRequestImpl) cr;
 					// there is no notification on cancel?
-					this.scheduledComponentList.remove(index);
+					this.getScheduledComponentList().remove(index);
 					((InvokeImpl) cr).stopTimer();
 					((InvokeImpl) cr).setState(OperationState.Idle);
 					return true;
@@ -307,10 +308,10 @@ public class DialogImpl implements Dialog {
 		}
 	}
 
-	private void freeInvokeId(Long l) {
+	private void freeInvokeId(Integer i) {
 		try {
 		this.dialogLock.lock();
-			int index = getIndexFromInvokeId(l);
+			int index = getIndexFromInvokeId(i);
 			if (this.invokeIDTable[index] == _INVOKEID_TAKEN)
 				this.freeCount++;
 			this.invokeIDTable[index] = _INVOKEID_FREE;
@@ -400,7 +401,7 @@ public class DialogImpl implements Dialog {
 	 * @param invokeId
 	 * @return false: failure - this invokeId already present in the list
 	 */
-	private boolean addIncomingInvokeId(Long invokeId) {
+	private boolean addIncomingInvokeId(Integer invokeId) {
 		synchronized (this.incomingInvokeList) {
 			if (this.incomingInvokeList.contains(invokeId))
 				return false;
@@ -411,7 +412,7 @@ public class DialogImpl implements Dialog {
 		}
 	}
 
-	private void removeIncomingInvokeId(Long invokeId) {
+	private void removeIncomingInvokeId(Integer invokeId) {
 		synchronized (this.incomingInvokeList) {
 			this.incomingInvokeList.remove(invokeId);
 		}
@@ -458,9 +459,9 @@ public class DialogImpl implements Dialog {
 			}
 
 			// now comps
-			tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionId));
-			if (this.scheduledComponentList.size() > 0) {
-				Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
+			tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
+			if (this.getScheduledComponentList().size() > 0) {
+				List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
 				this.prepareComponents(componentsToSend);
 				tcbm.setComponent(componentsToSend);
 			}
@@ -471,7 +472,7 @@ public class DialogImpl implements Dialog {
 				this.setState(TRPseudoState.InitialSent);
 				this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
 						this.localAddress, this.seqControl, this.protocolClass);
-				this.scheduledComponentList.clear();
+				this.getScheduledComponentList().clear();
 			} catch (Throwable e) {
 				// FIXME: remove freshly added invokes to free invoke ID??
 				release();
@@ -529,10 +530,10 @@ public class DialogImpl implements Dialog {
 
 				}
 
-				tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionId));
+				tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
-				if (this.scheduledComponentList.size() > 0) {
-					Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
+				if (this.getScheduledComponentList().size() > 0) {
+					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 
@@ -547,7 +548,7 @@ public class DialogImpl implements Dialog {
 					this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
 							this.localAddress, this.seqControl, this.protocolClass);
 					this.setState(TRPseudoState.Active);
-					this.scheduledComponentList.clear();
+					this.getScheduledComponentList().clear();
 				} catch (Exception e) {
 					// FIXME: remove freshly added invokes to free invoke ID??
 					if (logger.isEnabledFor(Level.ERROR)) {
@@ -562,10 +563,10 @@ public class DialogImpl implements Dialog {
 				// in this we ignore acn and passed args(except qos)
 				TCContinueMessageImpl tcbm = (TCContinueMessageImpl) TcapFactory.createTCContinueMessage();
 
-				tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionId));
+				tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
-				if (this.scheduledComponentList.size() > 0) {
-					Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
+				if (this.getScheduledComponentList().size() > 0) {
+					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 
@@ -576,7 +577,7 @@ public class DialogImpl implements Dialog {
 					tcbm.encode(aos);
 					this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
 							this.localAddress, this.seqControl, this.protocolClass);
-					this.scheduledComponentList.clear();
+					this.getScheduledComponentList().clear();
 				} catch (Exception e) {
 					// FIXME: remove freshly added invokes to free invoke ID??
 					if (logger.isEnabledFor(Level.ERROR)) {
@@ -626,8 +627,8 @@ public class DialogImpl implements Dialog {
 				tcbm = (TCEndMessageImpl) TcapFactory.createTCEndMessage();
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
 
-				if (this.scheduledComponentList.size() > 0) {
-					Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
+				if (this.getScheduledComponentList().size() > 0) {
+					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 				}
@@ -675,8 +676,8 @@ public class DialogImpl implements Dialog {
 				tcbm = (TCEndMessageImpl) TcapFactory.createTCEndMessage();
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
 
-				if (this.scheduledComponentList.size() > 0) {
-					Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
+				if (this.getScheduledComponentList().size() > 0) {
+					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 				}
@@ -701,7 +702,7 @@ public class DialogImpl implements Dialog {
 				this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
 						this.localAddress, this.seqControl, this.protocolClass);
 
-				this.scheduledComponentList.clear();
+				this.getScheduledComponentList().clear();
 			} catch (Exception e) {
 				// FIXME: remove freshly added invokes to free invoke ID??
 				if (logger.isEnabledFor(Level.ERROR)) {
@@ -747,8 +748,8 @@ public class DialogImpl implements Dialog {
 
 			}
 
-			if (this.scheduledComponentList.size() > 0) {
-				Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
+			if (this.getScheduledComponentList().size() > 0) {
+				List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
 				this.prepareComponents(componentsToSend);
 				msg.setComponent(componentsToSend);
 
@@ -759,7 +760,7 @@ public class DialogImpl implements Dialog {
 				msg.encode(aos);
 				this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
 						this.localAddress, this.seqControl, this.protocolClass);
-				this.scheduledComponentList.clear();
+				this.getScheduledComponentList().clear();
 			} catch (Exception e) {
 				if (logger.isEnabledFor(Level.ERROR)) {
 					logger.error("Failed to send message: ", e);
@@ -860,7 +861,7 @@ public class DialogImpl implements Dialog {
 					this.provider.send(aos.toByteArray(), event.getReturnMessageOnError(), this.remoteAddress,
 							this.localAddress, this.seqControl, this.protocolClass);
 
-					this.scheduledComponentList.clear();
+					this.getScheduledComponentList().clear();
 				} catch (Exception e) {
 					// FIXME: remove freshly added invokes to free invoke ID??
 					if (logger.isEnabledFor(Level.ERROR)) {
@@ -911,30 +912,25 @@ public class DialogImpl implements Dialog {
 					this.removeIncomingInvokeId(componentRequest.getInvokeId());
 				}
 			}
-			this.scheduledComponentList.add(componentRequest);
+			this.getScheduledComponentList().add(componentRequest);
 		} finally {
 			this.dialogLock.unlock();
 		}
 	}
 
-	public void processInvokeWithoutAnswer(Long invokeId) {
+	public void processInvokeWithoutAnswer(Integer invokeId) {
 
 		this.removeIncomingInvokeId(invokeId);
 	}
 
-	private void prepareComponents(Component[] res) {
-
-		int index = 0;
-		while (this.scheduledComponentList.size() > index) {
-			Component cr = this.scheduledComponentList.get(index);
-			if (cr.getType() == ComponentType.Invoke) {
-				InvokeImpl in = (InvokeImpl) cr;
-				// FIXME: check not null?
+	private void prepareComponents(List<Component> res) {
+		for (Component c : this.getScheduledComponentList()) {
+			if (c.getType() == ComponentType.Invoke) {
+				InvokeImpl in = (InvokeImpl) c;
 				this.operationsSent[getIndexFromInvokeId(in.getInvokeId())] = in;
 				in.setState(OperationState.Sent);
 			}
-
-			res[index++] = cr;
+			res.add(c);
 		}
 	}
 
@@ -961,12 +957,9 @@ public class DialogImpl implements Dialog {
 		}
 
 		// now comps
-		tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionId));
-		if (this.scheduledComponentList.size() > 0) {
-			Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
-			for (int index = 0; index < this.scheduledComponentList.size(); index++) {
-				componentsToSend[index] = this.scheduledComponentList.get(index);
-			}
+		tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
+		if (this.getScheduledComponentList().size() > 0) {
+			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
 			tcbm.setComponent(componentsToSend);
 		}
 
@@ -1010,13 +1003,10 @@ public class DialogImpl implements Dialog {
 
 		}
 
-		tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionId));
+		tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 		tcbm.setDestinationTransactionId(this.remoteTransactionId);
-		if (this.scheduledComponentList.size() > 0) {
-			Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
-			for (int index = 0; index < this.scheduledComponentList.size(); index++) {
-				componentsToSend[index] = this.scheduledComponentList.get(index);
-			}
+		if (this.getScheduledComponentList().size() > 0) {
+			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
 			tcbm.setComponent(componentsToSend);
 		}
 
@@ -1040,11 +1030,8 @@ public class DialogImpl implements Dialog {
 		TCEndMessageImpl tcbm = (TCEndMessageImpl) TcapFactory.createTCEndMessage();
 		tcbm.setDestinationTransactionId(this.remoteTransactionId);
 
-		if (this.scheduledComponentList.size() > 0) {
-			Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
-			for (int index = 0; index < this.scheduledComponentList.size(); index++) {
-				componentsToSend[index] = this.scheduledComponentList.get(index);
-			}
+		if (this.getScheduledComponentList().size() > 0) {
+			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
 			tcbm.setComponent(componentsToSend);
 		}
 
@@ -1107,13 +1094,9 @@ public class DialogImpl implements Dialog {
 
 		}
 
-		if (this.scheduledComponentList.size() > 0) {
-			Component[] componentsToSend = new Component[this.scheduledComponentList.size()];
-			for (int index = 0; index < this.scheduledComponentList.size(); index++) {
-				componentsToSend[index] = this.scheduledComponentList.get(index);
-			}
+		if (this.getScheduledComponentList().size() > 0) {
+			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
 			msg.setComponent(componentsToSend);
-
 		}
 
 		AsnOutputStream aos = new AsnOutputStream();
@@ -1174,8 +1157,7 @@ public class DialogImpl implements Dialog {
 				tcUniIndication.setDestinationAddress(localAddress);
 				tcUniIndication.setOriginatingAddress(remoteAddress);
 				// now comps
-				Component[] comps = msg.getComponent();
-				tcUniIndication.setComponents(comps);
+				tcUniIndication.setComponents(msg.getComponent());
 
 				if (msg.getDialogPortion() != null) {
 					// it should be dialog req?
@@ -1433,7 +1415,6 @@ public class DialogImpl implements Dialog {
 				boolean IsAareApdu = false;
 				boolean IsAbrtApdu = false;
 				ApplicationContextName acn = null;
-				Result result = null;
 				ResultSourceDiagnostic resultSourceDiagnostic = null;
 				AbortSource abrtSrc = null;
 				UserInformation userInfo = null;
@@ -1450,7 +1431,6 @@ public class DialogImpl implements Dialog {
 						IsAareApdu = true;
 						DialogResponseAPDU resptApdu = (DialogResponseAPDU) apdu;
 						acn = resptApdu.getApplicationContextName();
-						result = resptApdu.getResult();
 						resultSourceDiagnostic = resptApdu.getResultSourceDiagnostic();
 						userInfo = resptApdu.getUserInformation();
 					}
@@ -1556,14 +1536,14 @@ public class DialogImpl implements Dialog {
 		}
 	}
 
-	protected Component[] processOperationsState(Component[] components) {
+	protected List<Component> processOperationsState(List<Component> components) {
 		if (components == null) {
 			return null;
 		}
 
-		List<Component> resultingIndications = new ArrayList<Component>();
+		List<Component> resultingIndications = new ArrayList<>();
 		for (Component ci : components) {
-			Long invokeId;
+			Integer invokeId;
 			if (ci.getType() == ComponentType.Invoke)
 				invokeId = ((InvokeImpl) ci).getLinkedId();
 			else
@@ -1698,13 +1678,10 @@ public class DialogImpl implements Dialog {
 
 		}
 
-		components = new Component[resultingIndications.size()];
-		components = resultingIndications.toArray(components);
-		return components;
-
+		return resultingIndications;
 	}
 
-	private void addReject(List<Component> resultingIndications, Long invokeId, Problem p) {
+	private void addReject(List<Component> resultingIndications, Integer invokeId, Problem p) {
 		try {
 			Reject rej = TcapFactory.createComponentReject();
 			rej.setLocalOriginated(true);
@@ -1843,7 +1820,7 @@ public class DialogImpl implements Dialog {
 	}
 
 	// TC-TIMER-RESET
-	public void resetTimer(Long invokeId) throws TCAPException {
+	public void resetTimer(Integer invokeId) throws TCAPException {
 		try {
 		this.dialogLock.lock();
 			int index = getIndexFromInvokeId(invokeId);

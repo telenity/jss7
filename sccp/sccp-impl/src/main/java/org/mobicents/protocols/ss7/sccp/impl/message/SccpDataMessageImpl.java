@@ -59,9 +59,9 @@ public class SccpDataMessageImpl extends SccpDataNoticeTemplateMessageImpl imple
 	 * @param importance
 	 *            This parameter may be null if you use the default value
 	 */
-	protected SccpDataMessageImpl(SccpStackImpl sccpStackImpl, ProtocolClass protocolClass, int outgoingSls, int localSsn, SccpAddress calledParty,
+	protected SccpDataMessageImpl(int maxDataLen, ProtocolClass protocolClass, int outgoingSls, int localSsn, SccpAddress calledParty,
 			SccpAddress callingParty, byte[] data, HopCounter hopCounter, Importance importance) {
-		super(sccpStackImpl, SccpMessage.MESSAGE_TYPE_UNDEFINED, outgoingSls, localSsn, calledParty, callingParty, data, hopCounter, importance);
+		super(maxDataLen, SccpMessage.MESSAGE_TYPE_UNDEFINED, outgoingSls, localSsn, calledParty, callingParty, data, hopCounter, importance);
 
 		this.protocolClass = protocolClass;
 	}
@@ -73,8 +73,8 @@ public class SccpDataMessageImpl extends SccpDataNoticeTemplateMessageImpl imple
 	 * @param incomingDpc
 	 * @param incomingSls
 	 */
-	protected SccpDataMessageImpl(SccpStackImpl sccpStackImpl, int type, int incomingOpc, int incomingDpc, int incomingSls) {
-		super(sccpStackImpl, type, incomingOpc, incomingDpc, incomingSls);
+	protected SccpDataMessageImpl(int maxDataLen, int type, int incomingOpc, int incomingDpc, int incomingSls) {
+		super(maxDataLen, type, incomingOpc, incomingDpc, incomingSls);
 	}
 
 	public ProtocolClass getProtocolClass() {
@@ -148,7 +148,7 @@ public class SccpDataMessageImpl extends SccpDataNoticeTemplateMessageImpl imple
 		}
 		if (this.segmentation != null) {
 			sb.append(" segmentation=");
-			sb.append(this.segmentation.toString());
+			sb.append(this.segmentation);
 		}
 		sb.append(" DataLen=");
 		if (this.data != null)

@@ -22,7 +22,6 @@
 
 package org.mobicents.protocols.ss7.sccp.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -604,7 +603,7 @@ public class SccpManagement {
 	private class SubSystemTest implements Runnable {
 		// FIXME: remove "Thread", so we eat less resources.
 
-		private volatile boolean started = false;
+		private volatile boolean started;
 
 		// Flag to check if received an MTP-STATUS indication primitive stating
 		// User Part Unavailable.
@@ -616,8 +615,8 @@ public class SccpManagement {
 													// of this classes should be
 													// there.
 
-		private int ssn = 0;
-		private int affectedPc = 0;
+		private int ssn;
+		private int affectedPc;
 
 		private int currentTimerDelay = sccpStackImpl.sstTimerDuration_Min;
 

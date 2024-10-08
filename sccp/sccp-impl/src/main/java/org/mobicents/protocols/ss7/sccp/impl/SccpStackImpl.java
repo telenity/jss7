@@ -389,6 +389,11 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	 * @see org.mobicents.protocols.ss7.sccp.SccpStack#stop()
 	 */
 	public void stop() {
+		if (!isStarted()) {
+			logger.warn(String.format("Stack=%s is already stopped", this.name));
+			return;
+		}
+
 		logger.info("Stopping ...");
 
 		this.state = State.IDLE;

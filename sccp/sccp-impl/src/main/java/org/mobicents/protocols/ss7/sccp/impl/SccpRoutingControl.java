@@ -132,12 +132,12 @@ public class SccpRoutingControl {
 			try {
 				if (msg instanceof SccpDataMessage) {
 					if (logger.isDebugEnabled()) {
-						logger.debug(String.format("Local deliver : SCCP Data Message=%s", msg.toString()));
+						logger.debug(String.format("Local deliver : SCCP Data Message=%s", msg));
 					}
 					deliverMessageToSccpUser(listener, (SccpDataMessage) msg);
 				} else if (msg instanceof SccpNoticeMessage) {
 					if (logger.isDebugEnabled()) {
-						logger.debug(String.format("Local deliver : SCCP Notice Message=%s", msg.toString()));
+						logger.debug(String.format("Local deliver : SCCP Notice Message=%s", msg));
 					}
 					listener.onNotice((SccpNoticeMessage) msg);
 				} else {
@@ -189,7 +189,7 @@ public class SccpRoutingControl {
 		LongMessageRuleType lmrt = LongMessageRuleType.LongMessagesForbidden;
 		if (lmr != null)
 			lmrt = lmr.getLongMessageRuleType();
-		EncodingResultData erd = message.encode(lmrt, mup.getMaxUserDataLength(dpc), logger);
+		EncodingResultData erd = message.encode(this.sccpStackImpl, lmrt, mup.getMaxUserDataLength(dpc), logger);
 		switch (erd.getEncodingResult()) {
 		case Success:
 			Mtp3TransferPrimitiveFactory factory = mup.getMtp3TransferPrimitiveFactory();
@@ -210,7 +210,7 @@ public class SccpRoutingControl {
 			return erd.getReturnCause();
 
 		default:
-			String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(), message.toString());
+			String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(), message);
 			if (logger.isEnabledFor(Level.WARN)) {
 				logger.warn(em);
 			}
@@ -240,7 +240,7 @@ public class SccpRoutingControl {
 		}
 
 		LongMessageRuleType lmrt = LongMessageRuleType.LongMessagesForbidden;
-		EncodingResultData erd = message.encode(lmrt, mup.getMaxUserDataLength(dpc), logger);
+		EncodingResultData erd = message.encode(this.sccpStackImpl, lmrt, mup.getMaxUserDataLength(dpc), logger);
 		switch (erd.getEncodingResult()) {
 			case Success:
 				Mtp3TransferPrimitiveFactory factory = mup.getMtp3TransferPrimitiveFactory();
@@ -264,7 +264,7 @@ public class SccpRoutingControl {
 
 			default:
 				String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(),
-						message.toString());
+                        message);
 				if (logger.isEnabledFor(Level.WARN)) {
 					logger.warn(em);
 				}
@@ -583,12 +583,12 @@ public class SccpRoutingControl {
 						// JIC: user may behave bad and throw something here.
 						if (msg instanceof SccpDataMessage) {
 							if (logger.isDebugEnabled()) {
-								logger.debug(String.format("Local deliver : SCCP Data Message=%s", msg.toString()));
+								logger.debug(String.format("Local deliver : SCCP Data Message=%s", msg));
 							}
 							deliverMessageToSccpUser(listener, (SccpDataMessage) msg);
 						} else if (msg instanceof SccpNoticeMessage) {
 							if (logger.isDebugEnabled()) {
-								logger.debug(String.format("Local deliver : SCCP Notice Message=%s", msg.toString()));
+								logger.debug(String.format("Local deliver : SCCP Notice Message=%s", msg));
 							}
 							listener.onNotice((SccpNoticeMessage) msg);
 						} else {
@@ -675,7 +675,7 @@ public class SccpRoutingControl {
 
 					// send to MTP
 					if (logger.isDebugEnabled()) {
-						logger.debug(String.format("Tx : SCCP Message=%s", msg.toString()));
+						logger.debug(String.format("Tx : SCCP Message=%s", msg));
 					}
 					this.sendMessageToMtp(msg);
 				} else if (gt != null) {
@@ -689,7 +689,7 @@ public class SccpRoutingControl {
 
 					// send to MTP
 					if (logger.isDebugEnabled()) {
-						logger.debug(String.format("Tx : SCCP Message=%s", msg.toString()));
+						logger.debug(String.format("Tx : SCCP Message=%s", msg));
 					}
 					this.sendMessageToMtp(msg);
 				} else {
@@ -777,14 +777,14 @@ public class SccpRoutingControl {
 				
 				// send to MTP3
 				if (logger.isDebugEnabled()) {
-					logger.debug(String.format("sendSccpError to a remote user: SCCP Message=%s", msg.toString()));
+					logger.debug(String.format("sendSccpError to a remote user: SCCP Message=%s", msg));
 				}
 				this.route(ans);
 			} else {
 				
 				// deliver locally
 				if (logger.isDebugEnabled()) {
-					logger.debug(String.format("sendSccpError to a local user: SCCP Message=%s", msg.toString()));
+					logger.debug(String.format("sendSccpError to a local user: SCCP Message=%s", msg));
 				}
 				SccpListener listener = this.sccpProviderImpl.getSccpListener(msg.getOriginLocalSsn());
 				if (listener != null) {

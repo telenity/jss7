@@ -23,6 +23,8 @@
 package org.mobicents.protocols.ss7.tcap.asn;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -66,7 +68,7 @@ public class TcUnidirectionalTest  {
 		tcUniMessage.setDialogPortion(dp);
 
 		Invoke invComp = TcapFactory.createComponentInvoke();
-		invComp.setInvokeId(-128l);
+		invComp.setInvokeId(-128);
 		OperationCode oc = TcapFactory.createOperationCode();
 		oc.setLocalOperationCode(591L);
 		invComp.setOperationCode(oc);
@@ -75,7 +77,9 @@ public class TcUnidirectionalTest  {
 		p.setTag(Tag.STRING_OCTET);
 		p.setData(new byte[] { 1, 2, 3 });
 		invComp.setParameter(p);
-		tcUniMessage.setComponent(new Component[] { invComp });
+		List<Component> comp = new ArrayList<>();
+		comp.add(invComp);
+		tcUniMessage.setComponent(comp);
 		
 		AsnOutputStream aos = new AsnOutputStream();
 		tcUniMessage.encode(aos);
@@ -94,14 +98,14 @@ public class TcUnidirectionalTest  {
 		TCUniMessage tcm = TcapFactory.createTCUniMessage(ais);
 
 		DialogPortion dp = tcm.getDialogPortion();
-		Component[] comp = tcm.getComponent();
-		
+		List<Component> comp = tcm.getComponent();
+
 		assertNotNull(dp);
 		assertNotNull(dp.getDialogAPDU());
 		assertEquals(true, dp.isUnidirectional());
 		assertEquals(DialogAPDUType.UniDirectional, dp.getDialogAPDU().getType());
 
 		assertNotNull(comp);
-		assertEquals(1, comp.length);
+		assertEquals(1, comp.size());
 	}
 }

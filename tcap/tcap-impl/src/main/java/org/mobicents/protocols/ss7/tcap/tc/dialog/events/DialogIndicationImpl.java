@@ -30,13 +30,15 @@ import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.DialogIndication;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.EventType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Component;
 
+import java.util.List;
+
 /**
  * @author baranowb
  *
  */
 public abstract class DialogIndicationImpl implements DialogIndication {
 
-	private Component[] components;
+	private List<Component> components;
 	private Dialog dialog;
 	private Byte qos;
 	private EventType type;
@@ -50,13 +52,13 @@ public abstract class DialogIndicationImpl implements DialogIndication {
 	/**
 	 * @return the components
 	 */
-	public Component[] getComponents() {
+	public List<Component> getComponents() {
 		return components;
 	}
 	/**
 	 * @param components the components to set
 	 */
-	public void setComponents(Component[] components) {
+	public void setComponents(List<Component> components) {
 		this.components = components;
 	}
 	/**

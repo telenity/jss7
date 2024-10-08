@@ -46,7 +46,7 @@ public class TCEndMessageImpl implements TCEndMessage {
 	// opt
 	private DialogPortion dp;
 	// opt
-	private Component[] component;
+	private List<Component> component;
 
 	/*
 	 * (non-Javadoc)
@@ -54,7 +54,7 @@ public class TCEndMessageImpl implements TCEndMessage {
 	 * @see
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.TCBeginMessage#getComponent()
 	 */
-	public Component[] getComponent() {
+	public List<Component> getComponent() {
 
 		return this.component;
 	}
@@ -89,7 +89,7 @@ public class TCEndMessageImpl implements TCEndMessage {
 	 * org.mobicents.protocols.ss7.tcap.asn.comp.TCBeginMessage#setComponent
 	 * (org.mobicents.protocols.ss7.tcap.asn.comp.Component[])
 	 */
-	public void setComponent(Component[] c) {
+	public void setComponent(List<Component> c) {
 		this.component = c;
 
 	}
@@ -150,7 +150,7 @@ public class TCEndMessageImpl implements TCEndMessage {
 					
 				case Component._COMPONENT_TAG:
 					AsnInputStream compAis = localAis.readSequenceStream();
-					List<Component> cps = new ArrayList<Component>();
+					List<Component> cps = new ArrayList<>();
 					// its iterator :)
 					while (compAis.available() > 0) {
 						Component c = TcapFactory.createComponent(compAis);
@@ -160,9 +160,7 @@ public class TCEndMessageImpl implements TCEndMessage {
 						}
 						cps.add(c);
 					}
-
-					this.component = new Component[cps.size()];
-					this.component = cps.toArray(this.component);
+					setComponent(cps);
 					break;
 					
 				default:

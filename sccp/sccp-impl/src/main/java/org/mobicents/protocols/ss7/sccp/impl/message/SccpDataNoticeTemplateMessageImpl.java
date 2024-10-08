@@ -51,17 +51,19 @@ import org.mobicents.protocols.ss7.sccp.parameter.Segmentation;
  */
 public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableMessageImpl {
 
+	private static final String NOT_ENOUGH_DATA_ERROR = "Not enough data in buffer";
+
 	protected ImportanceImpl importance;
 
-	protected SccpDataNoticeTemplateMessageImpl(SccpStackImpl sccpStackImpl, int type, int outgoingSls, int localSsn, SccpAddress calledParty,
+	protected SccpDataNoticeTemplateMessageImpl(int maxDataLen, int type, int outgoingSls, int localSsn, SccpAddress calledParty,
 			SccpAddress callingParty, byte[] data, HopCounter hopCounter, Importance importance) {
-		super(sccpStackImpl, type, outgoingSls, localSsn, calledParty, callingParty, data, hopCounter);
+		super(maxDataLen, type, outgoingSls, localSsn, calledParty, callingParty, data, hopCounter);
 
 		this.importance = (ImportanceImpl) importance;
 	}
 
-	protected SccpDataNoticeTemplateMessageImpl(SccpStackImpl sccpStackImpl, int type, int incomingOpc, int incomingDpc, int incomingSls) {
-		super(sccpStackImpl, type, incomingOpc, incomingDpc, incomingSls);
+	protected SccpDataNoticeTemplateMessageImpl(int maxDataLen, int type, int incomingOpc, int incomingDpc, int incomingSls) {
+		super(maxDataLen, type, incomingOpc, incomingDpc, incomingSls);
 	}
 
 	public Importance getImportance() {
@@ -133,7 +135,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			int pointer = in.read() & 0xff;
 			in.mark(in.available());
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 			int len = in.read() & 0xff;
 
@@ -149,7 +151,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			in.mark(in.available());
 
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 			len = in.read() & 0xff;
 
@@ -162,7 +164,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			pointer = in.read() & 0xff;
 			in.mark(in.available());
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 			len = in.read() & 0xff;
 
@@ -178,7 +180,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 				return;
 			}
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 
 			int paramCode = 0;
@@ -204,7 +206,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			int pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
 			in.mark(in.available());
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 			int len = in.read() & 0xff;
 			byte[] buffer = new byte[len];
@@ -215,7 +217,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
 			in.mark(in.available());
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 			len = in.read() & 0xff;
 			buffer = new byte[len];
@@ -226,7 +228,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			pointer = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
 			in.mark(in.available());
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 			len = (in.read() & 0xff) + ((in.read() & 0xff) << 8);
 			data = new byte[len];
@@ -241,7 +243,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 				return;
 			}
 			if (pointer - 1 != in.skip(pointer - 1)) {
-				throw new IOException("Not enough data in buffer");
+				throw new IOException(NOT_ENOUGH_DATA_ERROR);
 			}
 
 			int paramCode = 0;
@@ -275,12 +277,12 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 	}
 
 	@Override
-	public EncodingResultData encode(LongMessageRuleType longMessageRuleType, int maxMtp3UserDataLength, Logger logger) throws IOException {
+	public EncodingResultData encode(SccpStackImpl sccpStackImpl, LongMessageRuleType longMessageRuleType, int maxMtp3UserDataLength, Logger logger) throws IOException {
 
 		byte[] bf = this.getData();
 		if (bf == null || bf.length == 0)
 			return new EncodingResultData(EncodingResult.DataMissed, null, null, null);
-		if (bf.length > this.sccpStackImpl.getMaxDataMessage())
+		if (bf.length > super.maxDataLen)
 			return new EncodingResultData(EncodingResult.DataMaxLengthExceeded, null, null, null);
 
 		if (calledParty == null)
@@ -290,8 +292,8 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 		if (!this.getSecondParamaterPresent())
 			return new EncodingResultData(EncodingResult.ProtocolClassMissing, null, null, null);
 
-		byte[] cdp = SccpAddressCodec.encode(calledParty, this.sccpStackImpl.isRemoveSpc());
-		byte[] cnp = SccpAddressCodec.encode(callingParty, this.sccpStackImpl.isRemoveSpc());
+		byte[] cdp = SccpAddressCodec.encode(calledParty, sccpStackImpl.isRemoveSpc());
+		byte[] cnp = SccpAddressCodec.encode(callingParty, sccpStackImpl.isRemoveSpc());
 
 		if (longMessageRuleType == null)
 			longMessageRuleType = LongMessageRuleType.LongMessagesForbidden;
@@ -304,16 +306,16 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 		if (this instanceof SccpDataMessageImpl)
 			isServiceMessage = false;
 
-		int fieldsLen = this.sccpStackImpl.calculateUdtFieldsLengthWithoutData(cdp.length, cnp.length);
+		int fieldsLen = sccpStackImpl.calculateUdtFieldsLengthWithoutData(cdp.length, cnp.length);
 		int availLen = maxMtp3UserDataLength - fieldsLen;
 		if (availLen > 254)
 			availLen = 254;
 
-		boolean useShortMessage=false;
+		boolean useShortMessage = false;
 		if (longMessageRuleType == LongMessageRuleType.LongMessagesForbidden)
-			useShortMessage=true;
+			useShortMessage = true;
 		else if(longMessageRuleType == LongMessageRuleType.XudtEnabled && bf.length <= availLen)
-			useShortMessage=true;
+			useShortMessage = true;
 
 		if (useShortMessage) {
 			// use UDT / UDTS
@@ -362,17 +364,17 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			if (this.hopCounter == null)
 				this.hopCounter = new HopCounterImpl(15);
 
-			int fieldsLenX = this.sccpStackImpl.calculateXudtFieldsLengthWithoutData(cdp.length, cnp.length, false, this.importance != null);
-			int fieldsLen2 = this.sccpStackImpl.calculateXudtFieldsLengthWithoutData2(cdp.length, cnp.length);
+			int fieldsLenX = sccpStackImpl.calculateXudtFieldsLengthWithoutData(cdp.length, cnp.length, false, this.importance != null);
+			int fieldsLen2 = sccpStackImpl.calculateXudtFieldsLengthWithoutData2(cdp.length, cnp.length);
 			int availLenX = maxMtp3UserDataLength - fieldsLenX;
 			if (availLenX > fieldsLen2)
 				availLenX = fieldsLen2;
-			int fieldsLenXSegm = this.sccpStackImpl.calculateXudtFieldsLengthWithoutData(cdp.length, cnp.length, true, this.importance != null);
+			int fieldsLenXSegm = sccpStackImpl.calculateXudtFieldsLengthWithoutData(cdp.length, cnp.length, true, this.importance != null);
 			int availLenXSegm = maxMtp3UserDataLength - fieldsLenXSegm;
 			if (availLenXSegm > fieldsLen2)
 				availLenXSegm = fieldsLen2;
 
-			if (bf.length <= availLenX && bf.length <= this.sccpStackImpl.getZMarginXudtMessage()) {
+			if (bf.length <= availLenX && bf.length <= sccpStackImpl.getZMarginXudtMessage()) {
 				// one segment
 				ByteArrayOutputStream out = new ByteArrayOutputStream(fieldsLenX + bf.length);
 
@@ -429,8 +431,8 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 					return new EncodingResultData(EncodingResult.ReturnFailure, null, null, ReturnCauseValue.SEG_FAILURE);
 				}
 				int segmLen;
-				if (bf.length <= this.sccpStackImpl.getZMarginXudtMessage() * 16)
-					segmLen = this.sccpStackImpl.getZMarginXudtMessage();
+				if (bf.length <= sccpStackImpl.getZMarginXudtMessage() * 16)
+					segmLen = sccpStackImpl.getZMarginXudtMessage();
 				else
 					segmLen = availLenXSegm;
 				if (segmLen > availLenXSegm)
@@ -452,7 +454,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 					this.segmentation = new SegmentationImpl(true, this.segmentation.isClass1Selected(), (byte) segmCount,
 							this.segmentation.getSegmentationLocalRef());
 				} else {
-					this.segmentation = new SegmentationImpl(true, this.getIsProtocolClass1(), (byte) segmCount, this.sccpStackImpl.newSegmentationLocalRef());
+					this.segmentation = new SegmentationImpl(true, this.getIsProtocolClass1(), (byte) segmCount, sccpStackImpl.newSegmentationLocalRef());
 				}
 
 				byte[] importanceBuf = null;
@@ -460,7 +462,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 					importanceBuf = importance.encode();
 				}
 				
-				ArrayList<byte[]> res = new ArrayList<byte[]>();
+				ArrayList<byte[]> res = new ArrayList<>(segmCount);
 				for (int num = 0; num < segmCount; num++) {
 					int fst = num * segmLen;
 					int last = fst + segmLen;
@@ -529,9 +531,9 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 
 			if (longMessageRuleType == LongMessageRuleType.LudtEnabled_WithSegmentationField) {
 				this.segmentation = new SegmentationImpl(true, this.getIsProtocolClass1(), (byte) 0,
-						this.sccpStackImpl.newSegmentationLocalRef());
+						sccpStackImpl.newSegmentationLocalRef());
 			}
-			int fieldsLenL = this.sccpStackImpl
+			int fieldsLenL = sccpStackImpl
 					.calculateLudtFieldsLengthWithoutData(cdp.length, cnp.length, this.segmentation != null, this.importance != null);
 			availLen = maxMtp3UserDataLength - fieldsLenL;
 			if (bf.length > availLen) { // message is too long to encode LUDT

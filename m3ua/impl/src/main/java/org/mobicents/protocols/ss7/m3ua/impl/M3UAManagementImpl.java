@@ -23,10 +23,10 @@
 package org.mobicents.protocols.ss7.m3ua.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -228,13 +228,13 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 					.append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
 		}
 
-		logger.info(String.format("M3UA configuration file path %s", persistFile.toString()));
+		logger.info(String.format("M3UA configuration file path %s", persistFile));
 
 		binding.setM3uaManagement(this);
 
 		try {
 			this.load();
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			logger.warn(String.format("Failed to load the SS7 configuration file. \n%s", e.getMessage()));
 		}
 
@@ -257,6 +257,10 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	}
 
 	public void stop() throws Exception {
+		if (!this.isStarted) {
+			logger.warn(String.format("Management=%s is already stopped", this.name));
+			return;
+		}
 
 		for (FastList.Node<M3UAManagementEventListener> n = this.managementEventListeners.head(), end = this.managementEventListeners
 				.tail(); (n = n.getNext()) != end;) {
@@ -316,9 +320,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	}
 
 	public Map<String, As[]> getRoute() {
-		Map<String, As[]> routeTmp = new HashMap<String, As[]>();
-		routeTmp.putAll(this.routeManagement.route);
-		return routeTmp;
+        return new HashMap<String, As[]>(this.routeManagement.route);
 	}
 
 	protected As getAs(String asName) {
@@ -931,7 +933,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		// TODO : Should we keep reference to Objects rather than recreating
 		// everytime?
 		try {
-			XMLObjectWriter writer = XMLObjectWriter.newInstance(new FileOutputStream(persistFile.toString()));
+			XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
 			writer.setBinding(binding);
 			// Enables cross-references.
 			// writer.setReferenceResolver(new XMLReferenceResolver());
@@ -951,11 +953,11 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * 
 	 * @throws Exception
 	 */
-	public void load() throws FileNotFoundException {
+	public void load() throws IOException {
 
 		XMLObjectReader reader = null;
 		try {
-			reader = XMLObjectReader.newInstance(new FileInputStream(persistFile.toString()));
+			reader = XMLObjectReader.newInstance(Files.newInputStream(Paths.get(persistFile.toString())));
 
 			reader.setBinding(binding);
 			aspfactories = reader.read(ASP_FACTORY_LIST, FastList.class);

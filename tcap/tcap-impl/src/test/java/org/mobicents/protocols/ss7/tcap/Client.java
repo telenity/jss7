@@ -112,7 +112,7 @@ public class Client extends EventTestHarness{
 	public Invoke createNewInvoke(){
 		
 		Invoke invoke = this.tcapProvider.getComponentPrimitiveFactory().createTCInvokeRequest();
-		invoke.setInvokeId(12l);
+		invoke.setInvokeId(12);
 		
 		OperationCode oc = TcapFactory.createOperationCode();
 		
@@ -139,7 +139,7 @@ public class Client extends EventTestHarness{
 		return invoke;
 	}
 
-	public void sendInvokeSet(Long[] lstInvokeId) throws Exception {
+	public void sendInvokeSet(Integer[] lstInvokeId) throws Exception {
 //		System.err.println(this+" T["+System.currentTimeMillis()+"]send BEGIN");
 //		ApplicationContextName acn = this.tcapProvider.getDialogPrimitiveFactory().createApplicationContextName(_ACN_);
 //		TCBeginRequest tcbr = this.tcapProvider.getDialogPrimitiveFactory().createBegin(this.dialog);
@@ -148,7 +148,7 @@ public class Client extends EventTestHarness{
 //		GlobalTitle gt = GlobalTitle.getInstance(0, NumberingPlan.ISDN_TELEPHONY, NatureOfAddress.INTERNATIONAL, "93702994006");
 //		((DialogImpl) this.dialog).setRemoteAddress(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt, 8));
 
-		for (Long invokeId : lstInvokeId) {
+		for (Integer invokeId : lstInvokeId) {
 			Invoke invoke = this.tcapProvider.getComponentPrimitiveFactory().createTCInvokeRequest();
 			invoke.setInvokeId(invokeId);
 			OperationCode opCode = this.tcapProvider.getComponentPrimitiveFactory().createOperationCode();
