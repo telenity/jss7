@@ -172,14 +172,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 		}
 	}
 
-	protected void resetDialogIdValueAfterRangeChange() {
-		if (this.curDialogId < this.stack.getDialogIdRangeStart())
-			this.curDialogId = this.stack.getDialogIdRangeStart();
-
-		if (this.curDialogId > this.stack.getDialogIdRangeEnd())
-			this.curDialogId = this.stack.getDialogIdRangeEnd() - 1;
-	}
-
 	// get next Seq Control value available
 	private int getNextSeqControl() {
 		int res = seqControl.getAndIncrement();
@@ -757,14 +749,14 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 		}
 	}
 
-	public void onPcState(int arg0, SignallingPointStatus arg1, int arg2, RemoteSccpStatus arg3) {
-		// TODO Auto-generated method stub
-
+	@Override
+	public void onPcState(int dpc, SignallingPointStatus status, int restrictedImportanceLevel,
+						  RemoteSccpStatus remoteSccpStatus) {
+		// TODO: SCCP PC state change
 	}
 
-	public void onState(int arg0, int arg1, boolean arg2, int arg3) {
-		// TODO Auto-generated method stub
-
+	public void onState(int dpc, int ssn, boolean inService, int multiplicityIndicator) {
+		// TODO: SCCP SSN state change
 	}
 
 }

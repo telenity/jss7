@@ -188,12 +188,10 @@ public class TCAPStackImpl implements TCAPStack {
 
 	public void setDialogIdRangeStart(long val) {
 		dialogIdRangeStart = val;
-		tcapProvider.resetDialogIdValueAfterRangeChange();
 	}
 
 	public void setDialogIdRangeEnd(long val) {
 		dialogIdRangeEnd = val;
-		tcapProvider.resetDialogIdValueAfterRangeChange();
 	}
 
 	public long getDialogIdRangeStart() {
