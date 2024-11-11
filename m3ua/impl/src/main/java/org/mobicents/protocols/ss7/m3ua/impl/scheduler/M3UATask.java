@@ -30,7 +30,7 @@ public abstract class M3UATask {
 
     public void run(long now) {
         if (!canceled) {
-            // exception in caught in scheduler.
+            // exception is caught in scheduler
             tick(now);
         }
     }
@@ -43,11 +43,10 @@ public abstract class M3UATask {
 
     public void cancel() {
         this.canceled = true;
-        // dont do this, let it be lazely reclaimed if ever, this causes race!
+        // don't do this, let it be lazily reclaimed if ever, this causes race!
         // remove task from list
-        // if (scheduler != null && (index >=0) && (index <
-        // scheduler.tasks.length)) {
-        // scheduler.tasks[index] = null;
+        // if (scheduler != null && (index >= 0) && (index < scheduler.tasks.length)) {
+        //     scheduler.tasks[index] = null;
         // }
     }
 
