@@ -242,7 +242,7 @@ public class SccpManagement {
 			msg.setOutgoingDpc(msg.getCalledPartyAddress().getSignalingPointCode());
 			this.sccpRoutingControl.sendManagementMessage(msg);
 		} catch (Exception e) {
-			logger.error(String.format("Exception while trying to send management message=%s", msg), e);
+			logger.warn(String.format("Exception while trying to send management message=%s", msg));
 		}
 	}
 

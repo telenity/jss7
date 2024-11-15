@@ -22,7 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.parameter;
 
-import org.mobicents.commons.HexTools;
 import org.mobicents.protocols.ss7.m3ua.parameter.HeartbeatData;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 
@@ -50,6 +49,6 @@ public class HeartbeatDataImpl extends ParameterImpl implements HeartbeatData {
 
     @Override
     public String toString() {
-        return String.format("HeartbeatData : data = %s ", HexTools.dump(this.value, 0));
+        return "HeartbeatData";
     }
 }
