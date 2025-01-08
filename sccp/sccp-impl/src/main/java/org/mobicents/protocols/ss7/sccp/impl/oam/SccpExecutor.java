@@ -19,7 +19,6 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
 package org.mobicents.protocols.ss7.sccp.impl.oam;
 
 import org.apache.log4j.Logger;
@@ -36,9 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
  * @author amit bhayani
- * 
  */
 public class SccpExecutor implements ShellExecutor {
 
@@ -49,7 +46,6 @@ public class SccpExecutor implements ShellExecutor {
 	private SccpStackImpl sccpStack = null;
 
 	public SccpExecutor() {
-
 	}
 
 	public void setSccpStack(SccpStackImpl sccpStack) {
@@ -58,13 +54,21 @@ public class SccpExecutor implements ShellExecutor {
 		this.sccpStack = sccpStack;
 	}
 
+	public Router getRouter() {
+		return router;
+	}
+
+	public SccpResource getSccpResource() {
+		return sccpResource;
+	}
+
 	public String execute(String[] options) {
 		if (this.router == null || this.sccpResource == null) {
 			logger.warn("Router not set. Command will not be executed ");
 			return SccpOAMMessage.SERVER_ERROR;
 		}
 
-		// Atleast 1 option is passed?
+		// At least 1 option is passed?
 		if (options == null || options.length < 2) {
 			return SccpOAMMessage.INVALID_COMMAND;
 		}

@@ -108,6 +108,10 @@ public class TCAPStackImpl implements TCAPStack {
 	}
 
     public void stop() {
+		if (!this.started) {
+			logger.warn("TCAPStack is already stopped");
+			return;
+		}
 		this.tcapProvider.stop();
 		this.started = false;
     }
