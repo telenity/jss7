@@ -288,11 +288,10 @@ public class RuleImpl implements Rule, Serializable {
 		if (this.getOriginationType() == OriginationType.REMOTE && !isMtpOriginated)
 			return false;
 
-//		// SSN if present flag is set in pattern - must match address SSN & flag
-//		// @TODO: disabled to avoid backward compatibility
-//		if (!isSsnMatch(address, pattern)) {
-//			return false;
-//		}
+		// SSN if present flag is set in pattern - must match address SSN & flag
+		if (!isSsnMatch(address, pattern)) {
+			return false;
+		}
 
 		// Routing on GTT
 		GlobalTitleIndicator gti = address.getAddressIndicator().getGlobalTitleIndicator();
