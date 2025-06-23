@@ -323,6 +323,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         return new HashMap<String, As[]>(this.routeManagement.route);
 	}
 
+	public M3UARouteManagement getRouteManagement() { return routeManagement; }
+
 	protected As getAs(String asName) {
 		for (FastList.Node<As> n = appServers.head(), end = appServers.tail(); (n = n.getNext()) != end;) {
 			As as = n.getValue();
@@ -1037,7 +1039,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 		AsImpl asImpl = this.routeManagement.getAsForRoute(data.getDpc(), data.getOpc(), data.getSI(), data.getSLS());
 		if (asImpl == null) {
-			logger.error(String.format("Tx : No AS found for routing message %s", payload));
+			// don't log here as it will be logged in the upper layer
 			throw new IOException(String.format("Tx : No AS found for routing message %s", payload));
 		}
 		payload.setNetworkAppearance(asImpl.getNetworkAppearance());

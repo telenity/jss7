@@ -493,8 +493,10 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		try {
 			this.sccpRoutingControl.routeMssgFromSccpUser(message);
 		} catch (IOException e) {
-			// log here Exceptions from MTP3 level
-			logger.error("IOException when sending the message to MTP3 level: " + e.getMessage(), e);
+			if (logger.isDebugEnabled()) {
+				// log here Exceptions from MTP3 level
+				logger.debug("IOException when sending the message to MTP3 level:", e);
+			}
 			throw e;
 		}
 	}

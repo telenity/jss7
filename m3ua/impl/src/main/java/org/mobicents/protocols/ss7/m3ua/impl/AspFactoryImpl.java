@@ -789,7 +789,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		}
 	}
 
-	private void processPayload(IpChannelType ipChannelType, ByteBuf byteBuf) {
+	protected void processPayload(IpChannelType ipChannelType, ByteBuf byteBuf) {
 		M3UAMessage m3UAMessage;
 		if (ipChannelType == IpChannelType.SCTP) {
 			try {

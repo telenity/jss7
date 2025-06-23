@@ -16,7 +16,7 @@
             1.0.0.FINAL
         </mobicents.tools.mavenplugin.eclipse.version>
         <concurrent.version>1.3.4</concurrent.version>
-        <log4j.version>1.2.25</log4j.version>
+        <log4j.version>1.2.26</log4j.version>
         <junit.version>4.13.2</junit.version>
         <testng.version>6.14.3</testng.version>
         <javolution.version>5.5.1</javolution.version>
@@ -26,7 +26,7 @@
         <!-- mobicents but not strictly ss7 -->
         <asn.version>2.0.2.FINAL</asn.version>
         <stream.version>1.0.0.FINAL</stream.version>
-        <sctp.version>1.7.2.3</sctp.version>
+        <sctp.version>1.7.2.5</sctp.version>
     </properties>
 
     <modules>
