@@ -9,18 +9,19 @@
 		    </run>
 	  	</groups>
 	  	 -->
-	  	 <!-- 
-	  	<packages>
-      		<package name="org.mobicents.protocols.ss7.sccp.impl.parameter" />
-      		<package name="org.mobicents.protocols.ss7.sccp.impl.gtt" />
-      		<package name="org.mobicents.protocols.ss7.indicator" />
-      		<package name="org.mobicents.protocols.ss7.sccp.parameter" />
-  		 </packages>
-  		  -->
-  		 <classes>
-  		 	<class name="org.mobicents.protocols.ss7.m3ua.impl.AspTransitionStateTest"></class>
-  		 	<class name="org.mobicents.protocols.ss7.m3ua.impl.message.MessageFactoryTest"></class>
-  		 	<class name="org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterTest"></class>
-  		 </classes>
+		<!--
+       <packages>
+           <package name="org.mobicents.protocols.ss7.sccp.impl.parameter" />
+           <package name="org.mobicents.protocols.ss7.sccp.impl.gtt" />
+           <package name="org.mobicents.protocols.ss7.indicator" />
+           <package name="org.mobicents.protocols.ss7.sccp.parameter" />
+        </packages>
+         -->
+		<classes>
+			<class name="org.mobicents.protocols.ss7.m3ua.impl.AspTransitionStateTest"></class>
+			<class name="org.mobicents.protocols.ss7.m3ua.impl.message.MessageFactoryTest"></class>
+			<class name="org.mobicents.protocols.ss7.m3ua.impl.message.MessageTest"></class>
+			<class name="org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterTest"></class>
+		</classes>
 	</test>
 </suite>

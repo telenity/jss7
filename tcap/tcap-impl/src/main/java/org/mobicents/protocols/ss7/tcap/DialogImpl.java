@@ -281,12 +281,12 @@ public class DialogImpl implements Dialog {
      */
 	public boolean cancelInvocation(Integer invokeId) throws TCAPException {
 
-		try {
-		this.dialogLock.lock();
-			int index = getIndexFromInvokeId(invokeId);
-			if (index < 0 || index >= this.operationsSent.length) {
-				throw new TCAPException("Wrong invoke id passed.");
-			}
+        try {
+            this.dialogLock.lock();
+            int index = getIndexFromInvokeId(invokeId);
+            if (index < 0 || index >= this.operationsSent.length) {
+                throw new TCAPException("Wrong invoke id passed.");
+            }
 
 			// lookup through send buffer.
 			for (index = 0; index < this.getScheduledComponentList().size(); index++) {
@@ -302,11 +302,11 @@ public class DialogImpl implements Dialog {
 				}
 			}
 
-			return false;
-		} finally {
-			this.dialogLock.unlock();
-		}
-	}
+            return false;
+        } finally {
+            this.dialogLock.unlock();
+        }
+    }
 
 	private void freeInvokeId(Integer i) {
 		try {
@@ -1359,6 +1359,13 @@ public class DialogImpl implements Dialog {
 		this.dialogLock.lock();
 
 			try {
+                if (state == TRPseudoState.Expunged) {
+                    if (logger.isEnabledFor(Level.WARN)) {
+                        logger.warn("Received TC-END for already closed dialog: " + this);
+                    }
+                    return;
+                }
+
 				restartIdleTimer();
 				tcEndIndication = (TCEndIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
 						.getDialogPrimitiveFactory()).createEndIndication(this);
@@ -1412,6 +1419,13 @@ public class DialogImpl implements Dialog {
 		this.dialogLock.lock();
 
 			try {
+                if (state == TRPseudoState.Expunged) {
+                    if (logger.isEnabledFor(Level.WARN)) {
+                        logger.warn("Received TC-ABORT for already closed dialog: " + this);
+                    }
+                    return;
+                }
+
 				boolean IsAareApdu = false;
 				boolean IsAbrtApdu = false;
 				ApplicationContextName acn = null;

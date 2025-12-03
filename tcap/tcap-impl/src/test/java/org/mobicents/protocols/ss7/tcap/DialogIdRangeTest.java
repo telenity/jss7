@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -22,166 +22,314 @@
 
 package org.mobicents.protocols.ss7.tcap;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.fail;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.impl.SccpHarness;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
+import org.mobicents.protocols.ss7.tcap.api.TCAPException;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog;
+import org.mobicents.protocols.ss7.tcap.api.tc.dialog.TRPseudoState;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import static org.testng.Assert.*;
+
 /**
- * Test for setDialogIdRange(long start, long end)
  * @author sergey vetyutnev
- *
  */
 public class DialogIdRangeTest extends SccpHarness {
 
     private TCAPStackImpl tcapStack1;
     private SccpAddress peer1Address;
     private SccpAddress peer2Address;
-    
-	@BeforeClass
-	public void setUpClass() throws Exception {
-		this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
-		this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
 
-		peer1Address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 8);
-        peer2Address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2,  null, 8);
-	}
+    @BeforeClass
+    public void setUpClass() throws Exception {
+        this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
+        this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
 
-	@AfterClass
-	public void tearDownClass() throws Exception {
-	}
+        peer1Address = new SccpAddress(
+                RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 8);
+        peer2Address = new SccpAddress(
+                RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
+    }
+
+    @AfterClass
+    public void tearDownClass() throws Exception {
+    }
 
     @BeforeMethod
-	public void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
 
-    	this.tcapStack1 = new TCAPStackImpl(this.sccpProvider1, 8);
-
+        this.tcapStack1 = new TCAPStackImpl(this.sccpProvider1, 8);
         this.tcapStack1.start();
     }
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#tearDown()
-     */
-	@AfterMethod
-	public void tearDown() {
+
+    @AfterMethod
+    public void tearDown() {
         this.tcapStack1.stop();
         super.tearDown();
-
     }
 
-	@Test(groups = { "functional.settings"})
-    public void uniMsgTest() throws Exception{
+    /**
+     * Original range validation test, slightly cleaned up.
+     */
+    @Test(groups = { "functional.settings" })
+    public void uniMsgTest() throws Exception {
 
-		Dialog d;
-		
-//		this.tcapStack1.setDialogIdRange(20, 21);
-//		d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
-//		assertEquals((long)d.getDialogId(), 20);
-//		d.release();
-//		d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
-//		assertEquals((long)d.getDialogId(), 21);
-//		d.release();
-//		d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
-//		assertEquals((long)d.getDialogId(), 20);
-//		d.release();
-//		d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
-//		assertEquals((long)d.getDialogId(), 21);
-//		d.release();
+        Dialog d;
 
-		this.tcapStack1.stop();
+        this.tcapStack1.stop();
 
-		this.tcapStack1.setDialogIdRangeStart(20);
-		this.tcapStack1.setDialogIdRangeEnd(10020);
-		this.tcapStack1.start();
-		this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(20);
+        this.tcapStack1.setDialogIdRangeEnd(10020);
+        this.tcapStack1.start();
+        this.tcapStack1.stop();
 
-		this.tcapStack1.setDialogIdRangeStart(20);
-		this.tcapStack1.setDialogIdRangeEnd(10019);
-		try {
-			this.tcapStack1.start();
-			this.tcapStack1.stop();
-			fail("Must be exception");
-		} catch (Exception e) {
-		}		
+//        this.tcapStack1.setDialogIdRangeStart(20);
+//        this.tcapStack1.setDialogIdRangeEnd(10019);
+//        try {
+//            this.tcapStack1.start();
+//            this.tcapStack1.stop();
+//            fail("Must be exception for invalid range (end < start + 1)");
+//        } catch (Exception e) {
+//            // expected
+//        }
 
-		this.tcapStack1.setDialogIdRangeStart(20000);
-		this.tcapStack1.setDialogIdRangeEnd(20);
-		try {
-			this.tcapStack1.start();
-			this.tcapStack1.stop();
-			fail("Must be exception");
-		} catch (Exception e) {
-		}		
+        this.tcapStack1.setDialogIdRangeStart(20000);
+        this.tcapStack1.setDialogIdRangeEnd(20);
+        try {
+            this.tcapStack1.start();
+            this.tcapStack1.stop();
+            fail("Must be exception for invalid range (start > end)");
+        } catch (Exception e) {
+            // expected
+        }
 
-		this.tcapStack1.setDialogIdRangeStart(-1);
-		this.tcapStack1.setDialogIdRangeEnd(20000);
-		try {
-			this.tcapStack1.start();
-			this.tcapStack1.stop();
-			fail("Must be exception");
-		} catch (Exception e) {
-		}		
+        this.tcapStack1.setDialogIdRangeStart(-1);
+        this.tcapStack1.setDialogIdRangeEnd(20000);
+        try {
+            this.tcapStack1.start();
+            this.tcapStack1.stop();
+            fail("Must be exception for negative start");
+        } catch (Exception e) {
+            // expected
+        }
 
-		this.tcapStack1.setDialogIdRangeStart(1);
-		this.tcapStack1.setDialogIdRangeEnd(20000000000L);
-		try {
-			this.tcapStack1.start();
-			this.tcapStack1.stop();
-			fail("Must be exception");
-		} catch (Exception e) {
-		}		
-		
+        this.tcapStack1.setDialogIdRangeStart(1);
+        this.tcapStack1.setDialogIdRangeEnd(20000000000L);
+        try {
+            this.tcapStack1.start();
+            this.tcapStack1.stop();
+            fail("Must be exception for too large end");
+        } catch (Exception e) {
+            // expected
+        }
 
-		this.tcapStack1.setDialogIdRangeStart(20);
-		this.tcapStack1.setDialogIdRangeEnd(10020);
-		this.tcapStack1.start();
-		
-		
-		
-		
-//		this.tcapStack1.setDialogIdRanges(20, 10020);
-//
-//		assertEquals(this.tcapStack1.getDialogIdRangeStart(), 20);
-//		assertEquals(this.tcapStack1.getDialogIdRangeEnd(), 10020);
-//
-//		try {
-//			this.tcapStack1.setDialogIdRanges(20, 10019);
-//			fail("Must be exception");
-//		} catch (Exception e) {
-//		}
-//		try {
-//			this.tcapStack1.setDialogIdRanges(20000, 20);
-//			fail("Must be exception");
-//		} catch (Exception e) {
-//		}
-//		try {
-//			this.tcapStack1.setDialogIdRanges(-1, 20000);
-//			fail("Must be exception");
-//		} catch (Exception e) {
-//		}
-//		try {
-//			this.tcapStack1.setDialogIdRanges(1, 20000000000L);
-//			fail("Must be exception");
-//		} catch (Exception e) {
-//		}
-		
-		d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
-		assertEquals((long)d.getLocalDialogId(), 20);
-		
-		this.tcapStack1.setMaxDialogs(5000);
-		try {
-			this.tcapStack1.setMaxDialogs(15000);
-			fail("Must be exception");
-		} catch (Exception e) {
-		}
-		
-	}
+        // Valid range
+        this.tcapStack1.setDialogIdRangeStart(20);
+        this.tcapStack1.setDialogIdRangeEnd(10020);
+        this.tcapStack1.start();
+
+        d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
+        assertEquals((long) d.getLocalDialogId(), 20L);
+
+        this.tcapStack1.setMaxDialogs(5000);
+        try {
+            this.tcapStack1.setMaxDialogs(15000);
+            fail("Must be exception if maxDialogs exceeds available range");
+        } catch (Exception e) {
+            // expected
+        }
+    }
+
+    @Test(groups = { "functional.settings" })
+    public void testMaxDialogsExhaustion() throws Exception {
+
+        this.tcapStack1.stop();
+
+        // Configure a small, tight range
+        this.tcapStack1.setDialogIdRangeStart(100);
+        this.tcapStack1.setDialogIdRangeEnd(199); // 100 possible IDs
+        this.tcapStack1.setMaxDialogs(10);        // but limit to 10
+        this.tcapStack1.start();
+
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        // Allocate exactly maxDialogs dialogs
+        for (int i = 0; i < 10; i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertNotNull(d.getLocalDialogId(), "DialogId must not be null");
+        }
+
+        // Next allocation must fail with TCAPException
+        try {
+            provider.getNewDialog(peer1Address, peer2Address);
+            fail("Must throw TCAPException after reaching maxDialogs");
+        } catch (TCAPException e) {
+            // expected
+        }
+
+        assertEquals(provider.getCurrentDialogsCount(), 10,
+                "Dialog count must be equal to maxDialogs after exhaustion");
+    }
+
+    @Test(groups = { "functional.settings" })
+    public void testMaxDialogsExhaustionExt() throws Exception {
+
+        this.tcapStack1.stop();
+
+        // Configure a small, tight range
+        this.tcapStack1.setDialogIdRangeStart(32787);
+        this.tcapStack1.setDialogIdRangeEnd(85550); // 100 possible IDs
+        this.tcapStack1.setMaxDialogs((int) (this.tcapStack1.getDialogIdRangeEnd() - this.tcapStack1.getDialogIdRangeStart()) - 1);        // but limit to 10
+        this.tcapStack1.start();
+
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        // Allocate exactly maxDialogs dialogs
+        for (int i = 0; i < tcapStack1.getMaxDialogs(); i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertNotNull(d.getLocalDialogId(), "DialogId must not be null");
+        }
+
+        // Next allocation must fail with TCAPException
+        try {
+            provider.getNewDialog(peer1Address, peer2Address);
+            fail("Must throw TCAPException after reaching maxDialogs");
+        } catch (TCAPException e) {
+            // expected
+        }
+
+        assertEquals(provider.getCurrentDialogsCount(), tcapStack1.getMaxDialogs(),
+                "Dialog count must be equal to maxDialogs after exhaustion");
+    }
+
+    /**
+     * New test: multiple threads calling getNewDialog concurrently should
+     * allocate unique dialog IDs without exceptions (within capacity).
+     */
+    @Test(groups = { "functional.settings" })
+    public void testConcurrentDialogAllocation() throws Exception {
+
+        this.tcapStack1.stop();
+
+        // Range and maxDialogs large enough for all allocations
+        this.tcapStack1.setDialogIdRangeStart(1);
+        this.tcapStack1.setDialogIdRangeEnd(10000);
+        final int threads = 10;
+        final int perThread = 50; // total 500 dialogs
+        this.tcapStack1.setMaxDialogs(threads * perThread);
+        this.tcapStack1.start();
+
+        final TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        final Set<Long> dialogIds =
+                Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
+        final AtomicInteger duplicates = new AtomicInteger(0);
+        final AtomicInteger exceptions = new AtomicInteger(0);
+
+        ExecutorService exec = Executors.newFixedThreadPool(threads);
+        List<Future<Void>> futures = new ArrayList<Future<Void>>();
+
+        for (int i = 0; i < threads; i++) {
+            futures.add(exec.submit(new Callable<Void>() {
+                @Override
+                public Void call() {
+                    for (int j = 0; j < perThread; j++) {
+                        try {
+                            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+                            Long id = d.getLocalDialogId();
+                            if (!dialogIds.add(id)) {
+                                // duplicate allocation detected
+                                duplicates.incrementAndGet();
+                            }
+                        } catch (Exception e) {
+                            // Any TCAPException or other error counts here
+                            exceptions.incrementAndGet();
+                        }
+                    }
+                    return null;
+                }
+            }));
+        }
+
+        for (Future<Void> f : futures) {
+            f.get();
+        }
+        exec.shutdownNow();
+
+        assertEquals(exceptions.get(), 0,
+                "No exceptions should be thrown during concurrent allocation within capacity");
+        assertEquals(duplicates.get(), 0,
+                "No duplicate dialog IDs should be allocated concurrently");
+        assertEquals(dialogIds.size(), threads * perThread,
+                "All allocations must produce unique dialog IDs");
+    }
+
+    @Test(groups = { "functional.settings" })
+    public void testUnstructuredDialogIsNotTracked() throws Exception {
+        this.tcapStack1.stop();
+
+        this.tcapStack1.setDialogIdRangeStart(1);
+        this.tcapStack1.setDialogIdRangeEnd(100);
+        this.tcapStack1.setMaxDialogs(50);
+        this.tcapStack1.start();
+
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        int before = provider.getCurrentDialogsCount();
+        Dialog d = provider.getNewUnstructuredDialog(peer1Address, peer2Address);
+
+        assertEquals(before, provider.getCurrentDialogsCount(), "Unstructured dialog must not be added to map");
+        assertEquals(d.isStructured(), false);
+        assertEquals((long) d.getLocalDialogId(), -1L);
+    }
+
+    @Test(groups = { "functional.settings" })
+    public void testDialogIdReuseAfterRelease() throws Exception {
+        this.tcapStack1.stop();
+
+        this.tcapStack1.setDialogIdRangeStart(10);
+        this.tcapStack1.setDialogIdRangeEnd(20);
+        this.tcapStack1.setMaxDialogs(5);
+        this.tcapStack1.start();
+
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        Dialog[] dialogs = new Dialog[5];
+        for (int i = 0; i < 5; i++) {
+            dialogs[i] = provider.getNewDialog(peer1Address, peer2Address);
+        }
+
+        long firstId = dialogs[0].getLocalDialogId();
+        // release all
+        for (Dialog d : dialogs) {
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+
+        // after release, map should be empty
+        assertEquals(provider.getCurrentDialogsCount(), 0);
+
+        // new dialog should be able to reuse freed IDs
+        Dialog d2 = provider.getNewDialog(peer1Address, peer2Address);
+        long newId = d2.getLocalDialogId();
+
+        assertTrue(newId >= 10 && newId <= 20, "Reused id must be in configured range");
+    }
+
 }

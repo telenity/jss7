@@ -23,6 +23,7 @@
 package org.mobicents.protocols.ss7.tcap;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,24 +91,22 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
 	private transient List<TCListener> tcListeners = new CopyOnWriteArrayList<>();
 	protected transient ScheduledExecutorService _EXECUTOR;
-	// boundry for Uni directional dialogs :), tx id is always encoded
-	// on 4 octets, so this is its max value
-	// private static final long _4_OCTETS_LONG_FILL = 4294967295l;
+
 	private transient ComponentPrimitiveFactory componentPrimitiveFactory;
 	private transient DialogPrimitiveFactory dialogPrimitiveFactory;
 	private transient SccpProvider sccpProvider;
 
 	private transient MessageFactory messageFactory;
 
-	private transient TCAPStackImpl stack; // originating TX id ~=Dialog, its direct
-	// mapping, but not described
-	// explicitly...
-	private transient ConcurrentMap<Long, DialogImpl> dialogs = new ConcurrentHashMap<>();
+	private transient TCAPStackImpl stack;
+
+    private transient ConcurrentMap<Long, DialogImpl> dialogs = new ConcurrentHashMap<>();
+    private final ArrayDeque<Long> freeDialogs = new ArrayDeque<>();
+
+    private final Object dialogsLock = new Object();
 
 	private AtomicInteger seqControl = new AtomicInteger();
 	private int ssn;
-	private long curDialogId;
-
 
 	protected TCAPProviderImpl(SccpProvider sccpProvider, TCAPStackImpl stack, int ssn) {
 		super();
@@ -131,7 +130,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	 * org.mobicents.protocols.ss7.tcap.api.TCAPStack#addTCListener(org.mobicents
 	 * .protocols.ss7.tcap.api.TCListener)
      */
-
 	public void addTCListener(TCListener lst) {
 		if (!this.tcListeners.contains(lst)) {
 			this.tcListeners.add(lst);
@@ -147,29 +145,6 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 	public void removeTCListener(TCListener lst) {
 		this.tcListeners.remove(lst);
 
-	}
-
-	protected boolean checkAvailableTxId(Long id) {
-		if (!this.dialogs.containsKey(id))
-			return true;
-		else
-			return false;
-	}
-
-	// some help methods... crude but will work for first impl.
-	private synchronized Long getAvailableTxId() throws TCAPException {
-		if (this.dialogs.size() >= this.stack.getMaxDialogs())
-			throw new TCAPException("Current dialog count exceeds its maximum value");
-
-		while (true) {
-			if (this.curDialogId < this.stack.getDialogIdRangeStart())
-				this.curDialogId = this.stack.getDialogIdRangeStart() - 1;
-			if (++this.curDialogId > this.stack.getDialogIdRangeEnd())
-				this.curDialogId = this.stack.getDialogIdRangeStart();
-			Long id = this.curDialogId;
-			if (checkAvailableTxId(id))
-				return id;
-		}
 	}
 
 	// get next Seq Control value available
@@ -244,24 +219,33 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			throw new NullPointerException("LocalAddress must not be null");
 		}
 
-		if (id == null) {
-			id = this.getAvailableTxId();
-		} else {
-			if (!checkAvailableTxId(id)) {
-				throw new TCAPException("Suggested local TransactionId is already present in system: " + id);
-			}
-		}
-		if (structured) {
-			DialogImpl di = new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this, seqControl,
-					false, protocolClass);
+        if (!structured) {
+            return new DialogImpl(localAddress, remoteAddress, -1L, false,
+                    this._EXECUTOR, this, seqControl, false, protocolClass);
+        }
 
-			this.dialogs.put(id, di);
+        if (id != null) {
+            throw new TCAPException("Suggested dialog id is no longer supported");
+        }
 
-			return di;
-		} else {
-			return new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this, seqControl,
-					false, protocolClass);
-		}
+        synchronized (dialogsLock) {
+            if (this.dialogs.size() >= this.stack.getMaxDialogs()) {
+                throw new TCAPException("Current dialog count exceeds its maximum value");
+            }
+
+            if (freeDialogs.isEmpty()) {
+                throw new TCAPException("No free dialog id available");
+            }
+
+            id = freeDialogs.removeFirst();
+
+            DialogImpl di = new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this,
+                    seqControl, false, protocolClass);
+
+            this.dialogs.put(id, di);
+
+            return di;
+        }
 	}
 
 	public int getCurrentDialogsCount() {
@@ -294,7 +278,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering TC-BEGIN.", e);
 			}
 		}
 
@@ -307,7 +291,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering TC-CONTINUE.", e);
 			}
 		}
 
@@ -320,7 +304,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering TC-END.", e);
 			}
 		}
 	}
@@ -332,7 +316,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering TC-PABORT.", e);
 			}
 		}
 
@@ -345,7 +329,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering TC-UABORT.", e);
 			}
 		}
 
@@ -358,7 +342,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering data TC-UNI.", e);
 			}
 		}
 	}
@@ -370,18 +354,22 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering data to transport layer.", e);
+				logger.error("Received exception while delivering TC-NOTICE.", e);
 			}
 		}
 	}
 
-	public void release(DialogImpl d) {
-		Long did = d.getLocalDialogId();
+    public void release(DialogImpl d) {
+        Long did = d.getLocalDialogId();
 
         this.doRelease(d);
 
-        this.dialogs.remove(did);
-	}
+        synchronized (dialogsLock) {
+            if (this.dialogs.remove(did) != null) {
+                freeDialogs.addLast(did);
+            }
+        }
+    }
 
 	private void doRelease(DialogImpl d) {
 		try {
@@ -405,7 +393,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering dialog release.", e);
+				logger.error("Received exception while delivering dialog timeout.", e);
 			}
 		}
 	}
@@ -430,7 +418,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 			}
 		} catch (Exception e) {
 			if (logger.isEnabledFor(Level.ERROR)) {
-				logger.error("Received exception while delivering Begin.", e);
+				logger.error("Received exception while delivering invoke timeout.", e);
 			}
 		}
 	}
@@ -442,7 +430,20 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 				stack.getCorePoolSize(), new DefaultThreadFactory("Tcap-Thread"));
 		executor.setRemoveOnCancelPolicy(true);
 		this._EXECUTOR = executor;
-		this.sccpProvider.registerSccpListener(ssn, this);
+
+        long start = this.stack.getDialogIdRangeStart();
+        long end = this.stack.getDialogIdRangeEnd();
+
+        synchronized (dialogsLock) {
+            freeDialogs.clear();
+            for (long id = start; id <= end; id++) {
+                freeDialogs.addLast(id);
+            }
+        }
+
+        logger.info("Initialized " + this.freeDialogs.size() + " dialog ids for TCAP Provider");
+
+        this.sccpProvider.registerSccpListener(ssn, this);
 		logger.info("Registered SCCP listener with address " + ssn);
 	}
 
@@ -450,7 +451,10 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 		this._EXECUTOR.shutdown();
 		this.sccpProvider.deregisterSccpListener(ssn);
 
-		this.dialogs.clear();
+        synchronized (dialogsLock) {
+            this.dialogs.clear();
+            this.freeDialogs.clear();
+        }
 	}
 
 	protected void sendProviderAbort(PAbortCauseType pAbortCause, byte[] remoteTransactionId, SccpAddress remoteAddress, SccpAddress localAddress,

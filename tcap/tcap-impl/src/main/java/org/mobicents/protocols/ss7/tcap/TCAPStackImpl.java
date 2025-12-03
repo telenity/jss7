@@ -52,9 +52,8 @@ public class TCAPStackImpl implements TCAPStack {
 	private long invokeTimeout = _INVOKE_TIMEOUT;
 	protected int maxDialogs = _MAX_DIALOGS;
 
-	// TODO: make this configurable
 	private long dialogIdRangeStart = 1;
-	private long dialogIdRangeEnd = Integer.MAX_VALUE;
+	private long dialogIdRangeEnd = 0xFFFFFL;
 	private boolean previewMode;
 
 	private int maxSeqControl = 15;
@@ -101,8 +100,6 @@ public class TCAPStackImpl implements TCAPStack {
 			throw new IllegalArgumentException("Range start value must be greater or equal 1");
 		if (rangeEnd > Integer.MAX_VALUE)
 			throw new IllegalArgumentException("Range end value must be less or equal " + Integer.MAX_VALUE);
-		if ((rangeEnd - rangeStart) < 10000)
-			throw new IllegalArgumentException("Range \"end - start\" must has at least 10000 possible dialogs");
 		if ((this.getDialogIdRangeEnd() - this.getDialogIdRangeStart()) <= this.maxDialogs)
 			throw new IllegalArgumentException("MaxDialog must be less than DialogIdRange");
 	}

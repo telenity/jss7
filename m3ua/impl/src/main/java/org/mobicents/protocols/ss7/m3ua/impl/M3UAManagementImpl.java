@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -76,7 +76,7 @@ import org.mobicents.protocols.ss7.mtp.Mtp3UserPartBaseImpl;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAManagement {
 	private static final Logger logger = Logger.getLogger(M3UAManagementImpl.class);
@@ -115,7 +115,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	private ScheduledExecutorService fsmTicker;
 
 	protected int maxAsForRoute = 2;
-	
+
 	protected int timeBetweenHeartbeat = 5000; // 5 sec default
 
 	private M3UARouteManagement routeManagement = null;
@@ -153,7 +153,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * Set the maximum SLS that can be used by SCTP. Internally SLS vs SCTP
 	 * Stream Sequence Number is maintained. Stream Seq Number 0 is for
 	 * management.
-	 * 
+	 *
 	 * @param maxSls
 	 *            the maxSls to set
 	 */
@@ -183,11 +183,11 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	public void setMaxAsForRoute(int maxAsForRoute) {
 		this.maxAsForRoute = maxAsForRoute;
 	}
-	
+
 	public int getHeartbeatTime(){
 		return this.timeBetweenHeartbeat;
 	}
-	
+
 	public void setHeartbeatTime(int timeBetweenHeartbeat){
 		this.timeBetweenHeartbeat = timeBetweenHeartbeat;
 	}
@@ -238,8 +238,6 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			logger.warn(String.format("Failed to load the SS7 configuration file. \n%s", e.getMessage()));
 		}
 
-		this.routeManagement.reset();
-
 		fsmTicker = Executors.newSingleThreadScheduledExecutor();
 		fsmTicker.scheduleAtFixedRate(m3uaScheduler, 500, 500, TimeUnit.MILLISECONDS);
 
@@ -252,7 +250,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 				logger.error("Exception while invoking M3UAManagementEventListener.onServiceStarted", ee);
 			}
 		}
-		
+
 		logger.info("Started M3UAManagement");
 	}
 
@@ -350,7 +348,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * type is IPSP. rc is optional and traffi-mode is also optional, default is
 	 * Loadshare
 	 * </p>
-	 * 
+	 *
 	 * @param args
 	 * @return
 	 * @throws Exception
@@ -448,10 +446,10 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 		return as;
 	}
-	
+
 	/**
 	 * Create new {@link AspFactoryImpl} without passing optional aspid and heartbeat is false
-	 * 
+	 *
 	 * @param aspName
 	 * @param associationName
 	 * @return
@@ -459,11 +457,11 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 */
 	public AspFactory createAspFactory(String aspName, String associationName) throws Exception {
 		return this.createAspFactory(aspName, associationName, false);
-	}	
+	}
 
 	/**
 	 * Create new {@link AspFactoryImpl} without passing optional aspid
-	 * 
+	 *
 	 * @param aspName
 	 * @param associationName
 	 * @return
@@ -505,7 +503,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * asp-name and sctp-association is mandatory where as aspid is optional. If
 	 * aspid is not passed, next available aspid wil be used
 	 * </p>
-	 * 
+	 *
 	 * @param aspName
 	 * @param associationName
 	 * @param aspid
@@ -589,7 +587,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	/**
 	 * Associate {@link AspImpl} to {@link AsImpl}
-	 * 
+	 *
 	 * @param asName
 	 * @param aspName
 	 * @return
@@ -709,7 +707,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	/**
 	 * This method should be called by management to start the ASP
-	 * 
+	 *
 	 * @param aspName
 	 *            The name of the ASP to be started
 	 * @throws Exception
@@ -746,7 +744,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	/**
 	 * This method should be called by management to stop the ASP
-	 * 
+	 *
 	 * @param aspName
 	 *            The name of the ASP to be stopped
 	 * @throws Exception
@@ -952,7 +950,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	/**
 	 * Load and create LinkSets and Link from persisted file
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void load() throws IOException {
@@ -966,7 +964,9 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			appServers = reader.read(AS_LIST, FastList.class);
 			this.routeManagement.route = reader.read(DPC_VS_AS_LIST, RouteMap.class);
 
-			// Create Asp's and assign to each of the AS. Schedule the FSM's
+            this.routeManagement.reset();
+
+            // Create Asp's and assign to each of the AS. Schedule the FSM's
 			for (FastList.Node<As> n = appServers.head(), end = appServers.tail(); (n = n.getNext()) != end;) {
 				AsImpl asImpl = (AsImpl) n.getValue();
 				asImpl.setM3UAManagement(this);

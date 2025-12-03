@@ -430,10 +430,15 @@ public class InvokeImpl implements Invoke {
 
 				// op failed, we must delete it from dialog and notify!
 				timerFuture.set(null);
+
+                if (state == OperationState.Idle) {
+                    return;
+                }
+
 				setState(OperationState.Idle);
+
 				// TC-L-CANCEL
-				if (dialog != null)
-					dialog.operationTimedOut(invoke);
+                dialog.operationTimedOut(invoke);
 			} finally {
 				dialog.getDialogLock().unlock();
 			}

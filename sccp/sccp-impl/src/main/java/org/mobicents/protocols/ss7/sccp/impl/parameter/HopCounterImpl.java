@@ -72,4 +72,11 @@ public class HopCounterImpl extends AbstractParameter implements HopCounter {
 	public byte[] encode() throws IOException {
 		return new byte[]{(byte) (this.value & 0x0F)};
 	}
+
+    @Override
+    public String toString() {
+        return "HopCounterImpl{" +
+                "value=" + value +
+                '}';
+    }
 }
