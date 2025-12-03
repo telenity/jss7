@@ -4,13 +4,14 @@
 
     <artifactId>ss7-parent</artifactId>
     <groupId>org.mobicents.protocols.ss7</groupId>
-    <version>2.0.0.20</version>
+    <version>${jss7.version}</version>
 
     <packaging>pom</packaging>
 
     <name>Mobicents SS7 :: ${project.artifactId}</name>
 
     <properties>
+        <jss7.version>2.0.0.21</jss7.version>
         <!-- maven.test.skip>false</maven.test.skip -->
         <mobicents.tools.mavenplugin.eclipse.version>
             1.0.0.FINAL

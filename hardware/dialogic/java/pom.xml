@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.mobicents.protocols.ss7.hardware</groupId>
 		<artifactId>mobicents-dialogic-parent</artifactId>
-		<version>2.0.0.20</version>
+		<version>${jss7.version}</version>
 	</parent>
 
 	<artifactId>mobicents-dialogic</artifactId>
@@ -41,8 +41,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.4.2</version>
-				<configuration>
+                <configuration>
 					<forkMode>pertest</forkMode>
 					<!-- So we dont have to juse xxxTest.java.bak "_" -->
 					<!-- <excludes> <exclude>**/TestCircle.java</exclude> <exclude>**/TestSquare.java</exclude> 

@@ -4,7 +4,7 @@
         <!-- Components Versions -->
         <property name="release.version" value="2.0.0-SNAPSHOT" />
 
-        <property name="ss7.version" value="2.0.0-SNAPSHOT" />
+        <property name="jss7.version" value="2.0.0-SNAPSHOT" />
 
         <property name="asn.version" value="2.0.0-SNAPSHOT" />
         <property name="sctp.version" value="1.0.0-SNAPSHOT" />
@@ -110,7 +110,7 @@
                                         <token key="SCTP_VERSION" value="${sctp.version}" />
                                         <token key="ASN_VERSION" value="${asn.version}" />
                                         <token key="STREAM_VERSION" value="${stream.version}" />
-                                        <token key="SS7_VERSION" value="${ss7.version}" />
+                                        <token key="SS7_VERSION" value="${jss7.version}" />
                                 </replacetokens>
                         </filterchain>
                 </copy>
