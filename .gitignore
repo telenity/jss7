@@ -29,6 +29,7 @@ atlassian-ide-plugin.xml
 *~
 # maven versions plugin
 pom.xml.versionsBackup
+.flattened-pom.xml
 # hprof dumps
 /*.hprof
 # ignore 'randomly' strewn around logs
