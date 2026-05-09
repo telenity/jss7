@@ -714,34 +714,34 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	@Override
 	public void onCommunicationLost(Association association) {
-		logger.warn(String.format("Communication channel lost for AspFactroy=%s Association=%s", this.name,
+		logger.warn(String.format("Communication channel lost for AspFactory=%s Association=%s", this.name,
 				association.getName()));
 		this.handleCommDown();
 	}
 
 	@Override
 	public void onCommunicationRestart(Association association) {
-		logger.warn(String.format("Communication channel restart for AspFactroy=%s Association=%s", this.name,
+		logger.warn(String.format("Communication channel restart for AspFactory=%s Association=%s", this.name,
 				association.getName()));
 
 		try {
 			this.transportManagement.stopAssociation(this.associationName);
 		} catch (Exception e) {
-			logger.warn(String.format("Error while trying to stop underlying Association for AspFactpry=%s",
+			logger.warn(String.format("Error while trying to stop underlying Association for AspFactory=%s",
 					this.getName()), e);
 		}
 
 		try {
 			this.transportManagement.startAssociation(this.associationName);
 		} catch (Exception e) {
-			logger.error(String.format("Error while trying to start underlying Association for AspFactpry=%s",
+			logger.error(String.format("Error while trying to start underlying Association for AspFactory=%s",
 					this.getName()), e);
 		}
 	}
 
 	@Override
 	public void onCommunicationShutdown(Association association) {
-		logger.warn(String.format("Communication channel shutdown for AspFactroy=%s Association=%s", this.name,
+		logger.warn(String.format("Communication channel shutdown for AspFactory=%s Association=%s", this.name,
 				association.getName()));
 		this.handleCommDown();
 

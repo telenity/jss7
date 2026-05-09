@@ -740,9 +740,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 							if (sgmMsgFst == null) {
 								// previous segments cache is not found - discard a segment
 								if (logger.isEnabledFor(Level.WARN)) {
-									logger.warn(String
-											.format("Reassembly function failure: received a non first segment without the first segement having recieved. SccpMessageSegment=%s",
-													msg));
+									logger.warn(String.format("Reassembly failed: non-first segment received before first segment. SccpMessageSegment=%s", msg));
 								}
 								return;
 							}
@@ -755,8 +753,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 										mspMain.stopTimer();
 								}
 								if (logger.isEnabledFor(Level.WARN)) {
-									logger.warn(String.format(
-											"Reassembly function failure: when receiving a next segment message order is missing. SccpMessageSegment=%s", msg));
+									logger.warn(String.format("Reassembly failed: next segment order is missing. SccpMessageSegment=%s", msg));
 								}
 								this.sccpRoutingControl.sendSccpError(sgmMsgFst, ReturnCauseValue.CANNOT_REASEMBLE);
 								return;

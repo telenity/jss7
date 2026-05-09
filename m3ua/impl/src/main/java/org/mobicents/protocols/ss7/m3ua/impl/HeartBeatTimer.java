@@ -77,14 +77,14 @@ public class HeartBeatTimer extends M3UATask {
 			try {
 				this.aspFactoryImpl.transportManagement.stopAssociation(this.aspFactoryImpl.associationName);
 			} catch (Exception e) {
-				logger.warn(String.format("Error while trying to stop underlying Association for AspFactpry=%s",
+				logger.warn(String.format("Error while trying to stop underlying Association for AspFactory=%s",
 						this.aspFactoryImpl.getName()), e);
 			}
 
 			try {
 				this.aspFactoryImpl.transportManagement.startAssociation(this.aspFactoryImpl.associationName);
 			} catch (Exception e) {
-				logger.error(String.format("Error while trying to start underlying Association for AspFactpry=%s",
+				logger.error(String.format("Error while trying to start underlying Association for AspFactory=%s",
 						this.aspFactoryImpl.getName()), e);
 			}
 
