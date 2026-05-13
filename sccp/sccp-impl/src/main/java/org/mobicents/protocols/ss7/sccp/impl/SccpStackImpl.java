@@ -805,7 +805,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 								msg));
 			}
 		} catch (IOException e) {
-			logger.error("IOException while decoding SCCP message: " + e.getMessage(), e);
+			logger.error("IOException while decoding SCCP message: ", e);
 		}
 	}
 	

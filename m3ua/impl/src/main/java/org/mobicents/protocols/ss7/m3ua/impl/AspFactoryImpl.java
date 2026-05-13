@@ -223,7 +223,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 						asPeerFSM.signal(TransitionState.ASP_DOWN);
 
 					} catch (UnknownTransitionException e) {
-						logger.error(e.getMessage(), e);
+						logger.error("ASP_DOWN failed", e);
 					}
 				}
 
@@ -243,7 +243,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 						asPeerFSM.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
 						asPeerFSM.signal(TransitionState.ASP_DOWN);
 					} catch (UnknownTransitionException e) {
-						logger.error(e.getMessage(), e);
+						logger.error("ASP_DOWN failed", e);
 					}
 				}
 
@@ -618,7 +618,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 					asPeerFSM.signal(TransitionState.ASP_DOWN);
 				}
 			} catch (UnknownTransitionException e) {
-				logger.error(e.getMessage(), e);
+				logger.error("ASP_DOWN failed", e);
 			}
 		}
 	}
@@ -667,7 +667,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 				}
 
 			} catch (UnknownTransitionException e) {
-				logger.error(e.getMessage(), e);
+				logger.error("COMM_UP failed", e);
 			}
 		}
 	}

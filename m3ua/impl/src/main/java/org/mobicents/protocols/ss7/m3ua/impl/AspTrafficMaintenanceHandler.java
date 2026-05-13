@@ -85,7 +85,7 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
 			asLocalFSM.signal(TransitionState.ASP_INACTIVE);
 
 		} catch (UnknownTransitionException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("ASP_INACTIVE failed", e);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
 			asLocalFSM.signal(TransitionState.ASP_ACTIVE);
 
 		} catch (UnknownTransitionException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("ASP_ACTIVE failed", e);
 		}
 	}
 
@@ -243,7 +243,7 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
 				asPeerFSM.signal(TransitionState.AS_STATE_CHANGE_ACTIVE);
 			}
 		} catch (UnknownTransitionException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("AS_STATE_CHANGE_ACTIVE failed", e);
 		}
 	}
 
@@ -445,7 +445,7 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
 				asPeerFSM.signal(TransitionState.AS_STATE_CHANGE_PENDING);
 			}
 		} catch (UnknownTransitionException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("AS_STATE_CHANGE_PENDING failed", e);
 		}
 	}
 

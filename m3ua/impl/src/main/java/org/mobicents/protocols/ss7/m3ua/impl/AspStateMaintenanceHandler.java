@@ -112,7 +112,7 @@ public class AspStateMaintenanceHandler extends MessageHandler {
 					asLocalFSM.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
 					asLocalFSM.signal(TransitionState.ASP_UP);
 				} catch (UnknownTransitionException e) {
-					logger.error(e.getMessage(), e);
+					logger.error("ASP_UP failed", e);
 				}
 			}
 		} else {
@@ -156,7 +156,7 @@ public class AspStateMaintenanceHandler extends MessageHandler {
 					try {
 						aspLocalFSM.signal(TransitionState.ASP_INACTIVE);
 					} catch (UnknownTransitionException e) {
-						logger.error(e.getMessage(), e);
+						logger.error("ASP_INACTIVE failed", e);
 					}
 				} else {
 					// Transition to ACTIVE_SENT
@@ -184,7 +184,7 @@ public class AspStateMaintenanceHandler extends MessageHandler {
 							}
 						}
 					} catch (UnknownTransitionException e) {
-						logger.error(e.getMessage(), e);
+						logger.error("ASP_ACTIVE_SENT failed", e);
 					}
 				}// if..else
 			}// for
@@ -234,7 +234,7 @@ public class AspStateMaintenanceHandler extends MessageHandler {
 					asLocalFSM.signal(TransitionState.ASP_DOWN);
 
 				} catch (UnknownTransitionException e) {
-					logger.error(e.getMessage(), e);
+					logger.error("ASP_DOWN failed", e);
 				}
 
 			}
@@ -279,7 +279,7 @@ public class AspStateMaintenanceHandler extends MessageHandler {
 				try {
 					fsm.signal(TransitionState.ASP_DOWN_ACK);
 				} catch (UnknownTransitionException e) {
-					logger.error(e.getMessage(), e);
+					logger.error("ASP_DOWN_ACK failed", e);
 				}
 			}// for
 

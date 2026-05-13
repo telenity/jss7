@@ -54,7 +54,7 @@ public class THPeerAsActToActNtfyAltAspAct implements TransitionHandler {
 			FSM aspLocalFSM = causeAsp.getLocalFSM();
 			aspLocalFSM.signal(TransitionState.OTHER_ALTERNATE_ASP_ACTIVE);
 		} catch (UnknownTransitionException e) {
-			logger.error(e.getMessage(), e);
+			logger.error("OTHER_ALTERNATE_ASP_ACTIVE failed", e);
 		}
 		return true;
 	}

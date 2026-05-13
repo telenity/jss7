@@ -92,7 +92,7 @@ public class AsStatePenTimeout implements FSMStateEventHandler {
 					inactive = true;
 					break;
 				} catch (UnknownTransitionException e) {
-					logger.error(e.getMessage(), e);
+					logger.error("AS_INACTIVE failed", e);
 				}
 
 			}// if
@@ -104,7 +104,7 @@ public class AsStatePenTimeout implements FSMStateEventHandler {
 				this.fsm.signal(TransitionState.AS_DOWN);
 				inactive = true;
 			} catch (UnknownTransitionException e) {
-				logger.error(e.getMessage(), e);
+				logger.error("AS_DOWN failed", e);
 			}
 		}
 		

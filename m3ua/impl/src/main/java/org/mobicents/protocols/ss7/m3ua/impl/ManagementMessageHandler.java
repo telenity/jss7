@@ -77,7 +77,7 @@ public class ManagementMessageHandler extends MessageHandler {
 					fsm.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
 					fsm.signal(TransitionState.getTransition(notify));
 				} catch (UnknownTransitionException e) {
-					logger.error(e.getMessage(), e);
+					logger.error("NTFY transition failed", e);
 				}
 			} else {
 				long[] rcs = notify.getRoutingContext().getRoutingContexts();
@@ -109,7 +109,7 @@ public class ManagementMessageHandler extends MessageHandler {
 						fsm.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
 						fsm.signal(TransitionState.getTransition(notify));
 					} catch (UnknownTransitionException e) {
-						logger.error(e.getMessage(), e);
+						logger.error("NTFY transition failed", e);
 					}
 				}// end of for
 			}// if (rc == null) {

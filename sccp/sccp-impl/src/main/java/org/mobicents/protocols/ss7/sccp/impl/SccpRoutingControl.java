@@ -607,7 +607,7 @@ public class SccpRoutingControl {
 					if (calledPartyAddress.isTranslated()) {
 						// Called address already translated once. This is loop
 						// condition and error
-						logger.error(String.format("Droping message. Received SCCPMessage=%s for routing but CalledPartyAddress is already translated once",
+						logger.error(String.format("Dropping message. Received SCCPMessage=%s for routing but CalledPartyAddress is already translated once",
 								msg));
 						this.sendSccpError(msg, ReturnCauseValue.SCCP_FAILURE);
 						return;
@@ -718,7 +718,7 @@ public class SccpRoutingControl {
 			if (calledPartyAddress.isTranslated()) {
 				// Called address already translated once. This is loop
 				// condition and error
-				logger.error(String.format("Droping message. Received SCCPMessage=%s for Routing , but CalledPartyAddress is already translated once", msg));
+				logger.error(String.format("Dropping message. Received SCCPMessage=%s for Routing, but CalledPartyAddress is already translated once", msg));
 				this.sendSccpError(msg, ReturnCauseValue.SCCP_FAILURE);
 				return;
 			}
@@ -815,7 +815,7 @@ public class SccpRoutingControl {
 				try {
 					listener.onMessage(msg);
 				} catch (Exception e) {
-					logger.error("Exception while delivering a system messages to the SCCP-user: " + e.getMessage(), e);
+					logger.error("Exception while delivering system messages to the SCCP-user: ", e);
 				}
 			} else {
 				logger.error(String.format("Received SccpDataMessage=%s but SccpStack is not started. Message will be dropped",

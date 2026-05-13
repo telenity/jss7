@@ -267,7 +267,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 						lsn.onMtp3TransferMessage(this.msg);
 					}
 				} catch (Throwable e) {
-					logger.error("Exception while delivering a system messages to the MTP3-user: " + e.getMessage(), e);
+					logger.error("Exception while delivering system messages to the MTP3-user: ", e);
 				}
 			} else {
 				logger.error(String.format(
@@ -297,7 +297,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 							lsn.onMtp3StatusMessage((Mtp3StatusPrimitive)this.msg);
 					}
 				} catch (Throwable e) {
-					logger.error("Exception while delivering a payload messages to the MTP3-user: " + e.getMessage(), e);
+					logger.error("Exception while delivering payload messages to the MTP3-user: ", e);
 				}
 			} else {
 				logger.error(String.format(

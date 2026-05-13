@@ -63,7 +63,7 @@ public class SEHPeerAsStateEnterPen extends SEHAsStateEnterPen {
 				try {
 					aspLocalFSM.signal(TransitionState.ASP_ACTIVE_SENT);
 				} catch (UnknownTransitionException e) {
-					logger.error(e.getMessage(), e);
+					logger.error("ASP_ACTIVE_SENT failed", e);
 				}
 			}
 		}

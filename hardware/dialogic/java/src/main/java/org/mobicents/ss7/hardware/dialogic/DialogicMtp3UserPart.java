@@ -226,7 +226,7 @@ public class DialogicMtp3UserPart extends Mtp3UserPartBaseImpl {
 				}
 				
 			} catch (IOException e) {
-				logger.error("IOException while parsing system messages from the Dialogic card: " + e.getMessage(), e);
+				logger.error("IOException while parsing system messages from the Dialogic card: ", e);
 			}
 		}
 	}
