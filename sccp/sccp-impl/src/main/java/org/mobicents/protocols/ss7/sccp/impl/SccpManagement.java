@@ -644,11 +644,6 @@ public class SccpManagement {
 					f.cancel(false);
 				}
 			}
-
-			try {
-				notify();
-			} catch (Exception e) {
-			}
 		}
 
 		void startTest() {
@@ -780,7 +775,7 @@ public class SccpManagement {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null && !(obj instanceof DpcSsn))
+			if (obj == null || !(obj instanceof DpcSsn))
 				return false;
 
 			DpcSsn y = (DpcSsn) obj;

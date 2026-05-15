@@ -36,6 +36,12 @@ import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
  */
 public abstract class SccpHarness {
 
+	/**
+	 * RouterImpl/SccpResource use a static XMLBinding configured in their constructors.
+	 * Parallel TestNG suites must not start stacks concurrently.
+	 */
+	private static final Object STACK_SETUP_LOCK = new Object();
+
 	protected String sccpStack1Name = null;
 	protected String sccpStack2Name = null;
 
@@ -143,8 +149,10 @@ public abstract class SccpHarness {
 	}
 
 	public void setUp() throws Exception {
-		this.setUpStack1();
-		this.setUpStack2();
+		synchronized (STACK_SETUP_LOCK) {
+			this.setUpStack1();
+			this.setUpStack2();
+		}
 	}
 
 	public void tearDown() {

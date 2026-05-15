@@ -17,6 +17,8 @@
 			<class name="org.mobicents.protocols.ss7.m3ua.impl.GatewayTest"></class>
 			<class name="org.mobicents.protocols.ss7.m3ua.impl.M3UAManagementTest"></class>
 			<class name="org.mobicents.protocols.ss7.m3ua.impl.fsm.FSMTest"></class>
+			<class name="org.mobicents.protocols.ss7.m3ua.impl.SgFSMTest"></class>
+			<class name="org.mobicents.protocols.ss7.m3ua.impl.IPSPClientFSMTest"></class>
 		</classes>
 	</test>
 

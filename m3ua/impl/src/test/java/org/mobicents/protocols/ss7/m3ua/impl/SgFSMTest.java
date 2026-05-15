@@ -125,8 +125,27 @@ public class SgFSMTest {
 
     @AfterMethod
     public void tearDown() throws Exception {
+        bringAllPeerAspsDown();
         serverM3UAMgmt.removeAllResourses();
         serverM3UAMgmt.stop();
+    }
+
+    private void bringAllPeerAspsDown() {
+        if (serverM3UAMgmt == null) {
+            return;
+        }
+        try {
+            for (AspFactory aspFactory : serverM3UAMgmt.getAspfactories()) {
+                AspFactoryImpl factory = (AspFactoryImpl) aspFactory;
+                M3UAMessageImpl inactive = messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE,
+                        MessageType.ASP_INACTIVE);
+                M3UAMessageImpl down = messageFactory.createMessage(MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_DOWN);
+                factory.read(inactive);
+                factory.read(down);
+            }
+        } catch (Exception ignored) {
+            // best-effort cleanup so removeAllResourses can unassign ASPs
+        }
     }
 
     private AspState getAspState(FSM fsm) {
@@ -888,6 +907,9 @@ public class SgFSMTest {
 
         aspFactoryImpl2.read(message);
 
+        assertEquals(AsState.ACTIVE, this.getAsState(remAs1.getLocalFSM()));
+        assertEquals(AsState.ACTIVE, this.getAsState(remAs2.getLocalFSM()));
+
         // Send Transfer Message and check load balancing behavior
         // int si, int ni, int mp, int opc, int dpc, int sls, byte[] data,
         // RoutingLabelFormat pointCodeFormat
@@ -1470,6 +1492,7 @@ public class SgFSMTest {
 
         private AssociationListener associationListener = null;
         private String name = null;
+        private boolean connected = false;
         private LinkedList<M3UAMessage> messageRxFromUserPart = new LinkedList<M3UAMessage>();
 
         TestAssociation(String name) {
@@ -1501,7 +1524,7 @@ public class SgFSMTest {
 
         @Override
         public String getName() {
-            return null;
+            return this.name;
         }
 
         @Override
@@ -1541,10 +1564,12 @@ public class SgFSMTest {
         }
 
         public void signalCommUp() {
+            this.connected = true;
             this.associationListener.onCommunicationUp(this, 1, 1);
         }
 
         public void signalCommLost() {
+            this.connected = false;
             this.associationListener.onCommunicationLost(this);
         }
 
@@ -1578,8 +1603,7 @@ public class SgFSMTest {
          */
         @Override
         public boolean isConnected() {
-            // TODO Auto-generated method stub
-            return false;
+            return this.connected;
         }
 
         @Override
@@ -1602,8 +1626,7 @@ public class SgFSMTest {
 
         @Override
         public boolean isUp() {
-            // TODO Auto-generated method stub
-            return false;
+            return this.connected;
         }
 
     }

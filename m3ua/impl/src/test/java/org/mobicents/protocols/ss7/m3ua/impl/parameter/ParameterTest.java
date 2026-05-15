@@ -145,7 +145,7 @@ public class ParameterTest {
 		assertEquals(p2.getMP(), p2.getMP());
 		assertEquals(p2.getSLS(), p2.getSLS());
 
-		boolean isDataCorrect = Arrays.equals(p2.getData(), p2.getData());
+		boolean isDataCorrect = Arrays.equals(p1.getData(), p2.getData());
 		assertTrue(isDataCorrect, "Data mismatch");
 	}
 
@@ -174,6 +174,45 @@ public class ParameterTest {
 
 		boolean isDataCorrect = Arrays.equals(p1.getData(), p2.getData());
 		assertTrue(isDataCorrect, "Data mismatch");
+	}
+
+	@Test
+	public void testProtocolDataCachedValue_multipleWrite() throws IOException {
+		byte[] payload = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+		ProtocolDataImpl p = (ProtocolDataImpl) factory.createProtocolData(1408, 14150, 3, 2, 0, 7, payload);
+
+		byte[] expected = p.getValue();
+		assertNotNull(expected);
+
+		ByteBuf first = Unpooled.buffer();
+		p.write(first);
+		byte[] firstWire = new byte[first.readableBytes()];
+		first.readBytes(firstWire);
+
+		ByteBuf second = Unpooled.buffer();
+		p.write(second);
+		byte[] secondWire = new byte[second.readableBytes()];
+		second.readBytes(secondWire);
+
+		assertTrue(Arrays.equals(firstWire, secondWire));
+		assertTrue(Arrays.equals(expected, Arrays.copyOfRange(firstWire, 4, 4 + expected.length)));
+	}
+
+	@Test
+	public void testProtocolDataDecodeReencode() throws IOException {
+		byte[] payload = new byte[] { 10, 20, 30 };
+		ProtocolDataImpl created = (ProtocolDataImpl) factory.createProtocolData(100, 200, 1, 2, 0, 3, payload);
+		byte[] encodedValue = created.getValue();
+
+		ProtocolDataImpl decoded = (ProtocolDataImpl) factory.createProtocolData(encodedValue);
+		assertTrue(Arrays.equals(payload, decoded.getData()));
+		assertTrue(Arrays.equals(encodedValue, decoded.getValue()));
+
+		ByteBuf wire = Unpooled.buffer();
+		decoded.write(wire);
+		byte[] paramBytes = new byte[wire.readableBytes()];
+		wire.readBytes(paramBytes);
+		assertTrue(Arrays.equals(encodedValue, getValue(paramBytes)));
 	}
 
 	@Test

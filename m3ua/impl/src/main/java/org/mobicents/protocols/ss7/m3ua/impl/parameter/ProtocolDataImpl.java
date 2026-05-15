@@ -39,6 +39,8 @@ public class ProtocolDataImpl extends ParameterImpl implements ProtocolData {
 	private int sls;
 	private byte[] data;
 
+	private byte[] value;
+
 	protected ProtocolDataImpl() {
 		this.tag = ParameterImpl.Protocol_Data;
 	}
@@ -52,7 +54,7 @@ public class ProtocolDataImpl extends ParameterImpl implements ProtocolData {
 		this.mp = mp;
 		this.sls = sls;
 		this.data = data;
-		encode();
+		this.value = encode();
 	}
 
 	/**
@@ -76,6 +78,8 @@ public class ProtocolDataImpl extends ParameterImpl implements ProtocolData {
 
 		this.data = new byte[valueData.length - 12];
 		System.arraycopy(valueData, 12, data, 0, valueData.length - 12);
+
+		this.value = valueData;
 	}
 
 	private byte[] encode() {
@@ -136,7 +140,7 @@ public class ProtocolDataImpl extends ParameterImpl implements ProtocolData {
 
 	@Override
 	protected byte[] getValue() {
-		return this.encode();
+		return value;
 	}
 
 	@Override

@@ -28,15 +28,13 @@ public class M3UACounterProviderImpl implements M3UACounterProvider {
     }
 
     public void updatePacketsPerAssTx(String assocName) {
-        Counter counter = packetsPerAssTx.get(assocName);
-        if (counter != null) {
+        packetsPerAssTx.compute(assocName, (key, counter) -> {
+            if (counter == null) {
+                counter = new Counter();
+            }
             counter.add();
-        }
-        else {
-            counter = new Counter();
-            counter.add();
-            packetsPerAssTx.put(assocName, counter);
-        }
+            return counter;
+        });
     }
 
     @Override
@@ -47,16 +45,13 @@ public class M3UACounterProviderImpl implements M3UACounterProvider {
     }
 
     public void updatePacketsPerAssRx(String assocName) {
-        Counter counter = packetsPerAssRx.get(assocName);
-        if (counter != null) {
+        packetsPerAssRx.compute(assocName, (key, counter) -> {
+            if (counter == null) {
+                counter = new Counter();
+            }
             counter.add();
-        }
-        else {
-            counter = new Counter();
-            counter.add();
-            packetsPerAssRx.put(assocName, counter);
-        }
+            return counter;
+        });
     }
 
 }
-

@@ -318,25 +318,26 @@ public class SccpRoutingControl {
 		RemoteSignalingPointCode remoteSpc = this.sccpStackImpl.getSccpResource().getRemoteSpcByPC(translationAddress.getSignalingPointCode());
 		if (remoteSpc == null) {
 			if (logger.isEnabledFor(Level.INFO)) {
-				logger.info(String.format("Received SccpMessage=%s for Translation but no %s Remote Signaling Pointcode = %d resource defined ", msg, destName,
+				logger.info(String.format("Received SccpMessage=%s for Translation but no %s Remote Signaling Pointcode = %d resource defined", msg, destName,
 						translationAddress.getSignalingPointCode()));
 			}
 			return TranslationAddressCheckingResult.translationFailure;
 		}
 
 		if (remoteSpc.isRemoteSpcProhibited()) {
-			Long lastTimeLog = prohibitedSpcs.get(remoteSpc.getRemoteSpc());
-			// 1 log per minute
-			if (lastTimeLog == null || System.currentTimeMillis() - lastTimeLog > 60000) {
-				prohibitedSpcs.put(remoteSpc.getRemoteSpc(), System.currentTimeMillis());
-				if (logger.isEnabledFor(Level.WARN)) {
-					logger.warn(String.format(
-							"Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited ", msg,
-							destName, translationAddress.getSignalingPointCode()));
+			prohibitedSpcs.compute(remoteSpc.getRemoteSpc(), (k, lastTimeLog) -> {
+				long now = System.currentTimeMillis();
+				if (lastTimeLog == null || now - lastTimeLog > 60000) {
+					if (logger.isEnabledFor(Level.WARN)) {
+						logger.warn(String.format("Received SccpMessage=%s for Translation but %s Remote Signaling Pointcode = %d is prohibited",
+								msg, destName, translationAddress.getSignalingPointCode()));
+					}
+					return now;
 				}
-			}
+				return lastTimeLog;
+			});
 			return TranslationAddressCheckingResult.destinationUnavailable_MtpFailure;
-		}			
+		}
 
 		if (translationAddress.getAddressIndicator().getRoutingIndicator() == RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN) {
 			if (targetSsn != 1) {
@@ -508,37 +509,18 @@ public class SccpRoutingControl {
 	}
 
 	private boolean selectLoadSharingRoute(LoadSharingAlgorithm loadSharingAlgo, SccpAddressedMessageImpl msg) {
-
-		if (loadSharingAlgo == LoadSharingAlgorithm.Bit4) {
-			if ((msg.getSls() & 0x10) == 0)
+		int sls = msg.getSls();
+		switch (loadSharingAlgo) {
+			case Bit4: return (sls & 0x10) == 0;
+			case Bit3: return (sls & 0x08) == 0;
+			case Bit2: return (sls & 0x04) == 0;
+			case Bit1: return (sls & 0x02) == 0;
+			case Bit0: return (sls & 0x01) == 0;
+			default:
+				// TODO: implement complicated algorithms for selecting a destination
+				// (CallingPartyAddress & SLS depended)
+				// Look at Q.715 8.1.3 - active loadsharing
 				return true;
-			else
-				return false;
-		} else if (loadSharingAlgo == LoadSharingAlgorithm.Bit3) {
-			if ((msg.getSls() & 0x08) == 0)
-				return true;
-			else
-				return false;
-		} else if (loadSharingAlgo == LoadSharingAlgorithm.Bit2) {
-			if ((msg.getSls() & 0x04) == 0)
-				return true;
-			else
-				return false;
-		} else if (loadSharingAlgo == LoadSharingAlgorithm.Bit1) {
-			if ((msg.getSls() & 0x02) == 0)
-				return true;
-			else
-				return false;
-		} else if (loadSharingAlgo == LoadSharingAlgorithm.Bit0) {
-			if ((msg.getSls() & 0x01) == 0)
-				return true;
-			else
-				return false;
-		} else {
-			// TODO: implement complicated algorithms for selecting a destination
-			// (CallingPartyAddress & SLS depended)
-			// Look at Q.715 8.1.3 - active loadsharing
-			return true;
 		}
 	}
 

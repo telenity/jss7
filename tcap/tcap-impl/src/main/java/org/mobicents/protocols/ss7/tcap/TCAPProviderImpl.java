@@ -596,7 +596,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 										message.getSls(), message.getProtocolClass().getProtocolClass());
 							} else {
 								this.sendProviderAbort(PAbortCauseType.BadlyFormattedTxPortion, tcUnidentified.getOriginatingTransactionId(), remoteAddress,
-										localAddress, message.getProtocolClass().getProtocolClass(), message.getSls());
+										localAddress, message.getSls(), message.getProtocolClass().getProtocolClass());
 							}
 						}
 						return;

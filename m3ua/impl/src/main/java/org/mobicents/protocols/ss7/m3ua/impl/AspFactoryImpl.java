@@ -502,24 +502,25 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 				this.association.send(payloadData);
 			} else {
-				byte[] bf = new byte[byteBuf.readableBytes()];
+				int encodedLength = byteBuf.readableBytes();
+				byte[] bf = new byte[encodedLength];
 				byteBuf.readBytes(bf);
 				synchronized (txBuffer) {
 					switch (message.getMessageClass()) {
 						case MessageClass.ASP_STATE_MAINTENANCE:
 						case MessageClass.MANAGEMENT:
 						case MessageClass.ROUTING_KEY_MANAGEMENT:
-							payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), bf, true, true,
+							payloadData = new org.mobicents.protocols.api.PayloadData(encodedLength, bf, true, true,
 									SCTP_PAYLOAD_PROT_ID_M3UA, 0);
 							break;
 						case MessageClass.TRANSFER_MESSAGES:
 							PayloadData payload = (PayloadData) message;
 							int seqControl = payload.getData().getSLS();
-							payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), bf, true, false,
+							payloadData = new org.mobicents.protocols.api.PayloadData(encodedLength, bf, true, false,
 									SCTP_PAYLOAD_PROT_ID_M3UA, this.slsTable[seqControl]);
 							break;
 						default:
-							payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), bf, true, true,
+							payloadData = new org.mobicents.protocols.api.PayloadData(encodedLength, bf, true, true,
 									SCTP_PAYLOAD_PROT_ID_M3UA, 0);
 							break;
 					}
