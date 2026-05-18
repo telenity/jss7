@@ -22,17 +22,17 @@
 
 package org.mobicents.protocols.ss7.sccp.impl;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.mobicents.protocols.ss7.sccp.ConcernedSignalingPointCode;
 import org.mobicents.protocols.ss7.sccp.RemoteSignalingPointCode;
 import org.mobicents.protocols.ss7.sccp.RemoteSubSystem;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author amit bhayani
@@ -53,7 +53,7 @@ public class SccpResourceTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		resource = new SccpResourceImpl("SccpResourceTest");
 		resource.start();
@@ -61,13 +61,13 @@ public class SccpResourceTest {
 
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		resource.removeAllResourses();
 		resource.stop();
 	}
 	
-	@Test(groups = { "sccpresource","functional.encode"})
+	@Test
 	public void testSerialization() throws Exception {
 
 		resource.addRemoteSpc(1, 6034, 0, 0);
@@ -82,18 +82,18 @@ public class SccpResourceTest {
 		SccpResourceImpl resource1 = new SccpResourceImpl("SccpResourceTest");
 		resource1.start();
 
-		assertEquals( resource1.getRemoteSpcs().size(),2);
+		assertEquals(2, resource1.getRemoteSpcs().size());
 		RemoteSignalingPointCode rsp1Temp = resource1.getRemoteSpc(1);
 		assertNotNull(rsp1Temp);
-		assertEquals( rsp1Temp.getRemoteSpc(),6034);
+		assertEquals(6034, rsp1Temp.getRemoteSpc());
 		
-		assertEquals( resource1.getRemoteSsns().size(),2);
+		assertEquals(2, resource1.getRemoteSsns().size());
 		RemoteSubSystem rss1Temp = resource1.getRemoteSsn(1);
-		assertEquals( rss1Temp.getRemoteSsn(),8);
+		assertEquals(8, rss1Temp.getRemoteSsn());
 		
-		assertEquals(resource1.getConcernedSpcs().size(), 2);
+		assertEquals(2, resource1.getConcernedSpcs().size());
 		ConcernedSignalingPointCode cspc1Temp = resource1.getConcernedSpc(1);
-		assertEquals(cspc1Temp.getRemoteSpc(), 603);
+		assertEquals(603, cspc1Temp.getRemoteSpc());
 	}
 
 }

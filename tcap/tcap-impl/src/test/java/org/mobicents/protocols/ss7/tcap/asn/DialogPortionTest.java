@@ -31,38 +31,37 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
-import org.testng.annotations.*;
+import org.junit.*;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * @author baranowb
  * @author amit bhayani
  * @author sergey vetyutnev
  */
-@Test(groups = { "asn" })
 public class DialogPortionTest {
 	
 	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
+	@Before
+	public void setUpClass() throws Exception {
 	}
 
-	@AfterClass
-	public static void tearDownClass() throws Exception {
+	@After
+	public void tearDownClass() throws Exception {
 	}
 	
-	@BeforeMethod
+	@Before
 	public void setUp(){
 		
 	}
 	
-	@AfterMethod
+	@After
 	public void tearDown() {
 		
 	}
 
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testDialogPortion_UserInformation() throws Exception {
 
 		// Hex dump is from wireshark trace for TCAP - MAP/USSD
@@ -132,7 +131,7 @@ public class DialogPortionTest {
 		
 	}
 
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testDialogPortion_DialogRequestAPDU() throws Exception {
 		// trace
 		byte[] b = new byte[] { 107, 30, 40, 28, 6, 7, 0, 17, (byte) 134, 5, 1,
@@ -193,7 +192,7 @@ public class DialogPortionTest {
 
 	}
 
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testDialogPortion_DialogAbortAPDU() throws Exception {
 
 		// trace

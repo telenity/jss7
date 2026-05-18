@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.mobicents.protocols.ss7.management</groupId>
 		<artifactId>management</artifactId>
-		<version>${jss7.version}</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>shell-server-api</artifactId>

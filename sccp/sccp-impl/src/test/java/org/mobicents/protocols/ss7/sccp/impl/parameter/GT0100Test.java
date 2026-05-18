@@ -35,8 +35,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
 import org.mobicents.protocols.ss7.indicator.NumberingPlan;
@@ -64,18 +64,18 @@ public class GT0100Test {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
 	/**
 	 * Test of decode method, of class GT0011.
 	 */
-	@Test(groups = { "parameter","functional.decode"})
+	@Test
 	public void testDecodeEven() throws Exception {
 		// wrap data with input stream
 		ByteArrayInputStream in = new ByteArrayInputStream(dataEven);
@@ -84,15 +84,15 @@ public class GT0100Test {
 		GT0100 gt1 = (GT0100) codec.decode(in);
 
 		// check results
-		assertEquals( gt1.getTranslationType(),0);
-		assertEquals( gt1.getNumberingPlan(),NumberingPlan.ISDN_TELEPHONY);
-		assertEquals( gt1.getDigits(),"9023629581");
+		assertEquals(0, gt1.getTranslationType());
+		assertEquals(NumberingPlan.ISDN_TELEPHONY, gt1.getNumberingPlan());
+		assertEquals("9023629581", gt1.getDigits());
 	}
 
 	/**
 	 * Test of encode method, of class GT0011.
 	 */
-	@Test(groups = { "parameter","functional.encode"})
+	@Test
 	public void testEncodeEven() throws Exception {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		GT0100 gt = new GT0100(0, NumberingPlan.ISDN_TELEPHONY, NatureOfAddress.NATIONAL, "9023629581");
@@ -102,13 +102,13 @@ public class GT0100Test {
 		byte[] res = bout.toByteArray();
 
 		boolean correct = Arrays.equals(dataEven, res);
-		assertTrue( correct,"Incorrect encoding");
+		assertTrue("Incorrect encoding",  correct);
 	}
 	
 	/**
 	 * Test of decode method, of class GT0011.
 	 */
-	@Test(groups = { "parameter","functional.decode"})
+	@Test
 	public void testDecodeOdd() throws Exception {
 		// wrap data with input stream
 		ByteArrayInputStream in = new ByteArrayInputStream(dataOdd);
@@ -117,15 +117,15 @@ public class GT0100Test {
 		GT0100 gt1 = (GT0100) codec.decode(in);
 
 		// check results
-		assertEquals( gt1.getTranslationType(),0);
-		assertEquals( gt1.getNumberingPlan(),NumberingPlan.ISDN_TELEPHONY);
-		assertEquals( gt1.getDigits(),"902362958");
+		assertEquals(0, gt1.getTranslationType());
+		assertEquals(NumberingPlan.ISDN_TELEPHONY, gt1.getNumberingPlan());
+		assertEquals("902362958", gt1.getDigits());
 	}
 
 	/**
 	 * Test of encode method, of class GT0011.
 	 */
-	@Test(groups = { "parameter","functional.encode"})
+	@Test
 	public void testEncodeOdd() throws Exception {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		GT0100 gt = new GT0100(0, NumberingPlan.ISDN_TELEPHONY, NatureOfAddress.NATIONAL, "902362958");
@@ -135,10 +135,10 @@ public class GT0100Test {
 		byte[] res = bout.toByteArray();
 
 		boolean correct = Arrays.equals(dataOdd, res);
-		assertTrue( correct,"Incorrect encoding");
+		assertTrue("Incorrect encoding",  correct);
 	}
 
-	@Test(groups = { "parameter","functional.encode"})
+	@Test
 	public void testSerialization() throws Exception {
 		GT0100 gt = new GT0100(0, NumberingPlan.ISDN_MOBILE, NatureOfAddress.NATIONAL, "9023629581");
 
@@ -157,10 +157,10 @@ public class GT0100Test {
 		GT0100 aiOut = reader.read("GT0100", GT0100.class);
 
 		// check results
-		assertEquals( aiOut.getNatureOfAddress(),NatureOfAddress.NATIONAL);
-		assertEquals( aiOut.getTranslationType(),0);
-		assertEquals( aiOut.getNumberingPlan(),NumberingPlan.ISDN_MOBILE);
-		assertEquals( aiOut.getDigits(),"9023629581");
+		assertEquals(NatureOfAddress.NATIONAL, aiOut.getNatureOfAddress());
+		assertEquals(0, aiOut.getTranslationType());
+		assertEquals(NumberingPlan.ISDN_MOBILE, aiOut.getNumberingPlan());
+		assertEquals("9023629581", aiOut.getDigits());
 	}
 
 }

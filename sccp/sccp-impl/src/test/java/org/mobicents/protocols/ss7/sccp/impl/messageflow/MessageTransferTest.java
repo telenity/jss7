@@ -22,8 +22,8 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.messageflow;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
@@ -40,11 +40,11 @@ import org.mobicents.protocols.ss7.sccp.message.SccpNoticeMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0001;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -58,13 +58,13 @@ public class MessageTransferTest extends SccpHarness {
 	public MessageTransferTest() {
 	}
 
-	@BeforeClass
+	@Before
 	public void setUpClass() throws Exception {
 		this.sccpStack1Name = "MessageTransferTestSccpStack1";
 		this.sccpStack2Name = "MessageTransferTestSccpStack2";
 	}
 
-	@AfterClass
+	@After
 	public void tearDownClass() throws Exception {
 	}
 
@@ -80,12 +80,12 @@ public class MessageTransferTest extends SccpHarness {
 		sccpStack2.start();
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		super.tearDown();
 	}
@@ -94,7 +94,7 @@ public class MessageTransferTest extends SccpHarness {
 		return new byte[] { 11, 12, 13, 14, 15 };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.transfer" })
+	@Test
 	public void testTransfer() throws Exception {
 
 		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, 8);
@@ -115,32 +115,32 @@ public class MessageTransferTest extends SccpHarness {
 				MessageSegmentationTest.getDataA(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 1);
-		assertEquals(u2.getMessages().size(), 0);
+		assertEquals(1, u1.getMessages().size());
+		assertEquals(0, u2.getMessages().size());
 		SccpNoticeMessage nMsg = (SccpNoticeMessage) u1.getMessages().get(0);
-		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.SEG_NOT_SUPPORTED);
+		assertEquals(ReturnCauseValue.SEG_NOT_SUPPORTED, nMsg.getReturnCause().getValue());
 
 		// transfer a UDT message: U1 -> U2
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a2, a1, getDataSrc(), 0, 8, true,
 				null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 1);
-		assertEquals(u2.getMessages().size(), 1);
+		assertEquals(1, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
 		SccpDataMessage dMsg = (SccpDataMessage) u2.getMessages().get(0);
 		assertTrue(Arrays.equals(dMsg.getData(), getDataSrc()));
-		assertEquals(dMsg.getType(), SccpMessage.MESSAGE_TYPE_UDT);
+		assertEquals(SccpMessage.MESSAGE_TYPE_UDT, dMsg.getType());
 
 		// transfer a UDT message: U1 -> U1
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a1, a1, getDataSrc(), 0, 8, true,
 				null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 1);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
 		dMsg = (SccpDataMessage) u1.getMessages().get(1);
 		assertTrue(Arrays.equals(dMsg.getData(), getDataSrc()));
-		assertEquals(dMsg.getType(), SccpMessage.MESSAGE_TYPE_UNDEFINED); // message
+		assertEquals(SccpMessage.MESSAGE_TYPE_UNDEFINED, dMsg.getType()); // message
 																			// type
 																			// has
 																			// not
@@ -159,11 +159,11 @@ public class MessageTransferTest extends SccpHarness {
 				null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 1);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
 		nMsg = (SccpNoticeMessage) u1.getMessages().get(2);
 		assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
-		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.SUBSYSTEM_FAILURE);
+		assertEquals(ReturnCauseValue.SUBSYSTEM_FAILURE, nMsg.getReturnCause().getValue());
 
 		// attempt to transfer a UDT message: U1 -> U2(unregistered ssn at U1)
 		// -> error
@@ -172,11 +172,11 @@ public class MessageTransferTest extends SccpHarness {
 				null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 4);
-		assertEquals(u2.getMessages().size(), 1);
+		assertEquals(4, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
 		nMsg = (SccpNoticeMessage) u1.getMessages().get(3);
 		assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
-		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.SCCP_FAILURE);
+		assertEquals(ReturnCauseValue.SCCP_FAILURE, nMsg.getReturnCause().getValue());
 
 		// ....................
 		// attempt to transfer a UDT message: U1 -> U2(unregistered ssn at U2,
@@ -189,12 +189,11 @@ public class MessageTransferTest extends SccpHarness {
 		// false));
 		// sccpProvider1.send(message);
 		// Thread.sleep(100);
-		// assertEquals(u1.getMessages().size(), 6);
-		// assertEquals(u2.getMessages().size(), 1);
+		// assertEquals(6, u1.getMessages().size());
+		// assertEquals(1, u2.getMessages().size());
 		// nMsg = (SccpNoticeMessage) u1.getMessages().get(3);
 		// assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
-		// assertEquals(nMsg.getReturnCause().getValue(),
-		// ReturnCauseValue.SCCP_FAILURE);
+		// assertEquals(// ReturnCauseValue.SCCP_FAILURE, nMsg.getReturnCause().getValue());
 		// ....................
 
 		// transfer a splitted XUDT message: U1 -> U2 - success
@@ -204,11 +203,11 @@ public class MessageTransferTest extends SccpHarness {
 				MessageSegmentationTest.getDataA(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 4);
-		assertEquals(u2.getMessages().size(), 2);
+		assertEquals(4, u1.getMessages().size());
+		assertEquals(2, u2.getMessages().size());
 		dMsg = (SccpDataMessage) u2.getMessages().get(1);
 		assertTrue(Arrays.equals(dMsg.getData(), MessageSegmentationTest.getDataA()));
-		assertEquals(dMsg.getType(), SccpMessage.MESSAGE_TYPE_XUDT);
+		assertEquals(SccpMessage.MESSAGE_TYPE_XUDT, dMsg.getType());
 
 		// transfer a long LUDT message: U1 -> U2 - success
 		sccpStack1.getRouter().removeLongMessageRule(1);
@@ -217,11 +216,11 @@ public class MessageTransferTest extends SccpHarness {
 				MessageSegmentationTest.getDataA(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 4);
-		assertEquals(u2.getMessages().size(), 3);
+		assertEquals(4, u1.getMessages().size());
+		assertEquals(3, u2.getMessages().size());
 		dMsg = (SccpDataMessage) u2.getMessages().get(2);
 		assertTrue(Arrays.equals(dMsg.getData(), MessageSegmentationTest.getDataA()));
-		assertEquals(dMsg.getType(), SccpMessage.MESSAGE_TYPE_LUDT);
+		assertEquals(SccpMessage.MESSAGE_TYPE_LUDT, dMsg.getType());
 
 		// attempt to transfer a LUDT message: U1 -> U2 - bad translation at U1
 		GT0001 gt1 = new GT0001(NatureOfAddress.NATIONAL, "12345");
@@ -230,11 +229,11 @@ public class MessageTransferTest extends SccpHarness {
 				null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 5);
-		assertEquals(u2.getMessages().size(), 3);
+		assertEquals(5, u1.getMessages().size());
+		assertEquals(3, u2.getMessages().size());
 		nMsg = (SccpNoticeMessage) u1.getMessages().get(4);
 		assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
-		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+		assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS, nMsg.getReturnCause().getValue());
 
 		// attempt to transfer a LUDT message: U1 -> U2 - bad translation at U2
 		SccpAddress a2_3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, getStack2PC(), gt1, 18);
@@ -242,10 +241,10 @@ public class MessageTransferTest extends SccpHarness {
 				null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 6);
-		assertEquals(u2.getMessages().size(), 3);
+		assertEquals(6, u1.getMessages().size());
+		assertEquals(3, u2.getMessages().size());
 		nMsg = (SccpNoticeMessage) u1.getMessages().get(5);
 		assertTrue(Arrays.equals(nMsg.getData(), getDataSrc()));
-		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+		assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS, nMsg.getReturnCause().getValue());
 	}
 }

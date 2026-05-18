@@ -21,10 +21,10 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +46,7 @@ import org.mobicents.protocols.api.Server;
 import org.mobicents.protocols.api.ServerListener;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
+import org.mobicents.protocols.ss7.m3ua.Util;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.message.MessageFactoryImpl;
@@ -69,11 +70,11 @@ import org.mobicents.protocols.ss7.mtp.Mtp3ResumePrimitive;
 import org.mobicents.protocols.ss7.mtp.Mtp3StatusPrimitive;
 import org.mobicents.protocols.ss7.mtp.Mtp3TransferPrimitive;
 import org.mobicents.protocols.ss7.mtp.Mtp3UserPartListener;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Tests for FSM of IPSP acting as CLIENT
@@ -100,19 +101,20 @@ public class IPSPClientFSMTest {
     public static void tearDownClass() throws Exception {
     }
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         semaphore = new Semaphore(0);
         this.transportManagement = new TransportManagement();
         this.clientM3UAMgmt = new M3UAManagementImpl("IPSPClientFSMTest");
         this.clientM3UAMgmt.setTransportManagement(this.transportManagement);
+        this.clientM3UAMgmt.setPersistDir(Util.getTmpTestDir());
         this.mtp3UserPartListener = new Mtp3UserPartListenerimpl();
         this.clientM3UAMgmt.addMtp3UserPartListener(this.mtp3UserPartListener);
         this.clientM3UAMgmt.start();
 
     }
 
-    @AfterMethod
+    @After
     public void tearDown() throws Exception {
         clientM3UAMgmt.removeAllResourses();
         clientM3UAMgmt.stop();

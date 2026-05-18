@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>mobicents-ss7-docs</artifactId>
 		<groupId>org.mobicents.protocols.ss7.docs</groupId>
-		<version>${jss7.version}</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>mobicents-ss7-docs-sources</artifactId>
@@ -14,13 +14,25 @@
 
 	</properties>
 
-	<build>
-		<resources>
-			<resource>
-				<directory>${basedir}/src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-	</build>
+		<build>
+			<resources>
+				<resource>
+					<directory>${basedir}/src/main/resources</directory>
+					<filtering>true</filtering>
+					<includes>
+						<include>**/*.xml</include>
+						<include>**/*.ent</include>
+					</includes>
+				</resource>
+				<resource>
+					<directory>${basedir}/src/main/resources</directory>
+					<filtering>false</filtering>
+					<excludes>
+						<exclude>**/*.xml</exclude>
+						<exclude>**/*.ent</exclude>
+					</excludes>
+				</resource>
+			</resources>
+		</build>
 
 </project>

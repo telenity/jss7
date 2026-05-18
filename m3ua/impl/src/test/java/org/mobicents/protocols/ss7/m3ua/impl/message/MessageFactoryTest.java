@@ -22,9 +22,9 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.message;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
@@ -33,11 +33,11 @@ import java.io.IOException;
 import org.mobicents.protocols.ss7.m3ua.message.MessageType;
 import org.mobicents.protocols.ss7.m3ua.message.transfer.PayloadData;
 import org.mobicents.protocols.ss7.m3ua.parameter.ProtocolData;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author amit bhayani
@@ -62,11 +62,11 @@ public class MessageFactoryTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 

@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
@@ -34,11 +34,11 @@ import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.message.SccpNoticeMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -52,13 +52,13 @@ public class MessageReassemblyTest extends SccpHarness {
 	public MessageReassemblyTest() {
 	}
 
-	@BeforeClass
+	@Before
 	public void setUpClass() throws Exception {
 		this.sccpStack1Name = "MessageReassemblyTestSccpStack1";
 		this.sccpStack2Name = "MessageReassemblyTestSccpStack2";
 	}
 
-	@AfterClass
+	@After
 	public void tearDownClass() throws Exception {
 	}
 
@@ -74,12 +74,12 @@ public class MessageReassemblyTest extends SccpHarness {
 		sccpProvider2= sccpStack2.getSccpProvider();
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		super.tearDown();
 	}
@@ -88,7 +88,7 @@ public class MessageReassemblyTest extends SccpHarness {
 		return new byte[] { 17, (byte) 129, 15, 4, 6, 10, 15, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15, 16, 4, (byte) 192, 100, 0, 0, 18, 1, 7, 0 };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.decode"})
+	@Test
 	public void testReassembly() throws Exception {
 
 		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, 8);
@@ -104,100 +104,100 @@ public class MessageReassemblyTest extends SccpHarness {
 		Thread.sleep(100);
 
 		// Receiving a chain of 3 XUDT segments -> success
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm1());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 1);
+		assertEquals(1, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm2());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 1);
-		assertEquals(u1.getMessages().size(), 0);
+		assertEquals(1, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(0, u1.getMessages().size());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm3());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u1.getMessages().size(), 1);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(1, u1.getMessages().size());
 		SccpDataMessage dMsg =  (SccpDataMessage)u1.getMessages().get(0);
 		assertTrue(Arrays.equals(dMsg.getData(), MessageSegmentationTest.getDataA()));
-		assertEquals(u2.getMessages().size(), 0);
+		assertEquals(0, u2.getMessages().size());
 
 		// Receiving a single XUDT message without segments -> success
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), getDataXudt1());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u1.getMessages().size(), 2);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(2, u1.getMessages().size());
 		dMsg =  (SccpDataMessage)u1.getMessages().get(1);
 		assertTrue(Arrays.equals(dMsg.getData(), SccpDataMessageTest.getDataXudt1Src()));
-		assertEquals(u2.getMessages().size(), 0);
+		assertEquals(0, u2.getMessages().size());
 
 		// Receiving a chain of 3 XUDTS segments -> success
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm1_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 1);
+		assertEquals(1, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm2_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 1);
-		assertEquals(u1.getMessages().size(), 2);
+		assertEquals(1, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(2, u1.getMessages().size());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm3_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u1.getMessages().size(), 3);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(3, u1.getMessages().size());
 		SccpNoticeMessage nMsg =  (SccpNoticeMessage)u1.getMessages().get(2);
 		assertTrue(Arrays.equals(nMsg.getData(), MessageSegmentationTest.getDataA()));
-		assertEquals(u2.getMessages().size(), 0);
+		assertEquals(0, u2.getMessages().size());
 
 		// Receiving an only the first segment of 3--segmented chain of 3 XUDT segments -> timeout
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm1());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 1);
+		assertEquals(1, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		Thread.sleep(5000);  // waiting for timeout - current timeout is 3 sec
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u2.getMessages().size(), 1);
-		assertEquals(((SccpNoticeMessage) u2.getMessages().get(0)).getReturnCause().getValue(), ReturnCauseValue.CANNOT_REASEMBLE);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(1, u2.getMessages().size());
+		assertEquals(ReturnCauseValue.CANNOT_REASEMBLE, ((SccpNoticeMessage) u2.getMessages().get(0)).getReturnCause().getValue());
 
 		// Receiving an only the second segment of 3--segmented chain of 3 XUDT segments -> error
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm2());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 1);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
 
 		// Receiving only th 1 and 3 message from a chain of 3 XUDTS segments -> error
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm1_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 1);
+		assertEquals(1, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm3_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 1); // no error for service messages
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size()); // no error for service messages
 
 		// Receiving two chains of 3 XUDT and XUDTS segments -> success
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm1());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm1_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 2);
+		assertEquals(2, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm2());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm2_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 2);
-		assertEquals(u1.getMessages().size(), 3);
+		assertEquals(2, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(3, u1.getMessages().size());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm3());
 		this.mtp3UserPart1.sendTransferMessageToLocalUser(getStack2PC(), getStack1PC(), MessageSegmentationTest.getDataSegm3_S());
 		Thread.sleep(100);
-		assertEquals(((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize(), 0);
-		assertEquals(u1.getMessages().size(), 5);
+		assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemplyCacheSize());
+		assertEquals(5, u1.getMessages().size());
 		dMsg = (SccpDataMessage) u1.getMessages().get(3);
 		nMsg = (SccpNoticeMessage) u1.getMessages().get(4);
 		assertTrue(Arrays.equals(dMsg.getData(), MessageSegmentationTest.getDataA()));
 		assertTrue(Arrays.equals(nMsg.getData(), MessageSegmentationTest.getDataA()));
-		assertEquals(u2.getMessages().size(), 1);
+		assertEquals(1, u2.getMessages().size());
 		
 		int i = 1;
 		i++;

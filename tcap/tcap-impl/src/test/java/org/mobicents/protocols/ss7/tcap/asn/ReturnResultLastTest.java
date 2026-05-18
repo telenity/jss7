@@ -35,7 +35,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResult;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
-import org.testng.annotations.Test; import static org.testng.Assert.*;
+import org.junit.Test; import static org.junit.Assert.*;
 
 /**
  * 
@@ -43,7 +43,6 @@ import org.testng.annotations.Test; import static org.testng.Assert.*;
  * @author sergey vetyutnev
  *
  */
-@Test(groups = { "asn" })
 public class ReturnResultLastTest  {
 
 	private byte[] getLDataEmpty() {
@@ -67,7 +66,7 @@ public class ReturnResultLastTest  {
 	}	
 	
 
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testDecodeWithParaSequ() throws IOException, ParseException {
 		
 		byte[] b = this.getLDataEmpty();
@@ -132,7 +131,7 @@ public class ReturnResultLastTest  {
 		assertTrue(Arrays.equals(this.getParameterData(), p.getData()));
 	}
 	
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testEncode() throws IOException, EncodeException {
 
 		byte[] expected = this.getLDataEmpty();

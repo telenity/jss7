@@ -189,11 +189,11 @@
 							language="XML"
 							role="XML"><![CDATA[
 <bean name="DahdiLinksetFactory"
-	class="org.mobicents.ss7.hardware.dahdi.oam.DahdiLinksetFactory">
+	class="">
 </bean>
 
 <bean name="DialogicLinksetFactory"
-	class="org.mobicents.ss7.hardware.dialogic.oam.DialogicLinksetFactory">
+	class="">
 </bean>
 
 <bean name="M3UALinksetFactory"

@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import javolution.util.FastList;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
@@ -22,12 +23,13 @@ import org.mobicents.protocols.ss7.m3ua.message.MessageType;
 import org.mobicents.protocols.ss7.m3ua.message.ssnm.SignallingCongestion;
 import org.mobicents.protocols.ss7.m3ua.parameter.*;
 import org.mobicents.protocols.ss7.mtp.*;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
+@Ignore("Manual test")
 public class MultipleAspTest {
     private static final Logger logger = Logger.getLogger(MultipleAspTest.class);
 
@@ -90,7 +92,7 @@ public class MultipleAspTest {
         }
     }
 
-    @BeforeMethod
+    @Before
     public void setup() throws Exception {
         System.setProperty("ss7.m3ua.ssnm.skipSourceCheck", "false");
 
@@ -120,7 +122,7 @@ public class MultipleAspTest {
         this.m3uaMgmt.removeAllResourses();
     }
 
-    @AfterMethod
+    @After
     public void teardown() throws Exception {
         serverStp1.stop();
         serverStp2.stop();

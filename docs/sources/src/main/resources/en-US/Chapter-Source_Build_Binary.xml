@@ -106,8 +106,7 @@
 						</listitem>	
 						<listitem>
 							<para><filename>protocols</filename> : The &THIS.PLATFORM; &THIS.APPLICATION; User Protocols libraries. Your application would directly 
-							call the API's exposed by these libraries. Depending on application you may be either interested in <literal>TCAP</literal>, 
-							<literal>MAP</literal> or both or <literal>ISUP</literal> libraries</para>
+							call the API's exposed by these libraries. Depending on application you may be interested in <literal>TCAP</literal> libraries.</para>
 						</listitem>	
 						<listitem>
 							<para><filename>shell</filename> : the Command Line Interface (CLI) module to manage the &THIS.PLATFORM; &THIS.APPLICATION;.
@@ -126,8 +125,8 @@
                         <literal>JMX</literal> and exposes <literal>JNDI</literal>
                 </para>
                 <para>
-                        &THIS.PLATFORM; SS7 Service exposes convenient way of configuring SS7 stack via CLI commands. Service wraps SS7 level 4 i.e., MAP, CAP and ISUP
-                        and lower layers and exposes it via JNDI such that layer above can do the look-up and use it in any application. 
+                        &THIS.PLATFORM; SS7 Service exposes convenient way of configuring SS7 stack via CLI commands. Service wraps the SS7 stack
+                        and exposes it via JNDI such that layer above can do the look-up and use it in any application. 
                 </para>
         </section>
 		<section
@@ -204,9 +203,6 @@
 20:34:20,499 INFO  [TCAPProviderImpl] (main) Starting TCAP Provider
 20:34:20,499 INFO  [TCAPProviderImpl] (main) Registered SCCP listener with address 9
 20:34:20,716 INFO  [SS7Service] (main)  [[[[[[[[[ Mobicents jSS7 2.0.0-SNAPSHOT TCAP service started ]]]]]]]]] 
-20:34:20,756 INFO  [SS7Service] (main)  [[[[[[[[[ Mobicents jSS7 2.0.0-SNAPSHOT MAP service started ]]]]]]]]] 
-20:34:20,765 INFO  [SS7Service] (main)  [[[[[[[[[ Mobicents jSS7 2.0.0-SNAPSHOT CAP service started ]]]]]]]]] 
-20:34:20,775 INFO  [SS7Service] (main)  [[[[[[[[[ Mobicents jSS7 2.0.0-SNAPSHOT ISUP service started ]]]]]]]]] 
 20:34:20,801 INFO  [Http11Protocol] (main) Starting Coyote HTTP/1.1 on http-127.0.0.1-8080
 20:34:20,816 INFO  [AjpProtocol] (main) Starting Coyote AJP/1.3 on ajp-127.0.0.1-8009
 20:34:20,821 INFO  [ServerImpl] (main) JBoss (Microcontainer) [5.1.0.GA (build: SVNTag=JBoss_5_1_0_GA date=200905221634)] Started in 27s:39ms
@@ -374,29 +370,7 @@ Halting VM]]></screen>
 
 		</section>
 					
-		<section id="configuring_LinksetFactory">
-			<title>Configuring dahdi</title>
-			<para><literal>Dahdi</literal> based MTP layer will only be used when you have installed dahdi based SS7 hardware (Sangoma or Diguim cards). 
-			
-			<literal>DahdiLinksetFactory</literal> is responsible to create 
-			new instances of corresponding <literal>DahdiLinkset</literal> when instructed by <literal>LinksetManager</literal>. 
-			</para>
-			
-			<itemizedlist>
-				<listitem>
-					<para><literal>DahdiLinksetFactory</literal> </para>
-					<programlisting language="XML" role="XML"><![CDATA[
-	<bean name="DahdiLinksetFactory"
-		class="org.mobicents.ss7.hardware.dahdi.oam.DahdiLinksetFactory">
-	</bean>]]>
-                        </programlisting>					
-				</listitem>
-			</itemizedlist>					
-			
-			<para> <literal>LinksetFactoryFactory</literal> is just a call-back class listening for new factories deployed 
-			and maintains Map of available factory name vs factory. You should never touch this bean.</para>
-			
-		<section id="configuring_LinksetManager">
+			<section id="configuring_LinksetManager">
 			<title>Configuring LinksetManager</title>
 			<para> 
 				<literal>LinksetManager</literal> is responsible for managing <literal>Linkset</literal> and <literal>Link</literal>.
@@ -424,64 +398,9 @@ Halting VM]]></screen>
 			<warning><para><filename>linksetmanager.xml</filename> should never be edited by hand. Always use Shell Client to connect to 
 			&THIS.PLATFORM; &THIS.APPLICATION; and execute commands.</para></warning>	
 			<para><literal>LinksetExecutor</literal> accepts the <literal>linkset</literal> commands and executes necessary operations.</para>
-		</section>	
-		</section>
-		
-		<section id="configuring_dialogic">
-			<title>Configuring dialogic</title>
-			<para><literal>Dialogic</literal> based MTP layer will only be used when you have installed Dialogic cards. 
+			</section>
 			
-			<literal>DialogicMtp3UserPart</literal> communicates with Dialogic hardware. It is assumed here that MTP3 and MTP2 is leveraged from
-			Dialogic stack either on-board or on-host. 
-			</para>
-			
-
-					<programlisting language="XML" role="XML"><![CDATA[
-	<!-- ==================================================================== -->
-	<!-- Dialogic Mtp3UserPart -->
-	<!-- ==================================================================== -->
-	<!---->
-	<bean name="Mtp3UserPart" class="org.mobicents.ss7.hardware.dialogic.DialogicMtp3UserPart">
-		<property name="sourceModuleId">61</property>
-		<property name="destinationModuleId">34</property>
-		<property name="routingLabelFormat">
-			<inject bean="RoutingLabelFormat" />
-		</property>		
-	</bean>]]>
-                        </programlisting>					
-			 <para>
-             	Stack has following properties:
-             	<variablelist>
-             		<varlistentry>
-             			<term>sourceModuleId</term>
-             			<listitem>
-             				<para>
-             					<literal>sourceModuleId</literal> is source module id and should match with configured in 
-								<filename>system.txt</filename> used by dialogic drivers. Here 61 is assigned for Mobicents process.
-             				</para>
-             			</listitem>
-             		</varlistentry>    
-             		<varlistentry>
-             			<term>destinationModuleId</term>
-             			<listitem>
-             				<para>
-             					<literal>destinationModuleId</literal> is destination module id. 34 is Dialogic MTP3 module id.
-             				</para>
-             			</listitem>
-             		</varlistentry>              		         	
-             		<varlistentry>
-             			<term>routingLabelFormat</term>
-             			<listitem>
-             				<para>
-             					The routing label format supported by this network. See <xref linkend="configuring_routing_label_format"/> for further details.
-             				</para>
-             			</listitem>
-             		</varlistentry>
-             	</variablelist>
-             </para>
-		</section>
-		
-        <section id="configuring_routing_label_format">
+	        <section id="configuring_routing_label_format">
         	<title>Configuring MTP3 routing label</title>
         	<para>
         		MTP Level 3 routes messages based on the routing label in the signaling information field (SIF) of
@@ -661,8 +580,7 @@ Halting VM]]></screen>
                 <section id="configuring_TCAP">
                         <title>Configuring TCAP</title>
                         <para> 
-                                <literal>TcapStack</literal> initiates the TCAP stack routines. Respective TCAP stack beans are instantiated for each <literal>MAP</literal>, <literal>CAP</literal>
-                                Service. If you are using either one, feel free to delete the other.
+                                <literal>TcapStack</literal> initiates the TCAP stack routines.
                         </para>
                         <programlisting language="XML" role="XML"><![CDATA[     	
 	<!-- ==================================================================== -->
@@ -781,114 +699,7 @@ All the outgoing Dialogs will have id starting with <literal>dialogIdRangeStart<
 
 
                 </section>  
-
-                <section id="configuring_MAP">
-                        <title>Configuring MAP</title>
-                        <para> 
-                                <literal>MapStack</literal> initiates the MAP stack routines. 
-                        </para>
-                        <programlisting language="XML" role="XML"><![CDATA[<!-- ==================================================================== -->
-	<!-- MAP Service -->
-	<!-- ==================================================================== -->	
-	<bean name="MapStack" class="org.mobicents.protocols.ss7.map.MAPStackImpl">
-		<constructor>
-			<parameter>
-				<inject bean="TcapStackMap" property="provider" />
-			</parameter>
-		</constructor>
-	</bean>]]></programlisting>     
-                         <para>
-                                <classname>org.mobicents.protocols.ss7.map.MAPStackImpl</classname> takes <classname>TcapStack</classname> as constructor
-                                argument. MAP uses passed TCAP stack. 
-                        </para>	
-                         <para>
-                        	Feel free to delete declaration of this bean if your service is consuming only CAP messages.
-                        </para>                       
-                </section> 
-
-                <section id="configuring_CAP">
-                        <title>Configuring CAP</title>
-                        <para> 
-                                <literal>CapStack</literal> initiates the CAP stack routines. 
-                        </para>
-                        <programlisting language="XML" role="XML"><![CDATA[	<!-- ==================================================================== -->
-	<!-- CAP Service -->
-	<!-- ==================================================================== -->
-	<bean name="CapStack" class="org.mobicents.protocols.ss7.cap.CAPStackImpl">
-		<constructor>
-			<parameter>
-				<inject bean="TcapStackCap" property="provider" />
-			</parameter>
-		</constructor>
-	</bean>]]></programlisting>     
-                         <para>
-                                <classname>org.mobicents.protocols.ss7.cap.CAPStackImpl</classname> takes <classname>TcapStack</classname> as constructor
-                                argument. CAP uses passed TCAP stack. 
-                        </para>	
-                        <para>
-                        	Feel free to delete declaration of this bean if your service is consuming only MAP messages.
-                        </para>
-                </section> 
-
-                 <section id="configuring_ISUP">
-                        <title>Configuring ISUP</title>
-                        <para> 
-                                <literal>IsupStack</literal> initiates the ISUP stack routines. 
-                        </para>
-                        <programlisting language="XML" role="XML"><![CDATA[	<!-- ==================================================================== -->
-	<!-- ISUP Service -->
-	<!-- ==================================================================== -->
-	<bean name="CircuitManager"
-		class="org.mobicents.protocols.ss7.isup.impl.CircuitManagerImpl">
-	</bean>
-
-	<bean name="IsupStack" class="org.mobicents.protocols.ss7.isup.impl.ISUPStackImpl">
-		<constructor>
-			<parameter>
-				<inject bean="SS7Scheduler" />
-			</parameter>
-			<parameter>22234</parameter>
-			<parameter>2</parameter>
-		</constructor>
-		<property name="mtp3UserPart">
-			<inject bean="Mtp3UserPart" />
-		</property>
-		<property name="circuitManager">
-			<inject bean="CircuitManager" />
-		</property>
-	</bean>]]></programlisting>     
-                         <para>
-                                <classname>org.mobicents.protocols.ss7.isup.impl.ISUPStackImpl</classname> takes <classname>SS7Scheduler</classname>, local signaling pointcode and network indicator
-                                 as constructor argument. MAP uses passed TCAP stack. 
-                        </para>	
-                        
-                        	  
-                        <para>                          
-                                Stack has following properties: 
-                                <variablelist>
-                                        <varlistentry>
-                                                <term>mtp3UserPart</term>
-                                                <listitem>
-                                                        <para>specifies SS7 Level 3 to be used as transport medium( be it SS7 card or M3UA). </para>
-                                                </listitem>
-                                        </varlistentry>                                 
-                                        <varlistentry>
-                                                <term>circuitManager</term>
-                                                <listitem>
-                                                        <para>
-                                                               CIC management bean
-                                                        </para>
-                                                </listitem>
-                                        </varlistentry>                                 
-                                </variablelist>
-                        </para>
-                        
-                         <para>
-                        	Feel free to delete declaration of this bean if your service is not consuming ISUP messages.
-                        </para>                       
-                </section> 
-                                                  
-                <section id="configuring_SS7Service">
+	                <section id="configuring_SS7Service">
                         <title>Configuring SS7Service</title>
                         <para> 
                                 SS7Service acts as core engine binding all the components together. 
@@ -905,37 +716,8 @@ All the outgoing Dialogs will have id starting with <literal>dialogIdRangeStart<
 			<inject bean="TcapStack" property="provider" />
 		</property>
 	</bean>
-	<bean name="MAPSS7Service" class="org.mobicents.ss7.SS7Service">
-		<constructor><parameter>MAP</parameter></constructor>
-		<annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="org.mobicents.ss7:service=MAPSS7Service",exposedInterface=org.mobicents.ss7.SS7ServiceMBean.class,registerDirectly=true)
-		</annotation>
-		<property name="jndiName">java:/mobicents/ss7/map</property>
-		<property name="stack">
-			<inject bean="MapStack" property="MAPProvider" />
-		</property>
-	</bean>
-	<bean name="CAPSS7Service" class="org.mobicents.ss7.SS7Service">
-		<constructor><parameter>CAP</parameter></constructor>
-		<annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="org.mobicents.ss7:service=CAPSS7Service",exposedInterface=org.mobicents.ss7.SS7ServiceMBean.class,registerDirectly=true)
-		</annotation>
-		<property name="jndiName">java:/mobicents/ss7/cap</property>
-		<property name="stack">
-			<inject bean="CapStack" property="CAPProvider" />
-		</property>
-	</bean>
-	<bean name="ISUPSS7Service" class="org.mobicents.ss7.SS7Service">
-		<constructor><parameter>ISUP</parameter></constructor>
-		<annotation>@org.jboss.aop.microcontainer.aspects.jmx.JMX(name="org.mobicents.ss7:service=ISUPSS7Service",exposedInterface=org.mobicents.ss7.SS7ServiceMBean.class,registerDirectly=true)
-		</annotation>
-		<property name="jndiName">java:/mobicents/ss7/isup</property>
-		<property name="stack">
-			<inject bean="IsupStack" property="isupProvider" />
-		</property>
-	</bean>]]></programlisting> 
+	]]></programlisting> 
 						<para> TCAPSS7Service binds TcapStack to JNDI <literal>java:/mobicents/ss7/tcap</literal>. </para>            
-                        <para> MAPSS7Service binds MapStack to JNDI <literal>java:/mobicents/ss7/map</literal>. </para>
-                        <para> CAPSS7Service binds CapStack to JNDI <literal>java:/mobicents/ss7/cap</literal>. </para>
-                          <para> ISUPSS7Service binds IsupStack to JNDI <literal>java:/mobicents/ss7/isup</literal>. </para>
                         <para>The JNDI name can be configured to any valid JNDI name specific to your application.</para>
                         <para>Feel free to delete service that your application is not using.</para>
                 </section>  		
@@ -1098,38 +880,7 @@ All the outgoing Dialogs will have id starting with <literal>dialogIdRangeStart<
                         </programlisting>	
 		</section>
 					
-		<section id="sgw_configuring_LinksetFactory">
-			<title>Configuring LinksetFactory</title>
-			<para> Concrete implementation of <literal>LinksetFactory</literal> is responsible to create 
-			new instances of corresponding <literal>Linkset</literal> when instructed by <literal>LinksetManager</literal>. 
-			&THIS.PLATFORM; Signaling Gateway defines two linkset factories : </para>
-			
-			<itemizedlist>
-				<listitem>
-					<para><literal>DahdiLinksetFactory</literal> </para>
-					<programlisting language="XML" role="XML"><![CDATA[
-	<bean name="DahdiLinksetFactory"
-		class="org.mobicents.ss7.hardware.dahdi.oam.DahdiLinksetFactory">
-	</bean>]]>
-                        </programlisting>					
-				</listitem>
-				<listitem>
-					<para><literal>DialogicLinksetFactory</literal></para>
-					 <programlisting language="XML" role="XML"><![CDATA[
-	<bean name="DialogicLinksetFactory"
-		class="org.mobicents.ss7.hardware.dialogic.oam.DialogicLinksetFactory">
-	</bean>]]>
-                        </programlisting>
-				</listitem>
-			</itemizedlist>					
-			<para>Its highly unlikely that you would require both the factories on same gateway. If you have <literal>dahdi</literal> based 
-			SS7 card installed, keep <literal>DahdiLinksetFactory</literal> and remove other. If you have <literal>dialogic</literal> based 
-			SS7 card installed, keep <literal>DialogicLinksetFactory</literal> and remove other. 
-			</para>
-			<para> <literal>LinksetFactoryFactory</literal> is just a call-back class listening for new factories deployed 
-			and maintains Map of available factory name vs factory. You should never touch this bean.</para>
-		</section>	
-		<section id="sgw_configuring_LinksetManager">
+			<section id="sgw_configuring_LinksetManager">
 			<title>Configuring LinksetManager</title>
 			<para> 
 				<literal>LinksetManager</literal> is responsible for managing <literal>Linkset</literal> and <literal>Link</literal>.
@@ -1302,13 +1053,7 @@ All the outgoing Dialogs will have id starting with <literal>dialogIdRangeStart<
 					</note>
 									    
 							    
-					<para>Use Ant to build the binary .</para>
-					<programlisting>
-[usr]$ cd jss7/release
-[usr]$ ant
-				    </programlisting>
-
-				</step>
+					</step>
 			</procedure>
 		</section>
 
@@ -1325,4 +1070,3 @@ All the outgoing Dialogs will have id starting with <literal>dialogIdRangeStart<
 
 	</section>
 </chapter>
-

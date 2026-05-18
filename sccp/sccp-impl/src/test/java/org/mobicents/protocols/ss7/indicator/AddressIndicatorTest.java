@@ -30,8 +30,8 @@ import java.io.ByteArrayOutputStream;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 /**
  * @author amit bhayani
@@ -54,32 +54,32 @@ public class AddressIndicatorTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
-	@Test(groups = { "functional.decode","indicator"})
+	@Test
 	public void testDecode() throws Exception {
 		byte b = 0x42;
 		AddressIndicator ai = new AddressIndicator(b);
 		assertFalse(ai.pcPresent());
 		assertTrue(ai.ssnPresent());
-		assertEquals( ai.getGlobalTitleIndicator(),GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
-		assertEquals( ai.getRoutingIndicator(),RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN);
+		assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, ai.getGlobalTitleIndicator());
+		assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, ai.getRoutingIndicator());
 	}
 
-	@Test(groups = { "functional.encode","indicator"})
+	@Test
 	public void testEncode() throws Exception {
 		AddressIndicator ai = new AddressIndicator(false, true, RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN,
 				GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
-		assertEquals( (int)ai.getValue(),66);
+		assertEquals(66, (int)ai.getValue());
 	}
 	
-	@Test(groups = { "functional.encode","indicator"})
+	@Test
 	public void testSerialize() throws Exception {
 		AddressIndicator ai = new AddressIndicator(false, true, RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN,
 				GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
@@ -101,8 +101,8 @@ public class AddressIndicatorTest {
 		
 		assertFalse(aiOut.pcPresent());
 		assertTrue(aiOut.ssnPresent());
-		assertEquals( aiOut.getGlobalTitleIndicator(),GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
-		assertEquals( aiOut.getRoutingIndicator(),RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN);
+		assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, aiOut.getGlobalTitleIndicator());
+		assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, aiOut.getRoutingIndicator());
 	}
 
 }

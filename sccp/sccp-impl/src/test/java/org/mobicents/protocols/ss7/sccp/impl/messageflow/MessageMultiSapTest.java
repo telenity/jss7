@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.messageflow;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LongMessageRuleType;
@@ -34,11 +34,11 @@ import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.message.SccpNoticeMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -53,13 +53,13 @@ public class MessageMultiSapTest extends SccpHarness {
 	public MessageMultiSapTest() {
 	}
 
-	@BeforeClass
+	@Before
 	public void setUpClass() throws Exception {
 		this.sccpStack1Name = "MessageTransferTestSccpStack1";
 		this.sccpStack2Name = "MessageTransferTestSccpStack2";
 	}
 
-	@AfterClass
+	@After
 	public void tearDownClass() throws Exception {
 	}
 
@@ -77,7 +77,7 @@ public class MessageMultiSapTest extends SccpHarness {
 		sccpProvider2= sccpStack2.getSccpProvider();
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		
@@ -88,7 +88,7 @@ public class MessageMultiSapTest extends SccpHarness {
 		resource1.addRemoteSsn(2, 12, getSSN(), 0, false);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		super.tearDown();
 	}
@@ -109,7 +109,7 @@ public class MessageMultiSapTest extends SccpHarness {
 		return new byte[] { 9, 0,     3, 5, 7,    2, 66, 8,    2, 66, 8,     5, 11, 12, 13, 14, 15 };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.transfer"})
+	@Test
 	public void testTransfer() throws Exception {
 
 		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, 8);
@@ -131,17 +131,17 @@ public class MessageMultiSapTest extends SccpHarness {
 				null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 0);
-		assertEquals(u2.getMessages().size(), 1);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(0, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		// send a UDT message to the sap2 (opc=11, dpc=12)
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 0);
-		assertEquals(u2.getMessages().size(), 1);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(0, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 
 		// send a UDT message to the absent sap (remoteSpc and remoteSsn are present and not prohibited)
 		resource1.addRemoteSpc(3, 15, 0, 0);
@@ -150,34 +150,34 @@ public class MessageMultiSapTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a4, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 1);
-		assertEquals(u2.getMessages().size(), 1);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(1, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 		SccpNoticeMessage nMsg = (SccpNoticeMessage) u1.getMessages().get(0);
-		assertEquals(nMsg.getReturnCause().getValue(), ReturnCauseValue.SCCP_FAILURE);
+		assertEquals(ReturnCauseValue.SCCP_FAILURE, nMsg.getReturnCause().getValue());
 
 		// receiving a message from the sap2 to the local sccp user -> delivering a message 
 		this.mtp3UserPart11.sendTransferMessageToLocalUser(12, 11, getDataUdt1());
 		Thread.sleep(500);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 1);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 
 		// receiving a message from the sap2 to the sap2 () -> sccp transit 
 		this.mtp3UserPart11.sendTransferMessageToLocalUser(12, 2, getDataUdt2());
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 2);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(2, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 
 		// receiving a message from mtp3 without dpc in CallingPartyAddress (RouteOnSsn in CallingPartyAddress)
 		this.mtp3UserPart11.sendTransferMessageToLocalUser(2, 1, getDataUdt3());
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 2);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(2, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 		SccpDataMessage dMsg = (SccpDataMessage) u1.getMessages().get(2);
-		assertEquals(dMsg.getCallingPartyAddress().getSignalingPointCode(), 2);
+		assertEquals(2, dMsg.getCallingPartyAddress().getSignalingPointCode());
 	}
 }
 

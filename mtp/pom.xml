@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>ss7-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7</groupId>
-		<version>${jss7.version}</version>
+		<version>${revision}</version>
 	</parent>
 
 	<groupId>org.mobicents.protocols.ss7.mtp</groupId>
@@ -23,16 +23,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
-					<systemProperties>
-						<property>
-							<name>file.name</name>
-							<value>target/log4j.log</value>
-						</property>
-					</systemProperties>
-					<includes>
-						<include>**/*Test.java</include>
-					</includes>
+					<parallel>none</parallel>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -22,10 +22,6 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
@@ -35,9 +31,11 @@ import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * 
@@ -50,13 +48,13 @@ public class SccpRemoveSpcTest {
 	private SccpStackImpl stack = new SccpStackImpl("TestStack");
 	private MessageFactoryImpl messageFactory;
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		this.messageFactory = new MessageFactoryImpl(stack);
 		this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
@@ -76,7 +74,7 @@ public class SccpRemoveSpcTest {
 		return new byte[] { 22, 22, 22, 22, 22 };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.decode"})
+	@Test
 	public void testDecode() throws Exception {
 
 		// ---- Encoding based on GT - removeSpc on
@@ -90,15 +88,15 @@ public class SccpRemoveSpcTest {
 
 		SccpAddress calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSubsystemNumber(),8);
-		assertEquals( calledAdd.getSignalingPointCode(),0);
+		assertEquals(8, calledAdd.getSubsystemNumber());
+		assertEquals(0, calledAdd.getSignalingPointCode());
 		GlobalTitle gt = calledAdd.getGlobalTitle();
 		assertTrue(gt.getDigits().equals("444444"));
 
 		SccpAddress callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSubsystemNumber(),8);
-		assertEquals( callingAdd.getSignalingPointCode(),0);
+		assertEquals(8, callingAdd.getSubsystemNumber());
+		assertEquals(0, callingAdd.getSignalingPointCode());
 		gt = callingAdd.getGlobalTitle();
 		assertTrue(gt.getDigits().equals("555555"));
 
@@ -113,15 +111,15 @@ public class SccpRemoveSpcTest {
 
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSubsystemNumber(),8);
-		assertEquals( calledAdd.getSignalingPointCode(),1447);
+		assertEquals(8, calledAdd.getSubsystemNumber());
+		assertEquals(1447, calledAdd.getSignalingPointCode());
 		gt = calledAdd.getGlobalTitle();
 		assertTrue(gt.getDigits().equals("444444"));
 
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSubsystemNumber(),8);
-		assertEquals( callingAdd.getSignalingPointCode(),1446);
+		assertEquals(8, callingAdd.getSubsystemNumber());
+		assertEquals(1446, callingAdd.getSignalingPointCode());
 		gt = callingAdd.getGlobalTitle();
 		assertTrue(gt.getDigits().equals("555555"));
 
@@ -136,15 +134,15 @@ public class SccpRemoveSpcTest {
 
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSubsystemNumber(),8);
-		assertEquals( calledAdd.getSignalingPointCode(),1447);
+		assertEquals(8, calledAdd.getSubsystemNumber());
+		assertEquals(1447, calledAdd.getSignalingPointCode());
 		gt = calledAdd.getGlobalTitle();
 		assertNull(gt);
 
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSubsystemNumber(),8);
-		assertEquals( callingAdd.getSignalingPointCode(),1446);
+		assertEquals(8, callingAdd.getSubsystemNumber());
+		assertEquals(1446, callingAdd.getSignalingPointCode());
 		gt = callingAdd.getGlobalTitle();
 		assertNull(gt);
 
@@ -159,21 +157,21 @@ public class SccpRemoveSpcTest {
 
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSubsystemNumber(),8);
-		assertEquals( calledAdd.getSignalingPointCode(),1447);
+		assertEquals(8, calledAdd.getSubsystemNumber());
+		assertEquals(1447, calledAdd.getSignalingPointCode());
 		gt = calledAdd.getGlobalTitle();
 		assertNull(gt);
 
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSubsystemNumber(),8);
-		assertEquals( callingAdd.getSignalingPointCode(),1446);
+		assertEquals(8, callingAdd.getSubsystemNumber());
+		assertEquals(1446, callingAdd.getSignalingPointCode());
 		gt = callingAdd.getGlobalTitle();
 		assertNull(gt);
 
 	}
 
-	@Test(groups = { "SccpMessage", "functional.encode"})
+	@Test
 	public void testEncode() throws Exception {
 
 		// ---- Encoding based on GT - removeSpc on
@@ -186,14 +184,14 @@ public class SccpRemoveSpcTest {
 		SccpDataMessageImpl msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getData(), 0, 8, false, null, null);
 
 		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertEquals(res.getSolidData(), this.getDataUdt_GT_WithOutDpc());
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
+		assertArrayEquals(this.getDataUdt_GT_WithOutDpc(), res.getSolidData());
 
 		// ---- removeSpc off
 		this.stack.setRemoveSpc(false);
 
 		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_GT_WithDpc()));
 
 		// ---- Encoding based on DPC+SSN - removeSpc on
@@ -204,14 +202,14 @@ public class SccpRemoveSpcTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getData(), 0, 8, false, null, null);
 
 		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_DpcSsn()));
 
 		// ---- removeSpc off
 		this.stack.setRemoveSpc(false);
 
 		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), this.getDataUdt_DpcSsn()));
 	}
 }

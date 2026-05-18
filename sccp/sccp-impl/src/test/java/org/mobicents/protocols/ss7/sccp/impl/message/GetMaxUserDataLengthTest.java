@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -33,9 +33,9 @@ import org.mobicents.protocols.ss7.sccp.impl.Mtp3UserPartImpl;
 import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -46,17 +46,17 @@ public class GetMaxUserDataLengthTest {
 
 	private SccpStackImpl stack = new SccpStackImpl("TestStack");
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		stack.start();
 		stack.removeAllResourses();
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
-	@Test(groups = { "SccpMessage", "MessageLength" })
+	@Test
 	public void testMessageLength() throws Exception {
 
 		SccpAddress a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
@@ -77,24 +77,24 @@ public class GetMaxUserDataLengthTest {
 		stack.getRouter().addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, -1);
 
 		int len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(len, 248);
+		assertEquals(248, len);
 
 		len = stack.getSccpProvider().getMaxUserDataLength(a2, a1);
-		assertEquals(len, 248);
+		assertEquals(248, len);
 
 		stack.getRouter().addLongMessageRule(1, 2, 2, LongMessageRuleType.XudtEnabled);
 
 		len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(len, 2560);
+		assertEquals(2560, len);
 		stack.getRouter().removeLongMessageRule(1);
 		stack.getRouter().addLongMessageRule(1, 2, 2, LongMessageRuleType.LudtEnabled);
 
 		len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(len, 231);
+		assertEquals(231, len);
 
 		mtp3UserPart.setMtpMsgLen(4000);
 		len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(len, 2560);
+		assertEquals(2560, len);
 
 	}
 

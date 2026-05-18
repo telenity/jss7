@@ -22,8 +22,8 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.parameter;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,17 +53,17 @@ public class GT0010Test {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
 
 
-	@Test(groups = { "parameter","functional.encode"})
+	@Test
 	public void testSerialization() throws Exception {
 		GT0010 gt = new GT0010(0, "9023629581");
 
@@ -82,8 +82,8 @@ public class GT0010Test {
 		GT0010 aiOut = reader.read("GT0010", GT0010.class);
 
 		// check results
-		assertEquals( aiOut.getTranslationType(),0);
-		assertEquals( aiOut.getDigits(),"9023629581");
+		assertEquals(0, aiOut.getTranslationType());
+		assertEquals("9023629581", aiOut.getDigits());
 	}
 
 }

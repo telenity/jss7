@@ -34,8 +34,8 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import org.mobicents.protocols.ss7.m3ua.parameter.CongestedIndication.CongestionLevel;
 import org.mobicents.protocols.ss7.m3ua.parameter.DeregistrationStatus;
@@ -70,12 +70,12 @@ public class ParameterTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		out = Unpooled.buffer(8192);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
@@ -137,16 +137,16 @@ public class ParameterTest {
 
 		ProtocolDataImpl p2 = (ProtocolDataImpl) factory.createProtocolData(protocolData);
 
-		assertEquals(p1.getTag(), p2.getTag());
-		assertEquals(p1.getOpc(), p2.getOpc());
-		assertEquals(p1.getDpc(), p2.getDpc());
+		assertEquals(p2.getTag(), p1.getTag());
+		assertEquals(p2.getOpc(), p1.getOpc());
+		assertEquals(p2.getDpc(), p1.getDpc());
 		assertEquals(p2.getSI(), p2.getSI());
 		assertEquals(p2.getNI(), p2.getNI());
 		assertEquals(p2.getMP(), p2.getMP());
 		assertEquals(p2.getSLS(), p2.getSLS());
 
 		boolean isDataCorrect = Arrays.equals(p1.getData(), p2.getData());
-		assertTrue(isDataCorrect, "Data mismatch");
+		assertTrue("Data mismatch", isDataCorrect);
 	}
 
 	/**
@@ -164,16 +164,16 @@ public class ParameterTest {
 
 		ProtocolDataImpl p2 = (ProtocolDataImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(p1.getTag(), p2.getTag());
-		assertEquals(p1.getOpc(), p2.getOpc());
-		assertEquals(p1.getDpc(), p2.getDpc());
-		assertEquals(p1.getSI(), p2.getSI());
-		assertEquals(p1.getNI(), p2.getNI());
-		assertEquals(p1.getMP(), p2.getMP());
-		assertEquals(p1.getSLS(), p2.getSLS());
+		assertEquals(p2.getTag(), p1.getTag());
+		assertEquals(p2.getOpc(), p1.getOpc());
+		assertEquals(p2.getDpc(), p1.getDpc());
+		assertEquals(p2.getSI(), p1.getSI());
+		assertEquals(p2.getNI(), p1.getNI());
+		assertEquals(p2.getMP(), p1.getMP());
+		assertEquals(p2.getSLS(), p1.getSLS());
 
 		boolean isDataCorrect = Arrays.equals(p1.getData(), p2.getData());
-		assertTrue(isDataCorrect, "Data mismatch");
+		assertTrue("Data mismatch", isDataCorrect);
 	}
 
 	@Test
@@ -227,7 +227,7 @@ public class ParameterTest {
 
 		NetworkAppearanceImpl np2 = (NetworkAppearanceImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(123, (int) np2.getNetApp());
+		assertEquals((int) np2.getNetApp(), 123);
 
 		// Test Serialization
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -242,8 +242,8 @@ public class ParameterTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		NetworkAppearanceImpl np3 = reader.read("NetworkAppearanceImpl", NetworkAppearanceImpl.class);
 
-		assertEquals(123, (int) np3.getNetApp());
-		assertEquals(Parameter.Network_Appearance, np3.getTag());
+		assertEquals((int) np3.getNetApp(), 123);
+		assertEquals(np3.getTag(), Parameter.Network_Appearance);
 	}
 
 	@Test
@@ -273,7 +273,7 @@ public class ParameterTest {
 		RoutingContextImpl rc3 = reader.read("RoutingContextImpl", RoutingContextImpl.class);
 
 		assertTrue(Arrays.equals(new long[] { 4294967295l }, rc3.getRoutingContexts()));
-		assertEquals(Parameter.Routing_Context, rc3.getTag());
+		assertEquals(rc3.getTag(), Parameter.Routing_Context);
 	}
 
 	@Test
@@ -303,7 +303,7 @@ public class ParameterTest {
 		RoutingContextImpl rc3 = reader.read("RoutingContextImpl", RoutingContextImpl.class);
 
 		assertTrue(Arrays.equals(new long[] { 123l, 4294967295l }, rc3.getRoutingContexts()));
-		assertEquals(Parameter.Routing_Context, rc3.getTag());
+		assertEquals(rc3.getTag(), Parameter.Routing_Context);
 	}
 
 	@Test
@@ -317,7 +317,7 @@ public class ParameterTest {
 
 		CorrelationIdImpl crrId2 = (CorrelationIdImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(4294967295l, crrId2.getCorrelationId());
+		assertEquals(crrId2.getCorrelationId(), 4294967295l);
 	}
 
 	@Test
@@ -366,7 +366,7 @@ public class ParameterTest {
 
 		InfoStringImpl infoStr2 = (InfoStringImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals("Hello World", infoStr2.getString());
+		assertEquals(infoStr2.getString(), "Hello World");
 
 	}
 
@@ -381,7 +381,7 @@ public class ParameterTest {
 
 		ConcernedDPCImpl concernedDPC2 = (ConcernedDPCImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(concernedDPC.getPointCode(), concernedDPC2.getPointCode());
+		assertEquals(concernedDPC2.getPointCode(), concernedDPC.getPointCode());
 
 	}
 
@@ -398,7 +398,7 @@ public class ParameterTest {
 		CongestedIndicationImpl congIndImpl2 = (CongestedIndicationImpl) factory.createParameter(getTag(data),
 				getValue(data));
 
-		assertEquals(congIndImpl.getCongestionLevel(), congIndImpl2.getCongestionLevel());
+		assertEquals(congIndImpl2.getCongestionLevel(), congIndImpl.getCongestionLevel());
 
 	}
 
@@ -411,9 +411,9 @@ public class ParameterTest {
 
 		UserCauseImpl usrCa2 = (UserCauseImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(usrCa.getUser(), usrCa2.getUser());
+		assertEquals(usrCa2.getUser(), usrCa.getUser());
 
-		assertEquals(usrCa.getCause(), usrCa2.getCause());
+		assertEquals(usrCa2.getCause(), usrCa.getCause());
 
 	}
 
@@ -428,7 +428,7 @@ public class ParameterTest {
 
 		ASPIdentifierImpl rc2 = (ASPIdentifierImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(12234445l, rc2.getAspId());
+		assertEquals(rc2.getAspId(), 12234445l);
 	}
 
 	@Test
@@ -445,8 +445,8 @@ public class ParameterTest {
 		DestinationPointCodeImpl affectedPc2 = (DestinationPointCodeImpl) factory.createParameter(getTag(data),
 				getValue(data));
 
-		assertEquals(123, affectedPc2.getPointCode());
-		assertEquals((short) 0, affectedPc2.getMask());
+		assertEquals(affectedPc2.getPointCode(), 123);
+		assertEquals(affectedPc2.getMask(), (short) 0);
 
 		// Test Serialization
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -461,9 +461,9 @@ public class ParameterTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		DestinationPointCodeImpl affectedPc3 = reader.read("DestinationPointCodeImpl", DestinationPointCodeImpl.class);
 
-		assertEquals(123, affectedPc3.getPointCode());
-		assertEquals((short) 0, affectedPc3.getMask());
-		assertEquals(Parameter.Destination_Point_Code, affectedPc3.getTag());
+		assertEquals(affectedPc3.getPointCode(), 123);
+		assertEquals(affectedPc3.getMask(), (short) 0);
+		assertEquals(affectedPc3.getTag(), Parameter.Destination_Point_Code);
 	}
 
 	@Test
@@ -477,7 +477,7 @@ public class ParameterTest {
 
 		LocalRKIdentifierImpl crrId2 = (LocalRKIdentifierImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(4294967295l, crrId2.getId());
+		assertEquals(crrId2.getId(), 4294967295l);
 
 		// Test Serialization
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -492,8 +492,8 @@ public class ParameterTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		LocalRKIdentifierImpl crrId3 = reader.read("LocalRKIdentifierImpl", LocalRKIdentifierImpl.class);
 
-		assertEquals(4294967295l, crrId3.getId());
-		assertEquals(Parameter.Local_Routing_Key_Identifier, crrId3.getTag());
+		assertEquals(crrId3.getId(), 4294967295l);
+		assertEquals(crrId3.getTag(), Parameter.Local_Routing_Key_Identifier);
 	}
 
 	@Test
@@ -525,7 +525,7 @@ public class ParameterTest {
 
 		assertTrue(Arrays.equals(new int[] { 123, 456 }, opcList3.getPointCodes()));
 		assertTrue(Arrays.equals(new short[] { 0, 1 }, opcList3.getMasks()));
-		assertEquals(Parameter.Originating_Point_Code_List, opcList3.getTag());
+		assertEquals(opcList3.getTag(), Parameter.Originating_Point_Code_List);
 	}
 
 	@Test
@@ -556,7 +556,7 @@ public class ParameterTest {
 		ServiceIndicatorsImpl siList3 = reader.read("ServiceIndicatorsImpl", ServiceIndicatorsImpl.class);
 
 		assertTrue(Arrays.equals(new short[] { 1, 2, 3, 4 }, siList3.getIndicators()));
-		assertEquals(Parameter.Service_Indicators, siList3.getTag());
+		assertEquals(siList3.getTag(), Parameter.Service_Indicators);
 	}
 
 	@Test
@@ -570,7 +570,7 @@ public class ParameterTest {
 
 		TrafficModeTypeImpl rc2 = (TrafficModeTypeImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(1, rc2.getMode());
+		assertEquals(rc2.getMode(), 1);
 
 		// Test Serialization
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -585,8 +585,8 @@ public class ParameterTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		TrafficModeTypeImpl crrId3 = reader.read("TrafficModeTypeImpl", TrafficModeTypeImpl.class);
 
-		assertEquals(1, crrId3.getMode());
-		assertEquals(Parameter.Traffic_Mode_Type, crrId3.getTag());
+		assertEquals(crrId3.getMode(), 1);
+		assertEquals(crrId3.getTag(), Parameter.Traffic_Mode_Type);
 	}
 
 	@Test
@@ -612,7 +612,7 @@ public class ParameterTest {
 
 		RoutingKeyImpl routeKey2 = (RoutingKeyImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(localRkId.getId(), routeKey2.getLocalRKIdentifier().getId());
+		assertEquals(routeKey2.getLocalRKIdentifier().getId(), localRkId.getId());
 		assertTrue(Arrays.equals(routKey.getRoutingContext().getRoutingContexts(), routeKey2.getRoutingContext()
 				.getRoutingContexts()));
 
@@ -629,10 +629,10 @@ public class ParameterTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		RoutingKeyImpl routeKey3 = reader.read("RoutingKeyImpl", RoutingKeyImpl.class);
 
-		assertEquals(localRkId.getId(), routeKey3.getLocalRKIdentifier().getId());
+		assertEquals(routeKey3.getLocalRKIdentifier().getId(), localRkId.getId());
 		assertTrue(Arrays.equals(routKey.getRoutingContext().getRoutingContexts(), routeKey3.getRoutingContext()
 				.getRoutingContexts()));
-		assertEquals(Parameter.Routing_Key, routeKey3.getTag());
+		assertEquals(routeKey3.getTag(), Parameter.Routing_Key);
 	}
 
 	@Test
@@ -677,7 +677,7 @@ public class ParameterTest {
 		assertNull(routeKey3.getLocalRKIdentifier());
 		assertTrue(Arrays.equals(routKey.getRoutingContext().getRoutingContexts(), routeKey3.getRoutingContext()
 				.getRoutingContexts()));
-		assertEquals(Parameter.Routing_Key, routeKey3.getTag());
+		assertEquals(routeKey3.getTag(), Parameter.Routing_Key);
 	}
 
 	@Test
@@ -691,7 +691,7 @@ public class ParameterTest {
 
 		RegistrationStatusImpl crrId2 = (RegistrationStatusImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(11, crrId2.getStatus());
+		assertEquals(crrId2.getStatus(), 11);
 	}
 
 	@Test
@@ -710,10 +710,10 @@ public class ParameterTest {
 
 		RegistrationResultImpl rc2 = (RegistrationResultImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(localRkId.getId(), rc2.getLocalRKIdentifier().getId());
+		assertEquals(rc2.getLocalRKIdentifier().getId(), localRkId.getId());
 		assertTrue(Arrays.equals(routKey.getRoutingContext().getRoutingContexts(), rc2.getRoutingContext()
 				.getRoutingContexts()));
-		assertEquals(status.getStatus(), rc2.getRegistrationStatus().getStatus());
+		assertEquals(rc2.getRegistrationStatus().getStatus(), status.getStatus());
 	}
 
 	@Test
@@ -728,7 +728,7 @@ public class ParameterTest {
 		DeregistrationStatusImpl crrId2 = (DeregistrationStatusImpl) factory.createParameter(getTag(data),
 				getValue(data));
 
-		assertEquals(5, crrId2.getStatus());
+		assertEquals(crrId2.getStatus(), 5);
 	}
 
 	@Test
@@ -747,7 +747,7 @@ public class ParameterTest {
 
 		assertTrue(Arrays.equals(routKey.getRoutingContext().getRoutingContexts(), rc2.getRoutingContext()
 				.getRoutingContexts()));
-		assertEquals(status.getStatus(), rc2.getDeregistrationStatus().getStatus());
+		assertEquals(rc2.getDeregistrationStatus().getStatus(), status.getStatus());
 	}
 
 	@Test
@@ -762,7 +762,7 @@ public class ParameterTest {
 
 		StatusImpl rc2 = (StatusImpl) factory.createParameter(getTag(data), getValue(data));
 
-		assertEquals(routKey.getType(), rc2.getType());
-		assertEquals(routKey.getInfo(), rc2.getInfo());
+		assertEquals(rc2.getType(), routKey.getType());
+		assertEquals(rc2.getInfo(), routKey.getInfo());
 	}
 }

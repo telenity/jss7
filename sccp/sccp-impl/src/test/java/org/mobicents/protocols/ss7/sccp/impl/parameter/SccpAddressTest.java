@@ -27,9 +27,9 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.parameter;
 
-import org.testng.annotations.*;
+import org.junit.*;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -67,52 +67,52 @@ public class SccpAddressTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
 	/**
 	 * Test of decode method, of class SccpAddressCodec.
 	 */
-	@Test(groups = { "parameter", "functional.decode" })
+	@Test
 	public void testDecode1() throws Exception {
 		SccpAddress address = SccpAddressCodec.decode(data);
 
-		assertEquals(address.getSignalingPointCode(), 0);
-		assertEquals(address.getSubsystemNumber(), 146);
-		assertEquals(address.getGlobalTitle().getDigits(), "79023700299");
+		assertEquals(0, address.getSignalingPointCode());
+		assertEquals(146, address.getSubsystemNumber());
+		assertEquals("79023700299", address.getGlobalTitle().getDigits());
 	}
 
-	@Test(groups = { "parameter", "functional.decode" })
+	@Test
 	public void testDecode2() throws Exception {
 		SccpAddress address = SccpAddressCodec.decode(new byte[] { 0x42, 0x08 });
 
-		assertEquals(address.getSignalingPointCode(), 0);
-		assertEquals(address.getSubsystemNumber(), 8);
+		assertEquals(0, address.getSignalingPointCode());
+		assertEquals(8, address.getSubsystemNumber());
 		assertNull(address.getGlobalTitle());
 	}
 
 	/**
 	 * Test of encode method, of class SccpAddressCodec.
 	 */
-	@Test(groups = { "parameter", "functional.encode" })
+	@Test
 	public void testEncode() throws Exception {
 		GlobalTitle gt = GlobalTitle.getInstance(0, NumberingPlan.ISDN_TELEPHONY, NatureOfAddress.INTERNATIONAL,
 				"79023700299");
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt, 146);
 		byte[] bin = SccpAddressCodec.encode(address, false);
-		assertTrue(Arrays.equals(data, bin), "Wrong encoding");
+		assertTrue("Wrong encoding", Arrays.equals(data, bin));
 	}
 
-	@Test(groups = { "parameter", "functional.encode" })
+	@Test
 	public void testEncode2() throws Exception {
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);
 		byte[] bin = SccpAddressCodec.encode(address, false);
-		assertTrue(Arrays.equals(new byte[] { 0x42, 0x08 }, bin), "Wrong encoding");
+		assertTrue("Wrong encoding", Arrays.equals(new byte[] { 0x42, 0x08 }, bin));
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class SccpAddressTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test(groups = { "parameter", "functional.encode" })
+	@Test
 	public void testEncode3() throws Exception {
 		byte[] data1 = new byte[] { 0x12, 0x06, 0x00, 0x11, 0x04, 0x39, 0x07, (byte) 0x92, 0x49, 0x00, 0x06 };
 //		SccpAddressCodec codec = new SccpAddressCodec(true);
@@ -129,7 +129,7 @@ public class SccpAddressTest {
 				"93702994006");
 		SccpAddress address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 5530, gt, 6);
 		byte[] bin = SccpAddressCodec.encode(address, true);
-		assertTrue(Arrays.equals(data1, bin), "Wrong encoding");
+		assertTrue("Wrong encoding", Arrays.equals(data1, bin));
 		
 		//Now test decode
 		
@@ -143,8 +143,8 @@ public class SccpAddressTest {
 		GlobalTitle gt = GlobalTitle.getInstance(NatureOfAddress.NATIONAL, "123");
 		SccpAddress a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt, 0);
 		SccpAddress a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt, 0);
-		assertEquals(a1, a2);
-		assertEquals(a1.hashCode(), a2.hashCode());
+		assertEquals(a2, a1);
+		assertEquals(a2.hashCode(), a1.hashCode());
 	}
 
 	@Test
@@ -163,7 +163,7 @@ public class SccpAddressTest {
 			fail("Address did not match");
 		}
 
-		assertEquals(new Integer(1), i);
+		assertEquals(i, new Integer(1));
 	}
 
 	@Test
@@ -186,17 +186,15 @@ public class SccpAddressTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		SccpAddress aiOut = reader.read("SccpAddress", SccpAddress.class);
 
-		assertEquals(
-				GlobalTitleIndicator.GLOBAL_TITLE_INCLUDES_TRANSLATION_TYPE_NUMBERING_PLAN_ENCODING_SCHEME_AND_NATURE_OF_ADDRESS,
-				aiOut.getAddressIndicator().getGlobalTitleIndicator());
-		assertEquals(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, aiOut.getAddressIndicator().getRoutingIndicator());
+		assertEquals(aiOut.getAddressIndicator().getGlobalTitleIndicator(), GlobalTitleIndicator.GLOBAL_TITLE_INCLUDES_TRANSLATION_TYPE_NUMBERING_PLAN_ENCODING_SCHEME_AND_NATURE_OF_ADDRESS);
+		assertEquals(aiOut.getAddressIndicator().getRoutingIndicator(), RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE);
 		assertTrue(aiOut.getAddressIndicator().pcPresent());
 		assertFalse(aiOut.getAddressIndicator().ssnPresent());
 
-		assertEquals(146, aiOut.getSignalingPointCode());
-		assertEquals(0, aiOut.getSubsystemNumber());
+		assertEquals(aiOut.getSignalingPointCode(), 146);
+		assertEquals(aiOut.getSubsystemNumber(), 0);
 
-		assertEquals("79023700271", aiOut.getGlobalTitle().getDigits());
+		assertEquals(aiOut.getGlobalTitle().getDigits(), "79023700271");
 	}
 
 	@Test
@@ -218,14 +216,14 @@ public class SccpAddressTest {
 		XMLObjectReader reader = XMLObjectReader.newInstance(input);
 		SccpAddress aiOut = reader.read("SccpAddress", SccpAddress.class);
 
-		assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, aiOut.getAddressIndicator()
-				.getGlobalTitleIndicator());
-		assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, aiOut.getAddressIndicator().getRoutingIndicator());
+		assertEquals(aiOut.getAddressIndicator()
+				.getGlobalTitleIndicator(), GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
+		assertEquals(aiOut.getAddressIndicator().getRoutingIndicator(), RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN);
 		assertTrue(aiOut.getAddressIndicator().pcPresent());
 		assertTrue(aiOut.getAddressIndicator().ssnPresent());
 
-		assertEquals(146, aiOut.getSignalingPointCode());
-		assertEquals(8, aiOut.getSubsystemNumber());
+		assertEquals(aiOut.getSignalingPointCode(), 146);
+		assertEquals(aiOut.getSubsystemNumber(), 8);
 
 		assertNull(aiOut.getGlobalTitle());
 	}

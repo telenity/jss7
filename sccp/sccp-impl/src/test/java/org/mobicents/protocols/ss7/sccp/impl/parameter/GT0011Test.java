@@ -34,8 +34,8 @@ import java.util.Arrays;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
 import org.mobicents.protocols.ss7.indicator.NumberingPlan;
@@ -62,18 +62,18 @@ public class GT0011Test {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
 	/**
 	 * Test of decode method, of class GT0011Codec.
 	 */
-	@Test(groups = { "parameter","functional.decode"})
+	@Test
 	public void testDecode() throws Exception {
 		// wrap data with input stream
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
@@ -82,15 +82,15 @@ public class GT0011Test {
 		GT0011 gt1 = (GT0011) codec.decode(in);
 
 		// check results
-		assertEquals( gt1.getTranslationType(),0);
-		assertEquals( gt1.getNp(),NumberingPlan.ISDN_TELEPHONY);
-		assertEquals( gt1.getDigits(),"9023629581");
+		assertEquals(0, gt1.getTranslationType());
+		assertEquals(NumberingPlan.ISDN_TELEPHONY, gt1.getNp());
+		assertEquals("9023629581", gt1.getDigits());
 	}
 
 	/**
 	 * Test of encode method, of class GT0011Codec.
 	 */
-	@Test(groups = { "parameter","functional.encode"})
+	@Test
 	public void testEncode() throws Exception {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		GT0011 gt = new GT0011(0, NumberingPlan.ISDN_TELEPHONY, "9023629581");
@@ -100,10 +100,10 @@ public class GT0011Test {
 		byte[] res = bout.toByteArray();
 
 		boolean correct = Arrays.equals(data, res);
-		assertTrue( correct,"Incorrect encoding");
+		assertTrue("Incorrect encoding",  correct);
 	}
 
-	@Test(groups = { "parameter","functional.encode"})
+	@Test
 	public void testSerialization() throws Exception {
 		GT0011 gt = new GT0011(0, NumberingPlan.ISDN_TELEPHONY, "9023629581");
 
@@ -122,9 +122,9 @@ public class GT0011Test {
 		GT0011 aiOut = reader.read("GT0011", GT0011.class);
 
 		// check results
-		assertEquals( aiOut.getTranslationType(),0);
-		assertEquals( aiOut.getNp(),NumberingPlan.ISDN_TELEPHONY);
-		assertEquals( aiOut.getDigits(),"9023629581");
+		assertEquals(0, aiOut.getTranslationType());
+		assertEquals(NumberingPlan.ISDN_TELEPHONY, aiOut.getNp());
+		assertEquals("9023629581", aiOut.getDigits());
 	}
 
 }

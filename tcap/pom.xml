@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>ss7-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7</groupId>
-		<version>${jss7.version}</version>
+		<version>${revision}</version>
 	</parent>
 
 
@@ -25,14 +25,4 @@
 
 	<build>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>release</id>
-			<modules>
-				<module>release</module>
-			</modules>
-		</profile>
-	</profiles>
-
 </project>

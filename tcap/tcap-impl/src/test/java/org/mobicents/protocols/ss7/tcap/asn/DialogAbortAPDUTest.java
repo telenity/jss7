@@ -28,15 +28,14 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * 
  * @author sergey vetyutnev
  * 
  */
-@Test(groups = { "asn" })
 public class DialogAbortAPDUTest {
 
 	private byte[] getData() {
@@ -47,7 +46,7 @@ public class DialogAbortAPDUTest {
 		return new byte[] { 100, 21, (byte) 128, 1, 1, (byte) 190, 16, 40, 14, 6, 7, 4, 0, 0, 1, 1, 1, 1, (byte) 160, 3, 1, 2, 3 };
 	}
 
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testDecode() throws Exception {
 
 		byte[] b = getData();

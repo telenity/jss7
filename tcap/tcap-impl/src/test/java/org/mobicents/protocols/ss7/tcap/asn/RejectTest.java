@@ -35,7 +35,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Reject;
 
-import org.testng.annotations.Test; import static org.testng.Assert.*;
+import org.junit.Test; import static org.junit.Assert.*;
 
 
 /**
@@ -43,7 +43,6 @@ import org.testng.annotations.Test; import static org.testng.Assert.*;
  * @author sergey vetyutnev
  *
  */
-@Test(groups = { "asn" })
 public class RejectTest  {
 	
 	private byte[] getData() {
@@ -54,16 +53,16 @@ public class RejectTest  {
 		return new byte[] { -92, 5, 5, 0, -128, 1, 0 };
 	}
 	
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testDecode() throws IOException, ParseException {
 
 		byte[] b = getData();
 		AsnInputStream asnIs = new AsnInputStream(b);
 		Component comp = TcapFactory.createComponent(asnIs);
 
-		assertEquals(ComponentType.Reject, comp.getType(),"Wrong component Type");
+		assertEquals("Wrong component Type", ComponentType.Reject, comp.getType());
 		Reject rej = (Reject) comp;
-		assertEquals(new Integer(1), rej.getInvokeId(),"Wrong invoke ID");
+		assertEquals("Wrong invoke ID", new Integer(1), rej.getInvokeId());
 		Problem prb = rej.getProblem();
 		assertEquals(ProblemType.Invoke, prb.getType());
 		assertEquals(InvokeProblemType.MistypedParameter, prb.getInvokeProblemType());
@@ -73,7 +72,7 @@ public class RejectTest  {
 		asnIs = new AsnInputStream(b);
 		comp = TcapFactory.createComponent(asnIs);
 
-		assertEquals(ComponentType.Reject, comp.getType(),"Wrong component Type");
+		assertEquals(ComponentType.Reject, comp.getType());
 		rej = (Reject) comp;
 		assertNull(rej.getInvokeId());
 		prb = rej.getProblem();
@@ -82,7 +81,7 @@ public class RejectTest  {
 	}
 	
 	
-	@Test(groups = { "functional.encode" })
+	@Test
 	public void testEncode() throws IOException, EncodeException {
 
 		byte[] expected = this.getData();

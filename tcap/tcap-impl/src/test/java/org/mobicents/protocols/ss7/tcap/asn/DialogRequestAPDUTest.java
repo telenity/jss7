@@ -29,16 +29,15 @@ import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 
-import org.testng.annotations.*;
+import org.junit.*;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * 
  * @author sergey vetyutnev
  * 
  */
-@Test(groups = { "asn" })
 public class DialogRequestAPDUTest {
 
 	private byte[] getData() {
@@ -50,7 +49,7 @@ public class DialogRequestAPDUTest {
 				(byte) 160, 2, (byte) 160, 0 };
 	}
 	
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testDecode() throws Exception {
 
 		byte[] b = getData();

@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.tcap.dialog.timeout;
 
-import static org.testng.Assert.fail;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +36,11 @@ import org.mobicents.protocols.ss7.tcap.TestEvent;
 import org.mobicents.protocols.ss7.tcap.api.TCAPException;
 import org.mobicents.protocols.ss7.tcap.api.TCAPSendException;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TerminationType;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Test for call flow.
@@ -48,7 +48,6 @@ import org.testng.annotations.Test;
  * @author baranowb
  *
  */
-@Test
 public class DialogIdleTest extends SccpHarness {
 
 	private static final int _WAIT_TIMEOUT = 90000;
@@ -66,14 +65,14 @@ public class DialogIdleTest extends SccpHarness {
 
 	}
 
-	@BeforeClass
+	@Before
 	public void setUpClass() throws Exception {
 		this.sccpStack1Name = "DialogIdleTestSccpStack1";
 		this.sccpStack2Name = "DialogIdleTestSccpStack2";
 		System.out.println("setUpClass");
 	}
 
-	@AfterClass
+	@After
 	public void tearDownClass() throws Exception {
 		System.out.println("tearDownClass");
 	}
@@ -83,7 +82,7 @@ public class DialogIdleTest extends SccpHarness {
 	 *
 	 * @see junit.framework.TestCase#setUp()
 	 */
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 		System.out.println("setUp");
 		super.setUp();
@@ -112,7 +111,7 @@ public class DialogIdleTest extends SccpHarness {
 	 *
 	 * @see junit.framework.TestCase#tearDown()
 	 */
-	@AfterMethod
+	@After
 	public void tearDown() {
 		System.out.println("tearDown");
 		this.tcapStack1.stop();
@@ -120,7 +119,7 @@ public class DialogIdleTest extends SccpHarness {
 		super.tearDown();
 	}
 
-	@Test(groups = { "functional.timeout.idle" })
+	@Test
 	public void testCreateOnly() throws TCAPException {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
@@ -138,7 +137,7 @@ public class DialogIdleTest extends SccpHarness {
 
 	}
 
-	@Test(groups = { "functional.timeout.idle" })
+	@Test
 	public void testAfterBeginOnly1() throws TCAPException, TCAPSendException {
 		//client timeout first
 		long stamp = System.currentTimeMillis();
@@ -171,7 +170,7 @@ public class DialogIdleTest extends SccpHarness {
 
 	}
 
-	@Test(groups = { "functional.timeout.idle" })
+	@Test
 	public void testAfterBeginOnly2() throws Exception {
 		//server timeout first
 		this.tcapStack1.setDialogIdleTimeout(_DIALOG_TIMEOUT);
@@ -203,7 +202,7 @@ public class DialogIdleTest extends SccpHarness {
 		server.compareEvents(serverExpectedEvents);
 	}
 
-	@Test(groups = { "functional.timeout.idle" })
+	@Test
 	public void testAfterContinue() throws TCAPException, TCAPSendException {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
@@ -242,7 +241,7 @@ public class DialogIdleTest extends SccpHarness {
 
 	}
 
-	@Test(groups = { "functional.timeout.idle" })
+	@Test
 	public void testAfterContinue2() throws TCAPException, TCAPSendException {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
@@ -286,7 +285,7 @@ public class DialogIdleTest extends SccpHarness {
 
 	}
 
-	@Test(groups = { "functional.timeout.idle" })
+	@Test
 	public void testAfterEnd() throws TCAPException, TCAPSendException {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();

@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
@@ -37,9 +37,9 @@ import org.mobicents.protocols.ss7.sccp.parameter.Importance;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCause;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -63,7 +63,7 @@ public class MessageSegmentationTest {
 		}
 	}
 	
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		this.messageFactory = new MessageFactoryImpl(stack);
 		this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
@@ -71,7 +71,7 @@ public class MessageSegmentationTest {
 		stack.setMaxDataMessage(2000);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
@@ -158,7 +158,7 @@ public class MessageSegmentationTest {
 		return buf1;
 	}
 
-	@Test(groups = { "SccpMessage", "functional.encode"})
+	@Test
 	public void testEncode() throws Exception {
 
 		// -- message length exceeds the max possible length
@@ -168,21 +168,21 @@ public class MessageSegmentationTest {
 		SccpDataMessageImpl msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, buf, 0, 8, false, null, null);
 		
 		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.DataMaxLengthExceeded);
+		assertEquals(EncodingResult.DataMaxLengthExceeded, res.getEncodingResult());
 
 		// -- UDT message: message length exceeds the max possible length for UDT
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataA(), 0, 8, false, null, null);
 
 		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.ReturnFailure);
-		assertEquals(res.getReturnCause(), ReturnCauseValue.SEG_NOT_SUPPORTED);
+		assertEquals(EncodingResult.ReturnFailure, res.getEncodingResult());
+		assertEquals(ReturnCauseValue.SEG_NOT_SUPPORTED, res.getReturnCause());
 
 		// -- UDT message: message length exceeds the max possible length for UDT
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataA(), 0, 8, false, null, null);
 
 		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.ReturnFailure);
-		assertEquals(res.getReturnCause(), ReturnCauseValue.SEG_NOT_SUPPORTED);
+		assertEquals(EncodingResult.ReturnFailure, res.getEncodingResult());
+		assertEquals(ReturnCauseValue.SEG_NOT_SUPPORTED, res.getReturnCause());
 
 		// -- XUDT message: a splitted to the 3 segments message
 		Importance imp = new ImportanceImpl((byte) 7);
@@ -190,8 +190,8 @@ public class MessageSegmentationTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd2, getDataA(), 0, 8, true, null, imp);
 
 		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertEquals(res.getSegementedData().size(), 3);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
+		assertEquals(3, res.getSegementedData().size());
 		assertTrue(Arrays.equals(res.getSegementedData().get(0), getDataSegm1()));		
 		assertTrue(Arrays.equals(res.getSegementedData().get(1), getDataSegm2()));		
 		assertTrue(Arrays.equals(res.getSegementedData().get(2), getDataSegm3()));		
@@ -202,8 +202,8 @@ public class MessageSegmentationTest {
 				getDataA(), null, imp);
 
 		res = msgNot.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertEquals(res.getSegementedData().size(), 3);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
+		assertEquals(3, res.getSegementedData().size());
 		assertTrue(Arrays.equals(res.getSegementedData().get(0), getDataSegm1_S()));		
 		assertTrue(Arrays.equals(res.getSegementedData().get(1), getDataSegm2_S()));		
 		assertTrue(Arrays.equals(res.getSegementedData().get(2), getDataSegm3_S()));		
@@ -211,24 +211,24 @@ public class MessageSegmentationTest {
 		// -- XUDT message: for splitting to the 3 segments message. This message is received from MTP as LUDT without Segmentation field -> Error
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataA(), 0, 8, false, null, imp);
 		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		ByteArrayInputStream in = new ByteArrayInputStream(res.getSolidData());
 		int type = in.read();
 		msg = (SccpDataMessageImpl)messageFactory.createMessage(type, 1, 2, 0, in);
 		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.ReturnFailure);
-		assertEquals(res.getReturnCause(), ReturnCauseValue.SEG_FAILURE);
+		assertEquals(EncodingResult.ReturnFailure, res.getEncodingResult());
+		assertEquals(ReturnCauseValue.SEG_FAILURE, res.getReturnCause());
 
 		// -- XUDT message: for splitting to the 3 segments message. This message is received from MTP as LUDT with Segmentation field -> OK
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataA(), 0, 8, false, null, imp);
 		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled_WithSegmentationField, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		in = new ByteArrayInputStream(res.getSolidData());
 		type = in.read();
 		msg = (SccpDataMessageImpl)messageFactory.createMessage(type, 1, 2, 0, in);
 		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
-		assertEquals(res.getSegementedData().size(), 3);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
+		assertEquals(3, res.getSegementedData().size());
 
 		
 		
@@ -248,7 +248,7 @@ public class MessageSegmentationTest {
 		return new byte[] { -127, -96, -122, 1 };
 	}
 	
-	@Test(groups = { "SccpMessage", "functional.encode"})
+	@Test
 	public void testLocalRef() throws Exception {
 		SegmentationImpl segm = new SegmentationImpl(true, false, (byte) 1, 100000);
 		byte[] buf = segm.encode();
@@ -256,8 +256,8 @@ public class MessageSegmentationTest {
 		
 		segm = new SegmentationImpl();
 		segm.decode(buf);
-		assertEquals(segm.getRemainingSegments(), 1);
-		assertEquals(segm.getSegmentationLocalRef(), 100000);
+		assertEquals(1, segm.getRemainingSegments());
+		assertEquals(100000, segm.getSegmentationLocalRef());
 		assertTrue(segm.isFirstSegIndication());
 		assertFalse(segm.isClass1Selected());
 	}

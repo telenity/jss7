@@ -26,8 +26,8 @@ package org.mobicents.protocols.ss7.sccp.impl.message;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
@@ -55,13 +55,13 @@ public class SccpDataMessageTest {
 	private SccpStackImpl stack = new SccpStackImpl("TestStack");
 	private MessageFactoryImpl messageFactory;
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		this.messageFactory = new MessageFactoryImpl(stack);
 		this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
@@ -143,7 +143,7 @@ public class SccpDataMessageTest {
 				22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.decode"})
+	@Test
 	public void testDecode() throws Exception {
 		
 		// ---- UDT
@@ -158,13 +158,13 @@ public class SccpDataMessageTest {
 
 		SccpAddress calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSubsystemNumber(),8);
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 
 		SccpAddress callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSignalingPointCode(),1);
-		assertEquals( callingAdd.getSubsystemNumber(),8);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(8, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 
 		// ---- UDT Management message
@@ -178,13 +178,13 @@ public class SccpDataMessageTest {
 
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSubsystemNumber(),1);
+		assertEquals(1, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSignalingPointCode(),1);
-		assertEquals( callingAdd.getSubsystemNumber(),1);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(1, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 
 		
@@ -197,13 +197,13 @@ public class SccpDataMessageTest {
 		assertNotNull(testObjectDecoded);
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals( calledAdd.getSignalingPointCode(),0);
-		assertEquals( calledAdd.getSubsystemNumber(),8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertTrue(calledAdd.getGlobalTitle().getDigits().equals("2348030000480"));
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSignalingPointCode(),0);
-		assertEquals( callingAdd.getSubsystemNumber(),8);
+		assertEquals(0, callingAdd.getSignalingPointCode());
+		assertEquals(8, callingAdd.getSubsystemNumber());
 		assertTrue(callingAdd.getGlobalTitle().getDigits().equals("2348030008180"));
 		assertNull(testObjectDecoded.getSegmentation());
 		assertNull(testObjectDecoded.getImportance());
@@ -216,24 +216,24 @@ public class SccpDataMessageTest {
 		System.out.println(testObjectDecoded);
 		assertNotNull(testObjectDecoded);
 
-		assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
+		assertEquals(1, testObjectDecoded.getProtocolClass().getProtocolClass());
 		assertTrue(testObjectDecoded.getProtocolClass().getReturnMessageOnError());
-		assertEquals(testObjectDecoded.getHopCounter().getValue(), 15);
+		assertEquals(15, testObjectDecoded.getHopCounter().getValue());
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertTrue(testObjectDecoded.getSegmentation().isFirstSegIndication());
 		assertTrue(testObjectDecoded.getSegmentation().isClass1Selected());
-		assertEquals(testObjectDecoded.getSegmentation().getRemainingSegments(), 2);
-		assertEquals(testObjectDecoded.getSegmentation().getSegmentationLocalRef(), 100);		
-		assertEquals(testObjectDecoded.getImportance().getValue(), 7);		
+		assertEquals(2, testObjectDecoded.getSegmentation().getRemainingSegments());
+		assertEquals(100, testObjectDecoded.getSegmentation().getSegmentationLocalRef());		
+		assertEquals(7, testObjectDecoded.getImportance().getValue());		
 		assertTrue(Arrays.equals(testObjectDecoded.getData(), getDataXudt1Src()));
 
 		// ---- XUDT without segm
@@ -244,21 +244,21 @@ public class SccpDataMessageTest {
 		System.out.println(testObjectDecoded);
 		assertNotNull(testObjectDecoded);
 
-		assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
+		assertEquals(1, testObjectDecoded.getProtocolClass().getProtocolClass());
 		assertTrue(testObjectDecoded.getProtocolClass().getReturnMessageOnError());
-		assertEquals(testObjectDecoded.getHopCounter().getValue(), 15);
+		assertEquals(15, testObjectDecoded.getHopCounter().getValue());
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertNull(testObjectDecoded.getSegmentation());
-		assertEquals(testObjectDecoded.getImportance().getValue(), 7);		
+		assertEquals(7, testObjectDecoded.getImportance().getValue());		
 		assertTrue(Arrays.equals(testObjectDecoded.getData(), getDataXudt1Src()));
 
 		// ---- XUDT without segm & importance
@@ -269,18 +269,18 @@ public class SccpDataMessageTest {
 		System.out.println(testObjectDecoded);
 		assertNotNull(testObjectDecoded);
 
-		assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
+		assertEquals(1, testObjectDecoded.getProtocolClass().getProtocolClass());
 		assertTrue(testObjectDecoded.getProtocolClass().getReturnMessageOnError());
-		assertEquals(testObjectDecoded.getHopCounter().getValue(), 15);
+		assertEquals(15, testObjectDecoded.getHopCounter().getValue());
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertNull(testObjectDecoded.getSegmentation());
 		assertNull(testObjectDecoded.getImportance());		
@@ -294,24 +294,24 @@ public class SccpDataMessageTest {
 		System.out.println(testObjectDecoded);
 		assertNotNull(testObjectDecoded);
 
-		assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
+		assertEquals(1, testObjectDecoded.getProtocolClass().getProtocolClass());
 		assertFalse(testObjectDecoded.getProtocolClass().getReturnMessageOnError());
-		assertEquals(testObjectDecoded.getHopCounter().getValue(), 10);
+		assertEquals(10, testObjectDecoded.getHopCounter().getValue());
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertTrue(testObjectDecoded.getSegmentation().isFirstSegIndication());
 		assertTrue(testObjectDecoded.getSegmentation().isClass1Selected());
-		assertEquals(testObjectDecoded.getSegmentation().getRemainingSegments(), 0);
-		assertEquals(testObjectDecoded.getSegmentation().getSegmentationLocalRef(), 1);		
-		assertEquals(testObjectDecoded.getImportance().getValue(), 7);		
+		assertEquals(0, testObjectDecoded.getSegmentation().getRemainingSegments());
+		assertEquals(1, testObjectDecoded.getSegmentation().getSegmentationLocalRef());		
+		assertEquals(7, testObjectDecoded.getImportance().getValue());		
 		assertTrue(Arrays.equals(testObjectDecoded.getData(), getDataXudt1Src()));
 
 		// ---- LUDT no segm and importance par
@@ -322,18 +322,18 @@ public class SccpDataMessageTest {
 		System.out.println(testObjectDecoded);
 		assertNotNull(testObjectDecoded);
 
-		assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
+		assertEquals(1, testObjectDecoded.getProtocolClass().getProtocolClass());
 		assertFalse(testObjectDecoded.getProtocolClass().getReturnMessageOnError());
-		assertEquals(testObjectDecoded.getHopCounter().getValue(), 10);
+		assertEquals(10, testObjectDecoded.getHopCounter().getValue());
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertNull(testObjectDecoded.getSegmentation());
 		assertNull(testObjectDecoded.getImportance());
@@ -347,26 +347,26 @@ public class SccpDataMessageTest {
 		System.out.println(testObjectDecoded);
 		assertNotNull(testObjectDecoded);
 
-		assertEquals(testObjectDecoded.getProtocolClass().getProtocolClass(), 1);
+		assertEquals(1, testObjectDecoded.getProtocolClass().getProtocolClass());
 		assertFalse(testObjectDecoded.getProtocolClass().getReturnMessageOnError());
-		assertEquals(testObjectDecoded.getHopCounter().getValue(), 10);
+		assertEquals(10, testObjectDecoded.getHopCounter().getValue());
 		calledAdd = testObjectDecoded.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = testObjectDecoded.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertNull(testObjectDecoded.getSegmentation());
-		assertEquals(testObjectDecoded.getImportance().getValue(), 7);		
+		assertEquals(7, testObjectDecoded.getImportance().getValue());		
 		assertTrue(Arrays.equals(testObjectDecoded.getData(), getDataLudt3Src()));
 		
 	}
 
-	@Test(groups = { "SccpMessage", "functional.encode"})
+	@Test
 	public void testEncode() throws Exception {
 
 		// ---- UDT
@@ -377,7 +377,7 @@ public class SccpDataMessageTest {
 		// HopCounter hopCounter, Importance importance
 		
 		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
 
 		
@@ -387,7 +387,7 @@ public class SccpDataMessageTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass0(calledAdd, callingAdd, getDataUdtSrc1(), 1, false, null, null);
 		
 		res = msg.encode(this.stack, LongMessageRuleType.LongMessagesForbidden, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt1()));
 
 		// ---- XUDT without segm
@@ -398,7 +398,7 @@ public class SccpDataMessageTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, true, hc, imp);
 		
 		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt2()));
 
 		// ---- XUDT without segm & importance
@@ -408,7 +408,7 @@ public class SccpDataMessageTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, true, hc, null);
 		
 		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt2()));
 
 		// ---- LUDT all param
@@ -419,7 +419,7 @@ public class SccpDataMessageTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, false, hc, imp);
 		
 		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled_WithSegmentationField, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt1()));
 
 		// ---- LUDT no segm and importance par
@@ -429,7 +429,7 @@ public class SccpDataMessageTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataXudt1Src(), 5, 1, false, hc, null);
 		
 		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt2()));
 
 		// ---- LUDT param importance (no segm) - long 300 bytes data
@@ -440,7 +440,7 @@ public class SccpDataMessageTest {
 		msg = (SccpDataMessageImpl)messageFactory.createDataMessageClass1(calledAdd, callingAdd, getDataLudt3Src(), 5, 1, false, hc, imp);
 		
 		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt3()));
 		
 	}

@@ -22,7 +22,7 @@
 package org.mobicents.protocols.ss7.sccp.impl.router;
 
 import java.util.Arrays;
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -30,11 +30,11 @@ import org.mobicents.protocols.ss7.sccp.OriginationType;
 import org.mobicents.protocols.ss7.sccp.RuleType;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author amit bhayani
@@ -52,15 +52,15 @@ public class RuleComparatorTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
-	@Test(groups = { "comparator", "functional.sort" })
+	@Test
 	public void testSorting() throws Exception {
 
 		SccpAddress pattern1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "800/????/9"), 0);
@@ -93,13 +93,13 @@ public class RuleComparatorTest {
 		// Sort
 		Arrays.sort(rules, ruleComparator);
 
-		assertEquals(rule6, rules[0]);
-		assertEquals(rule7, rules[1]);
-		assertEquals(rule1, rules[2]);
-		assertEquals(rule5, rules[3]);
-		assertEquals(rule4, rules[4]);
-		assertEquals(rule8, rules[5]);
-		assertEquals(rule3, rules[6]);
-		assertEquals(rule2, rules[7]);
+		assertEquals(rules[0], rule6);
+		assertEquals(rules[1], rule7);
+		assertEquals(rules[2], rule1);
+		assertEquals(rules[3], rule5);
+		assertEquals(rules[4], rule4);
+		assertEquals(rules[5], rule8);
+		assertEquals(rules[6], rule3);
+		assertEquals(rules[7], rule2);
 	}
 }

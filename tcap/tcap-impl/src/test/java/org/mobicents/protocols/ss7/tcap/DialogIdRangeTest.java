@@ -39,13 +39,13 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.TCAPException;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.TRPseudoState;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 /**
  * @author sergey vetyutnev
@@ -56,7 +56,7 @@ public class DialogIdRangeTest extends SccpHarness {
     private SccpAddress peer1Address;
     private SccpAddress peer2Address;
 
-    @BeforeClass
+    @Before
     public void setUpClass() throws Exception {
         this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
         this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
@@ -67,11 +67,11 @@ public class DialogIdRangeTest extends SccpHarness {
                 RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
     }
 
-    @AfterClass
+    @After
     public void tearDownClass() throws Exception {
     }
 
-    @BeforeMethod
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -79,7 +79,7 @@ public class DialogIdRangeTest extends SccpHarness {
         this.tcapStack1.start();
     }
 
-    @AfterMethod
+    @After
     public void tearDown() {
         this.tcapStack1.stop();
         super.tearDown();
@@ -88,7 +88,7 @@ public class DialogIdRangeTest extends SccpHarness {
     /**
      * Original range validation test, slightly cleaned up.
      */
-    @Test(groups = { "functional.settings" })
+    @Test
     public void uniMsgTest() throws Exception {
 
         Dialog d;
@@ -146,7 +146,7 @@ public class DialogIdRangeTest extends SccpHarness {
         this.tcapStack1.start();
 
         d = this.tcapStack1.getProvider().getNewDialog(peer1Address, peer2Address);
-        assertEquals((long) d.getLocalDialogId(), 20L);
+        assertEquals(20L, (long) d.getLocalDialogId());
 
         this.tcapStack1.setMaxDialogs(5000);
         try {
@@ -157,7 +157,7 @@ public class DialogIdRangeTest extends SccpHarness {
         }
     }
 
-    @Test(groups = { "functional.settings" })
+    @Test
     public void testMaxDialogsExhaustion() throws Exception {
 
         this.tcapStack1.stop();
@@ -173,7 +173,7 @@ public class DialogIdRangeTest extends SccpHarness {
         // Allocate exactly maxDialogs dialogs
         for (int i = 0; i < 10; i++) {
             Dialog d = provider.getNewDialog(peer1Address, peer2Address);
-            assertNotNull(d.getLocalDialogId(), "DialogId must not be null");
+            assertNotNull("DialogId must not be null", d.getLocalDialogId());
         }
 
         // Next allocation must fail with TCAPException
@@ -184,11 +184,10 @@ public class DialogIdRangeTest extends SccpHarness {
             // expected
         }
 
-        assertEquals(provider.getCurrentDialogsCount(), 10,
-                "Dialog count must be equal to maxDialogs after exhaustion");
+        assertEquals("Dialog count must be equal to maxDialogs after exhaustion", 10, provider.getCurrentDialogsCount());
     }
 
-    @Test(groups = { "functional.settings" })
+    @Test
     public void testMaxDialogsExhaustionExt() throws Exception {
 
         this.tcapStack1.stop();
@@ -204,7 +203,7 @@ public class DialogIdRangeTest extends SccpHarness {
         // Allocate exactly maxDialogs dialogs
         for (int i = 0; i < tcapStack1.getMaxDialogs(); i++) {
             Dialog d = provider.getNewDialog(peer1Address, peer2Address);
-            assertNotNull(d.getLocalDialogId(), "DialogId must not be null");
+            assertNotNull(d.getLocalDialogId());
         }
 
         // Next allocation must fail with TCAPException
@@ -215,15 +214,14 @@ public class DialogIdRangeTest extends SccpHarness {
             // expected
         }
 
-        assertEquals(provider.getCurrentDialogsCount(), tcapStack1.getMaxDialogs(),
-                "Dialog count must be equal to maxDialogs after exhaustion");
+        assertEquals("Dialog count must be equal to maxDialogs after exhaustion", tcapStack1.getMaxDialogs(), provider.getCurrentDialogsCount());
     }
 
     /**
      * New test: multiple threads calling getNewDialog concurrently should
      * allocate unique dialog IDs without exceptions (within capacity).
      */
-    @Test(groups = { "functional.settings" })
+    @Test
     public void testConcurrentDialogAllocation() throws Exception {
 
         this.tcapStack1.stop();
@@ -273,15 +271,12 @@ public class DialogIdRangeTest extends SccpHarness {
         }
         exec.shutdownNow();
 
-        assertEquals(exceptions.get(), 0,
-                "No exceptions should be thrown during concurrent allocation within capacity");
-        assertEquals(duplicates.get(), 0,
-                "No duplicate dialog IDs should be allocated concurrently");
-        assertEquals(dialogIds.size(), threads * perThread,
-                "All allocations must produce unique dialog IDs");
+        assertEquals("No exceptions should be thrown during concurrent allocation within capacity", 0, exceptions.get());
+        assertEquals("No duplicate dialog IDs should be allocated concurrently", 0, duplicates.get());
+        assertEquals("All allocations must produce unique dialog IDs", threads * perThread, dialogIds.size());
     }
 
-    @Test(groups = { "functional.settings" })
+    @Test
     public void testUnstructuredDialogIsNotTracked() throws Exception {
         this.tcapStack1.stop();
 
@@ -295,12 +290,12 @@ public class DialogIdRangeTest extends SccpHarness {
         int before = provider.getCurrentDialogsCount();
         Dialog d = provider.getNewUnstructuredDialog(peer1Address, peer2Address);
 
-        assertEquals(before, provider.getCurrentDialogsCount(), "Unstructured dialog must not be added to map");
-        assertEquals(d.isStructured(), false);
-        assertEquals((long) d.getLocalDialogId(), -1L);
+        assertEquals("Unstructured dialog must not be added to map", before, provider.getCurrentDialogsCount());
+        assertEquals(false, d.isStructured());
+        assertEquals(-1L, (long) d.getLocalDialogId());
     }
 
-    @Test(groups = { "functional.settings" })
+    @Test
     public void testDialogIdReuseAfterRelease() throws Exception {
         this.tcapStack1.stop();
 
@@ -329,7 +324,8 @@ public class DialogIdRangeTest extends SccpHarness {
         Dialog d2 = provider.getNewDialog(peer1Address, peer2Address);
         long newId = d2.getLocalDialogId();
 
-        assertTrue(newId >= 10 && newId <= 20, "Reused id must be in configured range");
+        assertTrue(newId >= 10 && newId <= 20);
+        assertTrue(d2.isStructured());
     }
 
 }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>m3ua</artifactId>
         <groupId>org.mobicents.protocols.ss7.m3ua</groupId>
-        <version>${jss7.version}</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>m3ua-impl</artifactId>
@@ -24,8 +24,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mobicents.protocols.ss7.m3ua</groupId>
@@ -64,12 +65,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>testng-methods.xml</suiteXmlFile>
-                        <suiteXmlFile>testng-classes.xml</suiteXmlFile>
-                    </suiteXmlFiles>
+                    <parallel>none</parallel>
                 </configuration>
             </plugin>
         </plugins>

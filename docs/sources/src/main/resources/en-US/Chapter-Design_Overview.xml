@@ -130,27 +130,12 @@
 								<entry>java:/mobicents/ss7/tcap</entry>
 								<entry>Exposes TCAP Stack via JNDI</entry>
 							</row>
-							<row>
-								<entry>MAP</entry>
-								<entry>java:/mobicents/ss7/map</entry>
-								<entry>Exposes MAP Stack via JNDI</entry>
-							</row>
-							<row>
-								<entry>CAP</entry>
-								<entry>java:/mobicents/ss7/cap</entry>
-								<entry>Exposes CAP Stack via JNDI</entry>
-							</row>
-							<row>
-								<entry>ISUP</entry>
-								<entry>java:/mobicents/ss7/isup</entry>
-								<entry>Exposes ISUP stack via JNDI</entry>
-							</row>
 						</tbody>						
 					</tgroup>
 				</table>
 
 		<para>
-			The figure below depicts the elements that are deployed as part of the SS7 MAP Service.
+			The figure below depicts the elements that are deployed as part of the SS7 Service.
 		</para>
 
 		<mediaobject
@@ -172,7 +157,7 @@
 			<varlistentry>
 				<term>Expose protocol access points:</term>
 				<listitem>
-					<para>Access points allow users to access lower layer protocols like <literal>MAP</literal> and interact with the SS7 network through such protocols.</para>
+					<para>Access points allow users to access protocol stacks and interact with the SS7 network through such protocols.</para>
 				</listitem>
 			</varlistentry>
 			<varlistentry>
@@ -257,8 +242,7 @@ The Simulator contains three layers of SS7 stack components and one testing task
 						<para>
 							<itemizedlist>
 								<listitem><para>TCAP + MAP</para></listitem>
-								<listitem><para>TCAP + CAP [yet to be implemented]</para></listitem>
-								<listitem><para>TCAP + INAP [yet to be implemented]</para></listitem>
+							<listitem><para>TCAP + INAP [yet to be implemented]</para></listitem>
 							</itemizedlist>
 						</para>
 					</listitem>
@@ -306,4 +290,3 @@ The Simulator contains three layers of SS7 stack components and one testing task
 	 </section>
 	 -->
 </chapter>
-

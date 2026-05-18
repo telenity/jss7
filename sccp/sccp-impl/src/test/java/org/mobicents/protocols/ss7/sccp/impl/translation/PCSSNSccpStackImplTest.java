@@ -23,17 +23,17 @@
 package org.mobicents.protocols.ss7.sccp.impl.translation;
 
 
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.impl.SccpHarness;
 import org.mobicents.protocols.ss7.sccp.impl.User;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author amit bhayani
@@ -47,22 +47,22 @@ public class PCSSNSccpStackImplTest extends SccpHarness {
 	public PCSSNSccpStackImplTest() {
 	}
 
-	@BeforeClass
+	@Before
 	public void setUpClass() throws Exception {
 		this.sccpStack1Name = "PCSSNSccTestSccpStack1";
 		this.sccpStack2Name = "PCSSNSccTestSccpStack2";
 	}
 
-	@AfterClass
+	@After
 	public void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		super.tearDown();
 	}
@@ -70,7 +70,7 @@ public class PCSSNSccpStackImplTest extends SccpHarness {
 	/**
 	 * Test of configure method, of class SccpStackImpl.
 	 */
-	@Test(groups = { "gtt","functional.route"})
+	@Test
 	public void testRemoteRoutingBasedOnSsn() throws Exception {
 		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 8);
 		a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
@@ -86,8 +86,8 @@ public class PCSSNSccpStackImplTest extends SccpHarness {
 
 		Thread.currentThread().sleep(3000);
 
-		assertTrue( u1.check(),"Message not received");
-		assertTrue( u2.check(),"Message not received");
+		assertTrue("Message not received",  u1.check());
+		assertTrue("Message not received",  u2.check());
 	}
 	
 }

@@ -36,14 +36,13 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
 import org.mobicents.protocols.ss7.tcap.asn.comp.TCUniMessage;
 
-import org.testng.annotations.Test; import static org.testng.Assert.*;
+import org.junit.Test; import static org.junit.Assert.*;
 
 /**
  * 
  * @author sergey vetyutnev
  * 
  */
-@Test(groups = { "asn" })
 public class TcUnidirectionalTest  {
 
 	private byte[] getData() {
@@ -51,7 +50,7 @@ public class TcUnidirectionalTest  {
 				12, 2, 1, -128, 2, 2, 2, 79, 4, 3, 1, 2, 3 };
 	}
 	
-	@Test(groups = { "functional.encode" })
+	@Test
 	public void testEncode() throws IOException, EncodeException {
 
 		byte[] expected = getData();
@@ -87,7 +86,7 @@ public class TcUnidirectionalTest  {
 		TCAPTestUtils.compareArrays(expected, data);
 	}
 	
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testDencode() throws IOException, ParseException {
 		
 		byte[] b = this.getData();

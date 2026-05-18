@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>sccp-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7.sccp</groupId>
-		<version>${jss7.version}</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>sccp-api</artifactId>

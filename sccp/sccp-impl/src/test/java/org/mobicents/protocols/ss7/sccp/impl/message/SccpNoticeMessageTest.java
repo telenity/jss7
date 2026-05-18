@@ -25,9 +25,9 @@ package org.mobicents.protocols.ss7.sccp.impl.message;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-import org.testng.annotations.*;
+import org.junit.*;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
@@ -63,13 +63,13 @@ public class SccpNoticeMessageTest {
 	private SccpStackImpl stack = new SccpStackImpl("TestStack");
 	private MessageFactoryImpl messageFactory;
 
-	@BeforeMethod
+	@Before
 	public void setUp() {
 		this.messageFactory = new MessageFactoryImpl(stack);
 		this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 	}
 
@@ -108,7 +108,7 @@ public class SccpNoticeMessageTest {
 		return new byte[] { 20, 5, 10, 7, 00, 8, 00, 11, 00, 00, 00, 2, 66, 8, 4, 67, 1, 0, 6, 5, 00, 11, 12, 13, 14, 15 };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.decode"})
+	@Test
 	public void testDecode() throws Exception {
 
 		// ---- UDTS
@@ -119,18 +119,18 @@ public class SccpNoticeMessageTest {
 		SccpNoticeMessage msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
 		System.out.println(msg);
 		assertNotNull(msg);
-		assertEquals(msg.getReturnCause().getValue(), ReturnCauseValue.NO_TRANSLATION_FOR_NATURE);
+		assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_NATURE, msg.getReturnCause().getValue());
 
 		SccpAddress calledAdd = msg.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 146);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(146, calledAdd.getSubsystemNumber());
 		assertTrue(calledAdd.getGlobalTitle().getDigits().equals("999999999"));
 
 		SccpAddress callingAdd = msg.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals( callingAdd.getSignalingPointCode(),1726);
-		assertEquals( callingAdd.getSubsystemNumber(),146);
+		assertEquals(1726, callingAdd.getSignalingPointCode());
+		assertEquals(146, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertTrue(Arrays.equals(msg.getData(), getDataUdtSSrc()));
 
@@ -142,21 +142,21 @@ public class SccpNoticeMessageTest {
 		msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
 		System.out.println(msg);
 		assertNotNull(msg);
-		assertEquals(msg.getReturnCause().getValue(), ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+		assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS, msg.getReturnCause().getValue());
 
-		assertEquals(msg.getHopCounter().getValue(), 15);
+		assertEquals(15, msg.getHopCounter().getValue());
 		calledAdd = msg.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = msg.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertNull(msg.getSegmentation());
-		assertEquals(msg.getImportance().getValue(), 7);		
+		assertEquals(7, msg.getImportance().getValue());		
 		assertTrue(Arrays.equals(msg.getData(), getDataXudt1Src()));
 
 		// ---- LUDT
@@ -167,18 +167,18 @@ public class SccpNoticeMessageTest {
 		msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
 		System.out.println(msg);
 		assertNotNull(msg);
-		assertEquals(msg.getReturnCause().getValue(), ReturnCauseValue.MTP_FAILURE);
+		assertEquals(ReturnCauseValue.MTP_FAILURE, msg.getReturnCause().getValue());
 
-		assertEquals(msg.getHopCounter().getValue(), 10);
+		assertEquals(10, msg.getHopCounter().getValue());
 		calledAdd = msg.getCalledPartyAddress();
 		assertNotNull(calledAdd);
-		assertEquals(calledAdd.getSignalingPointCode(), 0);
-		assertEquals(calledAdd.getSubsystemNumber(), 8);
+		assertEquals(0, calledAdd.getSignalingPointCode());
+		assertEquals(8, calledAdd.getSubsystemNumber());
 		assertNull(calledAdd.getGlobalTitle());
 		callingAdd = msg.getCallingPartyAddress();
 		assertNotNull(callingAdd);
-		assertEquals(callingAdd.getSignalingPointCode(), 1);
-		assertEquals(callingAdd.getSubsystemNumber(), 6);
+		assertEquals(1, callingAdd.getSignalingPointCode());
+		assertEquals(6, callingAdd.getSubsystemNumber());
 		assertNull(callingAdd.getGlobalTitle());
 		assertNull(msg.getSegmentation());
 		assertNull(msg.getImportance());		
@@ -186,7 +186,7 @@ public class SccpNoticeMessageTest {
 
 	}
 
-	@Test(groups = { "SccpMessage", "functional.encode"})
+	@Test
 	public void testEncode() throws Exception {
 
 		// ---- UDTS
@@ -199,7 +199,7 @@ public class SccpNoticeMessageTest {
 				getDataUdtSSrc(), null, null);
 
 		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdtS()));
 
 		// ---- UDTS
@@ -215,7 +215,7 @@ public class SccpNoticeMessageTest {
 				getDataXudt1Src(), hc, imp);
 
 		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
 
 		// ---- LUDT without segm
@@ -227,7 +227,7 @@ public class SccpNoticeMessageTest {
 				getDataXudt1Src(), hc, null);
 
 		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
-		assertEquals(res.getEncodingResult(), EncodingResult.Success);
+		assertEquals(EncodingResult.Success, res.getEncodingResult());
 		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt1()));
 	}
 	

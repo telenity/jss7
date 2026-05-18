@@ -27,8 +27,8 @@ import javolution.util.FastList;
 import org.apache.log4j.Logger;
 
 import org.mobicents.protocols.sctp.netty.NettySctpManagementImpl;
-import org.testng.annotations.*;
-import static org.testng.Assert.*;
+import org.junit.*;
+import static org.junit.Assert.*;
 
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
@@ -93,7 +93,7 @@ public class GatewayTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 
 		mtp3UserPartListener = new Mtp3UserPartListenerImpl();
@@ -116,7 +116,7 @@ public class GatewayTest {
 
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() throws Exception {
 
 		this.sctpManagement.stop();

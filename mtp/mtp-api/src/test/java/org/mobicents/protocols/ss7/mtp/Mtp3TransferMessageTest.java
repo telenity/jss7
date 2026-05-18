@@ -22,12 +22,12 @@
 
 package org.mobicents.protocols.ss7.mtp;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 /**
  * @author sergey vetyutnev
@@ -51,22 +51,22 @@ public class Mtp3TransferMessageTest {
 	// opc = 2000
 	// sls = 10
 
-	@Test(groups = { "Mtp3TransferMessageTest", "decode" })
+	@Test
 	public void testDecode() throws Exception {
 		Mtp3TransferPrimitiveFactory factory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
 		Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(getMsg());
 
-		assertEquals(msg.getSi(), 3);
-		assertEquals(msg.getNi(), 2);
-		assertEquals(msg.getMp(), 0);
-		assertEquals(msg.getDpc(), 1000);
-		assertEquals(msg.getOpc(), 2000);
-		assertEquals(msg.getSls(), 10);
+		assertEquals(3, msg.getSi());
+		assertEquals(2, msg.getNi());
+		assertEquals(0, msg.getMp());
+		assertEquals(1000, msg.getDpc());
+		assertEquals(2000, msg.getOpc());
+		assertEquals(10, msg.getSls());
 		assertTrue(Arrays.equals(msg.getData(), this.getData()));
 
 	}
 
-	@Test(groups = { "Mtp3TransferMessageTest", "encode" })
+	@Test
 	public void testEncode() throws Exception {
 		Mtp3TransferPrimitiveFactory factory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
 		Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(3, 2, 0, 2000, 1000, 10, this.getData());

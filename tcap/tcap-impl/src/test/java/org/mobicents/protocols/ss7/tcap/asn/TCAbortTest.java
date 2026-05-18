@@ -25,7 +25,7 @@ package org.mobicents.protocols.ss7.tcap.asn;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.testng.annotations.Test; import static org.testng.Assert.*;
+import org.junit.Test; import static org.junit.Assert.*;
 
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -39,7 +39,6 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.TCAbortMessage;
  * @author sergey vetyutnev
  * 
  */
-@Test(groups = { "asn" })
 public class TCAbortTest  {
 
 	private byte[] getDataDialogPort() {
@@ -61,7 +60,7 @@ public class TCAbortTest  {
 		return new byte[] { 0x7B, (byte) 0xA5, 0x34, 0x13 };
 	}
 	
-	@Test(groups = { "functional.encode" })
+	@Test
 	public void testBasicTCAbortTestEncode() throws IOException, EncodeException, ParseException {
 
 		//This Raw data is taken from ussd-abort- from msc2.txt
@@ -116,7 +115,7 @@ public class TCAbortTest  {
 		
 	}
 
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testBasicTCAbortTestDecode() throws IOException, ParseException {
 
 		//This Raw data is taken from ussd-abort- from msc2.txt
@@ -124,7 +123,7 @@ public class TCAbortTest  {
 
 		AsnInputStream ais = new AsnInputStream(data);
 		int tag = ais.readTag();
-		assertEquals(TCAbortMessage._TAG, tag,"Expected TCAbort");
+		assertEquals("Expected TCAbort", tag, TCAbortMessage._TAG);
 
 		TCAbortMessageImpl impl = new TCAbortMessageImpl();
 		impl.decode(ais);
@@ -144,7 +143,7 @@ public class TCAbortTest  {
 		data = getDataAbortCause();
 		ais = new AsnInputStream(data);
 		tag = ais.readTag();
-		assertEquals(TCAbortMessage._TAG, tag,"Expected TCAbort");
+		assertEquals("Expected TCAbort", tag, TCAbortMessage._TAG);
 
 		impl = new TCAbortMessageImpl();
 		impl.decode(ais);

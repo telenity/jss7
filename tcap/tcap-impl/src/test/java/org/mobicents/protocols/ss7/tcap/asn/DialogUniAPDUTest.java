@@ -28,8 +28,8 @@ import java.util.Arrays;
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 
 /**
@@ -37,7 +37,6 @@ import static org.testng.Assert.*;
  * @author sergey vetyutnev
  * 
  */
-@Test(groups = { "asn" })
 public class DialogUniAPDUTest {
 
 	private byte[] getData() {
@@ -45,7 +44,7 @@ public class DialogUniAPDUTest {
 				22, 33 };
 	}
 	
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testDecode() throws Exception {
 
 		byte[] b = getData();

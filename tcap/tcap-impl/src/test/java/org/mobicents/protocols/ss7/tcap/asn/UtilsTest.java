@@ -1,7 +1,7 @@
 package org.mobicents.protocols.ss7.tcap.asn;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 
@@ -45,12 +45,12 @@ public class UtilsTest {
 
     @Test
     public void testEncodeTransactionId_Boundaries() {
-        Assert.assertEquals(
+        Assert.assertArrayEquals(
                 new byte[]{0,0,0,0},
                 Utils.encodeTransactionId(0)
         );
 
-        Assert.assertEquals(
+        Assert.assertArrayEquals(
                 new byte[]{(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF},
                 Utils.encodeTransactionId(0xFFFFFFFFL)
         );
@@ -140,7 +140,7 @@ public class UtilsTest {
         Assert.assertEquals(0xFFFFFFFFL, val);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testDecodeTransactionId_OverlongArray() {
         Utils.decodeTransactionId(new byte[] {
                 0x01, 0x02, 0x03, 0x04, 0x05,

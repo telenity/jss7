@@ -25,7 +25,7 @@ package org.mobicents.protocols.ss7.tcap.asn;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.testng.annotations.Test; import static org.testng.Assert.*;
+import org.junit.Test; import static org.junit.Assert.*;
 
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
@@ -38,10 +38,9 @@ import org.mobicents.protocols.asn.BitSetStrictLength;
  * @author sergey vetyutnev
  * 
  */
-@Test(groups = { "asn" })
 public class UserInformationTest  {
 
-	@Test(groups = { "functional.decode" })
+	@Test
 	public void testUserInformationDecode() throws Exception {
 
 		// This raw data is from wireshark trace of TCAP - MAP
@@ -77,7 +76,7 @@ public class UserInformationTest  {
 	}
 	
 
-	@Test(groups = { "functional.encode" })
+	@Test
 	public void testUserInformationEncode() throws IOException, EncodeException {
 		
 		byte[] encodedData = new byte[] { (byte) 0xbe, 0x25, 0x28, 0x23, 0x06, 0x07,
@@ -116,7 +115,7 @@ public class UserInformationTest  {
 	}
 	public static final long[] _ACN_ = new long[] { 0, 4, 0, 0, 1, 0, 19, 2 };
 	
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testFailuuure() throws Exception
 	{
 		byte[] encoded = new byte[] { -66, 15, 40, 13, 6, 7, 4, 0, 0, 1, 0, 19, 2, -126, 2, 4, -112 };

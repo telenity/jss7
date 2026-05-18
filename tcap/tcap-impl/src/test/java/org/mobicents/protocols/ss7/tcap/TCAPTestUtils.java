@@ -24,8 +24,8 @@ package org.mobicents.protocols.ss7.tcap;
 
 import java.util.Arrays;
 
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author baranowb
@@ -35,8 +35,8 @@ public class TCAPTestUtils {
 
 	public static void compareArrays(byte[] expected, byte[] encoded) {
 		boolean same = Arrays.equals(expected, encoded);
-		assertTrue(same,"byte[] dont match, expected|encoded \n"
-				+ Arrays.toString(expected) + "\n" + Arrays.toString(encoded));
+		assertTrue("byte[] dont match, expected|encoded \n"
+				+ Arrays.toString(expected) + "\n" + Arrays.toString(encoded), same);
 	}
 	
 }

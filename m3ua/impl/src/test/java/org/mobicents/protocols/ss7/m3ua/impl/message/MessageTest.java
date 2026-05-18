@@ -60,11 +60,11 @@ import org.mobicents.protocols.ss7.m3ua.message.aspsm.HeartbeatAck;
 import org.mobicents.protocols.ss7.m3ua.message.ssnm.DestinationStateAudit;
 import org.mobicents.protocols.ss7.m3ua.message.ssnm.SignallingCongestion;
 import org.mobicents.protocols.ss7.m3ua.parameter.*;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -74,9 +74,9 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author kulikov
@@ -97,11 +97,11 @@ public class MessageTest {
     public static void tearDownClass() throws Exception {
     }
 
-    @BeforeMethod
+    @Before
     public void setUp() {
     }
 
-    @AfterMethod
+    @After
     public void tearDown() {
     }
 
@@ -127,8 +127,8 @@ public class MessageTest {
         assertEquals(p1.getNI(), p2.getNI());
         assertEquals(p1.getMP(), p2.getMP());
         assertEquals(p1.getSLS(), p2.getSLS());
-        assertEquals(payload, p1.getData());
-        assertEquals(payload, p2.getData());
+        assertTrue(Arrays.equals(payload, p1.getData()));
+        assertTrue(Arrays.equals(payload, p2.getData()));
     }
 
     @Test
@@ -153,8 +153,8 @@ public class MessageTest {
         assertEquals(p1.getNI(), p2.getNI());
         assertEquals(p1.getMP(), p2.getMP());
         assertEquals(p1.getSLS(), p2.getSLS());
-        assertEquals(payload, p1.getData());
-        assertEquals(payload, p2.getData());
+        assertTrue(Arrays.equals(payload, p1.getData()));
+        assertTrue(Arrays.equals(payload, p2.getData()));
     }
 
     @Test

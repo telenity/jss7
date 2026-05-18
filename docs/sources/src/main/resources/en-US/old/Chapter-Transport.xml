@@ -197,12 +197,12 @@
 								<tbody>
 									<row>
 										<entry>Dahdi/Zaptel</entry>
-										<entry>org.mobicents.ss7.hardware.dahdi. oam.DahdiLinksetFactory</entry>
+										<entry></entry>
 										<entry>Factory for creating <literal>dahdi</literal> based <literal>Linkset</literal></entry>
 									</row>
 									<row>
 										<entry>Dialogic</entry>
-										<entry>org.mobicents.ss7.hardware.dialogic. oam.DialogicLinksetFactory</entry>
+										<entry></entry>
 										<entry>Factory for creating <literal>dahdi</literal> based <literal>Linkset</literal></entry>
 									</row>
 									<row>
@@ -279,4 +279,3 @@
 			</itemizedlist>
 	</section>
 </chapter>
-

@@ -22,7 +22,7 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.messageflow;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
@@ -35,11 +35,11 @@ import org.mobicents.protocols.ss7.sccp.impl.User;
 import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -54,13 +54,13 @@ public class LoadSharingTest extends SccpHarness {
 	public LoadSharingTest() {
 	}
 
-	@BeforeClass
+	@Before
 	public void setUpClass() throws Exception {
 		this.sccpStack1Name = "MessageTransferTestSccpStack1";
 		this.sccpStack2Name = "MessageTransferTestSccpStack2";
 	}
 
-	@AfterClass
+	@After
 	public void tearDownClass() throws Exception {
 	}
 
@@ -78,7 +78,7 @@ public class LoadSharingTest extends SccpHarness {
 		sccpProvider2= sccpStack2.getSccpProvider();
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		
@@ -89,7 +89,7 @@ public class LoadSharingTest extends SccpHarness {
 		resource1.addRemoteSsn(2, 12, getSSN(), 0, false);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() {
 		super.tearDown();
 	}
@@ -98,7 +98,7 @@ public class LoadSharingTest extends SccpHarness {
 		return new byte[] { 11, 12, 13, 14, 15 };
 	}
 
-	@Test(groups = { "SccpMessage", "functional.transfer"})
+	@Test
 	public void testTransfer() throws Exception {
 
 		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, 8);
@@ -131,9 +131,9 @@ public class LoadSharingTest extends SccpHarness {
 		SccpDataMessage message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 0);
-		assertEquals(u2.getMessages().size(), 1);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(0, u1.getMessages().size());
+		assertEquals(1, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		// Primary is available backup is disabled
 		this.mtp3UserPart1.sendPauseMessageToLocalUser(12);
@@ -142,9 +142,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 0);
-		assertEquals(u2.getMessages().size(), 2);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(0, u1.getMessages().size());
+		assertEquals(2, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		// Primary is disabled backup is available 
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(12);
@@ -154,9 +154,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 1);
-		assertEquals(u2.getMessages().size(), 2);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(1, u1.getMessages().size());
+		assertEquals(2, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		// Primary and backup are disabled
 		this.mtp3UserPart1.sendPauseMessageToLocalUser(12);
@@ -165,9 +165,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 2);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(2, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(12);
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(getStack2PC());
@@ -182,9 +182,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 3);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(3, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		// Primary is available backup is disabled
 		this.mtp3UserPart1.sendPauseMessageToLocalUser(12);
@@ -193,9 +193,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 4);
-		assertEquals(mtp3UserPart11.getMessages().size(), 0);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(4, u2.getMessages().size());
+		assertEquals(0, mtp3UserPart11.getMessages().size());
 
 		// Primary is disabled backup is available 
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(12);
@@ -205,9 +205,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 2);
-		assertEquals(u2.getMessages().size(), 4);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(2, u1.getMessages().size());
+		assertEquals(4, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 
 		// Primary and backup are disabled
 		this.mtp3UserPart1.sendPauseMessageToLocalUser(12);
@@ -216,9 +216,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 4);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(4, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(12);
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(getStack2PC());
@@ -236,36 +236,36 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0xEF, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 5);
-		assertEquals(mtp3UserPart11.getMessages().size(), 1);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(5, u2.getMessages().size());
+		assertEquals(1, mtp3UserPart11.getMessages().size());
 
 		//   - class 1 (route by sls): sls = 0xFF: backup route (sls & 0x10 rule)
 		a3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "111111"), 0);
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0xFF, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 5);
-		assertEquals(mtp3UserPart11.getMessages().size(), 2);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(5, u2.getMessages().size());
+		assertEquals(2, mtp3UserPart11.getMessages().size());
 
 		//   - class 0: first message is for primary route
 		a3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "111111"), 0);
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass0(a3, a1, getDataSrc(), 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 6);
-		assertEquals(mtp3UserPart11.getMessages().size(), 2);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(6, u2.getMessages().size());
+		assertEquals(2, mtp3UserPart11.getMessages().size());
 
 		//   - class 0: second message is for backup route
 		a3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "111111"), 0);
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass0(a3, a1, getDataSrc(), 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 6);
-		assertEquals(mtp3UserPart11.getMessages().size(), 3);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(6, u2.getMessages().size());
+		assertEquals(3, mtp3UserPart11.getMessages().size());
 
 		// Primary is available backup is disabled
 		this.mtp3UserPart1.sendPauseMessageToLocalUser(12);
@@ -274,18 +274,18 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 7);
-		assertEquals(mtp3UserPart11.getMessages().size(), 3);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(7, u2.getMessages().size());
+		assertEquals(3, mtp3UserPart11.getMessages().size());
 
 		// Primary is available backup is disabled + CalledPartyAddress has SSN + primaryAddress has not SSN (SSN is taken from CalledPartyAddress) 
 		SccpAddress a3_2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "222222"), 8);
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3_2, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 8);
-		assertEquals(mtp3UserPart11.getMessages().size(), 3);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(8, u2.getMessages().size());
+		assertEquals(3, mtp3UserPart11.getMessages().size());
 
 		// Primary is disabled backup is available 
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(12);
@@ -295,9 +295,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 3);
-		assertEquals(u2.getMessages().size(), 8);
-		assertEquals(mtp3UserPart11.getMessages().size(), 4);
+		assertEquals(3, u1.getMessages().size());
+		assertEquals(8, u2.getMessages().size());
+		assertEquals(4, mtp3UserPart11.getMessages().size());
 
 		// Primary and backup are disabled
 		this.mtp3UserPart1.sendPauseMessageToLocalUser(12);
@@ -306,9 +306,9 @@ public class LoadSharingTest extends SccpHarness {
 		message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(a3, a1, getDataSrc(), 0, 8, true, null, null);
 		sccpProvider1.send(message);
 		Thread.sleep(100);
-		assertEquals(u1.getMessages().size(), 4);
-		assertEquals(u2.getMessages().size(), 8);
-		assertEquals(mtp3UserPart11.getMessages().size(), 4);
+		assertEquals(4, u1.getMessages().size());
+		assertEquals(8, u2.getMessages().size());
+		assertEquals(4, mtp3UserPart11.getMessages().size());
 
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(12);
 		this.mtp3UserPart1.sendResumeMessageToLocalUser(getStack2PC());

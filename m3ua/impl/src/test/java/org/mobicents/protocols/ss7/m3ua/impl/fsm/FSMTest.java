@@ -22,19 +22,19 @@
 package org.mobicents.protocols.ss7.m3ua.impl.fsm;
 
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.mobicents.protocols.ss7.m3ua.impl.scheduler.M3UAScheduler;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * 
@@ -59,7 +59,7 @@ public class FSMTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws Exception {
 
 		timedOut = false;
@@ -71,7 +71,7 @@ public class FSMTest {
 		scheduledExecutorService.scheduleAtFixedRate(m3uaScheduler, 500, 500, TimeUnit.MILLISECONDS);
 	}
 
-	@AfterMethod
+	@After
 	public void tearDown() throws Exception {
 
 	}

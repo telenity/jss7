@@ -25,7 +25,7 @@ package org.mobicents.protocols.ss7.tcap.asn;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.testng.annotations.Test; import static org.testng.Assert.*;
+import org.junit.Test; import static org.junit.Assert.*;
 
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -38,10 +38,9 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCodeType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 import org.mobicents.protocols.ss7.tcap.asn.comp.TCEndMessage;
 
-@Test(groups = { "asn" })
 public class TcEndTest  {
 	
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testTCEndMessage_No_Dialog() throws IOException, ParseException, EncodeException {
 
 		//no idea how to check rest...?
@@ -137,36 +136,36 @@ public class TcEndTest  {
 		
 		AsnInputStream ais = new AsnInputStream(b);
 		int tag = ais.readTag();
-		assertEquals(TCEndMessage._TAG,tag,"Expected TCEnd");
+		assertEquals("Expected TCEnd", tag, TCEndMessage._TAG);
 		TCEndMessage tcm = TcapFactory.createTCEndMessage(ais);
 		
-		assertNull(tcm.getDialogPortion(),"Dialog portion should not be present");
-//		assertEquals(144965633L, tcm.getDestinationTransactionId(),"Destination transaction id does not match");
-		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }), "Destination transaction id does not match");
+		assertNull("Dialog portion should not be present", tcm.getDialogPortion());
+//		assertEquals("Destination transaction id does not match", tcm.getDestinationTransactionId(), 144965633L);
+		assertTrue("Destination transaction id does not match", Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }));
 	
 		//comp portion
-		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(2,tcm.getComponent().size(),"Component count is wrong");
+		assertNotNull("Component portion should be present", tcm.getComponent());
+		assertEquals("Component count is wrong", tcm.getComponent().size(), 2);
 		Component c = tcm.getComponent().get(0);
-		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
+		assertEquals("Wrong component type", c.getType(), ComponentType.Invoke);
 		Invoke i = (Invoke) c;
-		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
-		assertNull(i.getLinkedId(),"Linked ID is not null");
+		assertEquals("Wrong invoke ID", i.getInvokeId(), new Integer(1));
+		assertNull("Linked ID is not null", i.getLinkedId());
 		
 		c = tcm.getComponent().get(1);
-		assertEquals(ComponentType.ReturnResultLast, c.getType(),"Wrong component type");
+		assertEquals("Wrong component type", c.getType(), ComponentType.ReturnResultLast);
 		ReturnResultLast rrl = (ReturnResultLast) c;
-		assertEquals(new Integer(2), rrl.getInvokeId(),"Wrong invoke ID");
-		assertNotNull( rrl.getOperationCode(),"Operation code should not be null");
+		assertEquals("Wrong invoke ID", rrl.getInvokeId(), new Integer(2));
+		assertNotNull("Operation code should not be null",  rrl.getOperationCode());
 
 		
 		OperationCode ocs = rrl.getOperationCode();
 		
 
-		assertEquals(OperationCodeType.Local, ocs.getOperationType(),"Wrong Operation Code type");
-		assertEquals(new Long(0x00FF), ocs.getLocalOperationCode(),"Wrong Operation Code");
+		assertEquals("Wrong Operation Code type", ocs.getOperationType(), OperationCodeType.Local);
+		assertEquals("Wrong Operation Code", ocs.getLocalOperationCode(), new Long(0x00FF));
 		
-		assertNotNull(rrl.getParameter(),"Parameter should not be null");
+		assertNotNull("Parameter should not be null", rrl.getParameter());
 		
 		AsnOutputStream aos = new AsnOutputStream();
 		tcm.encode(aos);
@@ -176,7 +175,7 @@ public class TcEndTest  {
 
 	}
 
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testTCEndMessage_No_Component() throws IOException, EncodeException, ParseException {
 
 		
@@ -252,33 +251,33 @@ public class TcEndTest  {
 		
 		AsnInputStream ais = new AsnInputStream(b);
 		int tag = ais.readTag();
-		assertEquals(TCEndMessage._TAG,tag,"Expected TCEnd");
+		assertEquals("Expected TCEnd", tag, TCEndMessage._TAG);
 		TCEndMessage tcm = TcapFactory.createTCEndMessage(ais);
-		assertNull(tcm.getComponent(),"Component portion should not be present");
-		assertNotNull(tcm.getDialogPortion(),"Dialog portion should not be null");
-//		assertEquals(145031169L, tcm.getDestinationTransactionId(),"Destination transaction id does not match");
-		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA5, 0, 1, }), "Destination transaction id does not match");
+		assertNull("Component portion should not be present", tcm.getComponent());
+		assertNotNull("Dialog portion should not be null", tcm.getDialogPortion());
+//		assertEquals("Destination transaction id does not match", tcm.getDestinationTransactionId(), 145031169L);
+		assertTrue("Destination transaction id does not match", Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA5, 0, 1, }));
 		
-		assertFalse( tcm.getDialogPortion().isUnidirectional(),"Dialog should not be Uni");
+		assertFalse("Dialog should not be Uni",  tcm.getDialogPortion().isUnidirectional());
 		DialogAPDU _dapd = tcm.getDialogPortion().getDialogAPDU();
-		assertEquals(DialogAPDUType.Response, _dapd.getType(),"Wrong dialog APDU type!");
+		assertEquals("Wrong dialog APDU type!", _dapd.getType(), DialogAPDUType.Response);
 		
 		DialogResponseAPDU dapd = (DialogResponseAPDU) _dapd;
 		
 		//check nulls first
-		assertNull(dapd.getUserInformation(),"UserInformation should not be present");
+		assertNull("UserInformation should not be present", dapd.getUserInformation());
 		
 		//not nulls
-		assertNotNull(dapd.getResult(),"Result should not be null");
+		assertNotNull("Result should not be null", dapd.getResult());
 		Result r = dapd.getResult();
-		assertEquals(ResultType.Accepted ,r.getResultType(),"Wrong result");
+		assertEquals("Wrong result", r.getResultType(), ResultType.Accepted );
 		
 		
-		assertNotNull(dapd.getResultSourceDiagnostic(),"Result Source Diagnostic should not be null");
+		assertNotNull("Result Source Diagnostic should not be null", dapd.getResultSourceDiagnostic());
 		
 		ResultSourceDiagnostic rsd = dapd.getResultSourceDiagnostic();
-		assertNull(rsd.getDialogServiceUserType(),"User diagnostic should not be present");
-		assertEquals(DialogServiceProviderType.NoCommonDialogPortion,rsd.getDialogServiceProviderType(),"Wrong provider diagnostic type");
+		assertNull("User diagnostic should not be present", rsd.getDialogServiceUserType());
+		assertEquals("Wrong provider diagnostic type", rsd.getDialogServiceProviderType(), DialogServiceProviderType.NoCommonDialogPortion);
 		
 		AsnOutputStream aos = new AsnOutputStream();
 		tcm.encode(aos);
@@ -288,7 +287,7 @@ public class TcEndTest  {
 
 	}
 	
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testTCEndMessage_No_Nothing() throws IOException, EncodeException, ParseException {
 
 		
@@ -316,13 +315,13 @@ public class TcEndTest  {
 		
 		AsnInputStream ais = new AsnInputStream(b);
 		int tag = ais.readTag();
-		assertEquals(TCEndMessage._TAG,tag,"Expected TCEnd");
+		assertEquals("Expected TCEnd", tag, TCEndMessage._TAG);
 		TCEndMessage tcm = TcapFactory.createTCEndMessage(ais);
 		
-		assertNull(tcm.getDialogPortion(),"Dialog portion should be null");
-		assertNull(tcm.getComponent(),"Component portion should not be present");
-//		assertEquals(145031169L, tcm.getDestinationTransactionId(),"Destination transaction id does not match");
-		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA5, 0, 1, }), "Destination transaction id does not match");
+		assertNull("Dialog portion should be null", tcm.getDialogPortion());
+		assertNull("Component portion should not be present", tcm.getComponent());
+//		assertEquals("Destination transaction id does not match", tcm.getDestinationTransactionId(), 145031169L);
+		assertTrue("Destination transaction id does not match", Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA5, 0, 1, }));
 		
 	
 		AsnOutputStream aos = new AsnOutputStream();
@@ -333,7 +332,7 @@ public class TcEndTest  {
 
 	}
 	
-	@Test(groups = { "functional.encode","functional.decode" })
+	@Test
 	public void testTCEndMessage_All() throws IOException, EncodeException, ParseException {
 
 		
@@ -486,61 +485,61 @@ public class TcEndTest  {
 
 		AsnInputStream ais = new AsnInputStream(b);
 		int tag = ais.readTag();
-		assertEquals(TCEndMessage._TAG,tag,"Expected TCEnd");
+		assertEquals("Expected TCEnd", tag, TCEndMessage._TAG);
 		TCEndMessage tcm = TcapFactory.createTCEndMessage(ais);
 		
 		//universal
-//		assertEquals(144965633L, tcm.getDestinationTransactionId(),"Destination transaction id does not match");
-		assertTrue(Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }), "Destination transaction id does not match");
+//		assertEquals("Destination transaction id does not match", tcm.getDestinationTransactionId(), 144965633L);
+		assertTrue("Destination transaction id does not match", Arrays.equals(tcm.getDestinationTransactionId(), new byte[] { 8, (byte) 0xA4, 0, 1, }));
 		
 		//dialog portion
-		assertNotNull(tcm.getDialogPortion(),"Dialog portion should not be null");
-//		assertEquals(144965633L, tcm.getDestinationTransactionId(),"Destination transaction id does not match");
+		assertNotNull("Dialog portion should not be null", tcm.getDialogPortion());
+//		assertEquals("Destination transaction id does not match", tcm.getDestinationTransactionId(), 144965633L);
 		
-		assertFalse( tcm.getDialogPortion().isUnidirectional(),"Dialog should not be Uni");
+		assertFalse("Dialog should not be Uni",  tcm.getDialogPortion().isUnidirectional());
 		DialogAPDU _dapd = tcm.getDialogPortion().getDialogAPDU();
-		assertEquals(DialogAPDUType.Response, _dapd.getType(),"Wrong dialog APDU type!");
+		assertEquals("Wrong dialog APDU type!", _dapd.getType(), DialogAPDUType.Response);
 		
 		DialogResponseAPDU dapd = (DialogResponseAPDU) _dapd;
 		
 		//check nulls first
-		assertNull(dapd.getUserInformation(),"UserInformation should not be present");
+		assertNull("UserInformation should not be present", dapd.getUserInformation());
 		
 		//not nulls
-		assertNotNull(dapd.getResult(),"Result should not be null");
+		assertNotNull("Result should not be null", dapd.getResult());
 		Result r = dapd.getResult();
-		assertEquals(ResultType.RejectedPermanent ,r.getResultType(),"Wrong result");
+		assertEquals("Wrong result", r.getResultType(), ResultType.RejectedPermanent );
 		
 		
-		assertNotNull(dapd.getResultSourceDiagnostic(),"Result Source Diagnostic should not be null");
+		assertNotNull("Result Source Diagnostic should not be null", dapd.getResultSourceDiagnostic());
 		
 		ResultSourceDiagnostic rsd = dapd.getResultSourceDiagnostic();
-		assertNull(rsd.getDialogServiceUserType(),"User diagnostic should not be present");
-		assertEquals(DialogServiceProviderType.Null,rsd.getDialogServiceProviderType(),"Wrong provider diagnostic type");
+		assertNull("User diagnostic should not be present", rsd.getDialogServiceUserType());
+		assertEquals("Wrong provider diagnostic type", rsd.getDialogServiceProviderType(), DialogServiceProviderType.Null);
 		
 		//comp portion
-		assertNotNull(tcm.getComponent(),"Component portion should be present");
-		assertEquals(2,tcm.getComponent().size(),"Component count is wrong");
+		assertNotNull("Component portion should be present", tcm.getComponent());
+		assertEquals("Component count is wrong", tcm.getComponent().size(), 2);
 		Component c = tcm.getComponent().get(0);
-		assertEquals(ComponentType.Invoke, c.getType(),"Wrong component type");
+		assertEquals("Wrong component type", c.getType(), ComponentType.Invoke);
 		Invoke i = (Invoke) c;
-		assertEquals(new Integer(1), i.getInvokeId(),"Wrong invoke ID");
-		assertNull(i.getLinkedId(),"Linked ID is not null");
+		assertEquals("Wrong invoke ID", i.getInvokeId(), new Integer(1));
+		assertNull("Linked ID is not null", i.getLinkedId());
 		
 		c = tcm.getComponent().get(1);
-		assertEquals(ComponentType.ReturnResultLast, c.getType(),"Wrong component type");
+		assertEquals("Wrong component type", c.getType(), ComponentType.ReturnResultLast);
 		ReturnResultLast rrl = (ReturnResultLast) c;
-		assertEquals(new Integer(2), rrl.getInvokeId(),"Wrong invoke ID");
-		assertNotNull( rrl.getOperationCode(),"Operation code should not be null");
+		assertEquals("Wrong invoke ID", rrl.getInvokeId(), new Integer(2));
+		assertNotNull("Operation code should not be null",  rrl.getOperationCode());
 
 		
 		OperationCode ocs = rrl.getOperationCode();
 		
-		assertEquals(OperationCodeType.Local, ocs.getOperationType(),"Wrong Operation Code type");
-		assertEquals(new Long(511), ocs.getLocalOperationCode(),"Wrong Operation Code");
+		assertEquals("Wrong Operation Code type", ocs.getOperationType(), OperationCodeType.Local);
+		assertEquals("Wrong Operation Code", ocs.getLocalOperationCode(), new Long(511));
 
 		
-		assertNotNull(rrl.getParameter(),"Parameter should not be null");
+		assertNotNull("Parameter should not be null", rrl.getParameter());
 		
 		
 		AsnOutputStream aos = new AsnOutputStream();

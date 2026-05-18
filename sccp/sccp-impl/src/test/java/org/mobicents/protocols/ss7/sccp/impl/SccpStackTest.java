@@ -23,14 +23,14 @@ package org.mobicents.protocols.ss7.sccp.impl;
 
 import java.io.IOException;
 
-import static org.testng.Assert.*;
+import static org.junit.Assert.*;
 
 import org.mobicents.protocols.ss7.Util;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.AfterClass;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Amit Bhayani
@@ -55,7 +55,7 @@ public class SccpStackTest {
 	public static void tearDownClass() throws Exception {
 	}
 
-	@BeforeMethod
+	@Before
 	public void setUp() throws IOException {
 		
 		
@@ -63,12 +63,12 @@ public class SccpStackTest {
 		
 	}
 	
-	@AfterMethod
+	@After
 	public void tearDown() {
 		this.sccpStackImpl.stop();
 	}
 	
-	@Test(groups = { "sccpStack", "functional.encode" })
+	@Test
 	public void testSerialization() throws Exception {
 		this.sccpStackImpl = new SccpStackImpl("SccpStackTest");
 		this.sccpStackImpl.setPersistDir(Util.getTmpTestDir());
@@ -86,13 +86,13 @@ public class SccpStackTest {
 		
 		this.sccpStackImpl.start();
 		
-		assertEquals(this.sccpStackImpl.getZMarginXudtMessage(), 160);
-		assertEquals(this.sccpStackImpl.getReassemblyTimerDelay(), 10000);
-		assertEquals(this.sccpStackImpl.getMaxDataMessage(), 3952);
-		assertEquals(this.sccpStackImpl.isRemoveSpc(), false);
-		assertEquals(this.sccpStackImpl.getSstTimerDuration_Min(), 5000);
-		assertEquals(this.sccpStackImpl.getSstTimerDuration_Max(), 1200000);
-		assertEquals(this.sccpStackImpl.getSstTimerDuration_IncreaseFactor(), 1.0);
+		assertEquals(160, this.sccpStackImpl.getZMarginXudtMessage());
+		assertEquals(10000, this.sccpStackImpl.getReassemblyTimerDelay());
+		assertEquals(3952, this.sccpStackImpl.getMaxDataMessage());
+		assertEquals(false, this.sccpStackImpl.isRemoveSpc());
+		assertEquals(5000, this.sccpStackImpl.getSstTimerDuration_Min());
+		assertEquals(1200000, this.sccpStackImpl.getSstTimerDuration_Max());
+		assertEquals(1.0, this.sccpStackImpl.getSstTimerDuration_IncreaseFactor(), 0.0);
 		
 		this.sccpStackImpl.stop();
 	}
