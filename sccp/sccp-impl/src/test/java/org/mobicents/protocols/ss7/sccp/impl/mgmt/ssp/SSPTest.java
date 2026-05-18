@@ -35,9 +35,7 @@ import org.mobicents.protocols.ss7.sccp.impl.mgmt.Mtp3PrimitiveMessageType;
 import org.mobicents.protocols.ss7.sccp.impl.mgmt.SccpMgmtMessage;
 import org.mobicents.protocols.ss7.sccp.impl.mgmt.SccpMgmtMessageType;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
-import org.junit.AfterClass;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,6 +47,10 @@ import org.junit.Test;
  * @author sergey vetyutnev
  */
 public class SSPTest extends SccpHarness {
+
+	private static final int TEST_SST_TIMER_DURATION = 1000;
+	private static final int WAIT_FOR_SST = 1500;
+	private static final int WAIT_FOR_SSP_RATE_LIMIT = 1200;
 
 	private SccpAddress a1, a2;
 
@@ -107,8 +109,7 @@ public class SSPTest extends SccpHarness {
 		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN());
 		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN());
 
-		sccpStack1.setSstTimerDuration_Min(5000);
-		sccpStack1.setSstTimerDuration_IncreaseFactor(1);
+		configureSstTimer();
 
 		u1.register();
 		//u2.register();
@@ -139,7 +140,7 @@ public class SSPTest extends SccpHarness {
 		assertTrue("U2 received Mtp3 Primitve, it should not!", stack.getManagementProxy().getMtp3Messages().size() == 0);
 		assertTrue("U2 did not receive Management message, it should !", stack.getManagementProxy().getMgmtMessages().size() == 0);
 
-		Thread.sleep(6000);
+		Thread.sleep(WAIT_FOR_SST);
 
 		assertTrue("U2 received Mtp3 Primitve, it should not!", stack.getManagementProxy().getMtp3Messages().size() == 0);
 		assertTrue("U2 did not receive Management message, it should !", stack.getManagementProxy().getMgmtMessages().size() == 1);
@@ -151,7 +152,7 @@ public class SSPTest extends SccpHarness {
 
 		// register;
 		u2.register();
-		Thread.sleep(5000);
+		Thread.sleep(WAIT_FOR_SST);
 		stack = (SccpStackImplProxy) sccpStack1;
 		// double check first message.
 		assertTrue("U1 received Mtp3 Primitve, it should not!", stack.getManagementProxy().getMtp3Messages().size() == 0);
@@ -182,7 +183,7 @@ public class SSPTest extends SccpHarness {
 		assertTrue("Out of sync messages, SST received before SSP.", rmsg2_sst.getTstamp() >= rmsg1_ssp.getTstamp());
 
 		//now lets wait and check if there is nothing more
-		Thread.sleep(5000);
+		Thread.sleep(WAIT_FOR_SST);
 		stack = (SccpStackImplProxy) sccpStack1;
 		//double check first message.
 		assertTrue("U1 received Mtp3 Primitve, it should not!", stack.getManagementProxy().getMtp3Messages().size() == 0);
@@ -220,8 +221,7 @@ public class SSPTest extends SccpHarness {
 		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN());
 		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN());
 
-		sccpStack1.setSstTimerDuration_Min(5000);
-		sccpStack1.setSstTimerDuration_IncreaseFactor(1);
+		configureSstTimer();
 
 		u1.register();
 		//u2.register();
@@ -252,7 +252,7 @@ public class SSPTest extends SccpHarness {
 		assertTrue("U2 received Mtp3 Primitve, it should not!", stack.getManagementProxy().getMtp3Messages().size() == 0);
 		assertTrue("U2 did not receive Management message, it should !", stack.getManagementProxy().getMgmtMessages().size() == 0);
 
-		Thread.sleep(6000);
+		Thread.sleep(WAIT_FOR_SST);
 
 		assertTrue("U2 received Mtp3 Primitve, it should not!", stack.getManagementProxy().getMtp3Messages().size() == 0);
 		assertTrue("U2 did not receive Management message, it should !", stack.getManagementProxy().getMgmtMessages().size() == 1);
@@ -268,7 +268,7 @@ public class SSPTest extends SccpHarness {
 
 		//register;
 		u2.register();
-		Thread.sleep(5000);
+		Thread.sleep(WAIT_FOR_SST);
 		stack = (SccpStackImplProxy) sccpStack1;
 		//double check first message.
 		assertTrue(stack.getManagementProxy().getMtp3Messages().size() == 1);
@@ -336,8 +336,7 @@ public class SSPTest extends SccpHarness {
 		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN());
 		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN());
 
-		sccpStack1.setSstTimerDuration_Min(5000);
-		sccpStack1.setSstTimerDuration_IncreaseFactor(1);
+		configureSstTimer();
 
 		u1.register();
 		//u2.register();
@@ -354,7 +353,7 @@ public class SSPTest extends SccpHarness {
 		// we do not send SSP during a second after sending
 		assertEquals(1, ((SccpStackImplProxy) sccpStack1).getManagementProxy().getMgmtMessages().size());
 
-		Thread.sleep(2000);
+		Thread.sleep(WAIT_FOR_SSP_RATE_LIMIT);
 		rss.setRemoteSsnProhibited(false);
 		u1.send();
 		Thread.sleep(100);
@@ -373,8 +372,7 @@ public class SSPTest extends SccpHarness {
 		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN());
 		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN());
 
-		sccpStack1.setSstTimerDuration_Min(5000);
-		sccpStack1.setSstTimerDuration_IncreaseFactor(1);
+		configureSstTimer();
 
 		sccpStack1.getSccpResource().addConcernedSpc(1, getStack2PC());
 
@@ -437,6 +435,11 @@ public class SSPTest extends SccpHarness {
 				(byte)(pc & 0xFF)
 		};
 		return b;
+	}
+
+	private void configureSstTimer() {
+		((SccpStackImplProxy) sccpStack1).setSstTimerDurationMinForTest(TEST_SST_TIMER_DURATION);
+		sccpStack1.setSstTimerDuration_IncreaseFactor(1);
 	}
 
 }

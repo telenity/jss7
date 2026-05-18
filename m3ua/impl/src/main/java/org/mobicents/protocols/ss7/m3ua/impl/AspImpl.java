@@ -96,8 +96,7 @@ public class AspImpl implements XMLSerializable, Asp {
 			} else {
 				// If this is IPSP and DE, it should maintain two states. One
 				// for sending ASP_UP to other side and other for receiving
-				// ASP_UP form
-				// other side
+				// ASP_UP from other side
 				this.initPeerFSM();
 				this.initLocalFSM();
 			}

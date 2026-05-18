@@ -155,7 +155,7 @@ public interface M3UAManagement {
 	 * Create new {@link As}.
 	 * 
 	 * @param asName
-	 *            Unque name of As
+	 *            Unique name of As
 	 * @param functionality
 	 *            {@link Functionality} of this As
 	 * @param exchangeType
@@ -169,8 +169,8 @@ public interface M3UAManagement {
 	 * @param trafficMode
 	 *            Optional {@link TrafficModeType}.
 	 * @param minAspActiveForLoadbalance
-	 *            Minimum {@link Asp} that should be ACTIVE before paylaod can
-	 *            be transfered. This is used only if {@link TrafficModeType} is
+	 *            Minimum {@link Asp} that should be ACTIVE before payload can
+	 *            be transferred. This is used only if {@link TrafficModeType} is
 	 *            Loadshare.
 	 * @param na
 	 *            Optional {@link NetworkAppearance}.

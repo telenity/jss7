@@ -285,7 +285,7 @@ public class AspStateMaintenanceHandler extends MessageHandler {
 
 			if (!stopAssociation) {
 				logger.error(String
-						.format("Ungracefully stopping the underlying Association=%s for AspFactory=%s. Atleast one of the ASP's is Double Exchange and Peer ASP state is still not down",
+						.format("Forcibly stopping the underlying Association=%s for AspFactory=%s. At least one of the ASP's is Double Exchange and Peer ASP state is still not down",
 								this.aspFactoryImpl.association.getName(), this.aspFactoryImpl.getName()));
 			}
 

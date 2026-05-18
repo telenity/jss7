@@ -26,6 +26,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.impl.SccpHarness;
@@ -36,9 +38,7 @@ import org.mobicents.protocols.ss7.tcap.asn.TcapFactory;
 import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Invoke;
 import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
-import org.junit.AfterClass;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,9 +50,10 @@ import org.junit.Test;
  */
 public class TCAPAbnormalTest extends SccpHarness {
 
-	public static final long WAIT_TIME = 500;
-	public static final long INVOKE_WAIT_TIME = 500;
-	private static final int _DIALOG_TIMEOUT = 5000;
+	public static final long WAIT_TIME = 200;
+	public static final long INVOKE_WAIT_TIME = 200;
+	private static final int _DIALOG_TIMEOUT = 500;
+	private static final int _LATCH_TIMEOUT = 15000;
 
 	private TCAPStackImpl tcapStack1;
 	private TCAPStackImpl tcapStack2;
@@ -136,11 +137,14 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 		SccpDataMessage message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(peer2Address, peer1Address,
 				getMessageWithUnsupportedProtocolVersion(), 0, 0, false, null, null);
 		this.sccpProvider1.send(message);
-		client.waitFor(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -183,10 +187,13 @@ public class TCAPAbnormalTest extends SccpHarness {
 		client.sendBegin();
 		client.releaseDialog();
 		Thread.sleep(WAIT_TIME);
+
+		CountDownLatch latch = new CountDownLatch(1);
+		server.setDoneLatch(latch);
+
 		client.startClientDialog();
 		client.sendBegin();
-		Thread.sleep(WAIT_TIME);
-		Thread.sleep(_DIALOG_TIMEOUT);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -210,11 +217,14 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 		SccpDataMessage message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(peer2Address, peer1Address,
 				getMessageBadSyntax(), 0, 0, false, null, null);
 		this.sccpProvider1.send(message);
-		client.waitFor(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -260,10 +270,14 @@ public class TCAPAbnormalTest extends SccpHarness {
 		server.sendContinue();
 		Thread.sleep(WAIT_TIME);
 
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
+
 		SccpDataMessage message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(peer1Address, peer2Address,
 				getMessageBadTag(), 0, 0, false, null, null);
 		this.sccpProvider2.send(message);
-		Thread.sleep(WAIT_TIME + _DIALOG_TIMEOUT);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -312,8 +326,12 @@ public class TCAPAbnormalTest extends SccpHarness {
 		Thread.sleep(WAIT_TIME);
 
 		client.releaseDialog();
+
+		CountDownLatch latch = new CountDownLatch(1);
+		server.setDoneLatch(latch);
+
 		server.sendContinue();
-		Thread.sleep(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -352,6 +370,10 @@ public class TCAPAbnormalTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + WAIT_TIME * 2);
 		serverExpectedEvents.add(te);
 
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
+
 		client.startClientDialog(0);
 		client.sendBegin();
 		Thread.sleep(WAIT_TIME);
@@ -361,7 +383,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		client.getCurDialog().setState(TRPseudoState.InitialSent);
 		server.sendContinue();
-		Thread.sleep(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -396,6 +418,10 @@ public class TCAPAbnormalTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 2, stamp + WAIT_TIME);
 		serverExpectedEvents.add(te);
 
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
+
 		client.startClientDialog();
 		client.sendBegin();
 		Thread.sleep(WAIT_TIME);
@@ -406,7 +432,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 		userInformation.setAsn(true);
 		userInformation.setEncodeType(new byte[] { 11, 22, 33 });
 		server.sendAbort(null, userInformation, null);
-		Thread.sleep(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -431,10 +457,12 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 		client.sendBeginUnreachableAddress(false);
-		Thread.sleep(WAIT_TIME);
-		Thread.sleep(_DIALOG_TIMEOUT);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -458,9 +486,12 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 		client.sendBeginUnreachableAddress(true);
-		Thread.sleep(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -487,6 +518,9 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 
 		DialogImpl tcapDialog = client.getCurDialog();
@@ -495,8 +529,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 		tcapDialog.sendComponent(invoke);
 
 		client.sendBeginUnreachableAddress(false);
-		Thread.sleep(WAIT_TIME);
-		Thread.sleep(_DIALOG_TIMEOUT);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -522,6 +555,9 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 
 		DialogImpl tcapDialog = client.getCurDialog();
@@ -530,8 +566,7 @@ public class TCAPAbnormalTest extends SccpHarness {
 		tcapDialog.sendComponent(invoke);
 
 		client.sendBeginUnreachableAddress(false);
-		Thread.sleep(WAIT_TIME);
-		Thread.sleep(_DIALOG_TIMEOUT * 2);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
@@ -568,11 +603,14 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
 		client.startClientDialog();
 		SccpDataMessage message = this.sccpProvider1.getMessageFactory().createDataMessageClass1(peer2Address, peer1Address,
 				getUnrecognizedMessageTypeMessage(), 0, 0, false, null, null);
 		this.sccpProvider1.send(message);
-		client.waitFor(WAIT_TIME);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);

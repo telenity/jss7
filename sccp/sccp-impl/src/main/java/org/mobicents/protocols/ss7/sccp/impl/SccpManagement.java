@@ -611,7 +611,7 @@ public class SccpManagement {
 
 		private Future testFuture;
 		private FastList<SubSystemTest> testsList; // just a ref to list of
-													// testse for DPC, instances
+													// tests for DPC, instances
 													// of this classes should be
 													// there.
 

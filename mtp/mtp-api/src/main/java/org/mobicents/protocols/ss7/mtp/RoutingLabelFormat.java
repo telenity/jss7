@@ -71,7 +71,7 @@ public enum RoutingLabelFormat {
 	}
 
 	/**
-	 * @return the sls
+	 * @return the slsLengthInBits
 	 */
 	public int getSlsLengthInBits() {
 		return this.slsLengthInBits;

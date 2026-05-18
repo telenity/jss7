@@ -164,7 +164,7 @@ public class TCBeginMessageImpl implements TCBeginMessage {
 					
 				default:
 					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-							"Error decoding TC-Begin: DialogPortion and Componebt parsing: bad tag - " + tag);
+							"Error decoding TC-Begin: DialogPortion and Component parsing: bad tag - " + tag);
 				}
 			}
 

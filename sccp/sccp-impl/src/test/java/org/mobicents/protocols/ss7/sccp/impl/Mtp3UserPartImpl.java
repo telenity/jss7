@@ -42,9 +42,6 @@ import org.mobicents.protocols.ss7.mtp.Mtp3UserPartBaseImpl;
  * @author sergey vetyutnev
  */
 public class Mtp3UserPartImpl extends Mtp3UserPartBaseImpl {
-
-//	protected ConcurrentLinkedQueue<byte[]> readFrom;
-//	protected ConcurrentLinkedQueue<byte[]> writeTo;
 	
 	private Mtp3UserPartImpl otherPart;
 	private ArrayList<Mtp3TransferPrimitive> messages = new ArrayList<Mtp3TransferPrimitive>();

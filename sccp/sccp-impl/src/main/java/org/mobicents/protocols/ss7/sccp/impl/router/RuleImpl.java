@@ -310,7 +310,7 @@ public class RuleImpl implements Rule, Serializable {
 			// nature of address must match
 			if (((GT0001) patternGT).getNoA() != gt.getNoA()) {
 				if(logger.isInfoEnabled()){
-					logger.info(String.format("Noa didn't match. Pattern Noa=%s Address Noad=%s Return  False", ((GT0001) patternGT).getNoA(), gt.getNoA()));
+					logger.info(String.format("Noa didn't match. Pattern Noa=%s Address Noa=%s Return  False", ((GT0001) patternGT).getNoA(), gt.getNoA()));
 				}
 				return false;
 			}

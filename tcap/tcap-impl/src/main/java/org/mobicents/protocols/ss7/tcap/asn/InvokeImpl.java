@@ -123,7 +123,7 @@ public class InvokeImpl implements Invoke {
 	/*
      * (non-Javadoc)
      *
-     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getParameteR()
+     * @see org.mobicents.protocols.ss7.tcap.asn.comp.Invoke#getParameter()
      */
 	public Parameter getParameter() {
 		return this.parameter;

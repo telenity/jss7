@@ -165,7 +165,7 @@ public class TCEndMessageImpl implements TCEndMessage {
 					
 				default:
 					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-							"Error decoding TC-End: DialogPortion and Componebt parsing: bad tag - " + tag);
+							"Error decoding TC-End: DialogPortion and Component parsing: bad tag - " + tag);
 				}
 			}
 

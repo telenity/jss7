@@ -25,6 +25,7 @@ package org.mobicents.protocols.ss7.sccp.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.sccp.ConcernedSignalingPointCode;
 import org.mobicents.protocols.ss7.sccp.RemoteSignalingPointCode;
 import org.mobicents.protocols.ss7.sccp.RemoteSubSystem;
@@ -56,6 +57,7 @@ public class SccpResourceTest {
 	@Before
 	public void setUp() {
 		resource = new SccpResourceImpl("SccpResourceTest");
+		resource.setPersistDir(Util.getTmpTestDir());
 		resource.start();
 		resource.removeAllResourses();
 
@@ -80,6 +82,7 @@ public class SccpResourceTest {
 		resource.addConcernedSpc(2, 604);
 
 		SccpResourceImpl resource1 = new SccpResourceImpl("SccpResourceTest");
+		resource1.setPersistDir(Util.getTmpTestDir());
 		resource1.start();
 
 		assertEquals(2, resource1.getRemoteSpcs().size());

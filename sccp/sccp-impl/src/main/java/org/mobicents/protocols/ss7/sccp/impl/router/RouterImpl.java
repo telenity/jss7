@@ -36,10 +36,15 @@ import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
-import org.mobicents.protocols.ss7.sccp.*;
+import org.mobicents.protocols.ss7.sccp.LoadSharingAlgorithm;
 import org.mobicents.protocols.ss7.sccp.LongMessageRule;
 import org.mobicents.protocols.ss7.sccp.LongMessageRuleType;
 import org.mobicents.protocols.ss7.sccp.Mtp3ServiceAccessPoint;
+import org.mobicents.protocols.ss7.sccp.OriginationType;
+import org.mobicents.protocols.ss7.sccp.Router;
+import org.mobicents.protocols.ss7.sccp.Rule;
+import org.mobicents.protocols.ss7.sccp.RuleType;
+import org.mobicents.protocols.ss7.sccp.SccpStack;
 import org.mobicents.protocols.ss7.sccp.impl.oam.SccpOAMMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0001;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0010;
@@ -90,7 +95,7 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
  * </li>
  * <li>
  * <p>
- * <i>numbering plan</i> (np) integer value which inidcates which numbering plan
+ * <i>numbering plan</i> (np) integer value which indicates which numbering plan
  * will be used for the global title. Its value aids the routing system in
  * determining the correct network system to route message to.
  * </p>

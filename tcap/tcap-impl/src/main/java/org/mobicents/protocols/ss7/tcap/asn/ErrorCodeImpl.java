@@ -34,7 +34,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 
 /**
  * @author baranowb
- * @author sergey netyutnev
+ * @author sergey vetyutnev
  * 
  */
 public class ErrorCodeImpl implements ErrorCode {

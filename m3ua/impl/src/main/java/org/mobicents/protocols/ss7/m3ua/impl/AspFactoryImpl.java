@@ -834,7 +834,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	@Override
 	public void inValidStreamId(org.mobicents.protocols.api.PayloadData payloadData) {
 		logger.error(String
-				.format("Tx : PayloadData with streamNumber=%d which is greater than or equal to maxSequenceNumber=%d. Droping PayloadData=%s",
+				.format("Tx : PayloadData with streamNumber=%d which is greater than or equal to maxSequenceNumber=%d. Dropping PayloadData=%s",
 						payloadData.getStreamNumber(), this.maxOutboundStreams, payloadData));
 	}
 

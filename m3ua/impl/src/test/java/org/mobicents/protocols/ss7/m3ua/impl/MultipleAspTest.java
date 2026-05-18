@@ -33,14 +33,10 @@ import static org.junit.Assert.*;
 public class MultipleAspTest {
     private static final Logger logger = Logger.getLogger(MultipleAspTest.class);
 
-    /*
-     * OPC = 3615, DPC = 4010, 4011, 4033
-     */
-
-    private static final int OPC = 3615;
-    private static final int DPC1 = 4010;
-    private static final int DPC2 = 4011;
-    private static final int DPC3 = 4033;
+    private static final int OPC = 4615;
+    private static final int DPC1 = 5010;
+    private static final int DPC2 = 5011;
+    private static final int DPC3 = 5033;
 
     private static final String SERVER_HOST = "127.0.0.1";
 

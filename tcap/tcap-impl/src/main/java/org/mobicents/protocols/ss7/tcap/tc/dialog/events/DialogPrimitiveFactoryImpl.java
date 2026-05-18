@@ -203,7 +203,7 @@ public class DialogPrimitiveFactoryImpl implements DialogPrimitiveFactory {
 		return tcbi;
 	}
 
-	// Aditionals for APDU
+	// Additionals for APDU
 
 	/*
 	 * (non-Javadoc)

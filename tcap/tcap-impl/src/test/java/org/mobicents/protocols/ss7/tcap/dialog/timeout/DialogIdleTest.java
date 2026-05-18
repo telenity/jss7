@@ -22,10 +22,10 @@
 
 package org.mobicents.protocols.ss7.tcap.dialog.timeout;
 
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.impl.SccpHarness;
@@ -36,9 +36,7 @@ import org.mobicents.protocols.ss7.tcap.TestEvent;
 import org.mobicents.protocols.ss7.tcap.api.TCAPException;
 import org.mobicents.protocols.ss7.tcap.api.TCAPSendException;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TerminationType;
-import org.junit.AfterClass;
 import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,10 +48,9 @@ import org.junit.Test;
  */
 public class DialogIdleTest extends SccpHarness {
 
-	private static final int _WAIT_TIMEOUT = 90000;
-	private static final int _WAIT_REMOVE = 30000;
-	private static final int _DIALOG_TIMEOUT = 5000;
-	private static final int _WAIT = _DIALOG_TIMEOUT / 2;
+	private static final int _DIALOG_TIMEOUT = 500;
+	private static final int _WAIT = 100;
+	private static final int _LATCH_TIMEOUT = 15000;
 	private TCAPStackImpl tcapStack1;
 	private TCAPStackImpl tcapStack2;
 	private SccpAddress peer1Address;
@@ -120,7 +117,7 @@ public class DialogIdleTest extends SccpHarness {
 	}
 
 	@Test
-	public void testCreateOnly() throws TCAPException {
+	public void testCreateOnly() throws Exception {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
 		TestEvent te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 0, stamp + _DIALOG_TIMEOUT);
@@ -130,15 +127,15 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 2, stamp + _DIALOG_TIMEOUT);
 		expectedEvents.add(te);
 
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
 		client.startClientDialog();
-		client.waitFor(_WAIT * 3);
-		// waitForEnd();
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 		client.compareEvents(expectedEvents);
-
 	}
 
 	@Test
-	public void testAfterBeginOnly1() throws TCAPException, TCAPSendException {
+	public void testAfterBeginOnly1() throws Exception {
 		//client timeout first
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
@@ -161,13 +158,15 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
 		client.startClientDialog();
 		client.waitFor(_WAIT);
 		client.sendBegin();
-		client.waitFor(_WAIT * 3);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
-
 	}
 
 	@Test
@@ -194,16 +193,19 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
 		client.startClientDialog();
 		client.waitFor(_WAIT);
 		client.sendBegin();
-		client.waitFor(_WAIT * 3);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 		client.compareEvents(clientExpectedEvents);
 		server.compareEvents(serverExpectedEvents);
 	}
 
 	@Test
-	public void testAfterContinue() throws TCAPException, TCAPSendException {
+	public void testAfterContinue() throws Exception {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
@@ -227,22 +229,24 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT * 2 + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
 
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
 		client.startClientDialog(0);
 		try {
 			client.waitFor(_WAIT);
 			client.sendBegin();
 			client.waitFor(_WAIT);
 			server.sendContinue();
-			client.waitFor(_WAIT * 3);
+			latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 		} finally {
 			client.compareEvents(clientExpectedEvents);
 			server.compareEvents(serverExpectedEvents);
 		}
-
 	}
 
 	@Test
-	public void testAfterContinue2() throws TCAPException, TCAPSendException {
+	public void testAfterContinue2() throws Exception {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
@@ -269,6 +273,10 @@ public class DialogIdleTest extends SccpHarness {
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + _WAIT * 3 + _DIALOG_TIMEOUT);
 		serverExpectedEvents.add(te);
+
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
 		client.startClientDialog(0);
 		try {
 			client.waitFor(_WAIT);
@@ -277,16 +285,15 @@ public class DialogIdleTest extends SccpHarness {
 			server.sendContinue();
 			client.waitFor(_WAIT);
 			client.sendContinue();
-			client.waitFor(_WAIT * 3);
+			latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 		} finally {
 			client.compareEvents(clientExpectedEvents);
 			server.compareEvents(serverExpectedEvents);
 		}
-
 	}
 
 	@Test
-	public void testAfterEnd() throws TCAPException, TCAPSendException {
+	public void testAfterEnd() throws Exception {
 		long stamp = System.currentTimeMillis();
 		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
@@ -307,6 +314,10 @@ public class DialogIdleTest extends SccpHarness {
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT * 3);
 		serverExpectedEvents.add(te);
+
+		CountDownLatch latch = new CountDownLatch(2);
+		client.setDoneLatch(latch);
+		server.setDoneLatch(latch);
 		client.startClientDialog(0);
 		try {
 			client.waitFor(_WAIT);
@@ -315,20 +326,12 @@ public class DialogIdleTest extends SccpHarness {
 			server.sendContinue();
 			client.waitFor(_WAIT);
 			client.sendEnd(TerminationType.Basic);
-			client.waitFor(_WAIT * 3);
+			latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 		} finally {
 			client.compareEvents(clientExpectedEvents);
 			server.compareEvents(serverExpectedEvents);
 		}
-
-	}
-
-	private void waitForEnd() {
-		try {
-			Thread.currentThread().sleep(_WAIT_TIMEOUT);
-		} catch (InterruptedException e) {
-			fail("Interrupted on wait!");
-		}
 	}
 
 }
+

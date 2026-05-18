@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import javolution.util.FastMap;
 
+import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.mtp.Mtp3UserPart;
 import org.mobicents.protocols.ss7.sccp.impl.SccpProviderImpl;
 import org.mobicents.protocols.ss7.sccp.impl.SccpRoutingControl;
@@ -65,11 +66,11 @@ public class SccpStackImplProxy extends SccpStackImpl {
 		super.sccpRoutingControl.setSccpManagement(sccpManagement);
 
 		this.router = new RouterImpl(this.getName(), this);
-		this.router.setPersistDir(this.getPersistDir());
+		this.router.setPersistDir(Util.getTmpTestDir());
 		this.router.start();
 
 		this.sccpResource = new SccpResourceImpl(this.getName());
-		this.sccpResource.setPersistDir(this.getPersistDir());
+		this.sccpResource.setPersistDir(Util.getTmpTestDir());
 		this.sccpResource.start();
 
 		this.sccpRoutingControl.start();
@@ -104,6 +105,10 @@ public class SccpStackImplProxy extends SccpStackImpl {
 	@Override
 	public void setReassemblyTimerDelay(int reassemblyTimerDelay) {
 		this.reassemblyTimerDelay = reassemblyTimerDelay;
+	}
+
+	public void setSstTimerDurationMinForTest(int sstTimerDurationMin) {
+		this.sstTimerDuration_Min = sstTimerDurationMin;
 	}
 
 }

@@ -46,16 +46,16 @@ public interface Mtp3UserPart {
 	public void removeMtp3UserPartListener(Mtp3UserPartListener listener);
 
 	/**
-	 * return PointCodeFormat
+	 * return RoutingLabelFormat
 	 * 
 	 * @return
 	 */
 	public RoutingLabelFormat getRoutingLabelFormat();
 
 	/**
-	 * Set PointCodeFormat
+	 * Set RoutingLabelFormat
 	 * 
-	 * @param length
+	 * @param routingLabelFormat
 	 */
 	public void setRoutingLabelFormat(RoutingLabelFormat routingLabelFormat);
 

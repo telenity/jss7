@@ -41,7 +41,7 @@ import org.mobicents.protocols.ss7.mtp.RoutingLabelFormat;
  * Management class to manage the route.
  * </p>
  * <p>
- * The DPC, OPC and SI of Message Signaling unit (MSU) transfered by M3UA-User
+ * The DPC, OPC and SI of Message Signaling unit (MSU) transferred by M3UA-User
  * to M3UA layer for routing is checked against configured key. If found, the
  * corresponding {@link AsImpl} is checked for state and if ACTIVE, message will
  * be delivered via this {@link AsImpl}. If multiple {@link AsImpl} are
@@ -154,7 +154,7 @@ public class M3UARouteManagement {
     }
 
     /**
-     * Reset the routeTable. Called after the persistance state of route is read
+     * Reset the routeTable. Called after the persistence state of route is read
      * from xml file.
      */
     protected void reset() {

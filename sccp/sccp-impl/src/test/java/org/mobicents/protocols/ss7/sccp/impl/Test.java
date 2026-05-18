@@ -2,6 +2,7 @@ package org.mobicents.protocols.ss7.sccp.impl;
 
 import java.io.IOException;
 
+import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.indicator.NatureOfAddress;
 import org.mobicents.protocols.ss7.indicator.NumberingPlan;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
@@ -26,6 +27,7 @@ public class Test implements SccpListener {
 		// ......
 		SccpStackImpl sccpStack1 = new SccpStackImpl("testSccpStack");
 		sccpStack1.setMtp3UserPart(1, mtp3UserPart1);
+		sccpStack1.setPersistDir(Util.getTmpTestDir());
 		sccpStack1.start();
 		return sccpStack1.getSccpProvider();
 	}

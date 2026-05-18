@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javolution.util.FastMap;
 
+import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.mtp.Mtp3TransferPrimitive;
 import org.mobicents.protocols.ss7.mtp.Mtp3TransferPrimitiveFactory;
@@ -84,6 +85,7 @@ public class RouterTest {
 
 		// cleans config file
 		router = new RouterImpl("RouterTest", testSccpStackImpl);
+		router.setPersistDir(Util.getTmpTestDir());
 		router.start();
 		router.removeAllResourses();
 
@@ -188,6 +190,7 @@ public class RouterTest {
 		router.stop();
 
 		RouterImpl router1 = new RouterImpl(router.getName(), null);
+		router1.setPersistDir(Util.getTmpTestDir());
 		router1.start();
 
 		Rule rl = router1.getRule(1);
@@ -195,6 +198,7 @@ public class RouterTest {
 		SccpAddress adb = router1.getBackupAddress(1);
 		LongMessageRule lmr = router1.getLongMessageRule(1);
 		Mtp3ServiceAccessPoint sap = router1.getMtp3ServiceAccessPoint(3);
+		assertNotNull(sap);
 		Mtp3Destination dst = sap.getMtp3Destination(1);
 
 		assertEquals(1, rl.getPrimaryAddressId());

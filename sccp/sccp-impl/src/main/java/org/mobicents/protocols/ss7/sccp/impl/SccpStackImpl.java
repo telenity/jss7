@@ -26,7 +26,11 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -660,28 +664,28 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 				RemoteSignalingPointCode remoteSpc = this.getSccpResource().getRemoteSpcByPC(dpc);
 				if (remoteSpc == null) {
 					if (logger.isEnabledFor(Level.WARN)) {
-						logger.warn(String.format("Incoming Mtp3 Message for nonlocal dpc=%d. But RemoteSpc is not found", dpc));
+						logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is not found", dpc));
 					}
 					return;
 				}
 				if (remoteSpc.isRemoteSpcProhibited()) {
 					if (logger.isEnabledFor(Level.WARN)) {
 						logger.warn(String.format(
-								"Incoming Mtp3 Message for nonlocal dpc=%d. But RemoteSpc is Prohibited", dpc));
+								"Incoming Mtp3 Message for non-local dpc=%d. But RemoteSpc is Prohibited", dpc));
 					}
 					return;
 				}			
 				Mtp3ServiceAccessPoint sap = this.router.findMtp3ServiceAccessPoint(dpc, sls);
 				if (sap == null) {
 					if (logger.isEnabledFor(Level.WARN)) {
-						logger.warn(String.format("Incoming Mtp3 Message for nonlocal dpc=%d / sls=%d. But SAP is not found", dpc, sls));
+						logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d / sls=%d. But SAP is not found", dpc, sls));
 					}
 					return;
 				}
 				Mtp3UserPart mup = this.getMtp3UserPart(sap.getMtp3Id());
 				if (mup == null) {
 					if (logger.isEnabledFor(Level.WARN)) {
-						logger.warn(String.format("Incoming Mtp3 Message for nonlocal dpc=%d / sls=%d. no matching Mtp3UserPart found", dpc, sls));
+						logger.warn(String.format("Incoming Mtp3 Message for non-local dpc=%d / sls=%d. no matching Mtp3UserPart found", dpc, sls));
 					}
 					return;
 				}

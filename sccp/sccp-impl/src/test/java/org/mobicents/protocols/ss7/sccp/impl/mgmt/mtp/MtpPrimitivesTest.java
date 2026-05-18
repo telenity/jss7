@@ -46,6 +46,9 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
  */
 public class MtpPrimitivesTest extends SccpHarness {
 
+	private static final int TEST_SST_TIMER_DURATION = 1000;
+	private static final int WAIT_FOR_SST = 2000;
+
 	private SccpAddress a1, a2;
 
 	public MtpPrimitivesTest() {
@@ -184,6 +187,8 @@ public class MtpPrimitivesTest extends SccpHarness {
 	
 	protected void doTestStatus(Mtp3UnavailabiltyCauseType type) throws Exception
 	{
+		((SccpStackImplProxy) sccpStack1).setSstTimerDurationMinForTest(TEST_SST_TIMER_DURATION);
+
 		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, 8);
 		a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), null, 8);
 
@@ -245,7 +250,7 @@ public class MtpPrimitivesTest extends SccpHarness {
 		}
 		this.mtp3UserPart1.sendStatusMessageToLocalUser(getStack2PC(), cs, 0);
 		
-		Thread.sleep(15000);
+		Thread.sleep(WAIT_FOR_SST);
         stack = (SccpStackImplProxy) sccpStack1;
 		
 		assertTrue("U1 did not receive Mtp3 Primitve, it should !", stack.getManagementProxy().getMtp3Messages().size() == 2);

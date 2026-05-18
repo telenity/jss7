@@ -1,13 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-
 	<parent>
 		<artifactId>ss7-parent</artifactId>
 		<groupId>org.mobicents.protocols.ss7</groupId>
 		<version>${revision}</version>
 	</parent>
-
 
 	<artifactId>sccp-parent</artifactId>
 	<groupId>org.mobicents.protocols.ss7.sccp</groupId>
@@ -17,34 +15,9 @@
 
 	<name>Mobicents SS7 :: SCCP :: Parent :: ${project.artifactId}</name>
 
-
 	<modules>
 		<module>sccp-api</module>
 		<module>sccp-impl</module>
 	</modules>
 
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>.</directory>
-							<includes>
-								<include>*_sccpresource.xml</include>
-								<include>*_sccprouter.xml</include>
-								<include>debuglog.txt</include>
-							</includes>
-							<!-- <excludes> <exclude>**/important.log</exclude> <exclude>**/another-important.log</exclude> 
-								</excludes> -->
-							<followSymlinks>false</followSymlinks>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-
-		</plugins>
-	</build>
 </project>

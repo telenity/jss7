@@ -176,7 +176,7 @@ public class RuleComparator implements Comparator<RuleImpl> {
 	}
 
 	/**
-	 * Returns number of '*' occured in passed digits
+	 * Returns number of '*' occurred in passed digits
 	 * 
 	 * @param digits
 	 * @return
@@ -193,7 +193,7 @@ public class RuleComparator implements Comparator<RuleImpl> {
 	}
 
 	/**
-	 * Returns number of '?' occured in passed digits
+	 * Returns number of '?' occurred in passed digits
 	 * 
 	 * @param digits
 	 * @return

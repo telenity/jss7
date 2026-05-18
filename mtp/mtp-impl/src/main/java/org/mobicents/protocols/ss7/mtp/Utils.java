@@ -23,10 +23,7 @@
 package org.mobicents.protocols.ss7.mtp;
 
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -36,7 +33,7 @@ public class Utils {
     // Some common statics //
     /////////////////////////
     /**
-     * Indicate value not set;
+     * Indicates value not set;
      */
     public static final byte _VALUE_NOT_SET = -1;
 

@@ -98,7 +98,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 			// = 16 bits each and SLS = 4 bits
 			return 272 - 4;
 		case ANSI_Sls8Bit:
-			// For PC_FORMAT_24, the MTP3 Routing Label takes 6 bytes - OPC/DPC
+			// For PC_FORMAT_24, the MTP3 Routing Label takes 7 bytes - OPC/DPC
 			// = 24 bits each and SLS = 8 bits
 			return 272 - 7;
 		default:
@@ -214,7 +214,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 			this.msgDeliveryExecutorSystem.execute(hdl);
 		} else {
 			logger.error(String.format(
-					"Received Mtp3PausePrimitive=%s but Mtp3PausePrimitive is not started. Message will be dropped",
+					"Received Mtp3PausePrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
 					msg));
 		}
 	}
@@ -225,7 +225,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 			this.msgDeliveryExecutorSystem.execute(hdl);
 		} else {
 			logger.error(String.format(
-					"Received Mtp3ResumePrimitive=%s but Mtp3PausePrimitive is not started. Message will be dropped",
+					"Received Mtp3ResumePrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
 					msg));
 		}
 	}
@@ -236,7 +236,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 			this.msgDeliveryExecutorSystem.execute(hdl);
 		} else {
 			logger.error(String.format(
-					"Received Mtp3StatusPrimitive=%s but Mtp3PausePrimitive is not started. Message will be dropped",
+					"Received Mtp3StatusPrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
 					msg));
 		}
 	}

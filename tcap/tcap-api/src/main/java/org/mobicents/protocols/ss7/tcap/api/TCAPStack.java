@@ -107,7 +107,7 @@ public interface TCAPStack {
 	/**
 	* previewMode is needed for special processing mode
 	* When PreviewMode in TCAP level we have:
-	* - we only listern incoming messages and sends nothing. send(),
+	* - we only listen incoming messages and sends nothing. send(),
 	*   close(), sendComponent() and other such methods do nothing.
 	* - A TCAP Dialog is temporary. TCAP Dialog is discarded after any
 	*   icoming message like TC-BEGIN or TC-CONTINUE has been processed
@@ -121,7 +121,7 @@ public interface TCAPStack {
 
 	/**
 	*     
-	* @return if areviewMode is active
+	* @return if previewMode is active
 	*/
 	public boolean getPreviewMode();
 

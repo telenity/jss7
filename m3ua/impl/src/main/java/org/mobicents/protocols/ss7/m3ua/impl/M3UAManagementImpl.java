@@ -125,7 +125,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	protected FastList<M3UAManagementEventListener> managementEventListeners = new FastList<M3UAManagementEventListener>();
 
 	/**
-	 * Maximum sequence number received from SCCTP user. If SCCTP users sends
+	 * Maximum sequence number received from SCTP user. If SCTP users sends
 	 * seq number greater than max, packet will be dropped and error message
 	 * will be logged
 	 */
@@ -980,7 +980,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 				FastList<Asp> tempAsp = new FastList<Asp>();
 				tempAsp.addAll(asImpl.appServerProcs);
 
-				// Claer Asp's from this As
+				// Clear Asp's from this As
 				asImpl.appServerProcs.clear();
 
 				for (FastList.Node<Asp> n1 = tempAsp.head(), end1 = tempAsp.tail(); (n1 = n1.getNext()) != end1;) {
@@ -1005,7 +1005,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 					factory.setAssociation(this.transportManagement.getAssociation(factory.associationName));
 				} catch (Throwable e1) {
 					logger.error(String.format(
-							"Error setting Assciation=%s for the AspFactory=%s while loading from XML",
+							"Error setting Association=%s for the AspFactory=%s while loading from XML",
 							factory.associationName, factory.getName()), e1);
 				}
 

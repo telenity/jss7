@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
@@ -82,6 +83,8 @@ public abstract class EventTestHarness implements TCListener {
 
 	protected PAbortCauseType pAbortCauseType;
 
+	private CountDownLatch doneLatch;
+
 	/**
 	 * @param stack
 	 * @param thisAddress
@@ -94,6 +97,10 @@ public abstract class EventTestHarness implements TCListener {
 		this.remoteAddress = remoteAddress;
 		this.tcapProvider = this.stack.getProvider();
 		this.tcapProvider.addTCListener(this);
+	}
+
+	public void setDoneLatch(CountDownLatch latch) {
+		this.doneLatch = latch;
 	}
 
 	public void startClientDialog() throws TCAPException {
@@ -262,7 +269,9 @@ public abstract class EventTestHarness implements TCListener {
 		System.err.println(this + " T[" + System.currentTimeMillis() + "]onDialogReleased");
 		TestEvent te = TestEvent.createReceivedEvent(EventType.DialogRelease, d, sequence++);
 		this.observerdEvents.add(te);
-
+		if (doneLatch != null) {
+			doneLatch.countDown();
+		}
 	}
 
 	public void onInvokeTimeout(Invoke tcInvokeRequest) {

@@ -212,11 +212,11 @@ public class DialogPortionImpl implements DialogPortion {
 			else
 				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Error decoding DialogPortion: bad Oid value");
 			
-			AsnInputStream loaclAsnIS = new AsnInputStream(ext.getEncodeType());
+			AsnInputStream localAsnIS = new AsnInputStream(ext.getEncodeType());
 
 			// now lets get APDU
-			tag = loaclAsnIS.readTag();
-			this.dialogAPDU = TcapFactory.createDialogAPDU(loaclAsnIS, tag, isUnidirectional());
+			tag = localAsnIS.readTag();
+			this.dialogAPDU = TcapFactory.createDialogAPDU(localAsnIS, tag, isUnidirectional());
 			
 		} catch (IOException e) {
 			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException when decoding DialogPortion: " + e.getMessage(), e);

@@ -197,7 +197,7 @@ public class TCContinueMessageImpl implements TCContinueMessage {
 
 				default:
 					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-							"Error decoding TC-Continue: DialogPortion and Componebt parsing: bad tag - " + tag);
+							"Error decoding TC-Continue: DialogPortion and Component parsing: bad tag - " + tag);
 				}
 			}
 		} catch (IOException e) {

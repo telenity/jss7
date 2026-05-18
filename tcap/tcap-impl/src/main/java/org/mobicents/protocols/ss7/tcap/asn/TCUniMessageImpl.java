@@ -132,7 +132,7 @@ public class TCUniMessageImpl implements TCUniMessage {
 					
 				default:
 					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-							"Error decoding TC-Uni: DialogPortion and Componebt parsing: bad tag - " + tag);
+							"Error decoding TC-Uni: DialogPortion and Component parsing: bad tag - " + tag);
 				}
 			}
 		} catch (IOException e) {

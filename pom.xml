@@ -16,7 +16,6 @@
         <!-- plugins -->
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
         <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
-        <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
         <compiler.plugin.version>2.5.1</compiler.plugin.version>
         <!-- dependencies -->
         <log4j.version>1.2.26</log4j.version>
@@ -213,15 +212,6 @@
         </license>
     </licenses>
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven-clean-plugin.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -120,7 +120,7 @@ public interface M3UAOAMMessages {
 	public static final String COMMA = ",";
 	
 	/**
-	 * Show command specific contsnats
+	 * Show command specific constants
 	 */
 	public static final String SHOW_ASSIGNED_TO = "Assigned to :\n";
 	
