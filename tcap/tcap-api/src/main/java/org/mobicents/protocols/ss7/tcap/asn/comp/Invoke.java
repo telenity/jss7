@@ -54,9 +54,9 @@ public interface Invoke extends Component {
 //	public long getInvokeTimeout();
 //
 //	/**
-//	 * Sets timeout for this invoke operation in miliseconds. If no indication
-//	 * on operation status is received, before this value passes, operation
-//	 * timesout.
+//	 * Sets timeout for this invoke operation in milliseconds. If no indication
+	//	 * on operation status is received, before this value passes, operation
+	//	 * times out.
 //	 * 
 //	 * @param invokeTimeout
 //	 *            the invokeTimeout to set

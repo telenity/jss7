@@ -772,7 +772,7 @@ public class TCAPComponentsTest extends SccpHarness {
 					}
 
 					TestEvent te = TestEvent.createReceivedEvent(et, c, sequence++);
-					this.observerdEvents.add(te);
+					this.observedEvents.add(te);
 				}
 			}
 		}
@@ -808,7 +808,7 @@ public class TCAPComponentsTest extends SccpHarness {
 			// invoke.setParameter(pm);
 
 			TestEvent te = TestEvent.createSentEvent(EventType.Invoke, null, sequence++);
-			this.observerdEvents.add(te);
+			this.observedEvents.add(te);
 
 			this.dialog.sendComponent(invoke);
 
@@ -843,7 +843,7 @@ public class TCAPComponentsTest extends SccpHarness {
 			rr.setOperationCode(oc);
 
 			TestEvent te = TestEvent.createSentEvent(EventType.ReturnResult, null, sequence++);
-			this.observerdEvents.add(te);
+			this.observedEvents.add(te);
 
 			this.dialog.sendComponent(rr);
 		}
@@ -859,7 +859,7 @@ public class TCAPComponentsTest extends SccpHarness {
 			rr.setOperationCode(oc);
 
 			TestEvent te = TestEvent.createSentEvent(EventType.ReturnResultLast, null, sequence++);
-			this.observerdEvents.add(te);
+			this.observedEvents.add(te);
 
 			this.dialog.sendComponent(rr);
 		}
@@ -874,7 +874,7 @@ public class TCAPComponentsTest extends SccpHarness {
 			err.setErrorCode(ec);
 
 			TestEvent te = TestEvent.createSentEvent(EventType.ReturnError, null, sequence++);
-			this.observerdEvents.add(te);
+			this.observedEvents.add(te);
 
 			this.dialog.sendComponent(err);
 		}
@@ -914,7 +914,7 @@ public class TCAPComponentsTest extends SccpHarness {
 					}
 
 					TestEvent te = TestEvent.createReceivedEvent(et, c, sequence++);
-					this.observerdEvents.add(te);
+					this.observedEvents.add(te);
 				}
 			}
 		}

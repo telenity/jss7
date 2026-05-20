@@ -118,7 +118,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<Integer, Mtp3UserPart>();
 	protected ScheduledExecutorService timerExecutors;
-	protected FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemplyCache = new FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl>();
+	protected FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemblyCache = new FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl>();
 
 	// executors for delivering messages SCCP user -> SCCP -> SCCP user (for messages that are not from or to MTP part)
 	protected ExecutorService[] msgDeliveryExecutors;
@@ -424,9 +424,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		
 		this.router.stop();
 
-		synchronized (reassemplyCache) {
+		synchronized (reassemblyCache) {
 			this.timerExecutors.shutdownNow();
-			reassemplyCache.clear();
+			reassemblyCache.clear();
 		}
 		
 	}
@@ -727,8 +727,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 							// first segment
 							sgmMsg.setReceivedFirstSegment();
 							MessageReassemblyProcess msp = new MessageReassemblyProcess(segm.getSegmentationLocalRef(), sgmMsg.getCallingPartyAddress());
-							synchronized (this.reassemplyCache) {
-								this.reassemplyCache.put(msp, sgmMsg);
+							synchronized (this.reassemblyCache) {
+								this.reassemblyCache.put(msp, sgmMsg);
 							}
 							sgmMsg.setMessageReassemblyProcess(msp);
 							msp.startTimer();
@@ -738,8 +738,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 							// nonfirst segment
 							MessageReassemblyProcess msp = new MessageReassemblyProcess(segm.getSegmentationLocalRef(), sgmMsg.getCallingPartyAddress());
 							SccpSegmentableMessageImpl sgmMsgFst = null;
-							synchronized (this.reassemplyCache) {
-								sgmMsgFst = this.reassemplyCache.get(msp);
+							synchronized (this.reassemblyCache) {
+								sgmMsgFst = this.reassemblyCache.get(msp);
 							}
 							if (sgmMsgFst == null) {
 								// previous segments cache is not found - discard a segment
@@ -750,8 +750,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 							}
 							if (sgmMsgFst.getRemainingSegments() - 1 != segm.getRemainingSegments()) {
 								// segments bad order
-								synchronized (this.reassemplyCache) {
-									this.reassemplyCache.remove(msp);
+								synchronized (this.reassemblyCache) {
+									this.reassemblyCache.remove(msp);
 									MessageReassemblyProcess mspMain = sgmMsgFst.getMessageReassemblyProcess();
 									if (mspMain != null)
 										mspMain.stopTimer();
@@ -765,11 +765,11 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 							if (sgmMsgFst.getRemainingSegments() == 1) {
 								// last segment
-								synchronized (this.reassemplyCache) {
+								synchronized (this.reassemblyCache) {
 									MessageReassemblyProcess mspMain = sgmMsgFst.getMessageReassemblyProcess();
 									if (mspMain != null)
 										mspMain.stopTimer();
-									this.reassemplyCache.remove(msp);
+									this.reassemblyCache.remove(msp);
 								}
 								if (sgmMsgFst.getRemainingSegments() != 1)
 									return;
@@ -858,8 +858,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 		public void run() {
 			SccpSegmentableMessageImpl msg = null;
-			synchronized (reassemplyCache) {
-				msg = reassemplyCache.remove(this);
+			synchronized (reassemblyCache) {
+				msg = reassemblyCache.remove(this);
 				if (msg == null)
 					return;
 

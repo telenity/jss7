@@ -97,7 +97,7 @@ public interface M3UAManagement {
 
 	/**
 	 * Set the time in milliseconds between two heartbeats. Heartbeat is only
-	 * sent when MUA association is idle.
+	 * sent when M3UA association is idle.
 	 * 
 	 * @param timeBetweenHeartbeat
 	 */

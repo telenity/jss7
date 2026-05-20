@@ -231,7 +231,7 @@ public interface Dialog {
 	/**
 	 * This method can be called on timeout of dialog, inside
 	 * {@link TCListener#onDialogTimeout(Dialog)} callback. If its called,
-	 * dialog wont be removed in case application does not perform 'send'.
+	 * dialog won't be removed in case application does not perform 'send'.
 	 */
 	public void keepAlive();
 
@@ -309,7 +309,7 @@ public interface Dialog {
 	public boolean getPreviewMode();
 
 	/**
-	 * @return This ReentrantLock object should for synchronizing of Dialog using in multithread environment 
+	 * @return This ReentrantLock object should for synchronizing of Dialog using in multithreaded environment 
 	 */
 	public ReentrantLock getDialogLock();
 

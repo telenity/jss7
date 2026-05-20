@@ -1251,7 +1251,7 @@ public class DialogImpl implements Dialog {
 				restartIdleTimer();
 				tcContinueIndication = (TCContinueIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
 						.getDialogPrimitiveFactory()).createContinueIndication(this);
-				// in continue remote address MAY change be cjanged, so lets
+				// in continue remote address MAY change be changed, so lets
 				// update!
 				this.setRemoteAddress(remoteAddress);
 				this.setRemoteTransactionId(msg.getOriginatingTransactionId());
@@ -1806,7 +1806,7 @@ public class DialogImpl implements Dialog {
 			freeInvokeId(tcInvokeRequestImpl.getInvokeId());
 			this.operationsSent[index] = null;
 			// lets call listener
-			// This is done actually with COmponentIndication ....
+			// This is done actually with ComponentIndication ....
 		} finally {
 			this.dialogLock.unlock();
 		}

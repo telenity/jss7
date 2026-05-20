@@ -76,7 +76,7 @@ public interface Mtp3UserPart {
 	public int getMaxUserDataLength(int dpc);
 
 	/**
-	 * If message delivering failed: MTP-PAUSE or MTR-STATUS indication will be
+	 * If message delivering failed: MTP-PAUSE or MTP-STATUS indication will be
 	 * sent
 	 * 
 	 * @param msg
@@ -85,7 +85,7 @@ public interface Mtp3UserPart {
 	public void sendMessage(Mtp3TransferPrimitive msg) throws IOException;
 
 	/**
-	 * If set to true, lowest bit of SLS is used for loadbalancing between
+	 * If set to true, lowest bit of SLS is used for load balancing between
 	 * Linkset else highest bit of SLS is used.
 	 * 
 	 * @param useLsbForLinksetSelection
@@ -93,7 +93,7 @@ public interface Mtp3UserPart {
 	public void setUseLsbForLinksetSelection(boolean useLsbForLinksetSelection);
 
 	/**
-	 * Returns true if lowest bit of SLS is used for loadbalancing between
+	 * Returns true if lowest bit of SLS is used for load balancing between
 	 * Linkset else returns false
 	 * 
 	 * @return

@@ -100,9 +100,9 @@ public abstract class SccpSegmentableMessageImpl extends SccpAddressedMessageImp
 		}
 	}
 
-	public void setReceivedNextSegment(SccpSegmentableMessageImpl nextSegement) {
+	public void setReceivedNextSegment(SccpSegmentableMessageImpl nextSegment) {
 		try {
-			this.buffer.write(nextSegement.data);
+			this.buffer.write(nextSegment.data);
 		} catch (IOException e) {
 			// this can not occur
 			e.printStackTrace();

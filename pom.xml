@@ -22,65 +22,37 @@
         <javolution.version>5.5.1</javolution.version>
         <netty.version>4.0.56.Final</netty.version>
         <junit.version>4.13.2</junit.version>
-        <!-- mobicents but not strictly ss7 -->
-        <asn.version>2.0.2.FINAL</asn.version>
-        <sctp.version>1.7.2.5</sctp.version>
     </properties>
 
     <modules>
         <module>management</module>
+        <module>sctp</module>
         <module>mtp</module>
         <module>m3ua</module>
         <module>sccp</module>
+        <module>asn</module>
         <module>tcap</module>
     </modules>
 
     <!-- declare our babies -->
     <dependencyManagement>
         <dependencies>
-            <!-- ASN -->
-            <dependency>
-                <groupId>org.mobicents.protocols.asn</groupId>
-                <artifactId>asn</artifactId>
-                <version>${asn.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
             <!-- SCTP -->
             <dependency>
-                <groupId>org.mobicents.protocols.sctp</groupId>
                 <artifactId>sctp-api</artifactId>
-                <version>${sctp.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-all</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
                 <groupId>org.mobicents.protocols.sctp</groupId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <artifactId>sctp-impl</artifactId>
-                <version>${sctp.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>io.netty</groupId>
-                        <artifactId>netty-all</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>org.mobicents.protocols.sctp</groupId>
+                <version>${project.version}</version>
+            </dependency>
+            <!-- ASN -->
+            <dependency>
+                <artifactId>asn</artifactId>
+                <groupId>org.mobicents.protocols.asn</groupId>
+                <version>${project.version}</version>
             </dependency>
             <!-- Management Shell -->
             <dependency>
@@ -132,7 +104,6 @@
                 <groupId>org.mobicents.protocols.ss7.tcap</groupId>
                 <version>${project.version}</version>
             </dependency>
-
             <!-- 3rd PARTY -->
             <dependency>
                 <groupId>ch.qos.reload4j</groupId>
@@ -152,7 +123,27 @@
             </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
-                <artifactId>netty-all</artifactId>
+                <artifactId>netty-common</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-buffer</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-transport-sctp</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-handler</artifactId>
                 <version>${netty.version}</version>
             </dependency>
         </dependencies>
@@ -267,20 +258,6 @@
     </distributionManagement>
 
     <repositories>
-        <repository>
-            <id>jboss-public-repository-group</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-            <layout>default</layout>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
         <repository>
             <id>telenity-third-party</id>
             <layout>default</layout>

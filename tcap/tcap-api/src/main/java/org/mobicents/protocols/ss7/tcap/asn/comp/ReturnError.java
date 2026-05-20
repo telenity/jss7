@@ -52,7 +52,7 @@ public interface ReturnError extends Component {
 	public void setErrorCode(ErrorCode ec);
 	public ErrorCode getErrorCode();
 	
-	//paramter, optional
+	//parameter, optional
 	public void setParameter(Parameter p);
 	public Parameter getParameter();
 }

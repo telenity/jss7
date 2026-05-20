@@ -110,7 +110,6 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	protected MessageFactory messageFactory = new MessageFactoryImpl();
 
 	protected Management transportManagement = null;
-	protected boolean sctpLibNettySupport = false;
 
 	private ScheduledExecutorService fsmTicker;
 
@@ -198,12 +197,10 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	public void setTransportManagement(Management transportManagement) {
 		this.transportManagement = transportManagement;
-		if (transportManagement != null && transportManagement.getClass().getSimpleName().contains("Netty"))
-			sctpLibNettySupport = true;
 	}
 
 	public boolean isSctpLibNettySupport() {
-		return sctpLibNettySupport;
+		return true;
 	}
 
 	public void start() throws Exception {

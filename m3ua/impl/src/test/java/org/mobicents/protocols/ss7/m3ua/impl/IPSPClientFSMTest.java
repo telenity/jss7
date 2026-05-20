@@ -154,7 +154,7 @@ public class IPSPClientFSMTest {
         TestAssociation testAssociation = (TestAssociation) this.transportManagement.getAssociation("testAssoc1");
         testAssociation.signalCommUp();
 
-        // Once comunication is UP, ASP_UP should have been sent.
+        // Once communication is UP, ASP_UP should have been sent.
         FSM aspLocalFSM = aspImpl.getLocalFSM();
         assertEquals(AspState.UP_SENT, this.getAspState(aspLocalFSM));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP, -1, -1));

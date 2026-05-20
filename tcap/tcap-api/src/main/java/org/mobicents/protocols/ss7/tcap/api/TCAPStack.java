@@ -107,12 +107,12 @@ public interface TCAPStack {
 	/**
 	* previewMode is needed for special processing mode
 	* When PreviewMode in TCAP level we have:
-	* - we only listen incoming messages and sends nothing. send(),
-	*   close(), sendComponent() and other such methods do nothing.
-	* - A TCAP Dialog is temporary. TCAP Dialog is discarded after any
-	*   icoming message like TC-BEGIN or TC-CONTINUE has been processed
-	* - for any incoming messages (including TC-CONTINUE, TC-END, TC-ABORT)
-	*   a new TCAP Dialog is created (end then deleted).
+ * - we only listen incoming messages and sends nothing. send(),
+	 *   close(), sendComponent() and other such methods do nothing.
+	 * - A TCAP Dialog is temporary. TCAP Dialog is discarded after any
+	 *   incoming message like TC-BEGIN or TC-CONTINUE has been processed
+	 * - for any incoming messages (including TC-CONTINUE, TC-END, TC-ABORT)
+	 *   a new TCAP Dialog is created (and then deleted).
 	* - no timers and timeouts
 	* 
 	* default state: no previewMode

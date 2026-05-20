@@ -266,7 +266,7 @@ public class RuleImpl implements Rule, Serializable {
 			gt = GlobalTitle.getInstance(((GT0010) primaryGt).getTranslationType(), translatedDigits);
 			break;
 		case NO_GLOBAL_TITLE_INCLUDED:
-			// Use Global Title from received aadress
+			// Use Global Title from received address
 			break;
 		}
 		return gt;

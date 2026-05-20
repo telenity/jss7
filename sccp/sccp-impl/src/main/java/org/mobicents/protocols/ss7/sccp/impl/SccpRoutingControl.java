@@ -210,7 +210,7 @@ public class SccpRoutingControl {
 			return erd.getReturnCause();
 
 		default:
-			String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(), message);
+			String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult(), message);
 			if (logger.isEnabledFor(Level.WARN)) {
 				logger.warn(em);
 			}
@@ -263,7 +263,7 @@ public class SccpRoutingControl {
 				return erd.getReturnCause();
 
 			default:
-				String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult().toString(),
+				String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult(),
                         message);
 				if (logger.isEnabledFor(Level.WARN)) {
 					logger.warn(em);

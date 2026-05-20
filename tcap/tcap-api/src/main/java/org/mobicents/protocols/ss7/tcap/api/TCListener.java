@@ -75,7 +75,7 @@ public interface TCListener {
 	public void onTCUserAbort(TCUserAbortIndication ind);
 
 	/**
-	 * Invoked TC-P-Abort (when dialog has been terminated by some unpredicatable
+	 * Invoked TC-P-Abort (when dialog has been terminated by some unpredictable
 	 * environment cause). See Q.771 3.1.4.2
 	 * 
 	 * @param ind
@@ -111,7 +111,7 @@ public interface TCListener {
 	public void onInvokeTimeout(Invoke tcInvokeRequest);
 
 	/**
-	 * Called once dialog times out. Once this method is called, dialog cant be used anymore.
+	 * Called once dialog times out. Once this method is called, dialog can't be used anymore.
 	 * @param d
 	 */
 	public void onDialogTimeout(Dialog d);

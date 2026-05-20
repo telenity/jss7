@@ -98,8 +98,8 @@ public class SccpStackImplProxy extends SccpStackImpl {
 		this.state = State.RUNNING;
 	}
 
-	public int getReassemplyCacheSize() {
-		return reassemplyCache.size();
+	public int getReassemblyCacheSize() {
+		return reassemblyCache.size();
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import static org.junit.Assert.*;
 
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
-import org.mobicents.protocols.sctp.ManagementImpl;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.IPSPType;

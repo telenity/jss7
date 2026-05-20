@@ -135,25 +135,25 @@ public class SccpManagementProxy extends SccpManagement {
 		super.handleMtp3Status(cause, affectedPc, congStatus);
 
 		int status = 0;
-		int unavailabiltyCause = 0;
+		int unavailabilityCause = 0;
 		switch(cause){
 		case SignallingNetworkCongested:
 			status = 2;
 			break;
 		case UserPartUnavailability_Unknown:
-			unavailabiltyCause = 0;
+			unavailabilityCause = 0;
 			status = 1;
 			break;
 		case UserPartUnavailability_UnequippedRemoteUser:
-			unavailabiltyCause = 1;
+			unavailabilityCause = 1;
 			status = 1;
 			break;
 		case UserPartUnavailability_InaccessibleRemoteUser:
-			unavailabiltyCause = 2;
+			unavailabilityCause = 2;
 			status = 1;
 			break;
 		}
-		Mtp3PrimitiveMessage prim = new Mtp3PrimitiveMessage(seq++,MTP3_STATUS,affectedPc,status,congStatus,unavailabiltyCause);
+		Mtp3PrimitiveMessage prim = new Mtp3PrimitiveMessage(seq++,MTP3_STATUS,affectedPc,status,congStatus,unavailabilityCause);
 		mtp3Messages.add(prim);
 	}
 }

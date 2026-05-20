@@ -89,7 +89,7 @@ public class ReturnResultLastImpl implements ReturnResultLast {
 	 */
 	public void setInvokeId(Integer i) {
 		if ((i == null) || (i < -128 || i > 127)) {
-			throw new IllegalArgumentException("Invoke ID our of range: <-128,127>: " + i);
+			throw new IllegalArgumentException("Invoke ID out of range: <-128,127>: " + i);
 		}
 		this.invokeId = i;
 

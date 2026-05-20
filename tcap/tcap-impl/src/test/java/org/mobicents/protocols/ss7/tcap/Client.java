@@ -95,7 +95,7 @@ public class Client extends EventTestHarness{
 		((DialogImpl) this.dialog).setRemoteAddress(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt, 8));
 		tcbr.setReturnMessageOnError(returnMessageOnError);
 		
-		this.observerdEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
+		this.observedEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
 		this.dialog.send(tcbr);
 	}
 
@@ -157,7 +157,7 @@ public class Client extends EventTestHarness{
 			this.dialog.sendComponent(invoke);
 		}
 
-//		this.observerdEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
+//		this.observedEvents.add(TestEvent.createSentEvent(EventType.Begin, tcbr, sequence++));
 //		this.dialog.send(tcbr);
 		
 		this.sendBegin();

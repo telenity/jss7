@@ -22,7 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
@@ -105,7 +104,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	protected FastList<Asp> aspList = new FastList<Asp>();
 
-	private ByteBuffer txBuffer = ByteBuffer.allocateDirect(8192);
+
 
 	// data buffer for incoming TCP data
 	private CompositeByteBuf tcpIncBuffer;
@@ -144,11 +143,6 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	private boolean isHeartBeatEnabled = false;
 
 	public AspFactoryImpl() {
-		// clean transmission buffer
-		txBuffer.clear();
-		txBuffer.rewind();
-		txBuffer.flip();
-
 		this.heartBeatTimer = new HeartBeatTimer(this);
 	}
 
@@ -474,60 +468,32 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 			((M3UAMessageImpl) message).encode(byteBuf);
 
-			org.mobicents.protocols.api.PayloadData payloadData = null;
+			org.mobicents.protocols.api.PayloadData payloadData;
 
 			if (m3UAManagementImpl.getStatisticsEnabled()) {
 				updateTxStatistic(message);
 			}
 
-			if (this.m3UAManagementImpl.isSctpLibNettySupport()) {
-				switch (message.getMessageClass()) {
-					case MessageClass.ASP_STATE_MAINTENANCE:
-					case MessageClass.MANAGEMENT:
-					case MessageClass.ROUTING_KEY_MANAGEMENT:
-						payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), byteBuf, true, true,
-								SCTP_PAYLOAD_PROT_ID_M3UA, 0);
-						break;
-					case MessageClass.TRANSFER_MESSAGES:
-						PayloadData payload = (PayloadData) message;
-						int seqControl = payload.getData().getSLS();
-						payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), byteBuf, true,
-								false, SCTP_PAYLOAD_PROT_ID_M3UA, this.slsTable[seqControl]);
-						break;
-					default:
-						payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), byteBuf, true, true,
-								SCTP_PAYLOAD_PROT_ID_M3UA, 0);
-						break;
-				}
-
-				this.association.send(payloadData);
-			} else {
-				int encodedLength = byteBuf.readableBytes();
-				byte[] bf = new byte[encodedLength];
-				byteBuf.readBytes(bf);
-				synchronized (txBuffer) {
-					switch (message.getMessageClass()) {
-						case MessageClass.ASP_STATE_MAINTENANCE:
-						case MessageClass.MANAGEMENT:
-						case MessageClass.ROUTING_KEY_MANAGEMENT:
-							payloadData = new org.mobicents.protocols.api.PayloadData(encodedLength, bf, true, true,
-									SCTP_PAYLOAD_PROT_ID_M3UA, 0);
-							break;
-						case MessageClass.TRANSFER_MESSAGES:
-							PayloadData payload = (PayloadData) message;
-							int seqControl = payload.getData().getSLS();
-							payloadData = new org.mobicents.protocols.api.PayloadData(encodedLength, bf, true, false,
-									SCTP_PAYLOAD_PROT_ID_M3UA, this.slsTable[seqControl]);
-							break;
-						default:
-							payloadData = new org.mobicents.protocols.api.PayloadData(encodedLength, bf, true, true,
-									SCTP_PAYLOAD_PROT_ID_M3UA, 0);
-							break;
-					}
-
-					this.association.send(payloadData);
-				}
+			switch (message.getMessageClass()) {
+				case MessageClass.ASP_STATE_MAINTENANCE:
+				case MessageClass.MANAGEMENT:
+				case MessageClass.ROUTING_KEY_MANAGEMENT:
+					payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), byteBuf, true, true,
+							SCTP_PAYLOAD_PROT_ID_M3UA, 0);
+					break;
+				case MessageClass.TRANSFER_MESSAGES:
+					PayloadData payload = (PayloadData) message;
+					int seqControl = payload.getData().getSLS();
+					payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), byteBuf, true,
+							false, SCTP_PAYLOAD_PROT_ID_M3UA, this.slsTable[seqControl]);
+					break;
+				default:
+					payloadData = new org.mobicents.protocols.api.PayloadData(byteBuf.readableBytes(), byteBuf, true, true,
+							SCTP_PAYLOAD_PROT_ID_M3UA, 0);
+					break;
 			}
+
+			this.association.send(payloadData);
 		} catch (Throwable e) {
 			logger.error(String.format("Error while trying to send PayloadData to SCTP layer. M3UAMessage=%s", message), e);
 		}
@@ -776,14 +742,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	@Override
 	public void onPayload(Association association, org.mobicents.protocols.api.PayloadData payloadData) {
 		try {
-			if (this.m3UAManagementImpl.sctpLibNettySupport) {
-				ByteBuf byteBuf = payloadData.getByteBuf();
-				processPayload(association.getIpChannelType(), byteBuf);
-			} else {
-				byte[] m3uadata = payloadData.getData();
-				ByteBuf byteBuf = Unpooled.wrappedBuffer(m3uadata);
-				processPayload(association.getIpChannelType(), byteBuf);
-			}
+			ByteBuf byteBuf = payloadData.getByteBuf();
+			processPayload(association.getIpChannelType(), byteBuf);
 		} catch (Throwable e) {
 			logger.error(
 					String.format("Error while trying to process PayloadData from SCTP layer. payloadData=%s", payloadData), e);
@@ -807,8 +767,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 			if (tcpIncBuffer == null) {
 				tcpIncBuffer = byteBuf.alloc().compositeBuffer();
 			}
-			tcpIncBuffer.addComponent(byteBuf);
-			tcpIncBuffer.writerIndex(tcpIncBuffer.capacity());
+			tcpIncBuffer.addComponent(true, byteBuf);
 
 			while (true) {
 				m3UAMessage = this.messageFactory.createMessage(tcpIncBuffer);

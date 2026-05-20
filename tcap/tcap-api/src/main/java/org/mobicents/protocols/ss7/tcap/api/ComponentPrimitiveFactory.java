@@ -50,7 +50,7 @@ public interface ComponentPrimitiveFactory {
 
 	/**
 	 * <p>
-	 * Create a new {@link Invoke}. Set the {@link InvokeClass} as per bellow
+	 * Create a new {@link Invoke}. Set the {@link InvokeClass} as per below
 	 * consideration
 	 * </p>
 	 * <ul>

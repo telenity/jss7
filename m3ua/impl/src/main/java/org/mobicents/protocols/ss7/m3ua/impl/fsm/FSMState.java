@@ -123,12 +123,12 @@ public class FSMState {
 	 * @param name
 	 *            the name of the transition.
 	 */
-	public FSMState signal(String namem) throws UnknownTransitionException {
-		Transition t = find(namem);
+	public FSMState signal(String name) throws UnknownTransitionException {
+		Transition t = find(name);
 		if (t != null) {
 			return t.process(this);
 		}
-		throw new UnknownTransitionException(String.format("Transition=%s. %s", namem, this.fsm.toString()));
+		throw new UnknownTransitionException(String.format("Transition=%s. %s", name, this.fsm.toString()));
 	}
 
 	/**
