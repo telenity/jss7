@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -22,10 +22,11 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.fsm;
 
-import javolution.util.FastMap;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.impl.scheduler.M3UATask;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author amit bhayani
@@ -43,11 +44,11 @@ public class FSM extends M3UATask {
     protected FSMState end;
 
     // intermediate states
-    private FastMap<String, FSMState> states = new FastMap<String, FSMState>();
+    private Map<String, FSMState> states = new ConcurrentHashMap<>();
 
-    protected FSMState currentState;
+    private FSMState currentState;
 
-    private FastMap attributes = new FastMap();
+    private Map<String, Object> attributes = new ConcurrentHashMap<>();
 
     private FSMState oldState;
 
@@ -89,64 +90,47 @@ public class FSM extends M3UATask {
     public void removeAttribute(String name) {
         attributes.remove(name);
     }
-    
+
+    private FSMState requireState(String name) {
+        if (!states.containsKey(name)) {
+            throw new IllegalStateException("Unknown state: " + name);
+        }
+        return states.get(name);
+    }
+
     public Transition createTransition(String name, String from, String to) {
         if (name.equals("timeout")) {
             throw new IllegalArgumentException("timeout is illegal name for transition");
         }
-
-        if (!states.containsKey(from)) {
-            throw new IllegalStateException("Unknown state: " + from);
-        }
-
-        if (!states.containsKey(to)) {
-            throw new IllegalStateException("Unknown state: " + to);
-        }
-
-        Transition t = new Transition(name, states.get(to));
-        states.get(from).add(t);
-
+        FSMState fromState = requireState(from);
+        FSMState toState = requireState(to);
+        Transition t = new Transition(name, toState);
+        fromState.add(t);
         return t;
     }
 
     public Transition createTimeoutTransition(String from, String to, long timeout) {
-        if (!states.containsKey(from)) {
-            throw new IllegalStateException("Unknown state: " + from);
-        }
-
-        if (!states.containsKey(to)) {
-            throw new IllegalStateException("Unknown state: " + to);
-        }
-
-        Transition t = new Transition("timeout", states.get(to));
-        states.get(from).timeout = timeout;
-        states.get(from).add(t);
-
+        FSMState fromState = requireState(from);
+        FSMState toState = requireState(to);
+        Transition t = new Transition("timeout", toState);
+        fromState.timeout = timeout;
+        fromState.add(t);
         return t;
     }
 
     /**
      * Processes transition.
-     * 
-     * @param name
-     *            the name of transition.
+     *
+     * @param name the name of transition.
      */
     public void signal(String name) throws UnknownTransitionException {
 
-        // check that start state defined
         if (start == null) {
-            throw new IllegalStateException("The start sate is not defined");
+            throw new IllegalStateException("The start state is not defined");
         }
-
-        // check that end state defined
         if (end == null) {
-            throw new IllegalStateException("The end sate is not defined");
+            throw new IllegalStateException("The end state is not defined");
         }
-
-        // ignore any signals if fsm reaches end state
-        // if (state == end) {
-        // return;
-        // }
 
         oldState = currentState;
         // switch to next state
@@ -157,7 +141,6 @@ public class FSM extends M3UATask {
     }
 
     public void tick(long now) {
-        // if (state != null && state != start && state != end) {
         if (currentState != null) {
             currentState.tick(now);
         }
@@ -165,8 +148,8 @@ public class FSM extends M3UATask {
 
     @Override
     public String toString() {
-        return String.format("FSM.name=%s old state=%s, current state=%s", this.name, (this.oldState!=null)?this.oldState.getName():"",
-                (this.currentState!=null)?this.currentState.getName():"");
+        return String.format("FSM.name=%s old state=%s, current state=%s", this.name, (this.oldState != null) ? this.oldState.getName() : "",
+                (this.currentState != null) ? this.currentState.getName() : "");
     }
 
 }

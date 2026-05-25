@@ -22,19 +22,20 @@
 package org.mobicents.protocols.ss7.m3ua.impl;
 
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javolution.util.FastList;
-import javolution.util.FastSet;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.As;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.IPSPType;
+import org.mobicents.protocols.ss7.m3ua.RouteKey;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.mobicents.protocols.ss7.m3ua.impl.oam.M3UAOAMMessages;
 import org.mobicents.protocols.ss7.m3ua.parameter.TrafficModeType;
-import org.mobicents.protocols.ss7.mtp.RoutingLabelFormat;
 
 /**
  * <p>
@@ -68,7 +69,6 @@ public class M3UARouteManagement {
 
     private static final Logger logger = Logger.getLogger(M3UARouteManagement.class);
 
-    private static final String KEY_SEPARATOR = ":";
     private static final int WILDCARD = -1;
 
     private M3UAManagementImpl m3uaManagement = null;
@@ -79,13 +79,13 @@ public class M3UARouteManagement {
     /**
      * persists key vs corresponding As that servers for this key
      */
-    protected RouteMap<String, As[]> route = new RouteMap<String, As[]>();
+    protected RouteMap<RouteKey, As[]> route = new RouteMap<>();
 
     /**
      * Persists DPC vs As's serving this DPC. Used for notifying M3UA-user of
      * MTP3 primitive PAUSE, RESUME.
      */
-    private FastSet<RouteRow> routeTable = new FastSet<RouteRow>();
+    private Map<Integer, RouteRow> routeTable = new ConcurrentHashMap<>();
 
     // Stores the Set of AS that can route traffic (irrespective of OPC or NI)
     // for given DPC
@@ -158,17 +158,15 @@ public class M3UARouteManagement {
      * from xml file.
      */
     protected void reset() {
-        for (RouteMap.Entry<String, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end;) {
-            String key = e.getKey();
+        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end;) {
+            RouteKey key = e.getKey();
             As[] asList = e.getValue();
 
             try {
-                String[] keys = key.split(KEY_SEPARATOR);
-                int dpc = Integer.parseInt(keys[0]);
                 for (int i = 0; i < asList.length; i++) {
                     AsImpl asImpl = (AsImpl)asList[i];
                     if (asImpl != null) {
-                        this.addAsToDPC(dpc, asImpl);
+                        this.addAsToDPC(key.getDpc(), asImpl);
                     }
                 }
             } catch (Exception ex) {
@@ -190,21 +188,9 @@ public class M3UARouteManagement {
      * {@link AsImpl} already added
      */
     protected void addRoute(int dpc, int opc, int si, String asName) throws Exception {
-        AsImpl asImpl = null;
-        for (FastList.Node<As> n = this.m3uaManagement.appServers.head(), end = this.m3uaManagement.appServers.tail(); (n = n
-                .getNext()) != end;) {
-			if (n.getValue().getName().compareTo(asName) == 0) {
-                asImpl = (AsImpl) n.getValue();
-                break;
-            }
-        }
+        AsImpl asImpl = this.findAsOrThrow(asName);
 
-        if (asImpl == null) {
-            throw new Exception(String.format(M3UAOAMMessages.NO_AS_FOUND, asName));
-        }
-
-        // Use simple string concatenation for key
-        String key = dpc + KEY_SEPARATOR + opc + KEY_SEPARATOR + si;
+        RouteKey key = new RouteKey(dpc, opc, si);
 
         As[] asArray = route.get(key);
 
@@ -248,21 +234,9 @@ public class M3UARouteManagement {
      *
      */
     protected void removeRoute(int dpc, int opc, int si, String asName) throws Exception {
-        AsImpl asImpl = null;
-        for (FastList.Node<As> n = this.m3uaManagement.appServers.head(), end = this.m3uaManagement.appServers.tail(); (n = n
-                .getNext()) != end;) {
-			if (n.getValue().getName().compareTo(asName) == 0) {
-                asImpl = (AsImpl) n.getValue();
-                break;
-            }
-        }
+        AsImpl asImpl = this.findAsOrThrow(asName);
 
-        if (asImpl == null) {
-            throw new Exception(String.format(M3UAOAMMessages.NO_AS_FOUND, asName));
-        }
-
-        // Use simple string concatenation for key
-        String key = dpc + KEY_SEPARATOR + opc + KEY_SEPARATOR + si;
+        RouteKey key = new RouteKey(dpc, opc, si);
 
         As[] asArray = route.get(key);
 
@@ -298,21 +272,31 @@ public class M3UARouteManagement {
      * @return true if the AsImpl is found in any route for the given DPC, false otherwise.
      */
     protected boolean isAsStillUsedForDpc(int dpc, AsImpl asImpl) {
-        String dpcPrefix = dpc + KEY_SEPARATOR; // Prefix to check for routes associated with this DPC
-        for (RouteMap.Entry<String, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end;) {
-            String key = e.getKey();
-            // Check if the route key starts with the DPC prefix
-            if (key.startsWith(dpcPrefix)) {
+        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end;) {
+            RouteKey key = e.getKey();
+            if (key.getDpc() == dpc) {
                 As[] asList = e.getValue();
                 for (int i = 0; i < asList.length; i++) {
                     AsImpl asTemp = (AsImpl) asList[i];
                     if (asTemp != null && asTemp.equals(asImpl)) {
-                        return true; // Found the AS in a route for this DPC
+                        return true;
                     }
                 }
             }
         }
-        return false; // AS not found in any route for this DPC
+        return false;
+    }
+
+    private AsImpl findAsOrThrow(String asName) throws Exception {
+        for (FastList.Node<As> n = this.m3uaManagement.appServers.head(), end = this.m3uaManagement.appServers.tail();
+                (n = n.getNext()) != end;) {
+            As as = n.getValue();
+            if (as.getName().compareTo(asName) == 0) {
+                return (AsImpl) as;
+            }
+        }
+
+        throw new Exception(String.format(M3UAOAMMessages.NO_AS_FOUND, asName));
     }
 
 
@@ -339,18 +323,15 @@ public class M3UARouteManagement {
         As[] asArray = null;
 
         // Check specific route first
-        String key = dpc + KEY_SEPARATOR + opc + KEY_SEPARATOR + si;
-        asArray = route.get(key);
+        asArray = route.get(new RouteKey(dpc, opc, si));
 
         if (asArray == null) {
             // Check SI wildcard
-            key = dpc + KEY_SEPARATOR + opc + KEY_SEPARATOR + WILDCARD;
-            asArray = route.get(key);
+            asArray = route.get(new RouteKey(dpc, opc, WILDCARD));
 
             if (asArray == null) {
                 // Check OPC and SI wildcard
-                key = dpc + KEY_SEPARATOR + WILDCARD + KEY_SEPARATOR + WILDCARD;
-                asArray = route.get(key);
+                asArray = route.get(new RouteKey(dpc, WILDCARD, WILDCARD));
             }
         }
 
@@ -416,22 +397,14 @@ public class M3UARouteManagement {
      * @param asImpl The AsImpl to add.
      */
     private void addAsToDPC(int dpc, AsImpl asImpl) {
-        RouteRow row = null;
-        // Find existing RouteRow for DPC
-        for (FastSet.Record r = routeTable.head(), end = routeTable.tail(); (r = r.getNext()) != end;) {
-            RouteRow value = routeTable.valueOf(r);
-            if (value.getDpc() == dpc) {
-                row = value;
-                break;
-            }
-        }
-
+        RouteRow row = this.routeTable.get(dpc);
         if (row == null) {
             row = new RouteRow(dpc, this.m3uaManagement);
-            this.routeTable.add(row);
+            RouteRow existing = this.routeTable.putIfAbsent(dpc, row);
+            if (existing != null) {
+                row = existing;
+            }
         }
-
-        // Add AS to the RouteRow
         row.addServedByAs(asImpl);
     }
 
@@ -444,23 +417,13 @@ public class M3UARouteManagement {
      * @param asImpl The AsImpl to remove.
      */
     private void removeAsFromDPC(int dpc, AsImpl asImpl) {
-        // Find the RouteRow for DPC
-        RouteRow row = null;
-        for (FastSet.Record r = routeTable.head(), end = routeTable.tail(); (r = r.getNext()) != end;) {
-            RouteRow value = routeTable.valueOf(r);
-            if (value.getDpc() == dpc) {
-                row = value;
-                break;
-            }
-        }
-
+        RouteRow row = this.routeTable.get(dpc);
         if (row == null) {
-            // This should ideally not happen if addAsToDPC is always called before removeRoute
             logger.error(String.format("Removing route As=%s from DPC=%d failed. No RouteRow found!", asImpl.getName(), dpc));
         } else {
             row.removeServedByAs(asImpl);
             if (row.servedByAsSize() == 0) {
-                this.routeTable.remove(row);
+                this.routeTable.remove(dpc, row);
             }
         }
     }

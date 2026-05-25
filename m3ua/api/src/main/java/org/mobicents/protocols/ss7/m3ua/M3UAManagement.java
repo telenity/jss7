@@ -345,10 +345,10 @@ public interface M3UAManagement {
 	public void removeM3UAManagementEventListener(M3UAManagementEventListener m3uaManagementEventListener);
 
 	/**
-	 * Returns the Route table/Map with DPC as key and list of {@link As} array
-	 * as potential As that can route Payload to this DPC
-	 * 
+	 * Returns the Route table/Map with composite key (DPC:OPC:SI) and list of
+	 * {@link As} array as potential As that can route Payload to this DPC
+	 *
 	 * @return
 	 */
-	public Map<String, As[]> getRoute();
+	public Map<RouteKey, As[]> getRoute();
 }

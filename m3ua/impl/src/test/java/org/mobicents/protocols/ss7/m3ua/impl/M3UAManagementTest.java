@@ -43,6 +43,7 @@ import org.mobicents.protocols.api.ServerListener;
 import org.mobicents.protocols.ss7.m3ua.As;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
+import org.mobicents.protocols.ss7.m3ua.RouteKey;
 import org.mobicents.protocols.ss7.m3ua.Util;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.mobicents.protocols.ss7.m3ua.parameter.NetworkAppearance;
@@ -122,11 +123,11 @@ public class M3UAManagementTest {
 
         assertEquals(1, m3uaMgmt1.getAppServers().size());
         assertEquals(1, m3uaMgmt1.getAspfactories().size());
-        Map<String, As[]> route = m3uaMgmt1.getRoute();
+        Map<RouteKey, As[]> route = m3uaMgmt1.getRoute();
         assertEquals(1, route.size());
 
         // Make sure AS is not null
-        As[] asList = route.get("123:1:1");
+        As[] asList = route.get(new RouteKey(123, 1, 1));
         As routeAs = asList[0];
         assertNotNull(routeAs);
 

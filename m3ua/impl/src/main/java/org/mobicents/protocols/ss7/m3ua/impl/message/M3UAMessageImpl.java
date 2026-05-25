@@ -23,12 +23,14 @@
 package org.mobicents.protocols.ss7.m3ua.impl.message;
 
 import io.netty.buffer.ByteBuf;
-import javolution.text.TextBuilder;
-import javolution.util.FastMap;
 
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.mobicents.protocols.ss7.m3ua.message.M3UAMessage;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author amit bhayani
@@ -40,7 +42,7 @@ public abstract class M3UAMessageImpl implements M3UAMessage {
     private int messageType;
 
     private String message;
-    protected FastMap<Short, Parameter> parameters = new FastMap<Short, Parameter>();
+    protected Map<Short, Parameter> parameters = new LinkedHashMap<>();
 
     private final ParameterFactoryImpl factory = new ParameterFactoryImpl();
 
@@ -109,10 +111,11 @@ public abstract class M3UAMessageImpl implements M3UAMessage {
 
     @Override
     public String toString() {
-        TextBuilder tb = new TextBuilder();
+        StringBuilder tb = new StringBuilder();
         tb.append(this.message).append(" Params(");
-        for (FastMap.Entry<Short, Parameter> e = parameters.head(), end = parameters.tail(); (e = e.getNext()) != end; ) {
-            Parameter value = e.getValue();
+        Iterator<Parameter> iterator = parameters.values().iterator();
+        while (iterator.hasNext()) {
+            Parameter value = iterator.next();
             tb.append(value.toString());
             tb.append(", ");
         }

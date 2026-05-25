@@ -25,11 +25,11 @@ package org.mobicents.protocols.ss7.m3ua.impl.oam;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.As;
 import org.mobicents.protocols.ss7.m3ua.AspFactory;
+import org.mobicents.protocols.ss7.m3ua.RouteKey;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.IPSPType;
@@ -230,16 +230,16 @@ public class M3UAShellExecutor implements ShellExecutor {
 	}
 
 	private String showRoutes() {
-		Map<String, As[]> route = this.m3uaManagement.getRoute();
+		Map<RouteKey, As[]> route = this.m3uaManagement.getRoute();
 
 		if (route.size() == 0) {
 			return M3UAOAMMessages.NO_ROUTE_DEFINED_YET;
 		}
 		StringBuffer sb = new StringBuffer();
 
-		Set<String> keys = route.keySet();
-		for (String key : keys) {
-			As[] asList = route.get(key);
+		for (Map.Entry<RouteKey, As[]> entry : route.entrySet()) {
+			RouteKey key = entry.getKey();
+			As[] asList = entry.getValue();
 
 			sb.append(M3UAOAMMessages.NEW_LINE);
 			sb.append(key);

@@ -24,7 +24,7 @@ package org.mobicents.protocols.sctp.netty.multihome;
 
 import static org.mobicents.protocols.sctp.netty.SctpTestSupport.await;
 import static org.junit.Assert.assertTrue;
-import javolution.util.FastList;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.Association;
@@ -87,8 +87,8 @@ public class NettySctpMultiHomeTransferTest {
     private volatile boolean clientAssocDown = false;
     private volatile boolean serverAssocDown = false;
 
-    private FastList<String> clientMessage = null;
-    private FastList<String> serverMessage = null;
+    private ArrayList<String> clientMessage = null;
+    private ArrayList<String> serverMessage = null;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -105,8 +105,8 @@ public class NettySctpMultiHomeTransferTest {
         this.clientAssocDown = false;
         this.serverAssocDown = false;
 
-        this.clientMessage = new FastList<String>();
-        this.serverMessage = new FastList<String>();
+        this.clientMessage = new ArrayList<String>();
+        this.serverMessage = new ArrayList<String>();
 
         this.management = new NettySctpManagementImpl("server-management");
 //        this.management.setSingleThread(true);

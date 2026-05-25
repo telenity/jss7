@@ -318,4 +318,69 @@ public class RuleTest {
 
 		// assertEquals(RULE, rule.toString());
 	}
+
+	@Test
+	public void testMatchWildcardAfterDeserialization() throws Exception {
+		// Pattern with wildcard components to test patternDigitsChars caching after XML roundtrip
+		SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "123/???/7"), 0);
+		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "333/---/4"), 0);
+
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R/K/R");
+		rule.setPrimaryAddressId(1);
+		assertTrue(rule.matches(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "1234567"), 0), false));
+
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
+		writer.setIndentation("\t");
+		writer.write(rule, "Rule", RuleImpl.class);
+		writer.close();
+
+		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+		XMLObjectReader reader = XMLObjectReader.newInstance(input);
+		RuleImpl deserialized = reader.read("Rule", RuleImpl.class);
+		assertNotNull(deserialized);
+
+		// Test wildcard matching after deserialization
+		assertTrue(deserialized.matches(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "1234567"), 0), false));
+		assertFalse(deserialized.matches(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "9999999"), 0), false));
+
+		// Test translation after deserialization with the wildcard rule
+		SccpAddress translated = deserialized.translate(
+				new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "1234567"), 0),
+				primaryAddress);
+		assertNotNull(translated);
+		assertEquals(123, translated.getSignalingPointCode());
+		assertEquals("3334564", translated.getGlobalTitle().getDigits());
+	}
+
+	@Test
+	public void testMatchAfterDeserialization() throws Exception {
+		SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "90555"), 0);
+		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 123, GlobalTitle.getInstance("-"), 8);
+
+		RuleImpl rule = new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R");
+		rule.setPrimaryAddressId(1);
+		assertTrue(rule.matches(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "90555"), 0), false));
+
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
+		writer.setIndentation("\t");
+		writer.write(rule, "Rule", RuleImpl.class);
+		writer.close();
+
+		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+		XMLObjectReader reader = XMLObjectReader.newInstance(input);
+		RuleImpl deserialized = reader.read("Rule", RuleImpl.class);
+		assertNotNull(deserialized);
+
+		assertTrue(deserialized.matches(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "90555"), 0), false));
+		assertFalse(deserialized.matches(new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "99999"), 0), false));
+
+		SccpAddress translated = deserialized.translate(
+				new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "90555"), 0),
+				primaryAddress);
+		assertNotNull(translated);
+		assertEquals(123, translated.getSignalingPointCode());
+		assertEquals(8, translated.getSubsystemNumber());
+	}
 }

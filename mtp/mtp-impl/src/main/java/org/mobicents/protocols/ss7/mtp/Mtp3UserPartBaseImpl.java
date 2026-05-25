@@ -48,7 +48,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 	// TODO: make it configurable
 	protected int deliveryTransferMessageThreadCount = 4;
 
-	protected boolean isStarted = false;
+	protected volatile boolean isStarted = false;
 
 	private CopyOnWriteArrayList<Mtp3UserPartListener> userListeners = new CopyOnWriteArrayList<Mtp3UserPartListener>();
 	// a thread pool for delivering Mtp3TransferMessage messages

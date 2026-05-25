@@ -22,6 +22,7 @@
 
 package org.mobicents.protocols.ss7.sccp.impl;
 
+import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -75,15 +76,14 @@ public class SccpStackImplProxy extends SccpStackImpl {
 
 		this.sccpRoutingControl.start();
 		this.sccpManagement.start();
-		// layer3exec.execute(new MtpStreamHandler());
 
 		this.timerExecutors = Executors.newScheduledThreadPool(1);
 
-		for (FastMap.Entry<Integer, Mtp3UserPart> e = this.mtp3UserParts.head(), end = this.mtp3UserParts.tail(); (e = e.getNext()) != end;) {
-			Mtp3UserPart mup = e.getValue();
+		Iterator<Mtp3UserPart> mtp3Iterator = this.mtp3UserParts.values().iterator();
+		while (mtp3Iterator.hasNext()) {
+			Mtp3UserPart mup = mtp3Iterator.next();
 			mup.addMtp3UserPartListener(this);
 		}
-//		this.mtp3UserPart.addMtp3UserPartListener(this);
 
 		int maxSls = 16;
 		slsFilter = 0x0f;

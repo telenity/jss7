@@ -91,7 +91,7 @@ public abstract class SccpSegmentableMessageImpl extends SccpAddressedMessageImp
 			return;
 
 		this.remainingSegments = this.segmentation.getRemainingSegments();
-		this.buffer = new ByteArrayOutputStream(this.data.length * (this.remainingSegments + 1));
+		this.buffer = new ByteArrayOutputStream(this.data.length);
 		try {
 			this.buffer.write(this.data);
 		} catch (IOException e) {
@@ -127,4 +127,3 @@ public abstract class SccpSegmentableMessageImpl extends SccpAddressedMessageImp
 		this.mrp = mrp;
 	}
 }
-

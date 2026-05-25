@@ -235,6 +235,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             throw new TCAPException("Suggested dialog id is no longer supported");
         }
 
+        DialogImpl di;
         synchronized (dialogsLock) {
             if (this.dialogs.size() >= this.stack.getMaxDialogs()) {
                 throw new TCAPException("Current dialog count exceeds its maximum value");
@@ -246,13 +247,13 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
             id = freeDialogs.removeFirst();
 
-            DialogImpl di = new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this,
+            di = new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this,
                     seqControl, false, protocolClass);
 
             this.dialogs.put(id, di);
-
-            return di;
         }
+        di.startIdleTimer();
+        return di;
 	}
 
 	public int getCurrentDialogsCount() {

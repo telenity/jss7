@@ -22,14 +22,15 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.ReferenceCountUtil;
-import javolution.util.FastList;
 import javolution.xml.XMLFormat;
 import javolution.xml.XMLSerializable;
 import javolution.xml.stream.XMLStreamException;
@@ -102,9 +103,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	protected Association association = null;
 	protected String associationName = null;
 
-	protected FastList<Asp> aspList = new FastList<Asp>();
-
-
+	protected List<Asp> aspList = new CopyOnWriteArrayList<>();
 
 	// data buffer for incoming TCP data
 	private CompositeByteBuf tcpIncBuffer;
@@ -203,8 +202,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 				ASPDown aspDown = (ASPDown) this.messageFactory.createMessage(MessageClass.ASP_STATE_MAINTENANCE,
 						MessageType.ASP_DOWN);
 				this.write(aspDown);
-				for (FastList.Node<Asp> n = aspList.head(), end = aspList.tail(); (n = n.getNext()) != end;) {
-					AspImpl aspImpl = (AspImpl) n.getValue();
+				for (Asp asp : aspList) {
+					AspImpl aspImpl = (AspImpl) asp;
 
 					try {
 						FSM aspLocalFSM = aspImpl.getLocalFSM();
@@ -225,8 +224,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 				aspFactoryStopTimer = new AspFactoryStopTimer(this);
 				this.m3UAManagementImpl.m3uaScheduler.execute(aspFactoryStopTimer);
 			} else {
-				for (FastList.Node<Asp> n = aspList.head(), end = aspList.tail(); (n = n.getNext()) != end;) {
-					AspImpl aspImpl = (AspImpl) n.getValue();
+				for (Asp asp : aspList) {
+					AspImpl aspImpl = (AspImpl) asp;
 
 					try {
 						FSM aspLocalFSM = aspImpl.getLocalFSM();
@@ -518,12 +517,12 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	}
 
 	public List<Asp> getAspList() {
-		return this.aspList.unmodifiable();
+		return Collections.unmodifiableList(this.aspList);
 	}
 
 	protected AspImpl getAsp(long rc) {
-		for (FastList.Node<Asp> n = aspList.head(), end = aspList.tail(); (n = n.getNext()) != end;) {
-			Asp aspImpl = n.getValue();
+		for (Asp asp : aspList) {
+			AspImpl aspImpl = (AspImpl) asp;
 			if (aspImpl.getAs().getRoutingContext() != null
 					&& aspImpl.getAs().getRoutingContext().getRoutingContexts()[0] == rc) {
 				return (AspImpl) aspImpl;
@@ -558,8 +557,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 			this.heartBeatTimer.cancel();
 		}
 
-		for (FastList.Node<Asp> n = aspList.head(), end = aspList.tail(); (n = n.getNext()) != end;) {
-			AspImpl aspImpl = (AspImpl) n.getValue();
+		for (Asp asp : aspList) {
+			AspImpl aspImpl = (AspImpl) asp;
 			try {
 				FSM aspLocalFSM = aspImpl.getLocalFSM();
 				if (aspLocalFSM != null) {
@@ -620,8 +619,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 			this.sendAspUp();
 		}
 
-		for (FastList.Node<Asp> n = aspList.head(), end = aspList.tail(); (n = n.getNext()) != end;) {
-			AspImpl aspImpl = (AspImpl) n.getValue();
+		for (Asp asp : aspList) {
+			AspImpl aspImpl = (AspImpl) asp;
 			try {
 				FSM aspLocalFSM = aspImpl.getLocalFSM();
 				if (aspLocalFSM != null) {
@@ -806,8 +805,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 		sb.append(M3UAOAMMessages.NEW_LINE);
 		sb.append(M3UAOAMMessages.SHOW_ASSIGNED_TO);
 
-		for (FastList.Node<Asp> n = aspList.head(), end = aspList.tail(); (n = n.getNext()) != end;) {
-			AspImpl aspImpl = (AspImpl) n.getValue();
+		for (Asp asp : aspList) {
+			AspImpl aspImpl = (AspImpl) asp;
 			sb.append(M3UAOAMMessages.TAB).append(M3UAOAMMessages.SHOW_AS_NAME).append(aspImpl.getAs().getName())
 					.append(M3UAOAMMessages.SHOW_FUNCTIONALITY).append(this.functionality)
 					.append(M3UAOAMMessages.SHOW_MODE).append(this.exchangeType);

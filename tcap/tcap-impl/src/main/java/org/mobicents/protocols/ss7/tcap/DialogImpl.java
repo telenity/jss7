@@ -204,8 +204,6 @@ public class DialogImpl implements Dialog {
 		TCAPStack stack = this.provider.getStack();
 		this.idleTaskTimeout = stack.getDialogIdleTimeout();
 
-		// start
-		startIdleTimer();
 	}
 
 	public void release() {
@@ -1729,20 +1727,17 @@ public class DialogImpl implements Dialog {
 
 	}
 
-	private void startIdleTimer() {
+	void startIdleTimer() {
 		if (!this.structured)
 			return;
 
-		try {
 		this.dialogLock.lock();
+		try {
 			if (this.idleTimerFuture != null) {
 				throw new IllegalStateException();
 			}
 
-			IdleTimerTask t = new IdleTimerTask();
-			t.d = this;
-			this.idleTimerFuture = this.executor.schedule(t, this.idleTaskTimeout, TimeUnit.MILLISECONDS);
-
+			this.scheduleIdleTimer();
 		} finally {
 			this.dialogLock.unlock();
 		}
@@ -1752,21 +1747,37 @@ public class DialogImpl implements Dialog {
 		if (!this.structured)
 			return;
 
-		try {
 		this.dialogLock.lock();
+		try {
 			if (this.idleTimerFuture != null) {
 				this.idleTimerFuture.cancel(false);
 				this.idleTimerFuture = null;
 			}
-
 		} finally {
 			this.dialogLock.unlock();
 		}
 	}
 
 	private void restartIdleTimer() {
-		stopIdleTimer();
-		startIdleTimer();
+		if (!this.structured)
+			return;
+
+		this.dialogLock.lock();
+		try {
+			if (this.idleTimerFuture != null) {
+				this.idleTimerFuture.cancel(false);
+				this.idleTimerFuture = null;
+			}
+			this.scheduleIdleTimer();
+		} finally {
+			this.dialogLock.unlock();
+		}
+	}
+
+	private void scheduleIdleTimer() {
+		IdleTimerTask t = new IdleTimerTask();
+		t.d = this;
+		this.idleTimerFuture = this.executor.schedule(t, this.idleTaskTimeout, TimeUnit.MILLISECONDS);
 	}
 
 	private class IdleTimerTask implements Runnable {

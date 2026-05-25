@@ -22,7 +22,7 @@
 package org.mobicents.protocols.ss7.m3ua.impl;
 
 import javolution.util.FastList;
-import javolution.util.FastSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
@@ -109,9 +109,8 @@ public class THLocalAsInactToAct implements TransitionHandler {
 			
 			//We want to pass MTP3 RESUME only for SE. If its DE the peer transition handler will take care of MTP3 RESUME
 			if(asImpl.getExchangeType() == ExchangeType.SE){
-				FastSet<AsStateListener> asStateListeners = this.asImpl.getAsStateListeners();
-				for (FastSet.Record r = asStateListeners.head(), end = asStateListeners.tail(); (r = r.getNext()) != end;) {
-					AsStateListener asAsStateListener = asStateListeners.valueOf(r);
+				Set<AsStateListener> asStateListeners = this.asImpl.getAsStateListeners();
+				for (AsStateListener asAsStateListener : asStateListeners) {
 					try {
 						asAsStateListener.onAsActive(this.asImpl);
 					} catch (Exception e) {

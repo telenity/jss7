@@ -29,6 +29,7 @@ import javolution.xml.XMLFormat;
 import javolution.xml.stream.XMLStreamException;
 
 import org.mobicents.protocols.ss7.m3ua.As;
+import org.mobicents.protocols.ss7.m3ua.RouteKey;
 
 /**
  * 
@@ -58,13 +59,14 @@ public class M3UAXMLBinding extends XMLBinding {
 			final Map map = (Map) obj;
 			for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
 				Map.Entry entry = (Map.Entry) it.next();
+				RouteKey routeKey = (RouteKey) entry.getKey();
 				AsImpl[] asList = (AsImpl[]) entry.getValue();
 
 				if (asList == null) {
 					continue;
 				}
 
-				xml.add((String) entry.getKey(), "key", String.class);
+				xml.add(routeKey.toString(), "key", String.class);
 
 				StringBuffer sb = new StringBuffer();
 				for (int count = 0; count < asList.length; count++) {
@@ -88,9 +90,11 @@ public class M3UAXMLBinding extends XMLBinding {
 		@Override
 		public void read(javolution.xml.XMLFormat.InputElement xml, RouteMap obj) throws XMLStreamException {
 			while (xml.hasNext()) {
-				String key = xml.get("key", String.class);
+				String keyStr = xml.get("key", String.class);
 				String value = xml.get("value", String.class);
 				AsImpl[] asList = new AsImpl[m3uaManagement.getMaxAsForRoute()];
+
+				RouteKey routeKey = RouteKey.parse(keyStr);
 
 				if (value != null && !value.equals("")) {
 					String[] asNames = value.split(",");
@@ -105,7 +109,7 @@ public class M3UAXMLBinding extends XMLBinding {
 					}
 				}// if (value != null && !value.equals(""))
 
-				obj.put(key, asList);
+				obj.put(routeKey, asList);
 			}// while
 		}
 

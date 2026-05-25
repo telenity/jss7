@@ -140,6 +140,9 @@ public class ProtocolDataImpl extends ParameterImpl implements ProtocolData {
 
 	@Override
 	protected byte[] getValue() {
+		if (value == null) {
+			value = encode();
+		}
 		return value;
 	}
 

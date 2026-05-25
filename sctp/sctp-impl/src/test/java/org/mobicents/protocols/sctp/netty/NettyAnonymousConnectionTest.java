@@ -28,9 +28,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-
-import javolution.util.FastList;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.Association;
@@ -85,7 +84,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
     private AssociationData assDataClt1; 
     private AssociationData assDataClt2; 
     private AssociationData assDataClt3; 
-    private FastList<AssociationData> assDataSrv = new FastList<AssociationData>(); 
+    private ArrayList<AssociationData> assDataSrv = new ArrayList<AssociationData>(); 
 
     @BeforeClass
     public static void setUpClass() throws Exception {

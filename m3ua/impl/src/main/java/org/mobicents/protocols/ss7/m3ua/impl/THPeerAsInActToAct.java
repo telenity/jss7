@@ -21,7 +21,7 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
@@ -47,9 +47,8 @@ public class THPeerAsInActToAct implements TransitionHandler {
 
 	@Override
 	public boolean process(FSMState state) {
-		FastSet<AsStateListener> asStateListeners = this.asImpl.getAsStateListeners();
-		for (FastSet.Record r = asStateListeners.head(), end = asStateListeners.tail(); (r = r.getNext()) != end;) {
-			AsStateListener asAsStateListener = asStateListeners.valueOf(r);
+		Set<AsStateListener> asStateListeners = this.asImpl.getAsStateListeners();
+		for (AsStateListener asAsStateListener : asStateListeners) {
 			try {
 				asAsStateListener.onAsActive(this.asImpl);
 			} catch (Exception e) {

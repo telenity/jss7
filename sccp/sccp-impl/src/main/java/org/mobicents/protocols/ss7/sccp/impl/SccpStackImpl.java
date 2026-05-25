@@ -25,16 +25,13 @@ package org.mobicents.protocols.ss7.sccp.impl;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
-import javolution.util.FastMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -116,9 +113,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	protected SccpManagement sccpManagement;
 	protected SccpRoutingControl sccpRoutingControl;
 
-	protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<Integer, Mtp3UserPart>();
+	protected Map<Integer, Mtp3UserPart> mtp3UserParts = new ConcurrentHashMap<>();
 	protected ScheduledExecutorService timerExecutors;
-	protected FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemblyCache = new FastMap<MessageReassemblyProcess, SccpSegmentableMessageImpl>();
+	protected Map<MessageReassemblyProcess, SccpSegmentableMessageImpl> reassemblyCache = new HashMap<>();
 
 	// executors for delivering messages SCCP user -> SCCP -> SCCP user (for messages that are not from or to MTP part)
 	protected ExecutorService[] msgDeliveryExecutors;
@@ -166,14 +163,10 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 	public Map<Integer, Mtp3UserPart> getMtp3UserParts() {
 		return mtp3UserParts;
 	}
-	
-	public void setMtp3UserParts(Map<Integer, Mtp3UserPart> mtp3UserPartsTemp){
-		if(mtp3UserPartsTemp!= null){
-			synchronized (this) {
-				FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<Integer, Mtp3UserPart>();
-				newMtp3UserPart.putAll(mtp3UserPartsTemp);
-				this.mtp3UserParts = newMtp3UserPart;
-			}
+
+	public void setMtp3UserParts(Map<Integer, Mtp3UserPart> mtp3UserPartsTemp) {
+		if (mtp3UserPartsTemp != null) {
+			this.mtp3UserParts = new ConcurrentHashMap<Integer, Mtp3UserPart>(mtp3UserPartsTemp);
 		}
 	}
 
@@ -185,22 +178,12 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		if (mtp3UserPart == null) {
 			this.removeMtp3UserPart(id);
 		} else {
-			synchronized (this) {
-				FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<Integer, Mtp3UserPart>();
-				newMtp3UserPart.putAll(this.mtp3UserParts);
-				newMtp3UserPart.put(id, mtp3UserPart);
-				this.mtp3UserParts = newMtp3UserPart;
-			}
+			this.mtp3UserParts.put(id, mtp3UserPart);
 		}
 	}
 
 	public void removeMtp3UserPart(int id) {
-		synchronized (this) {
-			FastMap<Integer, Mtp3UserPart> newMtp3UserPart = new FastMap<Integer, Mtp3UserPart>();
-			newMtp3UserPart.putAll(this.mtp3UserParts);
-			newMtp3UserPart.remove(id);
-			this.mtp3UserParts = newMtp3UserPart;
-		}
+		this.mtp3UserParts.remove(id);
 	}
 
 	public void setRemoveSpc(boolean removeSpc){
@@ -379,8 +362,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 					"SccpTransit-DeliveryExecutor-" + i));
 		}
 
-		for (FastMap.Entry<Integer, Mtp3UserPart> e = this.mtp3UserParts.head(), end = this.mtp3UserParts.tail(); (e = e.getNext()) != end;) {
-			Mtp3UserPart mup = e.getValue();
+		Iterator<Mtp3UserPart> mtp3Iterator = this.mtp3UserParts.values().iterator();
+		while (mtp3Iterator.hasNext()) {
+			Mtp3UserPart mup = mtp3Iterator.next();
 			mup.addMtp3UserPartListener(this);
 		}
 
@@ -409,8 +393,9 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 			this.msgDeliveryExecutors = null;
 		}
 
-		for (FastMap.Entry<Integer, Mtp3UserPart> e = this.mtp3UserParts.head(), end = this.mtp3UserParts.tail(); (e = e.getNext()) != end;) {
-			Mtp3UserPart mup = e.getValue();
+		Iterator<Mtp3UserPart> mtp3Iterator = this.mtp3UserParts.values().iterator();
+		while (mtp3Iterator.hasNext()) {
+			Mtp3UserPart mup = mtp3Iterator.next();
 			mup.removeMtp3UserPartListener(this);
 		}
 
@@ -874,4 +859,3 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		}
 	}
 }
-

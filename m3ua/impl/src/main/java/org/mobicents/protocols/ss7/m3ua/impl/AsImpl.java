@@ -25,10 +25,11 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javolution.util.FastList;
-import javolution.util.FastSet;
 import javolution.xml.XMLFormat;
 import javolution.xml.XMLSerializable;
 import javolution.xml.stream.XMLStreamException;
@@ -76,10 +77,10 @@ public class AsImpl implements XMLSerializable, As {
 	protected int minAspActiveForLb = 1;
 
 	// List of all the ASP's for this AS
-	protected FastList<Asp> appServerProcs = new FastList<Asp>();
+	protected FastList<Asp> appServerProcs = new FastList<>();
 
 	// List of As state listeners
-	private FastSet<AsStateListener> asStateListeners = new FastSet<AsStateListener>();
+	private Set<AsStateListener> asStateListeners = ConcurrentHashMap.newKeySet();
 
 	protected String name;
 	protected RoutingContext rc;
@@ -87,7 +88,7 @@ public class AsImpl implements XMLSerializable, As {
 
 	protected TrafficModeType defaultTrafModType;
 
-	protected ConcurrentLinkedQueue<PayloadData> penQueue = new ConcurrentLinkedQueue<PayloadData>();
+	protected ConcurrentLinkedQueue<PayloadData> penQueue = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * Peer FSM maintains state such that it receives the NTFY from other side
@@ -788,7 +789,7 @@ public class AsImpl implements XMLSerializable, As {
 		this.asStateListeners.remove(listener);
 	}
 
-	public FastSet<AsStateListener> getAsStateListeners() {
+	public Set<AsStateListener> getAsStateListeners() {
 		return asStateListeners;
 	}
 
