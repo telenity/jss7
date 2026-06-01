@@ -1,21 +1,21 @@
 package org.mobicents.protocols.ss7.m3ua;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 public class Counter {
 
-    private AtomicLong count = new AtomicLong(0);
+    private LongAdder count = new LongAdder();
 
     public void add() {
         add(1);
     }
 
     public void add(long increment) {
-        count.addAndGet(increment);
+        count.add(increment);
     }
 
     public long getAndReset() {
-        return count.getAndSet(0);
+        return count.sumThenReset();
     }
 
 }

@@ -23,6 +23,8 @@
 package org.mobicents.protocols.ss7.tcap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
 import org.mobicents.protocols.ss7.sccp.impl.SccpHarness;
 import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
+import org.mobicents.protocols.ss7.tcap.api.TCAPSendException;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.TRPseudoState;
 import org.mobicents.protocols.ss7.tcap.asn.TcapFactory;
 import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
@@ -620,5 +623,25 @@ public class TCAPAbnormalTest extends SccpHarness {
 
 	public static byte[] getUnrecognizedMessageTypeMessage() {
 		return new byte[] { 105, 6, 72, 4, 0, 0, 0, 1 };
+	}
+
+	/**
+	 * Calling send(TCBeginRequest) twice on the same dialog must throw
+	 * TCAPSendException for the second call. The state check must be done
+	 * under dialogLock to be safe against concurrent setState calls.
+	 */
+	@Test
+	public void sendBeginTwiceTest() throws Exception {
+		client.startClientDialog();
+		client.sendBegin();
+		Thread.sleep(WAIT_TIME);
+
+		try {
+			client.sendBegin();
+			fail("Expected TCAPSendException for second Begin");
+		} catch (TCAPSendException e) {
+			assertTrue("Unexpected message: " + e.getMessage(),
+					e.getMessage().contains("Can not send Begin in this state"));
+		}
 	}
 }

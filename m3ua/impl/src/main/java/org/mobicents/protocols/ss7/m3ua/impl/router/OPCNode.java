@@ -22,20 +22,21 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl.router;
 
-import javolution.util.FastList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.mobicents.protocols.ss7.m3ua.impl.AsImpl;
 
 /**
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class OPCNode {
 
     protected int dpc;
     protected int opc;
-    protected FastList<SINode> siList = new FastList<SINode>();
+    protected ConcurrentMap<Integer, SINode> siList = new ConcurrentHashMap<>();
 
     // Reference to wild card SINode. If no matching SINode found for passed si
     // and wildcard defined, use wildcard one.
@@ -47,16 +48,10 @@ public class OPCNode {
     }
 
     protected void addSi(int si, AsImpl asImpl) throws Exception {
-        for (FastList.Node<SINode> n = siList.head(), end = siList.tail(); (n = n.getNext()) != end;) {
-            SINode siNode = n.getValue();
-            if (siNode.si == si) {
-                throw new Exception(String.format("Service indicator %d already exist for OPC %d and DPC %d", si, opc,
-                        dpc));
-            }
-        }
-
         SINode siNode = new SINode(si, asImpl);
-        siList.add(siNode);
+        SINode oldNode = siList.putIfAbsent(si, siNode);
+        if (oldNode != null)
+            throw new Exception(String.format("Service indicator %d already exist for OPC %d and DPC %d", si, opc, dpc));
 
         if (si == -1) {
             wildCardSINode = siNode;
@@ -64,11 +59,9 @@ public class OPCNode {
     }
 
     protected AsImpl getAs(short si) {
-        for (FastList.Node<SINode> n = siList.head(), end = siList.tail(); (n = n.getNext()) != end;) {
-            SINode siNode = n.getValue();
-            if (siNode.si == si) {
-                return siNode.asImpl;
-            }
+        SINode siNode = siList.get(Integer.valueOf(si));
+        if (siNode != null) {
+            return siNode.asImpl;
         }
 
         if (wildCardSINode != null) {

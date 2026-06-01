@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -85,7 +86,7 @@ public class NettySctpManagementImpl implements Management {
 
     private ServerListener serverListener = null;
 
-    private FastList<ManagementEventListener> managementEventListeners = new FastList<>();
+    private CopyOnWriteArrayList<ManagementEventListener> managementEventListeners = new CopyOnWriteArrayList<>();
     protected FastList<Server> servers = new FastList<>();
     protected AssociationMap<String, Association> associations = new AssociationMap<>();
     private volatile boolean started = false;
@@ -152,28 +153,12 @@ public class NettySctpManagementImpl implements Management {
 
         @Override
     public void addManagementEventListener(ManagementEventListener listener) {
-        synchronized (this) {
-            if (this.managementEventListeners.contains(listener))
-                return;
-
-            FastList<ManagementEventListener> newManagementEventListeners = new FastList<>();
-            newManagementEventListeners.addAll(this.managementEventListeners);
-            newManagementEventListeners.add(listener);
-            this.managementEventListeners = newManagementEventListeners;
-        }
+        this.managementEventListeners.addIfAbsent(listener);
     }
 
         @Override
     public void removeManagementEventListener(ManagementEventListener listener) {
-        synchronized (this) {
-            if (!this.managementEventListeners.contains(listener))
-                return;
-
-            FastList<ManagementEventListener> newManagementEventListeners = new FastList<>();
-            newManagementEventListeners.addAll(this.managementEventListeners);
-            newManagementEventListeners.remove(listener);
-            this.managementEventListeners = newManagementEventListeners;
-        }
+        this.managementEventListeners.remove(listener);
     }
 
         @Override
@@ -858,7 +843,7 @@ public class NettySctpManagementImpl implements Management {
         // no op
     }
     
-    protected FastList<ManagementEventListener> getManagementEventListeners() {
+    protected List<ManagementEventListener> getManagementEventListeners() {
         return managementEventListeners;
     }
 

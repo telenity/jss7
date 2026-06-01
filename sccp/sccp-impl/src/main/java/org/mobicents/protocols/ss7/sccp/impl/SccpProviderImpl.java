@@ -24,8 +24,8 @@ package org.mobicents.protocols.ss7.sccp.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
-
-import javolution.util.FastMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -48,7 +48,7 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
 	private static final Logger logger = Logger.getLogger(SccpProviderImpl.class);
 
 	private transient SccpStackImpl stack;
-	protected FastMap<Integer, SccpListener> ssnToListener = new FastMap<Integer, SccpListener>();
+	protected Map<Integer, SccpListener> ssnToListener = new ConcurrentHashMap<>();
 
 	private MessageFactoryImpl messageFactory;
 	private ParameterFactoryImpl parameterFactory;
@@ -75,10 +75,7 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
 					logger.warn(String.format("Registering SccpListener=%s for already existing SccpListener=%s for SSN=%d", listener, existingListener, ssn));
 				}
 			}
-			FastMap<Integer, SccpListener> newListener = new FastMap<Integer, SccpListener>();
-			newListener.putAll(ssnToListener);
-			newListener.put(ssn, listener);
-			ssnToListener = newListener;
+			ssnToListener.put(ssn, listener);
 			
 			this.stack.broadcastChangedSsnState(ssn, true);
 		}
@@ -86,16 +83,12 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
 
 	public void deregisterSccpListener(int ssn) {
 		synchronized (this) {
-			FastMap<Integer, SccpListener> newListener = new FastMap<Integer, SccpListener>();
-			newListener.putAll(ssnToListener);
-			SccpListener existingListener = newListener.remove(ssn);
+			SccpListener existingListener = ssnToListener.remove(ssn);
 			if (existingListener == null) {
 				if (logger.isEnabledFor(Level.WARN)) {
 					logger.warn(String.format("No existing SccpListener=%s for SSN=%d", existingListener, ssn));
 				}
 			}
-			ssnToListener = newListener;
-
 			this.stack.broadcastChangedSsnState(ssn, false);
 		}
 	}
@@ -104,7 +97,7 @@ public class SccpProviderImpl implements SccpProvider, Serializable {
 		return ssnToListener.get(ssn);
 	}
 
-	protected FastMap<Integer, SccpListener> getAllSccpListeners() {
+	protected Map<Integer, SccpListener> getAllSccpListeners() {
 		return ssnToListener;
 	}
 

@@ -25,6 +25,7 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -85,7 +86,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
 	private static final Logger logger = Logger.getLogger(AspFactoryImpl.class);
 
-	private static long ASP_ID_COUNT = 1l;
+	private static AtomicLong ASP_ID_COUNT = new AtomicLong(1L);
 
 	private static final int SCTP_PAYLOAD_PROT_ID_M3UA = 3;
 
@@ -428,16 +429,16 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 				this.aspTrafficMaintenanceHandler.handleAspActive(aspActive);
 				break;
 			case MessageType.ASP_ACTIVE_ACK:
-				ASPActiveAck aspAciveAck = (ASPActiveAck) message;
-				this.aspTrafficMaintenanceHandler.handleAspActiveAck(aspAciveAck);
+				ASPActiveAck aspActiveAck = (ASPActiveAck) message;
+				this.aspTrafficMaintenanceHandler.handleAspActiveAck(aspActiveAck);
 				break;
 			case MessageType.ASP_INACTIVE:
 				ASPInactive aspInactive = (ASPInactive) message;
 				this.aspTrafficMaintenanceHandler.handleAspInactive(aspInactive);
 				break;
 			case MessageType.ASP_INACTIVE_ACK:
-				ASPInactiveAck aspInaciveAck = (ASPInactiveAck) message;
-				this.aspTrafficMaintenanceHandler.handleAspInactiveAck(aspInaciveAck);
+				ASPInactiveAck aspInactiveAck = (ASPInactiveAck) message;
+				this.aspTrafficMaintenanceHandler.handleAspInactiveAck(aspInactiveAck);
 				break;
 			default:
 				logger.error(String.format("Received ASPTM with invalid MessageType=%d message=%s",
@@ -544,11 +545,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 	}
 
 	protected static long generateId() {
-		ASP_ID_COUNT++;
-		if (ASP_ID_COUNT == 4294967295l) {
-			ASP_ID_COUNT = 1l;
-		}
-		return ASP_ID_COUNT;
+		return ASP_ID_COUNT.getAndIncrement() % 4294967295L;
 	}
 
 	private void handleCommDown() {

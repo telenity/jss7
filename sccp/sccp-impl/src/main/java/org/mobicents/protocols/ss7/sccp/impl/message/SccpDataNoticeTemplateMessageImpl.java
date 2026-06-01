@@ -272,7 +272,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			break;
 
 		default:
-			throw new IOException("Uknown optional parameter code: " + code);
+			throw new IOException("Unknown optional parameter code: " + code);
 		}
 	}
 
@@ -383,7 +383,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 				out.write(this.getSecondParamaterData());
 				out.write(this.hopCounter.getValue());
 
-				// we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 4 octests than
+				// we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 4 octets than
 				int len = 4;
 				out.write(len);
 
@@ -477,7 +477,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 					out.write(this.getSecondParamaterData());
 					out.write(this.hopCounter.getValue());
 
-					// we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 4 octests than
+					// we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 4 octets than
 					int len = 4;
 					out.write(len);
 
@@ -550,7 +550,7 @@ public abstract class SccpDataNoticeTemplateMessageImpl extends SccpSegmentableM
 			out.write(this.getSecondParamaterData());
 			out.write(this.hopCounter.getValue());
 
-			// we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 8 octests than
+			// we have 4 pointers, cdp,cnp,data and optionalm, cdp starts after 8 octets than
 			int len = 7;
 			out.write(len & 0xFF);
 			out.write((len >> 8) & 0xFF);

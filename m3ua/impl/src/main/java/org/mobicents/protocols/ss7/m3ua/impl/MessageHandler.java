@@ -54,7 +54,7 @@ public abstract class MessageHandler {
 	}
 
 	/**
-	 * Get's the ASP for any ASP Traffic Maintenance, Management, Signalling
+	 * Gets the ASP for any ASP Traffic Maintenance, Management, Signalling
 	 * Network Management and Transfer m3ua message's received which has null
 	 * Routing Context
 	 * 
@@ -64,20 +64,22 @@ public abstract class MessageHandler {
 		// We know if null RC, ASP cannot be shared and AspFactory will
 		// have only one ASP
 
-		AspImpl aspImpl = (AspImpl)this.aspFactoryImpl.aspList.get(0);
+		if (this.aspFactoryImpl.aspList.size() != 1) {
+			// size 0: no ASP available
+			// size > 1: ASP cannot be shared under null RC
+			if (this.aspFactoryImpl.aspList.size() > 1) {
+				// verify that AS to which this ASP is added is also having null
+				// RC or this asp is not shared by any other AS in which case we
+				// know messages are intended for same AS
 
-		if (this.aspFactoryImpl.aspList.size() > 1) {
-			// verify that AS to which this ASP is added is also having null
-			// RC or this asp is not shared by any other AS in which case we
-			// know messages are intended for same AS
-
-			ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory
-					.createErrorCode(ErrorCode.Invalid_Routing_Context);
-			sendError(null, errorCodeObj);
+				ErrorCode errorCodeObj = this.aspFactoryImpl.parameterFactory
+						.createErrorCode(ErrorCode.Invalid_Routing_Context);
+				sendError(null, errorCodeObj);
+			}
 			return null;
 		}
 
-		return aspImpl;
+		return (AspImpl) this.aspFactoryImpl.aspList.get(0);
 	}
 
 	protected FSM getAspFSMForRxPayload(AspImpl aspImpl) {

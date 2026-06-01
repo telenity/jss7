@@ -424,16 +424,14 @@ public class DialogImpl implements Dialog {
      * .protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest)
      */
 	public void send(TCBeginRequest event) throws TCAPSendException {
-
-		if (this.state != TRPseudoState.Idle) {
-			throw new TCAPSendException("Can not send Begin in this state: " + this.state);
-		}
-
 		if (!this.isStructured()) {
 			throw new TCAPSendException("Unstructured dialogs do not use Begin");
 		}
 		try {
 		this.dialogLock.lock();
+			if (this.state != TRPseudoState.Idle) {
+				throw new TCAPSendException("Can not send Begin in this state: " + this.state);
+			}
 			this.idleTimerActionTaken = true;
 			restartIdleTimer();
 			TCBeginMessageImpl tcbm = (TCBeginMessageImpl) TcapFactory.createTCBeginMessage();
@@ -459,7 +457,7 @@ public class DialogImpl implements Dialog {
 			// now comps
 			tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 			if (this.getScheduledComponentList().size() > 0) {
-				List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
+				List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList().size());
 				this.prepareComponents(componentsToSend);
 				tcbm.setComponent(componentsToSend);
 			}
@@ -531,7 +529,7 @@ public class DialogImpl implements Dialog {
 				tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
 				if (this.getScheduledComponentList().size() > 0) {
-					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
+					List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 
@@ -564,7 +562,7 @@ public class DialogImpl implements Dialog {
 				tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
 				if (this.getScheduledComponentList().size() > 0) {
-					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
+					List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 
@@ -626,7 +624,7 @@ public class DialogImpl implements Dialog {
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
 
 				if (this.getScheduledComponentList().size() > 0) {
-					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
+					List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 				}
@@ -675,7 +673,7 @@ public class DialogImpl implements Dialog {
 				tcbm.setDestinationTransactionId(this.remoteTransactionId);
 
 				if (this.getScheduledComponentList().size() > 0) {
-					List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
+					List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList().size());
 					this.prepareComponents(componentsToSend);
 					tcbm.setComponent(componentsToSend);
 				}
@@ -747,7 +745,7 @@ public class DialogImpl implements Dialog {
 			}
 
 			if (this.getScheduledComponentList().size() > 0) {
-				List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList().size());
+				List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList().size());
 				this.prepareComponents(componentsToSend);
 				msg.setComponent(componentsToSend);
 
@@ -957,7 +955,7 @@ public class DialogImpl implements Dialog {
 		// now comps
 		tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 		if (this.getScheduledComponentList().size() > 0) {
-			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
+			List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList());
 			tcbm.setComponent(componentsToSend);
 		}
 
@@ -1004,7 +1002,7 @@ public class DialogImpl implements Dialog {
 		tcbm.setOriginatingTransactionId(Utils.encodeTransactionId(this.localTransactionIdObject));
 		tcbm.setDestinationTransactionId(this.remoteTransactionId);
 		if (this.getScheduledComponentList().size() > 0) {
-			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
+			List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList());
 			tcbm.setComponent(componentsToSend);
 		}
 
@@ -1029,7 +1027,7 @@ public class DialogImpl implements Dialog {
 		tcbm.setDestinationTransactionId(this.remoteTransactionId);
 
 		if (this.getScheduledComponentList().size() > 0) {
-			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
+			List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList());
 			tcbm.setComponent(componentsToSend);
 		}
 
@@ -1093,7 +1091,7 @@ public class DialogImpl implements Dialog {
 		}
 
 		if (this.getScheduledComponentList().size() > 0) {
-			List<Component> componentsToSend = new ArrayList<Component>(this.getScheduledComponentList());
+			List<Component> componentsToSend = new ArrayList<>(this.getScheduledComponentList());
 			msg.setComponent(componentsToSend);
 		}
 

@@ -95,8 +95,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 	protected static final int MAX_SEQUENCE_NUMBER = 256;
 
-	protected FastList<As> appServers = new FastList<As>();
-	protected FastList<AspFactory> aspfactories = new FastList<AspFactory>();
+	protected FastList<As> appServers = new FastList<>();
+	protected FastList<AspFactory> aspfactories = new FastList<>();
 
 	protected M3UAScheduler m3uaScheduler = new M3UAScheduler();
 	protected M3UACounterProviderImpl m3uaCounterProvider;
@@ -158,12 +158,12 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 *            the maxSls to set
 	 */
 	public void setMaxSequenceNumber(int maxSequenceNumber) {
-		if (this.maxSequenceNumber < 1) {
-			this.maxSequenceNumber = 1;
+		if (maxSequenceNumber < 1) {
+			maxSequenceNumber = 1;
 		}
 
-		if (this.maxSequenceNumber > MAX_SEQUENCE_NUMBER) {
-			this.maxSequenceNumber = MAX_SEQUENCE_NUMBER;
+		if (maxSequenceNumber > MAX_SEQUENCE_NUMBER) {
+			maxSequenceNumber = MAX_SEQUENCE_NUMBER;
 		}
 		this.maxSequenceNumber = maxSequenceNumber;
 	}
@@ -298,7 +298,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	}
 
 	public Map<RouteKey, As[]> getRoute() {
-        return new HashMap<RouteKey, As[]>(this.routeManagement.route);
+        return new HashMap<>(this.routeManagement.route);
 	}
 
 	public M3UARouteManagement getRouteManagement() { return routeManagement; }
@@ -329,7 +329,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * Loadshare
 	 * </p>
 	 *
-	 * @param args
+	 * @param asName
 	 * @return
 	 * @throws Exception
 	 */
@@ -370,7 +370,6 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			} catch (Throwable ee) {
 				logger.error("Exception while invoking onAsCreated", ee);
 			}
-
 		}
 
 		return as;
@@ -417,7 +416,6 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			} catch (Throwable ee) {
 				logger.error("Exception while invoking onAsDestroyed", ee);
 			}
-
 		}
 
 		return as;
@@ -444,27 +442,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * @throws Exception
 	 */
 	public AspFactory createAspFactory(String aspName, String associationName, boolean isHeartBeatEnabled) throws Exception {
-		long aspid = 0l;
-		boolean regenerateFlag = true;
-
-		while (regenerateFlag) {
-			aspid = AspFactoryImpl.generateId();
-			if (aspfactories.size() == 0) {
-				// Special case where this is first Asp added
-				break;
-			}
-
-			for (FastList.Node<AspFactory> n = aspfactories.head(), end = aspfactories.tail(); (n = n.getNext()) != end;) {
-				AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) n.getValue();
-				if (aspid == aspFactoryImpl.getAspid().getAspId()) {
-					regenerateFlag = true;
-					break;
-				} else {
-					regenerateFlag = false;
-				}
-			}// for
-		}// while
-
+		long aspid = AspFactoryImpl.generateId();
 		return this.createAspFactory(aspName, associationName, aspid, isHeartBeatEnabled);
 	}
 
@@ -477,7 +455,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * </p>
 	 * <p>
 	 * asp-name and sctp-association is mandatory where as aspid is optional. If
-	 * aspid is not passed, next available aspid wil be used
+	 * aspid is not passed, next available aspid will be used
 	 * </p>
 	 *
 	 * @param aspName
@@ -593,8 +571,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		// Checks for RoutingContext. We know that for null RC there will always
 		// be a single ASP assigned to AS and ASP cannot be shared
 		if (asImpl.getRoutingContext() == null) {
-			// If AS has Null RC, this should be the first assignment of ASP to
-			// AS
+			// If AS has Null RC, this should be the first assignment of ASP to AS
 			if (aspImpls.size() != 0) {
 				throw new Exception(String.format(M3UAOAMMessages.ADD_ASP_TO_AS_FAIL_ALREADY_ASSIGNED_TO_OTHER_AS,
 						aspName, asName));
@@ -676,8 +653,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	/**
 	 * This method should be called by management to start the ASP
 	 *
-	 * @param aspName
-	 *            The name of the ASP to be started
+	 * @param aspName The name of the ASP to be started
 	 * @throws Exception
 	 */
 	public void startAsp(String aspName) throws Exception {
@@ -704,15 +680,13 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			} catch (Throwable ee) {
 				logger.error("Exception while invoking onAspFactoryStarted", ee);
 			}
-
 		}
 	}
 
 	/**
 	 * This method should be called by management to stop the ASP
 	 *
-	 * @param aspName
-	 *            The name of the ASP to be stopped
+	 * @param aspName The name of the ASP to be stopped
 	 * @throws Exception
 	 */
 	public void stopAsp(String aspName) throws Exception {
@@ -737,9 +711,9 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			this.store();
 
 		// TODO : Should calling
-		// m3uaManagementEventListener.onAspFactoryStopped() be before actual
-		// stop of aspFactory? The problem is ASP_DOWN and AS_INACTIV callbacks
-		// are before AspFactoryStopped. Is it ok?
+		//  m3uaManagementEventListener.onAspFactoryStopped() be before actual
+		//  stop of aspFactory? The problem is ASP_DOWN and AS_INACTIVE callbacks
+		//  are before AspFactoryStopped. Is it ok?
 		for (M3UAManagementEventListener m3uaManagementEventListener : this.managementEventListeners) {
 			try {
 				m3uaManagementEventListener.onAspFactoryStopped(aspFactoryImpl);
@@ -778,11 +752,11 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		this.routeManagement.removeAllResourses();
 
 		// Unassign asp from as
-		FastMap<String, FastList<String>> lstAsAsp = new FastMap<String, FastList<String>>();
+		FastMap<String, FastList<String>> lstAsAsp = new FastMap<>();
 
 		for (As as : this.appServers) {
 			AsImpl asImpl = (AsImpl) as;
-			FastList<String> lstAsps = new FastList<String>();
+			FastList<String> lstAsps = new FastList<>();
 
 			for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n
 					.getNext()) != end;) {
@@ -804,7 +778,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		}
 
 		// Remove all AspFactories
-		ArrayList<AspFactory> lstAspFactory = new ArrayList<AspFactory>();
+		ArrayList<AspFactory> lstAspFactory = new ArrayList<>();
 		for (AspFactory aspFact : this.aspfactories) {
 			lstAspFactory.add(aspFact);
 		}
@@ -813,7 +787,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		}
 
 		// Remove all AppServers
-		ArrayList<String> lst = new ArrayList<String>();
+		ArrayList<String> lst = new ArrayList<>();
 		for (As asImpl : this.appServers) {
 			lst.add(asImpl.getName());
 		}
@@ -892,13 +866,9 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 */
 	public void store() {
 
-		// TODO : Should we keep reference to Objects rather than recreating
-		// everytime?
 		try {
 			XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
 			writer.setBinding(binding);
-			// Enables cross-references.
-			// writer.setReferenceResolver(new XMLReferenceResolver());
 			writer.setIndentation(TAB_INDENT);
 			writer.write(aspfactories, ASP_FACTORY_LIST, FastList.class);
 			writer.write(appServers, AS_LIST, FastList.class);
@@ -939,7 +909,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 				m3uaScheduler.execute(asPeerFSM);
 
 				// All the Asp's for this As added in temp list
-				FastList<Asp> tempAsp = new FastList<Asp>();
+				FastList<Asp> tempAsp = new FastList<>();
 				tempAsp.addAll(asImpl.appServerProcs);
 
 				// Clear Asp's from this As
@@ -949,8 +919,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 					AspImpl aspImpl = (AspImpl) n1.getValue();
 
 					try {
-						// Now let the Asp's be created from respective
-						// AspFactory and added to As
+						// Now let the Asp's be created from respective AspFactory and added to As
 						this.assignAspToAs(asImpl.getName(), aspImpl.getName());
 					} catch (Exception e) {
 						logger.error("Error while assigning Asp to As on loading from xml file", e);
@@ -966,8 +935,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 				try {
 					factory.setAssociation(this.transportManagement.getAssociation(factory.associationName));
 				} catch (Throwable e1) {
-					logger.error(String.format(
-							"Error setting Association=%s for the AspFactory=%s while loading from XML",
+					logger.error(String.format("Error setting Association=%s for the AspFactory=%s while loading from XML",
 							factory.associationName, factory.getName()), e1);
 				}
 
@@ -975,16 +943,14 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 					try {
 						factory.start();
 					} catch (Exception e) {
-						logger.error(
-								String.format("Error starting the AspFactory=%s while loading from XML",
-										factory.getName()), e);
+						logger.error(String.format("Error starting the AspFactory=%s while loading from XML",
+								factory.getName()), e);
 					}
 				}
 			}
 
 		} catch (XMLStreamException ex) {
-			// this.logger.info(
-			// "Error while re-creating Linksets from persisted file", ex);
+			// no op
 		}
 	}
 

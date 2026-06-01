@@ -24,9 +24,12 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.netty.buffer.ByteBufAllocator;
 import javolution.util.FastMap;
@@ -148,6 +151,48 @@ public class M3UAManagementTest {
 
         m3uaMgmt1.destroyAs("AS1");
 
+    }
+
+    /**
+     * Regression: setMaxSequenceNumber must clamp the parameter, not the field.
+     * The previous implementation checked the field (default 256) so the bounds
+     * checks were dead code.
+     */
+    @Test
+    public void testSetMaxSequenceNumberClamping() throws Exception {
+        this.transportManagement.addAssociation(null, 0, null, 0, "ASPAssoc1");
+
+        this.m3uaMgmt.setMaxSequenceNumber(0);
+        assertEquals(1, this.m3uaMgmt.getMaxSequenceNumber());
+
+        this.m3uaMgmt.setMaxSequenceNumber(-10);
+        assertEquals(1, this.m3uaMgmt.getMaxSequenceNumber());
+
+        this.m3uaMgmt.setMaxSequenceNumber(M3UAManagementImpl.MAX_SEQUENCE_NUMBER + 1);
+        assertEquals(M3UAManagementImpl.MAX_SEQUENCE_NUMBER, this.m3uaMgmt.getMaxSequenceNumber());
+
+        this.m3uaMgmt.setMaxSequenceNumber(M3UAManagementImpl.MAX_SEQUENCE_NUMBER);
+        assertEquals(M3UAManagementImpl.MAX_SEQUENCE_NUMBER, this.m3uaMgmt.getMaxSequenceNumber());
+
+        this.m3uaMgmt.setMaxSequenceNumber(7);
+        assertEquals(7, this.m3uaMgmt.getMaxSequenceNumber());
+    }
+
+    /**
+     * generateId must return unique values across many calls and wrap via modulo
+     * when it overflows MAX.
+     */
+    @Test
+    public void testGenerateIdUniqueness() {
+        int n = 1000;
+        Set<Long> ids = new HashSet<>();
+        for (int i = 0; i < n; i++) {
+            long id = AspFactoryImpl.generateId();
+            assertTrue("generateId returned negative value: " + id, id >= 0);
+            assertTrue("generateId returned value above MAX: " + id, id < 4294967295L);
+            assertTrue("Duplicate id: " + id, ids.add(id));
+        }
+        assertEquals(n, ids.size());
     }
 
     class TestAssociation implements Association {

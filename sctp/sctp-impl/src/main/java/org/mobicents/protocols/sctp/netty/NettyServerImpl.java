@@ -35,6 +35,8 @@ import io.netty.handler.logging.LoggingHandler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javolution.util.FastList;
@@ -80,7 +82,7 @@ public class NettyServerImpl implements Server {
     private NettySctpManagementImpl management = null;
 
     protected FastList<String> associations = new FastList<>();
-    protected FastList<Association> anonymAssociations = new FastList<>();
+    protected List<Association> anonymAssociations = new ArrayList<>();
 
     // Netty declarations
     // The channel on which we'll accept connections
@@ -167,7 +169,7 @@ public class NettyServerImpl implements Server {
 
         @Override
     public List<Association> getAnonymAssociations() {
-        return this.anonymAssociations.unmodifiable();
+        return Collections.unmodifiableList(this.anonymAssociations);
     }
 
     protected ServerChannel getIpChannel() {

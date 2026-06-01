@@ -28,6 +28,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javolution.util.FastMap;
 
@@ -413,6 +415,47 @@ public class RouterTest {
 		assertTrue(rule4.getPattern().getGlobalTitle().getDigits().equals("999"));
 		assertEquals(OriginationType.REMOTE, rule4.getOriginationType());
 
+	}
+
+	/**
+	 * Concurrent addMtp3Destination + matches() must not corrupt the volatile
+	 * dpcList. Each thread adds a unique destId; after the dust settles, all
+	 * entries must be present and matches() must not throw.
+	 */
+	@Test
+	public void testMtp3SapConcurrentAdd() throws Exception {
+		Mtp3ServiceAccessPointImpl sap = new Mtp3ServiceAccessPointImpl(1, 11, 2);
+
+		int n = 100;
+		CountDownLatch start = new CountDownLatch(1);
+		CountDownLatch done = new CountDownLatch(n);
+		Thread[] threads = new Thread[n];
+		for (int i = 0; i < n; i++) {
+			final int destId = i;
+			threads[i] = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						start.await();
+						sap.addMtp3Destination(destId, 100 + destId, 100 + destId, 0, 255, 255);
+					} catch (Exception e) {
+						// already-exists races are tolerable; record others
+						e.printStackTrace();
+					} finally {
+						done.countDown();
+					}
+				}
+			});
+			threads[i].start();
+		}
+		start.countDown();
+		assertTrue("Concurrent add did not finish in time", done.await(5, TimeUnit.SECONDS));
+
+		// All destIds must have been inserted exactly once.
+		assertEquals(n, sap.getMtp3Destinations().size());
+
+		// matches() must remain safe to call on the now-populated map.
+		assertTrue(sap.matches(150, 0));
 	}
 
 	private class TestSccpStackImpl implements SccpStack {
