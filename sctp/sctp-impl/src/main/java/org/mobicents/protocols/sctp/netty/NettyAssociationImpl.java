@@ -564,13 +564,18 @@ public class NettyAssociationImpl implements Association {
     }
 
     protected void connect() {
-        if (!started.get() || !connecting.compareAndSet(false, true)) {
-            logger.warn("Skipping redundant connect() for association=" + name);
+        if (!started.get()) {
+            logger.warn("Association " + name + " is not started");
             return;
         }
 
         if (up.get()) {
             logger.info("Association " + name + " is up, no need to reconnect");
+            return;
+        }
+
+        if (!connecting.compareAndSet(false, true)) {
+            logger.warn("Skipping redundant connect() for association=" + name);
             return;
         }
 

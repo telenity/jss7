@@ -46,7 +46,7 @@ public class FSM extends M3UATask {
     // intermediate states
     private Map<String, FSMState> states = new ConcurrentHashMap<>();
 
-    private FSMState currentState;
+    private volatile FSMState currentState;
 
     private Map<String, Object> attributes = new ConcurrentHashMap<>();
 
