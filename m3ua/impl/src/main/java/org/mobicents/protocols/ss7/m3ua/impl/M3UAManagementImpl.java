@@ -35,7 +35,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javolution.text.TextBuilder;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
@@ -101,7 +100,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	protected M3UAScheduler m3uaScheduler = new M3UAScheduler();
 	protected M3UACounterProviderImpl m3uaCounterProvider;
 
-	private final TextBuilder persistFile = TextBuilder.newInstance();
+	private final StringBuilder persistFile = new StringBuilder();
 
 	private final String name;
 
@@ -216,7 +215,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
 		super.start();
 
-		this.persistFile.clear();
+		this.persistFile.setLength(0);
 
 		if (persistDir != null) {
 			this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_")
@@ -325,7 +324,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * </p>
 	 * <p>
 	 * where mode is optional, by default SE. ipspType should be specified if
-	 * type is IPSP. rc is optional and traffi-mode is also optional, default is
+	 * type is IPSP. rc is optional and traffic-mode is also optional, default is
 	 * Loadshare
 	 * </p>
 	 *
@@ -454,7 +453,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	 * Command is m3ua asp create <asp-name> <sctp-association> aspid <aspid> heartbeat <true|false>
 	 * </p>
 	 * <p>
-	 * asp-name and sctp-association is mandatory where as aspid is optional. If
+	 * asp-name and sctp-association is mandatory whereas aspid is optional. If
 	 * aspid is not passed, next available aspid will be used
 	 * </p>
 	 *
@@ -512,27 +511,27 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 	}
 
 	public AspFactoryImpl destroyAspFactory(String aspName) throws Exception {
-		AspFactoryImpl aspFactroy = this.getAspFactory(aspName);
-		if (aspFactroy == null) {
+		AspFactoryImpl aspFactory = this.getAspFactory(aspName);
+		if (aspFactory == null) {
 			throw new Exception(String.format(M3UAOAMMessages.NO_ASP_FOUND, aspName));
 		}
 
-		if (aspFactroy.aspList.size() != 0) {
+		if (aspFactory.aspList.size() != 0) {
 			throw new Exception("Asp are still assigned to As. Unassign all");
 		}
-		aspFactroy.unsetAssociation();
-		this.aspfactories.remove(aspFactroy);
+		aspFactory.unsetAssociation();
+		this.aspfactories.remove(aspFactory);
 		this.store();
 
 		for (M3UAManagementEventListener m3uaManagementEventListener : this.managementEventListeners) {
 			try {
-				m3uaManagementEventListener.onAspFactoryDestroyed(aspFactroy);
+				m3uaManagementEventListener.onAspFactoryDestroyed(aspFactory);
 			} catch (Throwable ee) {
 				logger.error("Exception while invoking onAspFactoryDestroyed", ee);
 			}
 		}
 
-		return aspFactroy;
+		return aspFactory;
 	}
 
 	/**
@@ -551,9 +550,9 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			throw new Exception(String.format(M3UAOAMMessages.NO_AS_FOUND, asName));
 		}
 
-		AspFactoryImpl aspFactroy = this.getAspFactory(aspName);
+		AspFactoryImpl aspFactory = this.getAspFactory(aspName);
 
-		if (aspFactroy == null) {
+		if (aspFactory == null) {
 			throw new Exception(String.format(M3UAOAMMessages.NO_ASP_FOUND, aspName));
 		}
 
@@ -566,7 +565,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			}
 		}
 
-		List<Asp> aspImpls = aspFactroy.aspList;
+		List<Asp> aspImpls = aspFactory.aspList;
 
 		// Checks for RoutingContext. We know that for null RC there will always
 		// be a single ASP assigned to AS and ASP cannot be shared
@@ -586,27 +585,27 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			}
 		}
 
-		if (aspFactroy.getFunctionality() != null && aspFactroy.getFunctionality() != asImpl.getFunctionality()) {
+		if (aspFactory.getFunctionality() != null && aspFactory.getFunctionality() != asImpl.getFunctionality()) {
 			throw new Exception(String.format(M3UAOAMMessages.ADD_ASP_TO_AS_FAIL_ALREADY_ASSIGNED_TO_OTHER_AS_TYPE,
-					aspName, asName, aspFactroy.getFunctionality()));
+					aspName, asName, aspFactory.getFunctionality()));
 		}
 
-		if (aspFactroy.getExchangeType() != null && aspFactroy.getExchangeType() != asImpl.getExchangeType()) {
+		if (aspFactory.getExchangeType() != null && aspFactory.getExchangeType() != asImpl.getExchangeType()) {
 			throw new Exception(String.format(
 					M3UAOAMMessages.ADD_ASP_TO_AS_FAIL_ALREADY_ASSIGNED_TO_OTHER_AS_EXCHANGETYPE, aspName, asName,
-					aspFactroy.getExchangeType()));
+					aspFactory.getExchangeType()));
 		}
 
-		if (aspFactroy.getIpspType() != null && aspFactroy.getIpspType() != asImpl.getIpspType()) {
+		if (aspFactory.getIpspType() != null && aspFactory.getIpspType() != asImpl.getIpspType()) {
 			throw new Exception(String.format(M3UAOAMMessages.ADD_ASP_TO_AS_FAIL_ALREADY_ASSIGNED_TO_OTHER_IPSP_TYPE,
-					aspName, asName, aspFactroy.getIpspType()));
+					aspName, asName, aspFactory.getIpspType()));
 		}
 
-		aspFactroy.setExchangeType(asImpl.getExchangeType());
-		aspFactroy.setFunctionality(asImpl.getFunctionality());
-		aspFactroy.setIpspType(asImpl.getIpspType());
+		aspFactory.setExchangeType(asImpl.getExchangeType());
+		aspFactory.setFunctionality(asImpl.getFunctionality());
+		aspFactory.setIpspType(asImpl.getIpspType());
 
-		AspImpl aspImpl = aspFactroy.createAsp();
+		AspImpl aspImpl = aspFactory.createAsp();
 		FSM aspLocalFSM = aspImpl.getLocalFSM();
 		m3uaScheduler.execute(aspLocalFSM);
 
@@ -950,7 +949,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 			}
 
 		} catch (XMLStreamException ex) {
-			// no op
+			// no-op
 		}
 	}
 

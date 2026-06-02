@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
 
-import javolution.text.TextBuilder;
 import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
@@ -57,7 +56,7 @@ public class SccpResourceImpl implements SccpResource {
 	private static final String REMOTE_SPC = "remoteSpcs";
 	private static final String CONCERNED_SPC = "concernedSpcs";
 
-	private final TextBuilder persistFile = TextBuilder.newInstance();
+	private final StringBuilder persistFile = new StringBuilder();
 
 	private static final SccpResourceXMLBinding binding = new SccpResourceXMLBinding();
 	private static final String TAB_INDENT = "\t";
@@ -65,9 +64,9 @@ public class SccpResourceImpl implements SccpResource {
 
 	private String persistDir;
 
-	protected RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystem>();
-	private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();
-	protected ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> concernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode>();
+	protected RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = new RemoteSubSystemMap<>();
+	private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = new RemoteSignalingPointCodeMap<>();
+	protected ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 
 	private final String name;
 
@@ -93,7 +92,7 @@ public class SccpResourceImpl implements SccpResource {
 	}
 
 	public void start() {
-		this.persistFile.clear();
+		this.persistFile.setLength(0);
 
 		if (persistDir != null) {
 			this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_")
@@ -125,13 +124,13 @@ public class SccpResourceImpl implements SccpResource {
 			throw new Exception(SccpOAMMessage.RSS_ALREADY_EXIST);
 		}
 
-		// TODO check if RemoteSignalingPointCode correspond to remoteSpc exist?
+		// TODO check if RemoteSignalingPointCode corresponds to remoteSpc exist?
 
 		RemoteSubSystemImpl rsscObj = new RemoteSubSystemImpl(remoteSpc, remoteSsn, remoteSsnFlag,
 				markProhibitedWhenSpcResuming);
 
 		synchronized (this) {
-			RemoteSubSystemMap<Integer, RemoteSubSystem> newRemoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystem>();
+			RemoteSubSystemMap<Integer, RemoteSubSystem> newRemoteSsns = new RemoteSubSystemMap<>();
 			newRemoteSsns.putAll(this.remoteSsns);
 			newRemoteSsns.put(remoteSsnid, rsscObj);
 			this.remoteSsns = newRemoteSsns;
@@ -146,7 +145,7 @@ public class SccpResourceImpl implements SccpResource {
 			throw new Exception(SccpOAMMessage.RSS_DOESNT_EXIST);
 		}
 
-		// TODO check if RemoteSignalingPointCode correspond to remoteSpc
+		// TODO check if RemoteSignalingPointCode corresponds to remoteSpc
 		// exist?
 
 		synchronized (this) {
@@ -166,7 +165,7 @@ public class SccpResourceImpl implements SccpResource {
 		}
 
 		synchronized (this) {
-			RemoteSubSystemMap<Integer, RemoteSubSystem> newRemoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystem>();
+			RemoteSubSystemMap<Integer, RemoteSubSystem> newRemoteSsns = new RemoteSubSystemMap<>();
 			newRemoteSsns.putAll(this.remoteSsns);
 			newRemoteSsns.remove(remoteSsnid);
 			this.remoteSsns = newRemoteSsns;
@@ -204,7 +203,7 @@ public class SccpResourceImpl implements SccpResource {
 		RemoteSignalingPointCodeImpl rspcObj = new RemoteSignalingPointCodeImpl(remoteSpc, remoteSpcFlag, mask, rspProhibitedByDefault);
 
 		synchronized (this) {
-			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();
+			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> newRemoteSpcs = new RemoteSignalingPointCodeMap<>();
 			newRemoteSpcs.putAll(this.remoteSpcs);
 			newRemoteSpcs.put(remoteSpcId, rspcObj);
 			this.remoteSpcs = newRemoteSpcs;
@@ -234,7 +233,7 @@ public class SccpResourceImpl implements SccpResource {
 		}
 
 		synchronized (this) {
-			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();
+			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> newRemoteSpcs = new RemoteSignalingPointCodeMap<>();
 			newRemoteSpcs.putAll(this.remoteSpcs);
 			newRemoteSpcs.remove(remoteSpcId);
 			this.remoteSpcs = newRemoteSpcs;
@@ -271,7 +270,7 @@ public class SccpResourceImpl implements SccpResource {
 		ConcernedSignalingPointCodeImpl concernedSpc = new ConcernedSignalingPointCodeImpl(remoteSpc);
 
 		synchronized (this) {
-			ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> newConcernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode>();
+			ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> newConcernedSpcs = new ConcernedSignalingPointCodeMap<>();
 			newConcernedSpcs.putAll(this.concernedSpcs);
 			newConcernedSpcs.put(concernedSpcId, concernedSpc);
 			this.concernedSpcs = newConcernedSpcs;
@@ -286,7 +285,7 @@ public class SccpResourceImpl implements SccpResource {
 		}
 
 		synchronized (this) {
-			ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> newConcernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode>();
+			ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> newConcernedSpcs = new ConcernedSignalingPointCodeMap<>();
 			newConcernedSpcs.putAll(this.concernedSpcs);
 			newConcernedSpcs.remove(concernedSpcId);
 			this.concernedSpcs = newConcernedSpcs;
@@ -336,9 +335,9 @@ public class SccpResourceImpl implements SccpResource {
 				// no resources allocated - nothing to do
 				return;
 
-			remoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystem>();
-			remoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode>();
-			concernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode>();
+			remoteSsns = new RemoteSubSystemMap<>();
+			remoteSpcs = new RemoteSignalingPointCodeMap<>();
+			concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 
 			// We store the cleared state
 			this.store();
@@ -351,7 +350,7 @@ public class SccpResourceImpl implements SccpResource {
 	public void store() {
 
 		// TODO : Should we keep reference to Objects rather than recreating
-		// everytime?
+		// every time?
 		try {
 			XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
 			writer.setBinding(binding);

@@ -37,7 +37,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import javolution.text.TextBuilder;
 import javolution.util.FastList;
 import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
@@ -73,7 +72,7 @@ public class NettySctpManagementImpl implements Management {
     private static final String SINGLE_THREAD_PROP = "singlethread";
     private static final String WORKER_THREADS_PROP = "workerthreads";
 
-    private final TextBuilder persistFile = TextBuilder.newInstance();
+    private final StringBuilder persistFile = new StringBuilder();
 
     protected static final NettySctpXMLBinding binding = new NettySctpXMLBinding();
     protected static final String TAB_INDENT = "\t";
@@ -169,7 +168,7 @@ public class NettySctpManagementImpl implements Management {
         }
 
         synchronized (this) {
-            this.persistFile.clear();
+            this.persistFile.setLength(0);
 
             if (persistDir != null) {
                 this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_")

@@ -19,10 +19,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javolution</groupId>
-			<artifactId>javolution</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-common</artifactId>
 		</dependency>

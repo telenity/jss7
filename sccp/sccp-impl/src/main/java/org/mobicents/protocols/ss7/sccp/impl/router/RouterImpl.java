@@ -29,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Map;
 
-import javolution.text.TextBuilder;
 import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
@@ -89,7 +88,7 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
  * <ul>
  * <li>
  * <p>
- * <i>translation type</i> (tt) integer numer which is used in a network to
+ * <i>translation type</i> (tt) integer number which is used in a network to
  * indicate the preferred method of global title analysis
  * </p>
  * </li>
@@ -102,7 +101,7 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
  * </li>
  * <li>
  * <p>
- * <i>nature of address</i> (noa) integer value which indicates address type.,
+ * <i>nature of address</i> (noa) integer value which indicates address type.
  * Specifically it indicates the scope of the address value, such as whether it
  * is an international number (i.e. including the country code), a "national" or
  * domestic number (i.e. without country code), and other formats such as
@@ -154,7 +153,7 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
  * </li>
  * <li>
  * <p>
- * <i>signaling link selection</i> (sls) indentifies link in set
+ * <i>signaling link selection</i> (sls) identifies link in set
  * </p>
  * </li>
  * </ul>
@@ -202,7 +201,7 @@ public class RouterImpl implements Router {
 	private static final String LONG_MESSAGE_RULE = "longMessageRule";
 	private static final String MTP3_SERVICE_ACCESS_POINT = "sap";
 
-	private final TextBuilder persistFile = TextBuilder.newInstance();
+	private final StringBuilder persistFile = new StringBuilder();
 
 	private static final SccpRouterXMLBinding binding = new SccpRouterXMLBinding();
 	private static final String TAB_INDENT = "\t";
@@ -212,11 +211,11 @@ public class RouterImpl implements Router {
 
 	private final RuleComparator ruleComparator = new RuleComparator();
 	// rule list
-	private RuleMap<Integer, Rule> rulesMap = new RuleMap<Integer, Rule>();
-	private SccpAddressMap<Integer, SccpAddress> primaryAddresses = new SccpAddressMap<Integer, SccpAddress>();
-	private SccpAddressMap<Integer, SccpAddress> backupAddresses = new SccpAddressMap<Integer, SccpAddress>();
-	private LongMessageRuleMap<Integer, LongMessageRule> longMessageRules = new LongMessageRuleMap<Integer, LongMessageRule>();
-	private Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> saps = new Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint>();
+	private RuleMap<Integer, Rule> rulesMap = new RuleMap<>();
+	private SccpAddressMap<Integer, SccpAddress> primaryAddresses = new SccpAddressMap<>();
+	private SccpAddressMap<Integer, SccpAddress> backupAddresses = new SccpAddressMap<>();
+	private LongMessageRuleMap<Integer, LongMessageRule> longMessageRules = new LongMessageRuleMap<>();
+	private Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> saps = new Mtp3ServiceAccessPointMap<>();
 
 	private final String name;
 	private final SccpStack sccpStack;
@@ -248,7 +247,7 @@ public class RouterImpl implements Router {
 	}
 
 	public void start() {
-		this.persistFile.clear();
+		this.persistFile.setLength(0);
 
 		if (persistDir != null) {
 			this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_")
@@ -373,10 +372,10 @@ public class RouterImpl implements Router {
 			throw new Exception(SccpOAMMessage.RULE_ALREADY_EXIST);
 		}
 
-		int maskumberOfSecs = (mask.split("/").length - 1);
+		int maskNumberOfSecs = (mask.split("/").length - 1);
 		int patternNumberOfSecs = (pattern.getGlobalTitle().getDigits().split("/").length - 1);
 
-		if (maskumberOfSecs != patternNumberOfSecs) {
+		if (maskNumberOfSecs != patternNumberOfSecs) {
 			throw new Exception(SccpOAMMessage.SEC_MISMATCH_PATTERN);
 		}
 
@@ -386,7 +385,7 @@ public class RouterImpl implements Router {
 		}
 
 		int primAddNumberOfSecs = (pAddress.getGlobalTitle().getDigits().split("/").length - 1);
-		if (maskumberOfSecs != primAddNumberOfSecs) {
+		if (maskNumberOfSecs != primAddNumberOfSecs) {
 			throw new Exception(SccpOAMMessage.SEC_MISMATCH_PRIMADDRESS);
 		}
 
@@ -397,7 +396,7 @@ public class RouterImpl implements Router {
 			}
 
 			int secAddNumberOfSecs = (sAddress.getGlobalTitle().getDigits().split("/").length - 1);
-			if (maskumberOfSecs != secAddNumberOfSecs) {
+			if (maskNumberOfSecs != secAddNumberOfSecs) {
 				throw new Exception(SccpOAMMessage.SEC_MISMATCH_SECADDRESS);
 			}
 		}
@@ -428,7 +427,7 @@ public class RouterImpl implements Router {
 			// Sort
 			Arrays.sort(rulesArray, ruleComparator);
 
-			RuleMap<Integer, Rule> newRule = new RuleMap<Integer, Rule>();
+			RuleMap<Integer, Rule> newRule = new RuleMap<>();
 			for (int i = 0; i < rulesArray.length; i++) {
 				RuleImpl ruleTemp = rulesArray[i];
 				newRule.put(ruleTemp.getRuleId(), ruleTemp);
@@ -446,10 +445,10 @@ public class RouterImpl implements Router {
 			throw new Exception(SccpOAMMessage.RULE_DOESNT_EXIST);
 		}
 
-		int maskumberOfSecs = (mask.split("/").length - 1);
+		int maskNumberOfSecs = (mask.split("/").length - 1);
 		int patternNumberOfSecs = (pattern.getGlobalTitle().getDigits().split("/").length - 1);
 
-		if (maskumberOfSecs != patternNumberOfSecs) {
+		if (maskNumberOfSecs != patternNumberOfSecs) {
 			throw new Exception(SccpOAMMessage.SEC_MISMATCH_PATTERN);
 		}
 
@@ -459,7 +458,7 @@ public class RouterImpl implements Router {
 			throw new Exception(String.format(SccpOAMMessage.NO_PRIMARY_ADDRESS, pAddressId));
 		}
 		int primAddNumberOfSecs = (pattern.getGlobalTitle().getDigits().split("/").length - 1);
-		if (maskumberOfSecs != primAddNumberOfSecs) {
+		if (maskNumberOfSecs != primAddNumberOfSecs) {
 			throw new Exception(SccpOAMMessage.SEC_MISMATCH_PRIMADDRESS);
 		}
 
@@ -469,7 +468,7 @@ public class RouterImpl implements Router {
 				throw new Exception(String.format(SccpOAMMessage.NO_BACKUP_ADDRESS, sAddressId));
 			}
 			int secAddNumberOfSecs = (pattern.getGlobalTitle().getDigits().split("/").length - 1);
-			if (maskumberOfSecs != secAddNumberOfSecs) {
+			if (maskNumberOfSecs != secAddNumberOfSecs) {
 				throw new Exception(SccpOAMMessage.SEC_MISMATCH_SECADDRESS);
 			}
 		}
@@ -499,7 +498,7 @@ public class RouterImpl implements Router {
 			// Sort
 			Arrays.sort(rulesArray, ruleComparator);
 
-			RuleMap<Integer, Rule> newRule = new RuleMap<Integer, Rule>();
+			RuleMap<Integer, Rule> newRule = new RuleMap<>();
 			for (int i = 0; i < rulesArray.length; i++) {
 				RuleImpl ruleTemp = rulesArray[i];
 				newRule.put(ruleTemp.getRuleId(), ruleTemp);
@@ -516,7 +515,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			RuleMap<Integer, Rule> newRule = new RuleMap<Integer, Rule>();
+			RuleMap<Integer, Rule> newRule = new RuleMap<>();
 			newRule.putAll(this.rulesMap);
 			newRule.remove(id);
 			this.rulesMap = newRule;
@@ -531,7 +530,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			SccpAddressMap<Integer, SccpAddress> newPrimaryAddress = new SccpAddressMap<Integer, SccpAddress>();
+			SccpAddressMap<Integer, SccpAddress> newPrimaryAddress = new SccpAddressMap<>();
 			newPrimaryAddress.putAll(this.primaryAddresses);
 			newPrimaryAddress.put(primAddressId, primaryAddress);
 			this.primaryAddresses = newPrimaryAddress;
@@ -545,7 +544,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			SccpAddressMap<Integer, SccpAddress> newPrimaryAddress = new SccpAddressMap<Integer, SccpAddress>();
+			SccpAddressMap<Integer, SccpAddress> newPrimaryAddress = new SccpAddressMap<>();
 			newPrimaryAddress.putAll(this.primaryAddresses);
 			newPrimaryAddress.put(primAddressId, primaryAddress);
 			this.primaryAddresses = newPrimaryAddress;
@@ -559,7 +558,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			SccpAddressMap<Integer, SccpAddress> newPrimaryAddress = new SccpAddressMap<Integer, SccpAddress>();
+			SccpAddressMap<Integer, SccpAddress> newPrimaryAddress = new SccpAddressMap<>();
 			newPrimaryAddress.putAll(this.primaryAddresses);
 			newPrimaryAddress.remove(id);
 			this.primaryAddresses = newPrimaryAddress;
@@ -574,7 +573,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			SccpAddressMap<Integer, SccpAddress> newBackupAddress = new SccpAddressMap<Integer, SccpAddress>();
+			SccpAddressMap<Integer, SccpAddress> newBackupAddress = new SccpAddressMap<>();
 			newBackupAddress.putAll(this.backupAddresses);
 			newBackupAddress.put(id, backupAddress);
 			this.backupAddresses = newBackupAddress;
@@ -588,7 +587,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			SccpAddressMap<Integer, SccpAddress> newBackupAddress = new SccpAddressMap<Integer, SccpAddress>();
+			SccpAddressMap<Integer, SccpAddress> newBackupAddress = new SccpAddressMap<>();
 			newBackupAddress.putAll(this.backupAddresses);
 			newBackupAddress.put(id, backupAddress);
 			this.backupAddresses = newBackupAddress;
@@ -603,7 +602,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			SccpAddressMap<Integer, SccpAddress> newBackupAddress = new SccpAddressMap<Integer, SccpAddress>();
+			SccpAddressMap<Integer, SccpAddress> newBackupAddress = new SccpAddressMap<>();
 			newBackupAddress.putAll(this.backupAddresses);
 			newBackupAddress.remove(id);
 			this.backupAddresses = newBackupAddress;
@@ -619,7 +618,7 @@ public class RouterImpl implements Router {
 		LongMessageRuleImpl longMessageRule = new LongMessageRuleImpl(firstSpc, lastSpc, ruleType);
 
 		synchronized (this) {
-			LongMessageRuleMap<Integer, LongMessageRule> newLongMessageRule = new LongMessageRuleMap<Integer, LongMessageRule>();
+			LongMessageRuleMap<Integer, LongMessageRule> newLongMessageRule = new LongMessageRuleMap<>();
 			newLongMessageRule.putAll(this.longMessageRules);
 			newLongMessageRule.put(id, longMessageRule);
 			this.longMessageRules = newLongMessageRule;
@@ -635,7 +634,7 @@ public class RouterImpl implements Router {
 		LongMessageRuleImpl longMessageRule = new LongMessageRuleImpl(firstSpc, lastSpc, ruleType);
 
 		synchronized (this) {
-			LongMessageRuleMap<Integer, LongMessageRule> newLongMessageRule = new LongMessageRuleMap<Integer, LongMessageRule>();
+			LongMessageRuleMap<Integer, LongMessageRule> newLongMessageRule = new LongMessageRuleMap<>();
 			newLongMessageRule.putAll(this.longMessageRules);
 			newLongMessageRule.put(id, longMessageRule);
 			this.longMessageRules = newLongMessageRule;
@@ -650,7 +649,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			LongMessageRuleMap<Integer, LongMessageRule> newLongMessageRule = new LongMessageRuleMap<Integer, LongMessageRule>();
+			LongMessageRuleMap<Integer, LongMessageRule> newLongMessageRule = new LongMessageRuleMap<>();
 			newLongMessageRule.putAll(this.longMessageRules);
 			newLongMessageRule.remove(id);
 			this.longMessageRules = newLongMessageRule;
@@ -704,7 +703,7 @@ public class RouterImpl implements Router {
 
 		Mtp3ServiceAccessPointImpl sap = new Mtp3ServiceAccessPointImpl(mtp3Id, opc, ni);
 		synchronized (this) {
-			Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> newSap = new Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint>();
+			Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> newSap = new Mtp3ServiceAccessPointMap<>();
 			newSap.putAll(this.saps);
 			newSap.put(id, sap);
 			this.saps = newSap;
@@ -723,7 +722,7 @@ public class RouterImpl implements Router {
 
 		Mtp3ServiceAccessPointImpl sap = new Mtp3ServiceAccessPointImpl(mtp3Id, opc, ni);
 		synchronized (this) {
-			Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> newSap = new Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint>();
+			Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> newSap = new Mtp3ServiceAccessPointMap<>();
 			newSap.putAll(this.saps);
 			newSap.put(id, sap);
 			this.saps = newSap;
@@ -738,7 +737,7 @@ public class RouterImpl implements Router {
 		}
 
 		synchronized (this) {
-			Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> newSap = new Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint>();
+			Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> newSap = new Mtp3ServiceAccessPointMap<>();
 			newSap.putAll(this.saps);
 			newSap.remove(id);
 			this.saps = newSap;
@@ -754,11 +753,11 @@ public class RouterImpl implements Router {
 				// no resources allocated - nothing to do
 				return;
 
-			rulesMap = new RuleMap<Integer, Rule>();
-			primaryAddresses = new SccpAddressMap<Integer, SccpAddress>();
-			backupAddresses = new SccpAddressMap<Integer, SccpAddress>();
-			longMessageRules = new LongMessageRuleMap<Integer, LongMessageRule>();
-			saps = new Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint>();
+			rulesMap = new RuleMap<>();
+			primaryAddresses = new SccpAddressMap<>();
+			backupAddresses = new SccpAddressMap<>();
+			longMessageRules = new LongMessageRuleMap<>();
+			saps = new Mtp3ServiceAccessPointMap<>();
 
 			// We store the cleared state
 			this.store();
@@ -770,13 +769,10 @@ public class RouterImpl implements Router {
 	 */
 	public void store() {
 
-		// TODO : Should we keep reference to Objects rather than recreating
-		// everytime?
 		try {
 			XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
 			writer.setBinding(binding);
-			// Enables cross-references.
-			// writer.setReferenceResolver(new XMLReferenceResolver());
+
 			writer.setIndentation(TAB_INDENT);
 			writer.write(rulesMap, RULE, RuleMap.class);
 			writer.write(primaryAddresses, PRIMARY_ADDRESS, SccpAddressMap.class);
@@ -810,8 +806,7 @@ public class RouterImpl implements Router {
 			longMessageRules = reader.read(LONG_MESSAGE_RULE, LongMessageRuleMap.class);
 			saps = reader.read(MTP3_SERVICE_ACCESS_POINT, Mtp3ServiceAccessPointMap.class);
 		} catch (XMLStreamException ex) {
-			// this.logger.info(
-			// "Error while re-creating Linksets from persisted file", ex);
+			// no-op
 		}
 	}
 }

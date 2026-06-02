@@ -24,7 +24,6 @@ package org.mobicents.protocols.ss7.m3ua.impl.parameter;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import javolution.text.TextBuilder;
 import javolution.util.FastList;
 import javolution.xml.XMLFormat;
 import javolution.xml.XMLSerializable;
@@ -98,9 +97,9 @@ public class RoutingKeyImpl extends ParameterImpl implements RoutingKey, XMLSeri
 
 	private void decode(byte[] data) {
 		int pos = 0;
-		FastList<DestinationPointCode> dpcList = new FastList<DestinationPointCode>();
-		FastList<ServiceIndicators> serIndList = new FastList<ServiceIndicators>();
-		FastList<OPCList> opcListList = new FastList<OPCList>();
+		FastList<DestinationPointCode> dpcList = new FastList<>();
+		FastList<ServiceIndicators> serIndList = new FastList<>();
+		FastList<OPCList> opcListList = new FastList<>();
 
 		while (pos < data.length) {
 			short tag = (short) ((data[pos] & 0xff) << 8 | (data[pos + 1] & 0xff));
@@ -227,37 +226,36 @@ public class RoutingKeyImpl extends ParameterImpl implements RoutingKey, XMLSeri
 
 	@Override
 	public String toString() {
-		TextBuilder tb = TextBuilder.newInstance();
-		tb.append("RoutingKey(");
+		StringBuilder sb = new StringBuilder("RoutingKey(");
 		if (localRkId != null) {
-			tb.append(localRkId.toString());
+			sb.append(localRkId.toString());
 		}
 
 		if (rc != null) {
-			tb.append(rc.toString());
+			sb.append(rc.toString());
 		}
 
 		if (trafMdTy != null) {
-			tb.append(trafMdTy.toString());
+			sb.append(trafMdTy.toString());
 		}
 
 		if (netApp != null) {
-			tb.append(netApp.toString());
+			sb.append(netApp.toString());
 		}
 
 		if (dpc != null) {
-			tb.append(dpc.toString());
+			sb.append(dpc.toString());
 		}
 
 		if (servInds != null) {
-			tb.append(servInds.toString());
+			sb.append(servInds.toString());
 		}
 
 		if (opcList != null) {
-			tb.append(opcList.toString());
+			sb.append(opcList.toString());
 		}
-		tb.append(")");
-		return tb.toString();
+		sb.append(")");
+		return sb.toString();
 	}
 
 	/**

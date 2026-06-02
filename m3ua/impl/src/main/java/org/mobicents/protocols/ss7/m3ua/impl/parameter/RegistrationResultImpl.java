@@ -24,7 +24,6 @@ package org.mobicents.protocols.ss7.m3ua.impl.parameter;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import javolution.text.TextBuilder;
 
 import org.mobicents.protocols.ss7.m3ua.parameter.LocalRKIdentifier;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
@@ -115,20 +114,19 @@ public class RegistrationResultImpl extends ParameterImpl implements Registratio
 
     @Override
     public String toString() {
-        TextBuilder tb = TextBuilder.newInstance();
-        tb.append("RegistrationResult(");
+        StringBuilder sb = new StringBuilder("RegistrationResult(");
         if (localRKId != null) {
-            tb.append(localRKId.toString());
+            sb.append(localRKId.toString());
         }
 
         if (status != null) {
-            tb.append(status.toString());
+            sb.append(status.toString());
         }
 
         if (rc != null) {
-            tb.append(rc.toString());
+            sb.append(rc.toString());
         }
-        tb.append(")");
-        return tb.toString();
+        sb.append(")");
+        return sb.toString();
     }
 }

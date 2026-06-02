@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import javolution.text.TextBuilder;
 import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
@@ -51,7 +50,7 @@ public class SccpResource {
 	private static final String REMOTE_SPC = "remoteSpcs";
 	private static final String CONCERNED_SPC = "concernedSpcs";
 
-	private final TextBuilder persistFile = TextBuilder.newInstance();
+	private final StringBuilder persistFile = new StringBuilder();
 
 	private static final SccpResourceXMLBinding binding = new SccpResourceXMLBinding();
 	private static final String TAB_INDENT = "\t";
@@ -59,9 +58,9 @@ public class SccpResource {
 
 	private String persistDir;
 
-	private RemoteSubSystemMap<Integer, RemoteSubSystemImpl> remoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystemImpl>();
-	private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> remoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl>();
-	private ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> concernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl>();
+	private RemoteSubSystemMap<Integer, RemoteSubSystemImpl> remoteSsns = new RemoteSubSystemMap<>();
+	private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> remoteSpcs = new RemoteSignalingPointCodeMap<>();
+	private ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 	
 	private final String name;
 
@@ -80,7 +79,7 @@ public class SccpResource {
 	}
 
 	public void start() {
-		this.persistFile.clear();
+		this.persistFile.setLength(0);
 
 		if (persistDir != null) {
 			this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
@@ -230,9 +229,9 @@ public class SccpResource {
 				// no resources allocated - nothing to do
 				return;
 
-			remoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystemImpl>();
-			remoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl>();
-			concernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl>();
+			remoteSsns = new RemoteSubSystemMap<>();
+			remoteSpcs = new RemoteSignalingPointCodeMap<>();
+			concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 
 			// We store the cleared state
 			this.store();
