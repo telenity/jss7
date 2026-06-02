@@ -441,6 +441,36 @@ public class TCAPAbnormalTest extends SccpHarness {
 		server.compareEvents(serverExpectedEvents);
 	}
 
+	@Test
+	public void userAbortInInitialSentReleasesDialog() throws Exception {
+		long stamp = System.currentTimeMillis();
+		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp);
+		clientExpectedEvents.add(te);
+		te = TestEvent.createSentEvent(EventType.UAbort, null, 1, stamp + WAIT_TIME);
+		clientExpectedEvents.add(te);
+		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 2, stamp + WAIT_TIME);
+		clientExpectedEvents.add(te);
+
+		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp);
+		serverExpectedEvents.add(te);
+
+		CountDownLatch latch = new CountDownLatch(1);
+		client.setDoneLatch(latch);
+
+		client.startClientDialog();
+		client.sendBegin();
+		Thread.sleep(WAIT_TIME);
+
+		client.sendAbort(null, null, null);
+		latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+
+		assertEquals(TRPseudoState.Expunged, client.getCurDialog().getState());
+		client.compareEvents(clientExpectedEvents);
+		server.compareEvents(serverExpectedEvents);
+	}
+
 	/**
 	 * Sending a message with unreachable CalledPartyAddress TC-BEGIN
 	 */
