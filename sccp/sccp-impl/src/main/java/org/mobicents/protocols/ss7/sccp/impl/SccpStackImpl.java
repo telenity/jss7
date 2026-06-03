@@ -564,7 +564,6 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 		
 		} catch (IOException e) {
 			// this can not occur
-			e.printStackTrace();
 			return 0;
 		}
 	}

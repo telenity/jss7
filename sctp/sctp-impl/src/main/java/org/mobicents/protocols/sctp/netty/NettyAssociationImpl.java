@@ -521,7 +521,7 @@ public class NettyAssociationImpl implements Association {
     }
 
     protected void setSecondaryPeerAddress(String secondaryPeerAddress) {
-        if (logger.isInfoEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(String.format("setSecondaryPeerAddress: %s", secondaryPeerAddress));
         }
         this.secondaryPeerAddress = secondaryPeerAddress;

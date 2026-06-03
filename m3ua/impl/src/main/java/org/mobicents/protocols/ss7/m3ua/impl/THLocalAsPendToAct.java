@@ -97,8 +97,7 @@ public class THLocalAsPendToAct implements TransitionHandler {
 
 			return true;
 		} catch (Exception e) {
-			logger.error(String.format("Error while translating Rem AS to INACTIVE message. %s", this.fsm.toString()),
-					e);
+			logger.error(String.format("Error while translating Rem AS to INACTIVE message. %s", this.fsm), e);
 		}
 		return false;
 	}

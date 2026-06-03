@@ -122,7 +122,7 @@ public class THLocalAsInactToAct implements TransitionHandler {
 
 			return true;
 		} catch (Exception e) {
-			logger.error(String.format("Error while translating Rem AS to INACTIVE. %s", this.fsm.toString()), e);
+			logger.error(String.format("Error while translating Rem AS to INACTIVE. %s", this.fsm), e);
 		}
 		// something wrong
 		return false;

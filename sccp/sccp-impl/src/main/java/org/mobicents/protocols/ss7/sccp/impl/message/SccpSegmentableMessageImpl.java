@@ -96,7 +96,6 @@ public abstract class SccpSegmentableMessageImpl extends SccpAddressedMessageImp
 			this.buffer.write(this.data);
 		} catch (IOException e) {
 			// this can not occur
-			e.printStackTrace();
 		}
 	}
 
@@ -105,7 +104,6 @@ public abstract class SccpSegmentableMessageImpl extends SccpAddressedMessageImp
 			this.buffer.write(nextSegment.data);
 		} catch (IOException e) {
 			// this can not occur
-			e.printStackTrace();
 		}
 
 		if (--this.remainingSegments == 0) {

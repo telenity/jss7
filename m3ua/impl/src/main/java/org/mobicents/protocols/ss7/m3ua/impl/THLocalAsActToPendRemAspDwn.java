@@ -127,7 +127,7 @@ public class THLocalAsActToPendRemAspDwn implements TransitionHandler {
 			}
 
 		} catch (Exception e) {
-			logger.error(String.format("Error while translating Rem AS to PENDING. %s", this.fsm.toString()), e);
+			logger.error(String.format("Error while translating Rem AS to PENDING. %s", this.fsm), e);
 		}
 
 		return true;

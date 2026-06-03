@@ -99,8 +99,7 @@ public class RemAsStatePenTimeout implements FSMStateEventHandler {
 						remAspImpl.getAspFactory().write(msg);
 					}
 				} catch (UnknownTransitionException e) {
-					logger.error(String.format("Error while translating Rem AS to INACTIVE. %s", this.fsm.toString()),
-							e);
+					logger.error(String.format("Error while translating Rem AS to INACTIVE. %s", this.fsm), e);
 				}
 
 			}// if (remAspImpl.getState() == AspState.INACTIVE)
@@ -112,7 +111,7 @@ public class RemAsStatePenTimeout implements FSMStateEventHandler {
 				this.fsm.signal(TransitionState.AS_DOWN);
 				inactive = true;
 			} catch (UnknownTransitionException e) {
-				logger.error(String.format("Error while translating Rem AS to DOWN. %s", this.fsm.toString()), e);
+				logger.error(String.format("Error while translating Rem AS to DOWN. %s", this.fsm), e);
 			}
 		}
 		
