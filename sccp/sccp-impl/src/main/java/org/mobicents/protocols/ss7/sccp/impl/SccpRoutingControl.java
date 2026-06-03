@@ -73,7 +73,7 @@ public class SccpRoutingControl {
 
 	private MessageFactoryImpl messageFactory;
 
-	private ConcurrentHashMap<Integer, Long> prohibitedSpcs = new ConcurrentHashMap<Integer, Long>();
+	private ConcurrentHashMap<Integer, Long> prohibitedSpcs = new ConcurrentHashMap<>();
 
 	public SccpRoutingControl(SccpProviderImpl sccpProviderImpl, SccpStackImpl sccpStackImpl) {
 		this.messageFactory = sccpStackImpl.messageFactory;

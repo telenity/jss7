@@ -161,7 +161,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		server.setDoneLatch(latch);
 
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.UAbort, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT);
@@ -169,7 +169,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 2, stamp + _WAIT + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT);
@@ -228,7 +228,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		server.setDoneLatch(latch);
 
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -238,7 +238,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT * 2 + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -301,7 +301,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		server.setDoneLatch(latch);
 
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -313,7 +313,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + _WAIT * 3 + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -380,7 +380,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		server.setDoneLatch(latch);
 
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -392,7 +392,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + _WAIT * 4);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -454,7 +454,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		server.setDoneLatch(latch);
 
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -466,7 +466,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + _WAIT * 4 + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -513,7 +513,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		};
 
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT * 2);
@@ -523,7 +523,7 @@ public class DialogIdleEndTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT + _DIALOG_TIMEOUT * 2);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		for (int index = 1; index < 3; index++) {

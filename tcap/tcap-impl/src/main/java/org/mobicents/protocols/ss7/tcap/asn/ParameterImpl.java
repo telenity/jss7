@@ -151,7 +151,7 @@ public class ParameterImpl implements Parameter {
 			if (this.data == null) {
 				return this.parameters;
 			}
-			List<Parameter> paramsList = new ArrayList<Parameter>();
+			List<Parameter> paramsList = new ArrayList<>();
 			// else we try to decode :)
 			try {
 				AsnInputStream ais = new AsnInputStream(this.data);

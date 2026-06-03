@@ -81,18 +81,18 @@ public class TransitionState {
 
     public static final String INVALID_RC = "invalidrc";
 
-    private static HashMap<Integer, HashMap<Integer, String>> transContainer = new HashMap<Integer, HashMap<Integer, String>>();
+    private static HashMap<Integer, HashMap<Integer, String>> transContainer = new HashMap<>();
 
     static {
 
         // Transfer
-        HashMap<Integer, String> trfrTransCont = new HashMap<Integer, String>();
+        HashMap<Integer, String> trfrTransCont = new HashMap<>();
         trfrTransCont.put(MessageType.PAYLOAD, PAYLOAD);
 
         transContainer.put(MessageClass.TRANSFER_MESSAGES, trfrTransCont);
 
         // SSNM
-        HashMap<Integer, String> ssnmTransCont = new HashMap<Integer, String>();
+        HashMap<Integer, String> ssnmTransCont = new HashMap<>();
         ssnmTransCont.put(MessageType.DESTINATION_UNAVAILABLE, DUNA);
         ssnmTransCont.put(MessageType.DESTINATION_AVAILABLE, DAVA);
         ssnmTransCont.put(MessageType.DESTINATION_STATE_AUDIT, DAUD);
@@ -103,7 +103,7 @@ public class TransitionState {
         transContainer.put(MessageClass.SIGNALING_NETWORK_MANAGEMENT, ssnmTransCont);
 
         // ASPSM
-        HashMap<Integer, String> aspsmTransCont = new HashMap<Integer, String>();
+        HashMap<Integer, String> aspsmTransCont = new HashMap<>();
         aspsmTransCont.put(MessageType.ASP_UP, ASP_UP);
         aspsmTransCont.put(MessageType.ASP_UP_ACK, ASP_UP_ACK);
         aspsmTransCont.put(MessageType.ASP_DOWN, ASP_DOWN);
@@ -114,7 +114,7 @@ public class TransitionState {
         transContainer.put(MessageClass.ASP_STATE_MAINTENANCE, aspsmTransCont);
 
         // ASPTM
-        HashMap<Integer, String> asptmTransCont = new HashMap<Integer, String>();
+        HashMap<Integer, String> asptmTransCont = new HashMap<>();
         asptmTransCont.put(MessageType.ASP_ACTIVE, ASP_ACTIVE);
         asptmTransCont.put(MessageType.ASP_ACTIVE_ACK, ASP_ACTIVE_ACK);
         asptmTransCont.put(MessageType.ASP_INACTIVE, ASP_INACTIVE);
@@ -123,7 +123,7 @@ public class TransitionState {
         transContainer.put(MessageClass.ASP_TRAFFIC_MAINTENANCE, asptmTransCont);
 
         // MGMT
-        HashMap<Integer, String> mgmtTransCont = new HashMap<Integer, String>();
+        HashMap<Integer, String> mgmtTransCont = new HashMap<>();
 
         // NTFY
         mgmtTransCont.put((Status.STATUS_AS_State_Change << 16 | Status.INFO_Reserved), AS_STATE_CHANGE_RESERVE);
@@ -135,7 +135,7 @@ public class TransitionState {
                 OTHER_INSUFFICIENT_ASP);
         mgmtTransCont.put((Status.STATUS_Other << 16 | Status.INFO_Alternate_ASP_Active), OTHER_ALTERNATE_ASP_ACTIVE);
         mgmtTransCont.put((Status.STATUS_Other << 16 | Status.INFO_Alternate_ASP_Failure), OTHER_ALTERNATE_ASP_FAILURE);
-        // Err cde
+        // Err code
         mgmtTransCont.put(ErrorCode.Invalid_Routing_Context, INVALID_RC);
 
         transContainer.put(MessageClass.MANAGEMENT, mgmtTransCont);

@@ -524,7 +524,7 @@ public class AsnInputStream extends InputStream {
 						throw new AsnException("Error while decoding the octet-string: End-of-contents tag must have the zero length");
 					}
 					if (tag != Tag.STRING_OCTET || tagClass != Tag.CLASS_UNIVERSAL)
-						throw new AsnException("Error while decoding the octet-string: subsequent octet string tag must be CLASS_UNIVERSAL - STRING_BIT");
+						throw new AsnException("Error while decoding the octet-string: subsequent octet string tag must be CLASS_UNIVERSAL - STRING_OCTET");
 					_readOctetString(outputStream, readLength());
 				}
 			} else {
@@ -534,7 +534,7 @@ public class AsnInputStream extends InputStream {
 						break;
 					int tag = readTag();
 					if (tag != Tag.STRING_OCTET || tagClass != Tag.CLASS_UNIVERSAL)
-						throw new AsnException("Error while decoding the octet-string: subsequent octet string tag must be CLASS_UNIVERSAL - STRING_BIT");
+						throw new AsnException("Error while decoding the octet-string: subsequent octet string tag must be CLASS_UNIVERSAL - STRING_OCTET");
 					int length2 = readLength();
 					if (pos + length2 > startPos + length)
 						throw new AsnException("Error while decoding the octet-string: subsequent octet string is inconsistent");

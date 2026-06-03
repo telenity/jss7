@@ -81,7 +81,7 @@ public class NettyServerImpl implements Server {
 
     private NettySctpManagementImpl management = null;
 
-    protected FastList<String> associations = new FastList<>();
+    protected List<String> associations = new ArrayList<>();
     protected List<Association> anonymAssociations = new ArrayList<>();
 
     // Netty declarations
@@ -164,7 +164,7 @@ public class NettyServerImpl implements Server {
 
         @Override
     public List<String> getAssociations() {
-        return this.associations.unmodifiable();
+        return Collections.unmodifiableList(this.associations);
     }
 
         @Override
@@ -196,9 +196,7 @@ public class NettyServerImpl implements Server {
     }
 
     protected void stop() throws Exception {
-        FastList<String> tempAssociations = associations;
-        for (FastList.Node<String> n = tempAssociations.head(), end = tempAssociations.tail(); (n = n.getNext()) != end;) {
-            String assocName = n.getValue();
+        for (String assocName : associations) {
             Association associationTemp = this.management.getAssociation(assocName);
             if (associationTemp.isStarted()) {
                 throw new Exception(String.format("Stop all the associations first. Association=%s is still started",
@@ -286,8 +284,8 @@ public class NettyServerImpl implements Server {
                 .append(this.acceptAnonymousConnections).append(", maxConcurrentConnectionsCount=").append(this.maxConcurrentConnectionsCount)
                 .append(", associations(anonymous does not included)=[");
 
-        for (FastList.Node<String> n = this.associations.head(), end = this.associations.tail(); (n = n.getNext()) != end;) {
-            sb.append(n.getValue());
+        for (String assocName : this.associations) {
+            sb.append(assocName);
             sb.append(", ");
         }
 
@@ -331,7 +329,7 @@ public class NettyServerImpl implements Server {
                 server.extraHostAddresses[i] = xml.get(EXTRA_HOST_ADDRESS, String.class);
             }
 
-            server.associations = xml.get(ASSOCIATIONS, FastList.class);
+            server.associations = new ArrayList<>(xml.get(ASSOCIATIONS, FastList.class));
         }
 
         @Override
@@ -350,7 +348,7 @@ public class NettyServerImpl implements Server {
                     xml.add(s, EXTRA_HOST_ADDRESS, String.class);
                 }
             }
-            xml.add(server.associations, ASSOCIATIONS, FastList.class);
+            xml.add(new FastList<>(server.associations), ASSOCIATIONS, FastList.class);
         }
     };
 }

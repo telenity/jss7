@@ -21,12 +21,12 @@
  */
 package org.mobicents.protocols.sctp;
 
-import javolution.util.FastMap;
+import java.util.HashMap;
 
 /**
  * @author amit bhayani
  *
  */
-public class AssociationMap<K, V> extends FastMap<K, V> {
+public class AssociationMap<K, V> extends HashMap<K, V> {
 
 }

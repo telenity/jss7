@@ -92,7 +92,7 @@ public class SccpManagement {
 	private ScheduledExecutorService managementExecutors;
 
 	// Keeps track of how many SST are running for given DPC
-	private final Map<Integer, List<SubSystemTest>> dpcVsSst = new HashMap<Integer, List<SubSystemTest>>();
+	private final Map<Integer, List<SubSystemTest>> dpcVsSst = new HashMap<>();
 	// Keeps the time when the last SSP (after recdMsgForProhibitedSsn()) has
 	// been sent
 	private final Map<DpcSsn, Long> dpcSspSent = new HashMap<>();

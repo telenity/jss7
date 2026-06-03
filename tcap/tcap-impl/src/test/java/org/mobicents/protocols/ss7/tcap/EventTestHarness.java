@@ -68,7 +68,7 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
  */
 public abstract class EventTestHarness implements TCListener {
 	public static final long[] _ACN_ = new long[] { 0, 4, 0, 0, 1, 0, 19, 2 };
-	protected List<TestEvent> observedEvents = new ArrayList<TestEvent>();
+	protected List<TestEvent> observedEvents = new ArrayList<>();
 
 	protected Dialog dialog;
 	protected TCAPStack stack;

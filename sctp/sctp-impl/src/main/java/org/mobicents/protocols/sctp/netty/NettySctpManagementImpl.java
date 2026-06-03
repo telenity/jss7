@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javolution.util.FastList;
-import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
@@ -86,7 +86,7 @@ public class NettySctpManagementImpl implements Management {
     private ServerListener serverListener = null;
 
     private CopyOnWriteArrayList<ManagementEventListener> managementEventListeners = new CopyOnWriteArrayList<>();
-    protected FastList<Server> servers = new FastList<>();
+    protected List<Server> servers = new ArrayList<>();
     protected AssociationMap<String, Association> associations = new AssociationMap<>();
     private volatile boolean started = false;
 
@@ -226,17 +226,13 @@ public class NettySctpManagementImpl implements Management {
         this.store();
 
         // Stop all associations
-        FastMap<String, Association> associationsTemp = this.associations;
-        for (FastMap.Entry<String, Association> n = associationsTemp.head(), end = associationsTemp.tail(); (n = n.getNext()) != end;) {
-            Association associationTemp = n.getValue();
+        for (Association associationTemp : this.associations.values()) {
             if (associationTemp.isStarted()) {
                 ((NettyAssociationImpl) associationTemp).stop();
             }
         }
 
-        FastList<Server> tempServers = servers;
-        for (FastList.Node<Server> n = tempServers.head(), end = tempServers.tail(); (n = n.getNext()) != end;) {
-            Server serverTemp = n.getValue();
+        for (Server serverTemp : servers) {
             if (serverTemp.isStarted()) {
                 try {
                     ((NettyServerImpl) serverTemp).stop();
@@ -249,9 +245,7 @@ public class NettySctpManagementImpl implements Management {
         // waiting till stopping associations
         for (int i1 = 0; i1 < 20; i1++) {
             boolean assConnected = false;
-            for (FastMap.Entry<String, Association> n = this.associations.head(), end = this.associations.tail(); (n = n
-                    .getNext()) != end;) {
-                Association associationTemp = n.getValue();
+            for (Association associationTemp : this.associations.values()) {
                 if (associationTemp.isConnected()) {
                     assConnected = true;
                     break;
@@ -296,9 +290,8 @@ public class NettySctpManagementImpl implements Management {
 
             // Remove all associations
             ArrayList<String> lst = new ArrayList<>();
-            for (FastMap.Entry<String, Association> n = this.associations.head(), end = this.associations.tail(); (n = n
-                    .getNext()) != end;) {
-                lst.add(n.getKey());
+            for (String key : this.associations.keySet()) {
+                lst.add(key);
             }
             for (String n : lst) {
                 this.stopAssociation(n);
@@ -307,8 +300,8 @@ public class NettySctpManagementImpl implements Management {
 
             // Remove all servers
             lst.clear();
-            for (FastList.Node<Server> n = this.servers.head(), end = this.servers.tail(); (n = n.getNext()) != end;) {
-                lst.add(n.getValue().getName());
+            for (Server serverTemp : this.servers) {
+                lst.add(serverTemp.getName());
             }
             for (String n : lst) {
                 this.stopServer(n);
@@ -350,8 +343,7 @@ public class NettySctpManagementImpl implements Management {
         }
 
         synchronized (this) {
-            for (FastList.Node<Server> n = this.servers.head(), end = this.servers.tail(); (n = n.getNext()) != end;) {
-                Server serverTemp = n.getValue();
+            for (Server serverTemp : this.servers) {
                 if (serverName.equals(serverTemp.getName())) {
                     throw new Exception(String.format("Server name=%s already exists", serverName));
                 }
@@ -366,8 +358,7 @@ public class NettySctpManagementImpl implements Management {
                     acceptAnonymousConnections, maxConcurrentConnectionsCount, extraHostAddresses);
             server.setManagement(this);
 
-            FastList<Server> newServers = new FastList<>();
-            newServers.addAll(this.servers);
+            List<Server> newServers = new ArrayList<>(this.servers);
             newServers.add(server);
             this.servers = newServers;
 
@@ -412,19 +403,19 @@ public class NettySctpManagementImpl implements Management {
 
         synchronized (this) {
             Server removeServer = null;
-            for (FastList.Node<Server> n = this.servers.head(), end = this.servers.tail(); (n = n.getNext()) != end;) {
-                NettyServerImpl serverTemp = (NettyServerImpl) n.getValue();
+            for (Server serverTemp : this.servers) {
+                NettyServerImpl serverTempImpl = (NettyServerImpl) serverTemp;
 
-                if (serverName.equals(serverTemp.getName())) {
-                    if (serverTemp.isStarted()) {
+                if (serverName.equals(serverTempImpl.getName())) {
+                    if (serverTempImpl.isStarted()) {
                         throw new Exception(String.format("Server=%s is started. Stop the server before removing", serverName));
                     }
 
-                    if (serverTemp.anonymAssociations.size() != 0 || serverTemp.associations.size() != 0) {
+                    if (serverTempImpl.anonymAssociations.size() != 0 || serverTempImpl.associations.size() != 0) {
                         throw new Exception(String.format(
                                 "Server=%s has Associations. Remove all those Associations before removing Server", serverName));
                     }
-                    removeServer = serverTemp;
+                    removeServer = serverTempImpl;
                     break;
                 }
             }
@@ -433,8 +424,7 @@ public class NettySctpManagementImpl implements Management {
                 throw new Exception(String.format("No Server found with name=%s", serverName));
             }
 
-            FastList<Server> newServers = new FastList<>();
-            newServers.addAll(this.servers);
+            List<Server> newServers = new ArrayList<>(this.servers);
             newServers.remove(removeServer);
             this.servers = newServers;
 
@@ -461,9 +451,7 @@ public class NettySctpManagementImpl implements Management {
             throw new Exception("Server name cannot be null");
         }
 
-        FastList<Server> tempServers = servers;
-        for (FastList.Node<Server> n = tempServers.head(), end = tempServers.tail(); (n = n.getNext()) != end;) {
-            Server serverTemp = n.getValue();
+        for (Server serverTemp : servers) {
 
             if (serverName.equals(serverTemp.getName())) {
                 if (serverTemp.isStarted()) {
@@ -489,9 +477,7 @@ public class NettySctpManagementImpl implements Management {
             throw new Exception("Server name cannot be null");
         }
 
-        FastList<Server> tempServers = servers;
-        for (FastList.Node<Server> n = tempServers.head(), end = tempServers.tail(); (n = n.getNext()) != end;) {
-            Server serverTemp = n.getValue();
+        for (Server serverTemp : servers) {
 
             if (serverName.equals(serverTemp.getName())) {
                 ((NettyServerImpl) serverTemp).stop();
@@ -506,7 +492,7 @@ public class NettySctpManagementImpl implements Management {
 
         @Override
     public List<Server> getServers() {
-        return servers.unmodifiable();
+        return Collections.unmodifiableList(servers);
     }
 
         @Override
@@ -545,8 +531,7 @@ public class NettySctpManagementImpl implements Management {
 
             Server server = null;
 
-            for (FastList.Node<Server> n = this.servers.head(), end = this.servers.tail(); (n = n.getNext()) != end;) {
-                Server serverTemp = n.getValue();
+            for (Server serverTemp : this.servers) {
                 if (serverTemp.getName().equals(serverName)) {
                     server = serverTemp;
                 }
@@ -556,9 +541,7 @@ public class NettySctpManagementImpl implements Management {
                 throw new Exception(String.format("No Server found for name=%s", serverName));
             }
 
-            for (FastMap.Entry<String, Association> n = this.associations.head(), end = this.associations.tail(); (n = n
-                    .getNext()) != end;) {
-                Association associationTemp = n.getValue();
+            for (Association associationTemp : this.associations.values()) {
 
                 if (associationTemp.getServerName() != null && associationTemp.getServerName().equals(server.getName())
                         && peerAddress.equals(associationTemp.getPeerAddress()) && associationTemp.getPeerPort() == peerPort) {
@@ -579,8 +562,7 @@ public class NettySctpManagementImpl implements Management {
             newAssociations.put(assocName, association);
             this.associations = newAssociations;
 
-            FastList<String> newAssociations2 = new FastList<>();
-            newAssociations2.addAll(((NettyServerImpl) server).associations);
+            List<String> newAssociations2 = new ArrayList<>(((NettyServerImpl) server).associations);
             newAssociations2.add(assocName);
             ((NettyServerImpl) server).associations = newAssociations2;
 
@@ -643,9 +625,7 @@ public class NettySctpManagementImpl implements Management {
         }
 
         synchronized (this) {
-            for (FastMap.Entry<String, Association> n = this.associations.head(), end = this.associations.tail(); (n = n
-                    .getNext()) != end;) {
-                Association associationTemp = n.getValue();
+            for (Association associationTemp : this.associations.values()) {
 
                 if (assocName.equals(associationTemp.getName())) {
                     throw new Exception(String.format("Already has association=%s", associationTemp.getName()));
@@ -718,11 +698,9 @@ public class NettySctpManagementImpl implements Management {
             this.associations = newAssociations;
 
             if (((NettyAssociationImpl) association).getAssociationType() == AssociationType.SERVER) {
-                for (FastList.Node<Server> n = this.servers.head(), end = this.servers.tail(); (n = n.getNext()) != end;) {
-                    Server serverTemp = n.getValue();
+                for (Server serverTemp : this.servers) {
                     if (serverTemp.getName().equals(association.getServerName())) {
-                        FastList<String> newAssociations2 = new FastList<>();
-                        newAssociations2.addAll(((NettyServerImpl) serverTemp).associations);
+                        List<String> newAssociations2 = new ArrayList<>(((NettyServerImpl) serverTemp).associations);
                         newAssociations2.remove(assocName);
                         ((NettyServerImpl) serverTemp).associations = newAssociations2;
                         break;
@@ -861,10 +839,9 @@ public class NettySctpManagementImpl implements Management {
                 // ignore - for backward compatibility when values are not defined
             }
 
-            this.servers = reader.read(SERVERS, FastList.class);
+            this.servers = new ArrayList<>(reader.read(SERVERS, FastList.class));
 
-            for (FastList.Node<Server> n = this.servers.head(), end = this.servers.tail(); (n = n.getNext()) != end;) {
-                Server serverTemp = n.getValue();
+            for (Server serverTemp : this.servers) {
                 ((NettyServerImpl) serverTemp).setManagement(this);
                 if (serverTemp.isStarted()) {
                     try {
@@ -876,10 +853,9 @@ public class NettySctpManagementImpl implements Management {
             }
 
             this.associations = reader.read(ASSOCIATIONS, AssociationMap.class);
-            for (FastMap.Entry<String, Association> n = this.associations.head(), end = this.associations.tail(); (n = n
-                    .getNext()) != end;) {
-                NettyAssociationImpl associationTemp = (NettyAssociationImpl) n.getValue();
-                associationTemp.setManagement(this);
+            for (Association associationTemp : this.associations.values()) {
+                NettyAssociationImpl associationTempImpl = (NettyAssociationImpl) associationTemp;
+                associationTempImpl.setManagement(this);
             }
 
         } catch (XMLStreamException ex) {
@@ -895,7 +871,7 @@ public class NettySctpManagementImpl implements Management {
 
             writer.write(this.connectDelay, CONNECT_DELAY_PROP, Integer.class);
 
-            writer.write(this.servers, SERVERS, FastList.class);
+            writer.write(new FastList<>(this.servers), SERVERS, FastList.class);
             writer.write(this.associations, ASSOCIATIONS, AssociationMap.class);
 
             writer.close();

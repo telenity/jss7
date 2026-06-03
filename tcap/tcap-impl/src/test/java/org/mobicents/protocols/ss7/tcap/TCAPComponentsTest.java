@@ -334,7 +334,7 @@ public class TCAPComponentsTest extends SccpHarness {
 
 		long stamp = System.currentTimeMillis();
 		int cnt = 0;
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Invoke, null, cnt++, stamp);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Begin, null, cnt++, stamp);
@@ -393,7 +393,7 @@ public class TCAPComponentsTest extends SccpHarness {
 		clientExpectedEvents.add(te);
 
 		cnt = 0;
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, cnt++, stamp);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Invoke, null, cnt++, stamp);
@@ -503,7 +503,7 @@ public class TCAPComponentsTest extends SccpHarness {
 
 		long stamp = System.currentTimeMillis();
 		int cnt = 0;
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Invoke, null, cnt++, stamp);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Begin, null, cnt++, stamp);
@@ -516,7 +516,7 @@ public class TCAPComponentsTest extends SccpHarness {
 		clientExpectedEvents.add(te);
 
 		cnt = 0;
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, cnt++, stamp);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Reject, null, cnt++, stamp);
@@ -592,7 +592,7 @@ public class TCAPComponentsTest extends SccpHarness {
 
 		long stamp = System.currentTimeMillis();
 		int cnt = 0;
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Invoke, null, cnt++, stamp);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Begin, null, cnt++, stamp);
@@ -605,7 +605,7 @@ public class TCAPComponentsTest extends SccpHarness {
 		clientExpectedEvents.add(te);
 
 		cnt = 0;
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, cnt++, stamp);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Reject, null, cnt++, stamp);
@@ -682,7 +682,7 @@ public class TCAPComponentsTest extends SccpHarness {
 
 		long stamp = System.currentTimeMillis();
 		int cnt = 0;
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Invoke, null, cnt++, stamp);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Begin, null, cnt++, stamp);
@@ -695,7 +695,7 @@ public class TCAPComponentsTest extends SccpHarness {
 		clientExpectedEvents.add(te);
 
 		cnt = 0;
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, cnt++, stamp);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Reject, null, cnt++, stamp);

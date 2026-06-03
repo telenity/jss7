@@ -575,7 +575,7 @@ public class RuleImpl implements Rule, Serializable {
             rule.secondaryAddressId = xml.getAttribute(SECONDARY_ADDRESS).toInt();
 
             String alst = xml.getAttribute(LS_TABLE, "");
-            List<Integer> convertedList = new LinkedList<Integer>();
+            List<Integer> convertedList = new LinkedList<>();
             if (alst.length() > 0) {
                 String[] convertedArray = alst.split(",");
                 for (String number : convertedArray) {

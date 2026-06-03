@@ -166,7 +166,7 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
 
 	public void setMtp3UserParts(Map<Integer, Mtp3UserPart> mtp3UserPartsTemp) {
 		if (mtp3UserPartsTemp != null) {
-			this.mtp3UserParts = new ConcurrentHashMap<Integer, Mtp3UserPart>(mtp3UserPartsTemp);
+			this.mtp3UserParts = new ConcurrentHashMap<>(mtp3UserPartsTemp);
 		}
 	}
 

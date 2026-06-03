@@ -22,7 +22,6 @@
 
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
-import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.impl.parameter.HopCounterImpl;
 import org.mobicents.protocols.ss7.sccp.message.SccpAddressedMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.HopCounter;

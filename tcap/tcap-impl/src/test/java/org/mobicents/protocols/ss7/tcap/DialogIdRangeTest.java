@@ -237,12 +237,12 @@ public class DialogIdRangeTest extends SccpHarness {
         final TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
 
         final Set<Long> dialogIds =
-                Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
+                Collections.newSetFromMap(new ConcurrentHashMap<>());
         final AtomicInteger duplicates = new AtomicInteger(0);
         final AtomicInteger exceptions = new AtomicInteger(0);
 
         ExecutorService exec = Executors.newFixedThreadPool(threads);
-        List<Future<Void>> futures = new ArrayList<Future<Void>>();
+        List<Future<Void>> futures = new ArrayList<>();
 
         for (int i = 0; i < threads; i++) {
             futures.add(exec.submit(new Callable<Void>() {

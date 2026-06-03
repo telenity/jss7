@@ -84,7 +84,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
     private AssociationData assDataClt1; 
     private AssociationData assDataClt2; 
     private AssociationData assDataClt3; 
-    private ArrayList<AssociationData> assDataSrv = new ArrayList<AssociationData>(); 
+    private ArrayList<AssociationData> assDataSrv = new ArrayList<>(); 
 
     @BeforeClass
     public static void setUpClass() throws Exception {

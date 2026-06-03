@@ -88,14 +88,14 @@ public class M3UAShellExecutor implements ShellExecutor {
 			return M3UAOAMMessages.INVALID_COMMAND;
 		}
 
-		Functionality functionlaity = Functionality.getFunctionality(args[4]);
+		Functionality functionality = Functionality.getFunctionality(args[4]);
 		ExchangeType exchangeType = null;
 		IPSPType ipspType = null;
 		RoutingContext rc = null;
 		TrafficModeType trafficModeType = null;
 		NetworkAppearance na = null;
 
-		if (functionlaity == null) {
+		if (functionality == null) {
 			return M3UAOAMMessages.INVALID_COMMAND;
 		}
 
@@ -129,8 +129,8 @@ public class M3UAShellExecutor implements ShellExecutor {
 			}
 		}
 
-		As asImpl = this.m3uaManagement.createAs(asName, functionlaity, exchangeType, ipspType, rc, trafficModeType, minAspActiveForLoadbalance, na);
-		return String.format(M3UAOAMMessages.CREATE_AS_SUCESSFULL, asImpl.getName());
+		As asImpl = this.m3uaManagement.createAs(asName, functionality, exchangeType, ipspType, rc, trafficModeType, minAspActiveForLoadbalance, na);
+		return String.format(M3UAOAMMessages.CREATE_AS_SUCCESSFUL, asImpl.getName());
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 		AsImpl asImpl = this.m3uaManagement.destroyAs(asName);
 
-		return String.format(M3UAOAMMessages.DESTROY_AS_SUCESSFULL, asName);
+		return String.format(M3UAOAMMessages.DESTROY_AS_SUCCESSFUL, asName);
 	}
 
 	/**
@@ -173,7 +173,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 		}
 
 		this.m3uaManagement.assignAspToAs(args[3], args[4]);
-		return String.format(M3UAOAMMessages.ADD_ASP_TO_AS_SUCESSFULL, args[4], args[3]);
+		return String.format(M3UAOAMMessages.ADD_ASP_TO_AS_SUCCESSFUL, args[4], args[3]);
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 		}
 
 		this.m3uaManagement.unassignAspFromAs(args[3], args[4]);
-		return String.format(M3UAOAMMessages.REMOVE_ASP_FROM_AS_SUCESSFULL, args[4], args[3]);
+		return String.format(M3UAOAMMessages.REMOVE_ASP_FROM_AS_SUCCESSFUL, args[4], args[3]);
 	}
 
 	private TrafficModeType getTrafficModeType(String mode) {
@@ -352,7 +352,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 							factory = this.m3uaManagement.createAspFactory(aspname, assocName, aspid, isHeartBeatEnabled);
 						}
 					}
-					return String.format(M3UAOAMMessages.CREATE_ASP_SUCESSFULL, factory.getName());
+					return String.format(M3UAOAMMessages.CREATE_ASP_SUCCESSFUL, factory.getName());
 				} else if (raspCmd.equals("destroy")) {
 					if (args.length < 4) {
 						return M3UAOAMMessages.INVALID_COMMAND;
@@ -360,7 +360,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 					String aspName = args[3];
 					this.m3uaManagement.destroyAspFactory(aspName);
-					return String.format(M3UAOAMMessages.DESTROY_ASP_SUCESSFULL, aspName);
+					return String.format(M3UAOAMMessages.DESTROY_ASP_SUCCESSFUL, aspName);
 
 				} else if (raspCmd.equals("show")) {
 					return this.showAspFactories();
@@ -372,7 +372,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 					String aspName = args[3];
 					this.m3uaManagement.startAsp(aspName);
-					return String.format(M3UAOAMMessages.ASP_START_SUCESSFULL, aspName);
+					return String.format(M3UAOAMMessages.ASP_START_SUCCESSFUL, aspName);
 				} else if (raspCmd.equals("stop")) {
 					if (args.length < 4) {
 						return M3UAOAMMessages.INVALID_COMMAND;
@@ -380,7 +380,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 					String aspName = args[3];
 					this.m3uaManagement.stopAsp(aspName);
-					return String.format(M3UAOAMMessages.ASP_STOP_SUCESSFULL, aspName);
+					return String.format(M3UAOAMMessages.ASP_STOP_SUCCESSFUL, aspName);
 				}
 
 				return M3UAOAMMessages.INVALID_COMMAND;
@@ -417,7 +417,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 
 					this.m3uaManagement.addRoute(dpc, opc, si, asName);
 
-					return String.format(M3UAOAMMessages.ADD_ROUTE_AS_FOR_DPC_SUCCESSFULL, asName, dpc);
+					return String.format(M3UAOAMMessages.ADD_ROUTE_AS_FOR_DPC_SUCCESSFUL, asName, dpc);
 				}
 
 				if (routeCmd.equals("remove")) {
@@ -444,7 +444,7 @@ public class M3UAShellExecutor implements ShellExecutor {
 					}
 
 					this.m3uaManagement.removeRoute(dpc, opc, si, asName);
-					return String.format(M3UAOAMMessages.REMOVE_AS_ROUTE_FOR_DPC_SUCCESSFULL, asName, dpc);
+					return String.format(M3UAOAMMessages.REMOVE_AS_ROUTE_FOR_DPC_SUCCESSFUL, asName, dpc);
 				}
 
 				if (routeCmd.equals("show")) {

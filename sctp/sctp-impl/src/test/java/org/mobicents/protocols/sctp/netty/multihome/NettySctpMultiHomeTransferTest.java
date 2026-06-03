@@ -105,8 +105,8 @@ public class NettySctpMultiHomeTransferTest {
         this.clientAssocDown = false;
         this.serverAssocDown = false;
 
-        this.clientMessage = new ArrayList<String>();
-        this.serverMessage = new ArrayList<String>();
+        this.clientMessage = new ArrayList<>();
+        this.serverMessage = new ArrayList<>();
 
         this.management = new NettySctpManagementImpl("server-management");
 //        this.management.setSingleThread(true);

@@ -50,7 +50,7 @@ public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 
 	protected volatile boolean isStarted = false;
 
-	private CopyOnWriteArrayList<Mtp3UserPartListener> userListeners = new CopyOnWriteArrayList<Mtp3UserPartListener>();
+	private CopyOnWriteArrayList<Mtp3UserPartListener> userListeners = new CopyOnWriteArrayList<>();
 	// a thread pool for delivering Mtp3TransferMessage messages
 	private ExecutorService[] msgDeliveryExecutors;
 	// a thread for delivering PAUSE, RESUME and STATUS messages

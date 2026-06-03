@@ -23,7 +23,6 @@
 package org.mobicents.protocols.ss7.sccp.impl.message;
 
 import java.io.IOException;
-import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.impl.parameter.AbstractParameter;
 import org.mobicents.protocols.ss7.sccp.impl.parameter.ProtocolClassImpl;
 import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;

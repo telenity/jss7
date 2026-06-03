@@ -23,8 +23,6 @@
 package org.mobicents.protocols.ss7.mtp;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 

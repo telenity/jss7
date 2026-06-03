@@ -26,8 +26,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.net.InetSocketAddress;
-
-import javolution.util.FastMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.api.Association;
@@ -81,10 +80,9 @@ public class NettySctpServerHandler extends NettySctpChannelInboundHandlerAdapte
         // Iterate through all corresponding associate to
         // check if incoming connection request matches with any provisioned
         // ip:port
-        FastMap<String, Association> associations = this.managementImpl.associations;
-        for (FastMap.Entry<String, Association> n = associations.head(), end = associations.tail(); (n = n.getNext()) != end
-                && !provisioned;) {
-            NettyAssociationImpl association = (NettyAssociationImpl) n.getValue();
+        Map<String, Association> associations = this.managementImpl.associations;
+        for (Map.Entry<String, Association> entry : associations.entrySet()) {
+            NettyAssociationImpl association = (NettyAssociationImpl) entry.getValue();
             String secondaryHostAddress = association.secondaryHostAddress;
             // check if an association binds to the found server
             if (serverImpl.getName().equals(association.getServerName())

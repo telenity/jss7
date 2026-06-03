@@ -119,7 +119,7 @@ public class DialogIdleTest extends SccpHarness {
 	@Test
 	public void testCreateOnly() throws Exception {
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> expectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> expectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 0, stamp + _DIALOG_TIMEOUT);
 		expectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.PAbort, null, 1, stamp + _DIALOG_TIMEOUT);
@@ -138,7 +138,7 @@ public class DialogIdleTest extends SccpHarness {
 	public void testAfterBeginOnly1() throws Exception {
 		//client timeout first
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT);
@@ -148,7 +148,7 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT);
@@ -175,7 +175,7 @@ public class DialogIdleTest extends SccpHarness {
 		this.tcapStack1.setDialogIdleTimeout(_DIALOG_TIMEOUT);
 		this.tcapStack2.setDialogIdleTimeout(_DIALOG_TIMEOUT-100);
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.PAbort, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT);
@@ -183,7 +183,7 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 2, stamp + _WAIT + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.DialogTimeout, null, 1, stamp + _WAIT + _DIALOG_TIMEOUT);
@@ -207,7 +207,7 @@ public class DialogIdleTest extends SccpHarness {
 	@Test
 	public void testAfterContinue() throws Exception {
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -219,7 +219,7 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 4, stamp + _WAIT * 2 + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -248,7 +248,7 @@ public class DialogIdleTest extends SccpHarness {
 	@Test
 	public void testAfterContinue2() throws Exception {
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -262,7 +262,7 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 5, stamp + _WAIT * 3 + _DIALOG_TIMEOUT);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -295,7 +295,7 @@ public class DialogIdleTest extends SccpHarness {
 	@Test
 	public void testAfterEnd() throws Exception {
 		long stamp = System.currentTimeMillis();
-		List<TestEvent> clientExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> clientExpectedEvents = new ArrayList<>();
 		TestEvent te = TestEvent.createSentEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		clientExpectedEvents.add(te);
 		te = TestEvent.createReceivedEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);
@@ -305,7 +305,7 @@ public class DialogIdleTest extends SccpHarness {
 		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 3, stamp + _WAIT * 3);
 		clientExpectedEvents.add(te);
 
-		List<TestEvent> serverExpectedEvents = new ArrayList<TestEvent>();
+		List<TestEvent> serverExpectedEvents = new ArrayList<>();
 		te = TestEvent.createReceivedEvent(EventType.Begin, null, 0, stamp + _WAIT);
 		serverExpectedEvents.add(te);
 		te = TestEvent.createSentEvent(EventType.Continue, null, 1, stamp + _WAIT * 2);

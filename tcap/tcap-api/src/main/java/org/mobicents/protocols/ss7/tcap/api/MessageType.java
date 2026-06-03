@@ -23,7 +23,6 @@
 package org.mobicents.protocols.ss7.tcap.api;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
@@ -65,7 +64,7 @@ public enum MessageType {
 	}
 
 	public void encode(AsnOutputStream asnO) {
-		// write directly, we know its applciation class, constructed and num is
+		// write directly, we know its application class, constructed and num is
 		// in range of 5 bits
 		// this way its faster.
 		asnO.write(tagContent);

@@ -34,9 +34,9 @@ public interface M3UAOAMMessages {
 	 */
 	public static final String INVALID_COMMAND = "Invalid Command";
 
-	public static final String ADD_ASP_TO_AS_SUCESSFULL = "Successfully added ASP name=%s to AS name=%s";
+	public static final String ADD_ASP_TO_AS_SUCCESSFUL = "Successfully added ASP name=%s to AS name=%s";
 	
-	public static final String REMOVE_ASP_FROM_AS_SUCESSFULL = "Successfully removed ASP name=%s from AS name=%s";
+	public static final String REMOVE_ASP_FROM_AS_SUCCESSFUL = "Successfully removed ASP name=%s from AS name=%s";
 
 	public static final String NO_AS_FOUND = "No AS found for given name %s";
 	
@@ -60,21 +60,21 @@ public interface M3UAOAMMessages {
 	
 	public static final String ASP_ALREADY_STARTED = "ASP name=%s already started";
 
-	public static final String ASP_START_SUCESSFULL = "Successfully started ASP name=%s";
+	public static final String ASP_START_SUCCESSFUL = "Successfully started ASP name=%s";
 
-	public static final String ASP_STOP_SUCESSFULL = "Successfully stopped ASP name=%s";
+	public static final String ASP_STOP_SUCCESSFUL = "Successfully stopped ASP name=%s";
 
-	public static final String CREATE_AS_SUCESSFULL = "Successfully created AS name=%s";
+	public static final String CREATE_AS_SUCCESSFUL = "Successfully created AS name=%s";
 	
-	public static final String DESTROY_AS_SUCESSFULL = "Successfully destroyed AS name=%s";
+	public static final String DESTROY_AS_SUCCESSFUL = "Successfully destroyed AS name=%s";
 	
 	public static final String DESTROY_AS_FAILED_ASP_ASSIGNED = "As=%s still has ASP's assigned. Unassign Asp's before destroying this As";
 
 	public static final String CREATE_AS_FAIL_NAME_EXIST = "Creation of AS failed. Other AS with name=%s already exist";
 
-	public static final String CREATE_ASP_SUCESSFULL = "Successfully created ASP name=%s";
+	public static final String CREATE_ASP_SUCCESSFUL = "Successfully created ASP name=%s";
 	
-	public static final String DESTROY_ASP_SUCESSFULL = "Successfully destroyed ASP name=%s";
+	public static final String DESTROY_ASP_SUCCESSFUL = "Successfully destroyed ASP name=%s";
 
 	public static final String CREATE_ASP_FAIL_NAME_EXIST = "Creation of ASP failed. Other ASP with name=%s already exist";
 
@@ -82,15 +82,15 @@ public interface M3UAOAMMessages {
 
 	public static final String ROUTE_AS_FOR_DPC_EXIST = "AS=%s already routes for DPC=%d";
 
-	public static final String ADD_ROUTE_AS_FOR_DPC_SUCCESSFULL = "AS=%s successfully added as route for DPC=%d";
+	public static final String ADD_ROUTE_AS_FOR_DPC_SUCCESSFUL = "AS=%s successfully added as route for DPC=%d";
 
 	public static final String NO_ROUTE_DEFINED_FOR_DPC = "No route defined for DPC=%d";
 
 	public static final String NO_AS_ROUTE_FOR_DPC = "AS=%s doesn't routes for DPC=%d";
 
-	public static final String REMOVE_AS_ROUTE_FOR_DPC_SUCCESSFULL = "Successfully removed AS=%s as route for DPC=%d";
+	public static final String REMOVE_AS_ROUTE_FOR_DPC_SUCCESSFUL = "Successfully removed AS=%s as route for DPC=%d";
 
-	public static final String CMD_NOTSUPPORTED_M3UAMANAGEMENT_IS_SERVER = "The M3UAManagement is Server side and doesnt support command %s";
+	public static final String CMD_NOTSUPPORTED_M3UAMANAGEMENT_IS_SERVER = "The M3UAManagement is Server side and doesn't support command %s";
 	
 	public static final String NOT_SUPPORTED_YET = "Not supported yet";
 	

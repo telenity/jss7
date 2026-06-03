@@ -21,7 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
