@@ -262,7 +262,7 @@ public class RouterImpl implements Router {
 		try {
 			this.load();
 		} catch (IOException e) {
-			logger.warn(String.format("Failed to load the SS7 configuration file"), e);
+			logger.warn("Failed to load the SS7 configuration file", e);
 		}
 
 		logger.info("Started SCCP Router");

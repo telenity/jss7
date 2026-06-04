@@ -56,7 +56,7 @@ public class THLocalAsDwnToInact implements TransitionHandler {
 				AspImpl remAsp = (AspImpl) this.fsm.getAttribute(AsImpl.ATTRIBUTE_ASP);
 
 				if (remAsp == null) {
-					logger.error(String.format("No ASP found. %s", this.fsm.toString()));
+					logger.error(String.format("No ASP found. %s", this.fsm));
 					return false;
 				}
 
@@ -65,8 +65,7 @@ public class THLocalAsDwnToInact implements TransitionHandler {
 			}
 			return true;
 		} catch (Exception e) {
-			logger.error(String.format("Error while translating Rem AS to INACTIVE message. %s", this.fsm.toString()),
-					e);
+			logger.error(String.format("Error while translating Rem AS to INACTIVE message. %s", this.fsm), e);
 		}
 		return false;
 	}

@@ -128,7 +128,7 @@ public class FSMState {
         if (t != null) {
             return t.process(this);
         }
-        throw new UnknownTransitionException(String.format("Transition=%s. %s", name, this.fsm.toString()));
+        throw new UnknownTransitionException(String.format("Transition=%s. %s", name, this.fsm));
     }
 
     /**

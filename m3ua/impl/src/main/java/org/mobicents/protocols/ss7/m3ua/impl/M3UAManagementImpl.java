@@ -232,7 +232,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 		try {
 			this.load();
 		} catch (IOException e) {
-			logger.warn(String.format("Failed to load the SS7 configuration file"), e);
+			logger.warn("Failed to load the SS7 configuration file", e);
 		}
 
 		fsmTicker = Executors.newSingleThreadScheduledExecutor();

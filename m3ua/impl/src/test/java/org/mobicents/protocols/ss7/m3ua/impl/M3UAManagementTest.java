@@ -51,6 +51,7 @@ import org.mobicents.protocols.ss7.m3ua.Util;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.mobicents.protocols.ss7.m3ua.parameter.NetworkAppearance;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
+import org.mobicents.protocols.ss7.mtp.RoutingLabelFormat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -193,6 +194,21 @@ public class M3UAManagementTest {
             assertTrue("Duplicate id: " + id, ids.add(id));
         }
         assertEquals(n, ids.size());
+    }
+
+    @Test
+    public void testAnsiSls5BitRoutingLabelFormatStarts() throws Exception {
+        M3UAManagementImpl ansiM3uaMgmt = new M3UAManagementImpl("M3UAManagementTestAnsiSls5Bit");
+        ansiM3uaMgmt.setPersistDir(Util.getTmpTestDir());
+        ansiM3uaMgmt.setTransportManagement(this.transportManagement);
+        ansiM3uaMgmt.setRoutingLabelFormat(RoutingLabelFormat.ANSI_Sls5Bit);
+        ansiM3uaMgmt.start();
+        try {
+            assertEquals(RoutingLabelFormat.ANSI_Sls5Bit, ansiM3uaMgmt.getRoutingLabelFormat());
+            assertEquals(272 - 7, ansiM3uaMgmt.getMaxUserDataLength(1));
+        } finally {
+            ansiM3uaMgmt.stop();
+        }
     }
 
     class TestAssociation implements Association {

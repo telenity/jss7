@@ -188,7 +188,7 @@ public class NettySctpManagementImpl implements Management {
             try {
                 this.load();
             } catch (IOException e) {
-                logger.warn(String.format("Failed to load the SCTP configuration file"), e);
+                logger.warn("Failed to load the SCTP configuration file", e);
             }
 
             this.started = true;

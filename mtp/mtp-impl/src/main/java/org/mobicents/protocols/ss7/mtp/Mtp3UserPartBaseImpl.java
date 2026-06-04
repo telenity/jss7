@@ -37,272 +37,273 @@ import org.apache.log4j.Logger;
  */
 public abstract class Mtp3UserPartBaseImpl implements Mtp3UserPart {
 
-	private static final Logger logger = Logger.getLogger(Mtp3UserPartBaseImpl.class);
+    private static final Logger logger = Logger.getLogger(Mtp3UserPartBaseImpl.class);
 
-	private int maxSls = 32;
-	private int slsFilter = 0x1F;
+    private int maxSls = 32;
+    private int slsFilter = 0x1F;
 
-	// The count of threads that will be used for message delivering to
-	// Mtp3UserPartListener's
-	// For single thread model this value should be equal 1
-	// TODO: make it configurable
-	protected int deliveryTransferMessageThreadCount = 4;
+    // The count of threads that will be used for message delivering to
+    // Mtp3UserPartListener's
+    // For single thread model this value should be equal 1
+    // TODO: make it configurable
+    protected int deliveryTransferMessageThreadCount = 4;
 
-	protected volatile boolean isStarted = false;
+    protected volatile boolean isStarted = false;
 
-	private CopyOnWriteArrayList<Mtp3UserPartListener> userListeners = new CopyOnWriteArrayList<>();
-	// a thread pool for delivering Mtp3TransferMessage messages
-	private ExecutorService[] msgDeliveryExecutors;
-	// a thread for delivering PAUSE, RESUME and STATUS messages
-	private ExecutorService msgDeliveryExecutorSystem;
-	private int slsTable[] = null;
+    private CopyOnWriteArrayList<Mtp3UserPartListener> userListeners = new CopyOnWriteArrayList<>();
+    // a thread pool for delivering Mtp3TransferMessage messages
+    private ExecutorService[] msgDeliveryExecutors;
+    // a thread for delivering PAUSE, RESUME and STATUS messages
+    private ExecutorService msgDeliveryExecutorSystem;
+    private int slsTable[] = null;
 
-	private RoutingLabelFormat routingLabelFormat = RoutingLabelFormat.ITU;
+    private RoutingLabelFormat routingLabelFormat = RoutingLabelFormat.ITU;
 
-	private Mtp3TransferPrimitiveFactory mtp3TransferPrimitiveFactory = null;
+    private Mtp3TransferPrimitiveFactory mtp3TransferPrimitiveFactory = null;
 
-	private boolean useLsbForLinksetSelection = false;
+    private boolean useLsbForLinksetSelection = false;
 
-	public Mtp3UserPartBaseImpl() {
-	}
+    public Mtp3UserPartBaseImpl() {
+    }
 
-	public int getDeliveryMessageThreadCount() {
-		return this.deliveryTransferMessageThreadCount;
-	}
+    public int getDeliveryMessageThreadCount() {
+        return this.deliveryTransferMessageThreadCount;
+    }
 
-	public void setDeliveryMessageThreadCount(int deliveryMessageThreadCount) {
-		if (deliveryMessageThreadCount > 0)
-			this.deliveryTransferMessageThreadCount = deliveryMessageThreadCount;
-	}
+    public void setDeliveryMessageThreadCount(int deliveryMessageThreadCount) {
+        if (deliveryMessageThreadCount > 0)
+            this.deliveryTransferMessageThreadCount = deliveryMessageThreadCount;
+    }
 
-	@Override
-	public void addMtp3UserPartListener(Mtp3UserPartListener listener) {
-		this.userListeners.add(listener);
-	}
+    @Override
+    public void addMtp3UserPartListener(Mtp3UserPartListener listener) {
+        this.userListeners.add(listener);
+    }
 
-	@Override
-	public void removeMtp3UserPartListener(Mtp3UserPartListener listener) {
-		this.userListeners.remove(listener);
-	}
+    @Override
+    public void removeMtp3UserPartListener(Mtp3UserPartListener listener) {
+        this.userListeners.remove(listener);
+    }
 
-	/*
-	 * For classic MTP3 this value is maximum SIF length minus routing label
-	 * length. This method should be overloaded if different message length is
-	 * supported.
-	 */
-	@Override
-	public int getMaxUserDataLength(int dpc) {
-		switch (this.routingLabelFormat) {
-		case ITU:
-			// For PC_FORMAT_14, the MTP3 Routing Label takes 4 bytes - OPC/DPC
-			// = 16 bits each and SLS = 4 bits
-			return 272 - 4;
-		case ANSI_Sls8Bit:
-			// For PC_FORMAT_24, the MTP3 Routing Label takes 7 bytes - OPC/DPC
-			// = 24 bits each and SLS = 8 bits
-			return 272 - 7;
-		default:
-			// TODO : We don't support rest just yet
-			return -1;
+    /*
+     * For classic MTP3 this value is maximum SIF length minus routing label
+     * length. This method should be overloaded if different message length is
+     * supported.
+     */
+    @Override
+    public int getMaxUserDataLength(int dpc) {
+        switch (this.routingLabelFormat) {
+            case ITU:
+                // For PC_FORMAT_14, the MTP3 Routing Label takes 4 bytes - OPC/DPC
+                // = 16 bits each and SLS = 4 bits
+                return 272 - 4;
+            case ANSI_Sls8Bit:
+            case ANSI_Sls5Bit:
+                // For PC_FORMAT_24, the MTP3 Routing Label takes 7 bytes - OPC/DPC
+                // = 24 bits each and SLS = 5 or 8 bits
+                return 272 - 7;
+            default:
+                // TODO : We don't support rest just yet
+                return -1;
 
-		}
-	}
+        }
+    }
 
-	@Override
-	public RoutingLabelFormat getRoutingLabelFormat() {
-		return this.routingLabelFormat;
-	}
+    @Override
+    public RoutingLabelFormat getRoutingLabelFormat() {
+        return this.routingLabelFormat;
+    }
 
-	@Override
-	public void setRoutingLabelFormat(RoutingLabelFormat routingLabelFormat) {
-		this.routingLabelFormat = routingLabelFormat;
-	}
+    @Override
+    public void setRoutingLabelFormat(RoutingLabelFormat routingLabelFormat) {
+        this.routingLabelFormat = routingLabelFormat;
+    }
 
-	@Override
-	public Mtp3TransferPrimitiveFactory getMtp3TransferPrimitiveFactory() {
-		return this.mtp3TransferPrimitiveFactory;
-	}
+    @Override
+    public Mtp3TransferPrimitiveFactory getMtp3TransferPrimitiveFactory() {
+        return this.mtp3TransferPrimitiveFactory;
+    }
 
-	@Override
-	public boolean isUseLsbForLinksetSelection() {
-		return useLsbForLinksetSelection;
-	}
+    @Override
+    public boolean isUseLsbForLinksetSelection() {
+        return useLsbForLinksetSelection;
+    }
 
-	@Override
-	public void setUseLsbForLinksetSelection(boolean useLsbForLinksetSelection) {
-		this.useLsbForLinksetSelection = useLsbForLinksetSelection;
-	}
+    @Override
+    public void setUseLsbForLinksetSelection(boolean useLsbForLinksetSelection) {
+        this.useLsbForLinksetSelection = useLsbForLinksetSelection;
+    }
 
-	public void start() throws Exception {
+    public void start() throws Exception {
 
-		if (this.isStarted)
-			return;
+        if (this.isStarted)
+            return;
 
-		if (!(this.routingLabelFormat == RoutingLabelFormat.ITU || this.routingLabelFormat == RoutingLabelFormat.ANSI_Sls8Bit)) {
-			throw new Exception("Invalid PointCodeFormat set. We support only ITU or ANSI now");
-		}
+        if (!(this.routingLabelFormat == RoutingLabelFormat.ITU || this.routingLabelFormat == RoutingLabelFormat.ANSI_Sls8Bit
+                || this.routingLabelFormat == RoutingLabelFormat.ANSI_Sls5Bit)) {
+            throw new Exception("Invalid PointCodeFormat set. We support only ITU or ANSI now");
+        }
 
-		switch (this.routingLabelFormat) {
-		case ITU:
-			this.maxSls = 16;
-			this.slsFilter = 0x0f;
-			break;
-		case ANSI_Sls5Bit:
-			this.maxSls = 32;
-			this.slsFilter = 0x1f;
-			break;
-		case ANSI_Sls8Bit:
-			this.maxSls = 256;
-			this.slsFilter = 0xff;
-			break;
-		default:
-			throw new Exception("Invalid SLS length");
-		}
+        switch (this.routingLabelFormat) {
+            case ITU:
+                this.maxSls = 16;
+                this.slsFilter = 0x0f;
+                break;
+            case ANSI_Sls5Bit:
+                this.maxSls = 32;
+                this.slsFilter = 0x1f;
+                break;
+            case ANSI_Sls8Bit:
+                this.maxSls = 256;
+                this.slsFilter = 0xff;
+                break;
+            default:
+                throw new Exception("Invalid SLS length");
+        }
 
-		this.slsTable = new int[maxSls];
+        this.slsTable = new int[maxSls];
 
-		this.mtp3TransferPrimitiveFactory = new Mtp3TransferPrimitiveFactory(this.routingLabelFormat);
+        this.mtp3TransferPrimitiveFactory = new Mtp3TransferPrimitiveFactory(this.routingLabelFormat);
 
-		this.createSLSTable(this.deliveryTransferMessageThreadCount);
+        this.createSLSTable(this.deliveryTransferMessageThreadCount);
 
-		this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
-		for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
-			this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
-					"Mtp3-DeliveryExecutor-" + i));
-		}
-		this.msgDeliveryExecutorSystem = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory(
-				"Mtp3-DeliveryExecutorSystem"));
+        this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
+        for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
+            this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
+                    "Mtp3-DeliveryExecutor-" + i));
+        }
+        this.msgDeliveryExecutorSystem = Executors.newSingleThreadScheduledExecutor(new DefaultThreadFactory(
+                "Mtp3-DeliveryExecutorSystem"));
 
-		this.isStarted = true;
-	}
+        this.isStarted = true;
+    }
 
-	public void stop() throws Exception {
+    public void stop() throws Exception {
 
-		if (!this.isStarted)
-			return;
+        if (!this.isStarted)
+            return;
 
-		this.isStarted = false;
+        this.isStarted = false;
 
-		for (ExecutorService es : this.msgDeliveryExecutors) {
-			es.shutdown();
-		}
-		this.msgDeliveryExecutorSystem.shutdown();
-	}
+        for (ExecutorService es : this.msgDeliveryExecutors) {
+            es.shutdown();
+        }
+        this.msgDeliveryExecutorSystem.shutdown();
+    }
 
-	/**
-	 * Deliver an incoming message to the local user
-	 *
-	 * @param msg
-	 * @param effectiveSls
-	 *            For the thread selection (for message delivering)
-	 */
-	protected void sendTransferMessageToLocalUser(Mtp3TransferPrimitive msg, int seqControl) {
-		if (this.isStarted) {
-			MsgTransferDeliveryHandler hdl = new MsgTransferDeliveryHandler(msg);
+    /**
+     * Deliver an incoming message to the local user
+     *
+     * @param msg
+     * @param effectiveSls For the thread selection (for message delivering)
+     */
+    protected void sendTransferMessageToLocalUser(Mtp3TransferPrimitive msg, int seqControl) {
+        if (this.isStarted) {
+            MsgTransferDeliveryHandler hdl = new MsgTransferDeliveryHandler(msg);
 
-			seqControl = seqControl & slsFilter;
-			this.msgDeliveryExecutors[this.slsTable[seqControl]].execute(hdl);
-		} else {
-			logger.error(String.format(
-					"Received Mtp3TransferPrimitive=%s but Mtp3UserPart is not started. Message will be dropped", msg));
-		}
-	}
+            seqControl = seqControl & slsFilter;
+            this.msgDeliveryExecutors[this.slsTable[seqControl]].execute(hdl);
+        } else {
+            logger.error(String.format(
+                    "Received Mtp3TransferPrimitive=%s but Mtp3UserPart is not started. Message will be dropped", msg));
+        }
+    }
 
-	protected void sendPauseMessageToLocalUser(Mtp3PausePrimitive msg) {
-		if (this.isStarted) {
-			MsgSystemDeliveryHandler hdl = new MsgSystemDeliveryHandler(msg);
-			this.msgDeliveryExecutorSystem.execute(hdl);
-		} else {
-			logger.error(String.format(
-					"Received Mtp3PausePrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
-					msg));
-		}
-	}
+    protected void sendPauseMessageToLocalUser(Mtp3PausePrimitive msg) {
+        if (this.isStarted) {
+            MsgSystemDeliveryHandler hdl = new MsgSystemDeliveryHandler(msg);
+            this.msgDeliveryExecutorSystem.execute(hdl);
+        } else {
+            logger.error(String.format(
+                    "Received Mtp3PausePrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
+                    msg));
+        }
+    }
 
-	protected void sendResumeMessageToLocalUser(Mtp3ResumePrimitive msg) {
-		if (this.isStarted) {
-			MsgSystemDeliveryHandler hdl = new MsgSystemDeliveryHandler(msg);
-			this.msgDeliveryExecutorSystem.execute(hdl);
-		} else {
-			logger.error(String.format(
-					"Received Mtp3ResumePrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
-					msg));
-		}
-	}
+    protected void sendResumeMessageToLocalUser(Mtp3ResumePrimitive msg) {
+        if (this.isStarted) {
+            MsgSystemDeliveryHandler hdl = new MsgSystemDeliveryHandler(msg);
+            this.msgDeliveryExecutorSystem.execute(hdl);
+        } else {
+            logger.error(String.format(
+                    "Received Mtp3ResumePrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
+                    msg));
+        }
+    }
 
-	protected void sendStatusMessageToLocalUser(Mtp3StatusPrimitive msg) {
-		if (this.isStarted) {
-			MsgSystemDeliveryHandler hdl = new MsgSystemDeliveryHandler(msg);
-			this.msgDeliveryExecutorSystem.execute(hdl);
-		} else {
-			logger.error(String.format(
-					"Received Mtp3StatusPrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
-					msg));
-		}
-	}
+    protected void sendStatusMessageToLocalUser(Mtp3StatusPrimitive msg) {
+        if (this.isStarted) {
+            MsgSystemDeliveryHandler hdl = new MsgSystemDeliveryHandler(msg);
+            this.msgDeliveryExecutorSystem.execute(hdl);
+        } else {
+            logger.error(String.format(
+                    "Received Mtp3StatusPrimitive=%s but Mtp3UserPart is not started. Message will be dropped",
+                    msg));
+        }
+    }
 
-	private void createSLSTable(int minimumBoundThread) {
-		int stream = 0;
-		for (int i = 0; i < maxSls; i++) {
-			if (stream >= minimumBoundThread) {
-				stream = 0;
-			}
-			slsTable[i] = stream++;
-		}
-	}
+    private void createSLSTable(int minimumBoundThread) {
+        int stream = 0;
+        for (int i = 0; i < maxSls; i++) {
+            if (stream >= minimumBoundThread) {
+                stream = 0;
+            }
+            slsTable[i] = stream++;
+        }
+    }
 
-	private class MsgTransferDeliveryHandler implements Runnable {
+    private class MsgTransferDeliveryHandler implements Runnable {
 
-		private Mtp3TransferPrimitive msg;
+        private Mtp3TransferPrimitive msg;
 
-		public MsgTransferDeliveryHandler(Mtp3TransferPrimitive msg) {
-			this.msg = msg;
-		}
+        public MsgTransferDeliveryHandler(Mtp3TransferPrimitive msg) {
+            this.msg = msg;
+        }
 
-		@Override
-		public void run() {
-			if (isStarted) {
-				try {
-					for (Mtp3UserPartListener lsn : userListeners) {
-						lsn.onMtp3TransferMessage(this.msg);
-					}
-				} catch (Throwable e) {
-					logger.error("Exception while delivering system messages to the MTP3-user: ", e);
-				}
-			} else {
-				logger.error(String.format(
-						"Received Mtp3TransferPrimitive=%s but Mtp3UserPart is not started. Message will be dropped", msg));
-			}
-		}
-	}
+        @Override
+        public void run() {
+            if (isStarted) {
+                try {
+                    for (Mtp3UserPartListener lsn : userListeners) {
+                        lsn.onMtp3TransferMessage(this.msg);
+                    }
+                } catch (Throwable e) {
+                    logger.error("Exception while delivering system messages to the MTP3-user", e);
+                }
+            } else {
+                logger.error(String.format(
+                        "Received Mtp3TransferPrimitive=%s but Mtp3UserPart is not started. Message will be dropped", msg));
+            }
+        }
+    }
 
-	private class MsgSystemDeliveryHandler implements Runnable {
+    private class MsgSystemDeliveryHandler implements Runnable {
 
-		Mtp3Primitive msg;
+        Mtp3Primitive msg;
 
-		public MsgSystemDeliveryHandler(Mtp3Primitive msg) {
-			this.msg = msg;
-		}
+        public MsgSystemDeliveryHandler(Mtp3Primitive msg) {
+            this.msg = msg;
+        }
 
-		@Override
-		public void run() {
-			if (isStarted) {
-				try {
-					for (Mtp3UserPartListener lsn : userListeners) {
-						if (this.msg.getType() == Mtp3Primitive.PAUSE)
-							lsn.onMtp3PauseMessage((Mtp3PausePrimitive)this.msg);
-						if (this.msg.getType() == Mtp3Primitive.RESUME)
-							lsn.onMtp3ResumeMessage((Mtp3ResumePrimitive)this.msg);
-						if (this.msg.getType() == Mtp3Primitive.STATUS)
-							lsn.onMtp3StatusMessage((Mtp3StatusPrimitive)this.msg);
-					}
-				} catch (Throwable e) {
-					logger.error("Exception while delivering payload messages to the MTP3-user: ", e);
-				}
-			} else {
-				logger.error(String.format(
-						"Received Mtp3Primitive=%s but Mtp3UserPart is not started. Message will be dropped", msg));
-			}
-		}
-	}
+        @Override
+        public void run() {
+            if (isStarted) {
+                try {
+                    for (Mtp3UserPartListener lsn : userListeners) {
+                        if (this.msg.getType() == Mtp3Primitive.PAUSE)
+                            lsn.onMtp3PauseMessage((Mtp3PausePrimitive) this.msg);
+                        if (this.msg.getType() == Mtp3Primitive.RESUME)
+                            lsn.onMtp3ResumeMessage((Mtp3ResumePrimitive) this.msg);
+                        if (this.msg.getType() == Mtp3Primitive.STATUS)
+                            lsn.onMtp3StatusMessage((Mtp3StatusPrimitive) this.msg);
+                    }
+                } catch (Throwable e) {
+                    logger.error("Exception while delivering payload messages to the MTP3-user", e);
+                }
+            } else {
+                logger.error(String.format(
+                        "Received Mtp3Primitive=%s but Mtp3UserPart is not started. Message will be dropped", msg));
+            }
+        }
+    }
 }
