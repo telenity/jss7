@@ -27,6 +27,6 @@ package org.mobicents.protocols.ss7.sccp.parameter;
  * @author kulikov
  */
 public interface Parameter { //marker interface?.... ech
-  
-    
+
+
 }

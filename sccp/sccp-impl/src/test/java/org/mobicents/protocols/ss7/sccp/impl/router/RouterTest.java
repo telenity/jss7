@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -59,581 +59,581 @@ import org.junit.Test;
  */
 public class RouterTest {
 
-	private SccpAddress primaryAddr1, primaryAddr2;
-
-	private RouterImpl router = null;
-
-	private TestSccpStackImpl testSccpStackImpl = null;
-
-	public RouterTest() {
-	}
-
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
-
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
-
-	@Before
-	public void setUp() throws IOException {
-		testSccpStackImpl = new TestSccpStackImpl();
-
-		primaryAddr1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1,
-				"333"), 0);
-		primaryAddr2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 321, GlobalTitle.getInstance(1,
-				"333"), 0);
-
-		// cleans config file
-		router = new RouterImpl("RouterTest", testSccpStackImpl);
-		router.setPersistDir(Util.getTmpTestDir());
-		router.start();
-		router.removeAllResourses();
-
-	}
-
-	@After
-	public void tearDown() {
-		router.removeAllResourses();
-		router.stop();
-	}
-
-	/**
-	 * Test of add method, of class RouterImpl.
-	 */
-	@Test
-	public void testRouter() throws Exception {
-		router.addPrimaryAddress(1, primaryAddr1);
-		assertEquals(1, router.getPrimaryAddresses().size());
-
-		router.addPrimaryAddress(2, primaryAddr2);
-		assertEquals(2, router.getPrimaryAddresses().size());
-
-		router.removePrimaryAddress(1);
-		SccpAddress pa = router.getPrimaryAddresses().values().iterator().next();
-		assertNotNull(pa);
-		assertEquals(321, pa.getSignalingPointCode());
-		assertEquals(1, router.getPrimaryAddresses().size());
-
-		assertEquals(0, router.getBackupAddresses().size());
-
-		router.addBackupAddress(1, primaryAddr1);
-		assertEquals(1, router.getBackupAddresses().size());
-
-		router.addBackupAddress(2, primaryAddr2);
-		assertEquals(2, router.getBackupAddresses().size());
-
-		router.removeBackupAddress(1);
-		pa = router.getBackupAddresses().values().iterator().next();
-		assertNotNull(pa);
-		assertEquals(321, pa.getSignalingPointCode());
-		assertEquals(1, router.getBackupAddresses().size());
-
-		SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "123456789"), 0);
-
-		router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R", 2, 2);
-		assertEquals(1, router.getRules().size());
-
-		router.addRule(2, RuleType.Loadshared, LoadSharingAlgorithm.Bit4, OriginationType.ALL, pattern, "K", 2, 2);
-		assertEquals(2, router.getRules().size());
-
-		router.removeRule(2);
-		Rule rule = router.getRules().values().iterator().next();
-		assertNotNull(rule);
-		assertEquals(RuleType.Solitary, rule.getRuleType());
-		assertEquals(1, router.getRules().size());
-
-		router.addLongMessageRule(1, 1, 2, LongMessageRuleType.XudtEnabled);
-		assertEquals(1, router.getLongMessageRules().size());
-		router.addLongMessageRule(2, 3, 4, LongMessageRuleType.LudtEnabled);
-		assertEquals(2, router.getLongMessageRules().size());
-		router.removeLongMessageRule(2);
-		LongMessageRule lmr = router.getLongMessageRules().values().iterator().next();
-		assertNotNull(lmr);
-		assertEquals(LongMessageRuleType.XudtEnabled, lmr.getLongMessageRuleType());
-		assertEquals(1, router.getLongMessageRules().size());
-
-		router.addMtp3ServiceAccessPoint(1, 1, 11, 2);
-		assertEquals(1, router.getMtp3ServiceAccessPoints().size());
-		router.addMtp3ServiceAccessPoint(2, 2, 12, 2);
-		assertEquals(2, router.getMtp3ServiceAccessPoints().size());
-		router.removeMtp3ServiceAccessPoint(2);
-		Mtp3ServiceAccessPoint sap = router.getMtp3ServiceAccessPoints().values().iterator().next();
-		assertNotNull(sap);
-		assertEquals(11, sap.getOpc());
-		assertEquals(1, router.getLongMessageRules().size());
-
-		router.addMtp3Destination(1, 1, 101, 110, 0, 255, 255);
-		assertEquals(1, sap.getMtp3Destinations().size());
-		router.addMtp3Destination(1, 2, 111, 120, 0, 255, 255);
-		assertEquals(2, sap.getMtp3Destinations().size());
-		router.removeMtp3Destination(1, 2);
-		Mtp3Destination dest = sap.getMtp3Destinations().values().iterator().next();
-		assertNotNull(dest);
-		assertEquals(101, dest.getFirstDpc());
-		assertEquals(1, sap.getMtp3Destinations().size());
-	}
-
-	@Test
-	public void testSerialization() throws Exception {
-		router.addPrimaryAddress(1, primaryAddr1);
-		router.addPrimaryAddress(2, primaryAddr2);
-		router.addBackupAddress(1, primaryAddr1);
-
-		SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "123456789"), 0);
-		router.addRule(1, RuleType.Loadshared, LoadSharingAlgorithm.Bit4, OriginationType.REMOTE, pattern, "K", 1, 1);
-
-		router.addLongMessageRule(1, 1, 2, LongMessageRuleType.XudtEnabled);
-		router.addMtp3ServiceAccessPoint(3, 1, 11, 2);
-		router.addMtp3Destination(3, 1, 101, 110, 0, 255, 255);
-		router.stop();
-
-		RouterImpl router1 = new RouterImpl(router.getName(), null);
-		router1.setPersistDir(Util.getTmpTestDir());
-		router1.start();
-
-		Rule rl = router1.getRule(1);
-		SccpAddress adp = router1.getPrimaryAddress(2);
-		SccpAddress adb = router1.getBackupAddress(1);
-		LongMessageRule lmr = router1.getLongMessageRule(1);
-		Mtp3ServiceAccessPoint sap = router1.getMtp3ServiceAccessPoint(3);
-		assertNotNull(sap);
-		Mtp3Destination dst = sap.getMtp3Destination(1);
-
-		assertEquals(1, rl.getPrimaryAddressId());
-		assertEquals(1, rl.getSecondaryAddressId());
-		assertEquals(LoadSharingAlgorithm.Bit4, rl.getLoadSharingAlgorithm());
-		assertEquals(OriginationType.REMOTE, rl.getOriginationType());
-		assertEquals(primaryAddr2.getSignalingPointCode(), adp.getSignalingPointCode());
-		assertEquals(primaryAddr1.getSignalingPointCode(), adb.getSignalingPointCode());
-		assertEquals(1, lmr.getFirstSpc());
-		assertEquals(1, sap.getMtp3Destinations().size());
-		assertEquals(110, dst.getLastDpc());
-
-		router1.stop();
-	}
-
-	/**
-	 * Test of Ordering.
-	 */
-	@Test
-	public void testOrdering() throws Exception {
-		primaryAddr1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1,
-				"333/---/4"), 0);
-		router.addPrimaryAddress(1, primaryAddr1);
-
-		SccpAddress pattern1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "800/????/9"), 0);
-		router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern1, "R/K/R", 1, -1);
-
-		// Rule 2
-		SccpAddress pattern2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "*"), 0);
-		SccpAddress primaryAddr2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "-"), 0);
-		router.addPrimaryAddress(2, primaryAddr2);
-
-		router.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern2, "K", 2, -1);
-
-		// Rule 3
-		SccpAddress pattern3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "9/?/9/*"), 0);
-		SccpAddress primaryAddr3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "-/-/-/-"), 0);
-		router.addPrimaryAddress(3, primaryAddr3);
-		router.addRule(3, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern3, "K/K/K/K", 3, -1);
-
-		// Rule 4
-		SccpAddress pattern4 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "80/??/0/???/9"), 0);
-		SccpAddress primaryAddr4 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "90/-/1/-/7"), 0);
-		router.addPrimaryAddress(4, primaryAddr4);
-		router.addRule(4, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern4, "R/K/R/K/R", 4, -1);
-
-		// Rule 5
-		SccpAddress pattern5 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "800/?????/9"), 0);
-		SccpAddress primaryAddr5 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "90/-/7"), 0);
-		router.addPrimaryAddress(5, primaryAddr5);
-		router.addRule(5, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern5, "R/K/R", 5, -1);
-
-		// Rule 6
-		SccpAddress pattern6 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "123456"), 0);
-		SccpAddress primaryAddr6 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "-"), 0);
-		router.addPrimaryAddress(6, primaryAddr6);
-		router.addRule(6, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern6, "K", 6, -1);
-
-		// Rule 7
-		SccpAddress pattern7 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "1234567890"), 0);
-		SccpAddress primaryAddr7 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "-"), 0);
-		router.addPrimaryAddress(7, primaryAddr7);
-		router.addRule(7, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern7, "K", 7, -1);
-
-		// Rule 8
-
-		SccpAddress pattern8 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "999/*"), 0);
-		SccpAddress primaryAddr8 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
-				GlobalTitle.getInstance(1, "111/-"), 0);
-		router.addPrimaryAddress(8, primaryAddr8);
-		router.addRule(8, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern8, "R/K", 8, -1);
-
-		// TEST find rule
-
-		// Rule 6
-		SccpAddress calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
-				GlobalTitle.getInstance(1, "123456"), 0);
-		Rule rule = router.findRule(calledParty, false);
-
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern6);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "K");
-
-		// Rule 7
-		calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"1234567890"), 0);
-		rule = router.findRule(calledParty, false);
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern7);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "K");
-
-		// Rule 1
-		calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"80012039"), 0);
-		rule = router.findRule(calledParty, false);
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern1);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "R/K/R");
-
-		// Rule 5
-		calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"800120349"), 0);
-		rule = router.findRule(calledParty, false);
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern5);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "R/K/R");
-
-		// Rule 4
-		calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"801203459"), 0);
-		rule = router.findRule(calledParty, false);
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern4);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "R/K/R/K/R");
-
-		// Rule 8
-		calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"999123456"), 0);
-		rule = router.findRule(calledParty, false);
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern8);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "R/K");
-
-		// Rule 3
-		calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"919123456"), 0);
-		rule = router.findRule(calledParty, false);
-		assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
-		assertEquals(rule.getPattern(), pattern3);
-		assertEquals(rule.getRuleType(), RuleType.Solitary);
-		assertEquals(rule.getSecondaryAddressId(), -1);
-		assertEquals(rule.getMask(), "K/K/K/K");
-
-	}
-
-	/**
-	 * Test of Ordering with OriginationType.
-	 */
-	@Test
-	public void testOrderingWithOriginationType() throws Exception {
-		// Rule 1
-		primaryAddr1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "999"),
-				0);
-		router.addPrimaryAddress(1, primaryAddr1);
-
-		SccpAddress pattern1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"*"), 0);
-		router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern1, "K", 1, -1);
-
-		// Rule 2
-		router.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.LOCAL, pattern1, "K", 1,
-				-1);
-
-		// Rule 3
-		SccpAddress pattern2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
-				"999"), 0);
-		router.addRule(3, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern2, "K", 1, -1);
-
-		// Rule 4
-		router.addRule(4, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.REMOTE, pattern2, "K",
-				1, -1);
-
-		// TEST find rule
-		boolean localOriginatedSign = false;
-		boolean remoteOriginatedSign = true;
-
-		SccpAddress calledParty1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(
-				1, "123456"), 0);
-		SccpAddress calledParty2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(
-				1, "999"), 0);
-
-		Rule rule1 = router.findRule(calledParty1, localOriginatedSign);
-		Rule rule2 = router.findRule(calledParty1, remoteOriginatedSign);
-		Rule rule3 = router.findRule(calledParty2, localOriginatedSign);
-		Rule rule4 = router.findRule(calledParty2, remoteOriginatedSign);
-
-		assertTrue(rule1.getPattern().getGlobalTitle().getDigits().equals("*"));
-		assertEquals(OriginationType.LOCAL, rule1.getOriginationType());
-
-		assertTrue(rule2.getPattern().getGlobalTitle().getDigits().equals("*"));
-		assertEquals(OriginationType.ALL, rule2.getOriginationType());
-
-		assertTrue(rule3.getPattern().getGlobalTitle().getDigits().equals("*"));
-		assertEquals(OriginationType.LOCAL, rule3.getOriginationType());
-
-		assertTrue(rule4.getPattern().getGlobalTitle().getDigits().equals("999"));
-		assertEquals(OriginationType.REMOTE, rule4.getOriginationType());
-
-	}
-
-	/**
-	 * Concurrent addMtp3Destination + matches() must not corrupt the volatile
-	 * dpcList. Each thread adds a unique destId; after the dust settles, all
-	 * entries must be present and matches() must not throw.
-	 */
-	@Test
-	public void testMtp3SapConcurrentAdd() throws Exception {
-		Mtp3ServiceAccessPointImpl sap = new Mtp3ServiceAccessPointImpl(1, 11, 2);
-
-		int n = 100;
-		CountDownLatch start = new CountDownLatch(1);
-		CountDownLatch done = new CountDownLatch(n);
-		Thread[] threads = new Thread[n];
-		for (int i = 0; i < n; i++) {
-			final int destId = i;
-			threads[i] = new Thread(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						start.await();
-						sap.addMtp3Destination(destId, 100 + destId, 100 + destId, 0, 255, 255);
-					} catch (Exception e) {
-						// already-exists races are tolerable; record others
-						e.printStackTrace();
-					} finally {
-						done.countDown();
-					}
-				}
-			});
-			threads[i].start();
-		}
-		start.countDown();
-		assertTrue("Concurrent add did not finish in time", done.await(5, TimeUnit.SECONDS));
-
-		// All destIds must have been inserted exactly once.
-		assertEquals(n, sap.getMtp3Destinations().size());
-
-		// matches() must remain safe to call on the now-populated map.
-		assertTrue(sap.matches(150, 0));
-	}
-
-	private class TestSccpStackImpl implements SccpStack {
-
-		protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<Integer, Mtp3UserPart>();
-
-		TestSccpStackImpl() {
-			Mtp3UserPartImpl mtp3UserPartImpl1 = new Mtp3UserPartImpl();
-			Mtp3UserPartImpl mtp3UserPartImpl2 = new Mtp3UserPartImpl();
-
-			mtp3UserParts.put(1, mtp3UserPartImpl1);
-			mtp3UserParts.put(2, mtp3UserPartImpl2);
-		}
-
-		@Override
-		public void start() throws IllegalStateException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void stop() {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public SccpProvider getSccpProvider() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public String getPersistDir() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void setPersistDir(String persistDir) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void setRemoveSpc(boolean removeSpc) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public boolean isRemoveSpc() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public SccpResource getSccpResource() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Map<Integer, Mtp3UserPart> getMtp3UserParts() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Mtp3UserPart getMtp3UserPart(int id) {
-			return this.mtp3UserParts.get(id);
-		}
-
-		@Override
-		public String getName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public int getSstTimerDuration_Min() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int getSstTimerDuration_Max() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public double getSstTimerDuration_IncreaseFactor() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int getZMarginXudtMessage() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int getMaxDataMessage() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public int getReassemblyTimerDelay() {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public Router getRouter() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-	}
-
-	private class Mtp3UserPartImpl implements Mtp3UserPart {
-
-		@Override
-		public void addMtp3UserPartListener(Mtp3UserPartListener arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public int getMaxUserDataLength(int arg0) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public Mtp3TransferPrimitiveFactory getMtp3TransferPrimitiveFactory() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public RoutingLabelFormat getRoutingLabelFormat() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public boolean isUseLsbForLinksetSelection() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		@Override
-		public void removeMtp3UserPartListener(Mtp3UserPartListener arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void sendMessage(Mtp3TransferPrimitive arg0) throws IOException {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void setRoutingLabelFormat(RoutingLabelFormat arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void setUseLsbForLinksetSelection(boolean arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-	}
+    private SccpAddress primaryAddr1, primaryAddr2;
+
+    private RouterImpl router = null;
+
+    private TestSccpStackImpl testSccpStackImpl = null;
+
+    public RouterTest() {
+    }
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws IOException {
+        testSccpStackImpl = new TestSccpStackImpl();
+
+        primaryAddr1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1,
+                "333"), 0);
+        primaryAddr2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 321, GlobalTitle.getInstance(1,
+                "333"), 0);
+
+        // cleans config file
+        router = new RouterImpl("RouterTest", testSccpStackImpl);
+        router.setPersistDir(Util.getTmpTestDir());
+        router.start();
+        router.removeAllResourses();
+
+    }
+
+    @After
+    public void tearDown() {
+        router.removeAllResourses();
+        router.stop();
+    }
+
+    /**
+     * Test of add method, of class RouterImpl.
+     */
+    @Test
+    public void testRouter() throws Exception {
+        router.addPrimaryAddress(1, primaryAddr1);
+        assertEquals(1, router.getPrimaryAddresses().size());
+
+        router.addPrimaryAddress(2, primaryAddr2);
+        assertEquals(2, router.getPrimaryAddresses().size());
+
+        router.removePrimaryAddress(1);
+        SccpAddress pa = router.getPrimaryAddresses().values().iterator().next();
+        assertNotNull(pa);
+        assertEquals(321, pa.getSignalingPointCode());
+        assertEquals(1, router.getPrimaryAddresses().size());
+
+        assertEquals(0, router.getBackupAddresses().size());
+
+        router.addBackupAddress(1, primaryAddr1);
+        assertEquals(1, router.getBackupAddresses().size());
+
+        router.addBackupAddress(2, primaryAddr2);
+        assertEquals(2, router.getBackupAddresses().size());
+
+        router.removeBackupAddress(1);
+        pa = router.getBackupAddresses().values().iterator().next();
+        assertNotNull(pa);
+        assertEquals(321, pa.getSignalingPointCode());
+        assertEquals(1, router.getBackupAddresses().size());
+
+        SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "123456789"), 0);
+
+        router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "R", 2, 2);
+        assertEquals(1, router.getRules().size());
+
+        router.addRule(2, RuleType.Loadshared, LoadSharingAlgorithm.Bit4, OriginationType.ALL, pattern, "K", 2, 2);
+        assertEquals(2, router.getRules().size());
+
+        router.removeRule(2);
+        Rule rule = router.getRules().values().iterator().next();
+        assertNotNull(rule);
+        assertEquals(RuleType.Solitary, rule.getRuleType());
+        assertEquals(1, router.getRules().size());
+
+        router.addLongMessageRule(1, 1, 2, LongMessageRuleType.XudtEnabled);
+        assertEquals(1, router.getLongMessageRules().size());
+        router.addLongMessageRule(2, 3, 4, LongMessageRuleType.LudtEnabled);
+        assertEquals(2, router.getLongMessageRules().size());
+        router.removeLongMessageRule(2);
+        LongMessageRule lmr = router.getLongMessageRules().values().iterator().next();
+        assertNotNull(lmr);
+        assertEquals(LongMessageRuleType.XudtEnabled, lmr.getLongMessageRuleType());
+        assertEquals(1, router.getLongMessageRules().size());
+
+        router.addMtp3ServiceAccessPoint(1, 1, 11, 2);
+        assertEquals(1, router.getMtp3ServiceAccessPoints().size());
+        router.addMtp3ServiceAccessPoint(2, 2, 12, 2);
+        assertEquals(2, router.getMtp3ServiceAccessPoints().size());
+        router.removeMtp3ServiceAccessPoint(2);
+        Mtp3ServiceAccessPoint sap = router.getMtp3ServiceAccessPoints().values().iterator().next();
+        assertNotNull(sap);
+        assertEquals(11, sap.getOpc());
+        assertEquals(1, router.getLongMessageRules().size());
+
+        router.addMtp3Destination(1, 1, 101, 110, 0, 255, 255);
+        assertEquals(1, sap.getMtp3Destinations().size());
+        router.addMtp3Destination(1, 2, 111, 120, 0, 255, 255);
+        assertEquals(2, sap.getMtp3Destinations().size());
+        router.removeMtp3Destination(1, 2);
+        Mtp3Destination dest = sap.getMtp3Destinations().values().iterator().next();
+        assertNotNull(dest);
+        assertEquals(101, dest.getFirstDpc());
+        assertEquals(1, sap.getMtp3Destinations().size());
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        router.addPrimaryAddress(1, primaryAddr1);
+        router.addPrimaryAddress(2, primaryAddr2);
+        router.addBackupAddress(1, primaryAddr1);
+
+        SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "123456789"), 0);
+        router.addRule(1, RuleType.Loadshared, LoadSharingAlgorithm.Bit4, OriginationType.REMOTE, pattern, "K", 1, 1);
+
+        router.addLongMessageRule(1, 1, 2, LongMessageRuleType.XudtEnabled);
+        router.addMtp3ServiceAccessPoint(3, 1, 11, 2);
+        router.addMtp3Destination(3, 1, 101, 110, 0, 255, 255);
+        router.stop();
+
+        RouterImpl router1 = new RouterImpl(router.getName(), null);
+        router1.setPersistDir(Util.getTmpTestDir());
+        router1.start();
+
+        Rule rl = router1.getRule(1);
+        SccpAddress adp = router1.getPrimaryAddress(2);
+        SccpAddress adb = router1.getBackupAddress(1);
+        LongMessageRule lmr = router1.getLongMessageRule(1);
+        Mtp3ServiceAccessPoint sap = router1.getMtp3ServiceAccessPoint(3);
+        assertNotNull(sap);
+        Mtp3Destination dst = sap.getMtp3Destination(1);
+
+        assertEquals(1, rl.getPrimaryAddressId());
+        assertEquals(1, rl.getSecondaryAddressId());
+        assertEquals(LoadSharingAlgorithm.Bit4, rl.getLoadSharingAlgorithm());
+        assertEquals(OriginationType.REMOTE, rl.getOriginationType());
+        assertEquals(primaryAddr2.getSignalingPointCode(), adp.getSignalingPointCode());
+        assertEquals(primaryAddr1.getSignalingPointCode(), adb.getSignalingPointCode());
+        assertEquals(1, lmr.getFirstSpc());
+        assertEquals(1, sap.getMtp3Destinations().size());
+        assertEquals(110, dst.getLastDpc());
+
+        router1.stop();
+    }
+
+    /**
+     * Test of Ordering.
+     */
+    @Test
+    public void testOrdering() throws Exception {
+        primaryAddr1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1,
+                "333/---/4"), 0);
+        router.addPrimaryAddress(1, primaryAddr1);
+
+        SccpAddress pattern1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "800/????/9"), 0);
+        router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern1, "R/K/R", 1, -1);
+
+        // Rule 2
+        SccpAddress pattern2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "*"), 0);
+        SccpAddress primaryAddr2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "-"), 0);
+        router.addPrimaryAddress(2, primaryAddr2);
+
+        router.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern2, "K", 2, -1);
+
+        // Rule 3
+        SccpAddress pattern3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "9/?/9/*"), 0);
+        SccpAddress primaryAddr3 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "-/-/-/-"), 0);
+        router.addPrimaryAddress(3, primaryAddr3);
+        router.addRule(3, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern3, "K/K/K/K", 3, -1);
+
+        // Rule 4
+        SccpAddress pattern4 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "80/??/0/???/9"), 0);
+        SccpAddress primaryAddr4 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "90/-/1/-/7"), 0);
+        router.addPrimaryAddress(4, primaryAddr4);
+        router.addRule(4, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern4, "R/K/R/K/R", 4, -1);
+
+        // Rule 5
+        SccpAddress pattern5 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "800/?????/9"), 0);
+        SccpAddress primaryAddr5 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "90/-/7"), 0);
+        router.addPrimaryAddress(5, primaryAddr5);
+        router.addRule(5, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern5, "R/K/R", 5, -1);
+
+        // Rule 6
+        SccpAddress pattern6 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "123456"), 0);
+        SccpAddress primaryAddr6 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "-"), 0);
+        router.addPrimaryAddress(6, primaryAddr6);
+        router.addRule(6, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern6, "K", 6, -1);
+
+        // Rule 7
+        SccpAddress pattern7 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "1234567890"), 0);
+        SccpAddress primaryAddr7 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "-"), 0);
+        router.addPrimaryAddress(7, primaryAddr7);
+        router.addRule(7, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern7, "K", 7, -1);
+
+        // Rule 8
+
+        SccpAddress pattern8 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "999/*"), 0);
+        SccpAddress primaryAddr8 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123,
+                GlobalTitle.getInstance(1, "111/-"), 0);
+        router.addPrimaryAddress(8, primaryAddr8);
+        router.addRule(8, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern8, "R/K", 8, -1);
+
+        // TEST find rule
+
+        // Rule 6
+        SccpAddress calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0,
+                GlobalTitle.getInstance(1, "123456"), 0);
+        Rule rule = router.findRule(calledParty, false);
+
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern6);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "K");
+
+        // Rule 7
+        calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "1234567890"), 0);
+        rule = router.findRule(calledParty, false);
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern7);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "K");
+
+        // Rule 1
+        calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "80012039"), 0);
+        rule = router.findRule(calledParty, false);
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern1);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "R/K/R");
+
+        // Rule 5
+        calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "800120349"), 0);
+        rule = router.findRule(calledParty, false);
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern5);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "R/K/R");
+
+        // Rule 4
+        calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "801203459"), 0);
+        rule = router.findRule(calledParty, false);
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern4);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "R/K/R/K/R");
+
+        // Rule 8
+        calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "999123456"), 0);
+        rule = router.findRule(calledParty, false);
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern8);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "R/K");
+
+        // Rule 3
+        calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "919123456"), 0);
+        rule = router.findRule(calledParty, false);
+        assertEquals(rule.getLoadSharingAlgorithm(), LoadSharingAlgorithm.Undefined);
+        assertEquals(rule.getPattern(), pattern3);
+        assertEquals(rule.getRuleType(), RuleType.Solitary);
+        assertEquals(rule.getSecondaryAddressId(), -1);
+        assertEquals(rule.getMask(), "K/K/K/K");
+
+    }
+
+    /**
+     * Test of Ordering with OriginationType.
+     */
+    @Test
+    public void testOrderingWithOriginationType() throws Exception {
+        // Rule 1
+        primaryAddr1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "999"),
+                0);
+        router.addPrimaryAddress(1, primaryAddr1);
+
+        SccpAddress pattern1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "*"), 0);
+        router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern1, "K", 1, -1);
+
+        // Rule 2
+        router.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.LOCAL, pattern1, "K", 1,
+                -1);
+
+        // Rule 3
+        SccpAddress pattern2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1,
+                "999"), 0);
+        router.addRule(3, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern2, "K", 1, -1);
+
+        // Rule 4
+        router.addRule(4, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.REMOTE, pattern2, "K",
+                1, -1);
+
+        // TEST find rule
+        boolean localOriginatedSign = false;
+        boolean remoteOriginatedSign = true;
+
+        SccpAddress calledParty1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(
+                1, "123456"), 0);
+        SccpAddress calledParty2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(
+                1, "999"), 0);
+
+        Rule rule1 = router.findRule(calledParty1, localOriginatedSign);
+        Rule rule2 = router.findRule(calledParty1, remoteOriginatedSign);
+        Rule rule3 = router.findRule(calledParty2, localOriginatedSign);
+        Rule rule4 = router.findRule(calledParty2, remoteOriginatedSign);
+
+        assertTrue(rule1.getPattern().getGlobalTitle().getDigits().equals("*"));
+        assertEquals(OriginationType.LOCAL, rule1.getOriginationType());
+
+        assertTrue(rule2.getPattern().getGlobalTitle().getDigits().equals("*"));
+        assertEquals(OriginationType.ALL, rule2.getOriginationType());
+
+        assertTrue(rule3.getPattern().getGlobalTitle().getDigits().equals("*"));
+        assertEquals(OriginationType.LOCAL, rule3.getOriginationType());
+
+        assertTrue(rule4.getPattern().getGlobalTitle().getDigits().equals("999"));
+        assertEquals(OriginationType.REMOTE, rule4.getOriginationType());
+
+    }
+
+    /**
+     * Concurrent addMtp3Destination + matches() must not corrupt the volatile
+     * dpcList. Each thread adds a unique destId; after the dust settles, all
+     * entries must be present and matches() must not throw.
+     */
+    @Test
+    public void testMtp3SapConcurrentAdd() throws Exception {
+        Mtp3ServiceAccessPointImpl sap = new Mtp3ServiceAccessPointImpl(1, 11, 2);
+
+        int n = 100;
+        CountDownLatch start = new CountDownLatch(1);
+        CountDownLatch done = new CountDownLatch(n);
+        Thread[] threads = new Thread[n];
+        for (int i = 0; i < n; i++) {
+            final int destId = i;
+            threads[i] = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        start.await();
+                        sap.addMtp3Destination(destId, 100 + destId, 100 + destId, 0, 255, 255);
+                    } catch (Exception e) {
+                        // already-exists races are tolerable; record others
+                        e.printStackTrace();
+                    } finally {
+                        done.countDown();
+                    }
+                }
+            });
+            threads[i].start();
+        }
+        start.countDown();
+        assertTrue("Concurrent add did not finish in time", done.await(5, TimeUnit.SECONDS));
+
+        // All destIds must have been inserted exactly once.
+        assertEquals(n, sap.getMtp3Destinations().size());
+
+        // matches() must remain safe to call on the now-populated map.
+        assertTrue(sap.matches(150, 0));
+    }
+
+    private class TestSccpStackImpl implements SccpStack {
+
+        protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<Integer, Mtp3UserPart>();
+
+        TestSccpStackImpl() {
+            Mtp3UserPartImpl mtp3UserPartImpl1 = new Mtp3UserPartImpl();
+            Mtp3UserPartImpl mtp3UserPartImpl2 = new Mtp3UserPartImpl();
+
+            mtp3UserParts.put(1, mtp3UserPartImpl1);
+            mtp3UserParts.put(2, mtp3UserPartImpl2);
+        }
+
+        @Override
+        public void start() throws IllegalStateException {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void stop() {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public SccpProvider getSccpProvider() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public String getPersistDir() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public void setPersistDir(String persistDir) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void setRemoveSpc(boolean removeSpc) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public boolean isRemoveSpc() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        @Override
+        public SccpResource getSccpResource() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Map<Integer, Mtp3UserPart> getMtp3UserParts() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Mtp3UserPart getMtp3UserPart(int id) {
+            return this.mtp3UserParts.get(id);
+        }
+
+        @Override
+        public String getName() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public int getSstTimerDuration_Min() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public int getSstTimerDuration_Max() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public double getSstTimerDuration_IncreaseFactor() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public int getZMarginXudtMessage() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public int getMaxDataMessage() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public int getReassemblyTimerDelay() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public Router getRouter() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+    }
+
+    private class Mtp3UserPartImpl implements Mtp3UserPart {
+
+        @Override
+        public void addMtp3UserPartListener(Mtp3UserPartListener arg0) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public int getMaxUserDataLength(int arg0) {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public Mtp3TransferPrimitiveFactory getMtp3TransferPrimitiveFactory() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public RoutingLabelFormat getRoutingLabelFormat() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public boolean isUseLsbForLinksetSelection() {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        @Override
+        public void removeMtp3UserPartListener(Mtp3UserPartListener arg0) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void sendMessage(Mtp3TransferPrimitive arg0) throws IOException {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void setRoutingLabelFormat(RoutingLabelFormat arg0) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void setUseLsbForLinksetSelection(boolean arg0) {
+            // TODO Auto-generated method stub
+
+        }
+
+    }
 }

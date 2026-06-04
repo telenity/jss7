@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -55,181 +55,183 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 /**
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public class SccpNoticeMessageTest {
 
-	private Logger logger;
-	private SccpStackImpl stack = new SccpStackImpl("TestStack");
-	private MessageFactoryImpl messageFactory;
+    private Logger logger;
+    private SccpStackImpl stack = new SccpStackImpl("TestStack");
+    private MessageFactoryImpl messageFactory;
 
-	@Before
-	public void setUp() {
-		this.messageFactory = new MessageFactoryImpl(stack);
-		this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
-	}
+    @Before
+    public void setUp() {
+        this.messageFactory = new MessageFactoryImpl(stack);
+        this.logger = Logger.getLogger(SccpStackImpl.class.getCanonicalName());
+    }
 
-	@After
-	public void tearDown() {
-	}
+    @After
+    public void tearDown() {
+    }
 
-	public byte[] getDataUdtS() {
-		return new byte[] { 0x0A, 0x00, 0x03, 0x0D, 0x11, 0x0A, 0x52, (byte) 0x92, 0x00, 0x11, 0x04, (byte) 0x99, (byte) 0x99, (byte) 0x99, (byte) 0x99, 0x09,
-				0x04, 0x03, (byte) 0xBE, 0x06, (byte) 0x92, (byte) 0x83, 0x65, (byte) 0x81, (byte) 0x80, 0x48, 0x04, 0x00, 0x00, 0x00, 0x01, 0x49, 0x04, 0x00,
-				0x17, 0x3A, 0x26, 0x6B, 0x2A, 0x28, 0x28, 0x06, 0x07, 0x00, 0x11, (byte) 0x86, 0x05, 0x01, 0x01, 0x01, (byte) 0xA0, 0x1D, 0x61, 0x1B,
-				(byte) 0x80, 0x02, 0x07, (byte) 0x80, (byte) 0xA1, 0x09, 0x06, 0x07, 0x04, 0x00, 0x00, 0x01, 0x00, 0x32, 0x01, (byte) 0xA2, 0x03, 0x02, 0x01,
-				0x00, (byte) 0xA3, 0x05, (byte) 0xA1, 0x03, 0x02, 0x01, 0x00, 0x6C, 0x46, (byte) 0xA1, 0x3C, 0x02, 0x01, 0x02, 0x02, 0x01, 0x17, 0x30, 0x34,
-				(byte) 0xA0, 0x32, 0x30, 0x06, (byte) 0x80, 0x01, 0x0E, (byte) 0x81, 0x01, 0x01, 0x30, 0x06, (byte) 0x80, 0x01, 0x0D, (byte) 0x81, 0x01, 0x01,
-				0x30, 0x0B, (byte) 0x80, 0x01, 0x11, (byte) 0x81, 0x01, 0x01, (byte) 0xA2, 0x03, (byte) 0x80, 0x01, 0x01, 0x30, 0x0B, (byte) 0x80, 0x01, 0x11,
-				(byte) 0x81, 0x01, 0x01, (byte) 0xA2, 0x03, (byte) 0x80, 0x01, 0x02, 0x30, 0x06, (byte) 0x80, 0x01, 0x12, (byte) 0x81, 0x01, 0x01, (byte) 0xA1,
-				0x06, 0x02, 0x01, 0x03, 0x02, 0x01, 0x1F };
-	}
+    public byte[] getDataUdtS() {
+        return new byte[]{0x0A, 0x00, 0x03, 0x0D, 0x11, 0x0A, 0x52, (byte) 0x92, 0x00, 0x11, 0x04, (byte) 0x99, (byte) 0x99, (byte) 0x99, (byte) 0x99, 0x09,
+                0x04, 0x03, (byte) 0xBE, 0x06, (byte) 0x92, (byte) 0x83, 0x65, (byte) 0x81, (byte) 0x80, 0x48, 0x04, 0x00, 0x00, 0x00, 0x01, 0x49, 0x04, 0x00,
+                0x17, 0x3A, 0x26, 0x6B, 0x2A, 0x28, 0x28, 0x06, 0x07, 0x00, 0x11, (byte) 0x86, 0x05, 0x01, 0x01, 0x01, (byte) 0xA0, 0x1D, 0x61, 0x1B,
+                (byte) 0x80, 0x02, 0x07, (byte) 0x80, (byte) 0xA1, 0x09, 0x06, 0x07, 0x04, 0x00, 0x00, 0x01, 0x00, 0x32, 0x01, (byte) 0xA2, 0x03, 0x02, 0x01,
+                0x00, (byte) 0xA3, 0x05, (byte) 0xA1, 0x03, 0x02, 0x01, 0x00, 0x6C, 0x46, (byte) 0xA1, 0x3C, 0x02, 0x01, 0x02, 0x02, 0x01, 0x17, 0x30, 0x34,
+                (byte) 0xA0, 0x32, 0x30, 0x06, (byte) 0x80, 0x01, 0x0E, (byte) 0x81, 0x01, 0x01, 0x30, 0x06, (byte) 0x80, 0x01, 0x0D, (byte) 0x81, 0x01, 0x01,
+                0x30, 0x0B, (byte) 0x80, 0x01, 0x11, (byte) 0x81, 0x01, 0x01, (byte) 0xA2, 0x03, (byte) 0x80, 0x01, 0x01, 0x30, 0x0B, (byte) 0x80, 0x01, 0x11,
+                (byte) 0x81, 0x01, 0x01, (byte) 0xA2, 0x03, (byte) 0x80, 0x01, 0x02, 0x30, 0x06, (byte) 0x80, 0x01, 0x12, (byte) 0x81, 0x01, 0x01, (byte) 0xA1,
+                0x06, 0x02, 0x01, 0x03, 0x02, 0x01, 0x1F};
+    }
 
-	public byte[] getDataUdtSSrc() {
-		return new byte[] { 101, -127, -128, 72, 4, 0, 0, 0, 1, 73, 4, 0, 23, 58, 38, 107, 42, 40, 40, 6, 7, 0, 17, -122, 5, 1, 1, 1, -96, 29, 97, 27, -128, 2,
-				7, -128, -95, 9, 6, 7, 4, 0, 0, 1, 0, 50, 1, -94, 3, 2, 1, 0, -93, 5, -95, 3, 2, 1, 0, 108, 70, -95, 60, 2, 1, 2, 2, 1, 23, 48, 52, -96, 50,
-				48, 6, -128, 1, 14, -127, 1, 1, 48, 6, -128, 1, 13, -127, 1, 1, 48, 11, -128, 1, 17, -127, 1, 1, -94, 3, -128, 1, 1, 48, 11, -128, 1, 17, -127,
-				1, 1, -94, 3, -128, 1, 2, 48, 6, -128, 1, 18, -127, 1, 1, -95, 6, 2, 1, 3, 2, 1, 31 };
-	};
+    public byte[] getDataUdtSSrc() {
+        return new byte[]{101, -127, -128, 72, 4, 0, 0, 0, 1, 73, 4, 0, 23, 58, 38, 107, 42, 40, 40, 6, 7, 0, 17, -122, 5, 1, 1, 1, -96, 29, 97, 27, -128, 2,
+                7, -128, -95, 9, 6, 7, 4, 0, 0, 1, 0, 50, 1, -94, 3, 2, 1, 0, -93, 5, -95, 3, 2, 1, 0, 108, 70, -95, 60, 2, 1, 2, 2, 1, 23, 48, 52, -96, 50,
+                48, 6, -128, 1, 14, -127, 1, 1, 48, 6, -128, 1, 13, -127, 1, 1, 48, 11, -128, 1, 17, -127, 1, 1, -94, 3, -128, 1, 1, 48, 11, -128, 1, 17, -127,
+                1, 1, -94, 3, -128, 1, 2, 48, 6, -128, 1, 18, -127, 1, 1, -95, 6, 2, 1, 3, 2, 1, 31};
+    }
 
-	public byte[] getDataXudt1() {
-		return new byte[] { 18, 1, 15, 4, 6, 10, 15, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15, 18, 1, 7, 0 };
-	}
+    ;
 
-	public byte[] getDataUdt() {
-		return new byte[] { 10, 1, 3, 5, 9, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15 };
-	}
+    public byte[] getDataXudt1() {
+        return new byte[]{18, 1, 15, 4, 6, 10, 15, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15, 18, 1, 7, 0};
+    }
 
-	public byte[] getDataXudt1Src() {
-		return new byte[] { 11, 12, 13, 14, 15 };
-	}
+    public byte[] getDataUdt() {
+        return new byte[]{10, 1, 3, 5, 9, 2, 66, 8, 4, 67, 1, 0, 6, 5, 11, 12, 13, 14, 15};
+    }
 
-	public byte[] getDataLudt1() {
-		return new byte[] { 20, 5, 10, 7, 00, 8, 00, 11, 00, 00, 00, 2, 66, 8, 4, 67, 1, 0, 6, 5, 00, 11, 12, 13, 14, 15 };
-	}
+    public byte[] getDataXudt1Src() {
+        return new byte[]{11, 12, 13, 14, 15};
+    }
 
-	@Test
-	public void testDecode() throws Exception {
+    public byte[] getDataLudt1() {
+        return new byte[]{20, 5, 10, 7, 00, 8, 00, 11, 00, 00, 00, 2, 66, 8, 4, 67, 1, 0, 6, 5, 00, 11, 12, 13, 14, 15};
+    }
 
-		// ---- UDTS
-		byte[] b = this.getDataUdtS(); 
+    @Test
+    public void testDecode() throws Exception {
 
-		ByteArrayInputStream buf = new ByteArrayInputStream(b);
-		int type = buf.read();
-		SccpNoticeMessage msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
-		System.out.println(msg);
-		assertNotNull(msg);
-		assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_NATURE, msg.getReturnCause().getValue());
+        // ---- UDTS
+        byte[] b = this.getDataUdtS();
 
-		SccpAddress calledAdd = msg.getCalledPartyAddress();
-		assertNotNull(calledAdd);
-		assertEquals(0, calledAdd.getSignalingPointCode());
-		assertEquals(146, calledAdd.getSubsystemNumber());
-		assertTrue(calledAdd.getGlobalTitle().getDigits().equals("999999999"));
+        ByteArrayInputStream buf = new ByteArrayInputStream(b);
+        int type = buf.read();
+        SccpNoticeMessage msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
+        System.out.println(msg);
+        assertNotNull(msg);
+        assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_NATURE, msg.getReturnCause().getValue());
 
-		SccpAddress callingAdd = msg.getCallingPartyAddress();
-		assertNotNull(callingAdd);
-		assertEquals(1726, callingAdd.getSignalingPointCode());
-		assertEquals(146, callingAdd.getSubsystemNumber());
-		assertNull(callingAdd.getGlobalTitle());
-		assertTrue(Arrays.equals(msg.getData(), getDataUdtSSrc()));
+        SccpAddress calledAdd = msg.getCalledPartyAddress();
+        assertNotNull(calledAdd);
+        assertEquals(0, calledAdd.getSignalingPointCode());
+        assertEquals(146, calledAdd.getSubsystemNumber());
+        assertTrue(calledAdd.getGlobalTitle().getDigits().equals("999999999"));
 
-		// ---- XUDT without segm
-		b = this.getDataXudt1(); 
+        SccpAddress callingAdd = msg.getCallingPartyAddress();
+        assertNotNull(callingAdd);
+        assertEquals(1726, callingAdd.getSignalingPointCode());
+        assertEquals(146, callingAdd.getSubsystemNumber());
+        assertNull(callingAdd.getGlobalTitle());
+        assertTrue(Arrays.equals(msg.getData(), getDataUdtSSrc()));
 
-		buf = new ByteArrayInputStream(b);
-		type = buf.read();
-		msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
-		System.out.println(msg);
-		assertNotNull(msg);
-		assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS, msg.getReturnCause().getValue());
+        // ---- XUDT without segm
+        b = this.getDataXudt1();
 
-		assertEquals(15, msg.getHopCounter().getValue());
-		calledAdd = msg.getCalledPartyAddress();
-		assertNotNull(calledAdd);
-		assertEquals(0, calledAdd.getSignalingPointCode());
-		assertEquals(8, calledAdd.getSubsystemNumber());
-		assertNull(calledAdd.getGlobalTitle());
-		callingAdd = msg.getCallingPartyAddress();
-		assertNotNull(callingAdd);
-		assertEquals(1, callingAdd.getSignalingPointCode());
-		assertEquals(6, callingAdd.getSubsystemNumber());
-		assertNull(callingAdd.getGlobalTitle());
-		assertNull(msg.getSegmentation());
-		assertEquals(7, msg.getImportance().getValue());		
-		assertTrue(Arrays.equals(msg.getData(), getDataXudt1Src()));
+        buf = new ByteArrayInputStream(b);
+        type = buf.read();
+        msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
+        System.out.println(msg);
+        assertNotNull(msg);
+        assertEquals(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS, msg.getReturnCause().getValue());
 
-		// ---- LUDT
-		b = this.getDataLudt1(); 
+        assertEquals(15, msg.getHopCounter().getValue());
+        calledAdd = msg.getCalledPartyAddress();
+        assertNotNull(calledAdd);
+        assertEquals(0, calledAdd.getSignalingPointCode());
+        assertEquals(8, calledAdd.getSubsystemNumber());
+        assertNull(calledAdd.getGlobalTitle());
+        callingAdd = msg.getCallingPartyAddress();
+        assertNotNull(callingAdd);
+        assertEquals(1, callingAdd.getSignalingPointCode());
+        assertEquals(6, callingAdd.getSubsystemNumber());
+        assertNull(callingAdd.getGlobalTitle());
+        assertNull(msg.getSegmentation());
+        assertEquals(7, msg.getImportance().getValue());
+        assertTrue(Arrays.equals(msg.getData(), getDataXudt1Src()));
 
-		buf = new ByteArrayInputStream(b);
-		type = buf.read();
-		msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
-		System.out.println(msg);
-		assertNotNull(msg);
-		assertEquals(ReturnCauseValue.MTP_FAILURE, msg.getReturnCause().getValue());
+        // ---- LUDT
+        b = this.getDataLudt1();
 
-		assertEquals(10, msg.getHopCounter().getValue());
-		calledAdd = msg.getCalledPartyAddress();
-		assertNotNull(calledAdd);
-		assertEquals(0, calledAdd.getSignalingPointCode());
-		assertEquals(8, calledAdd.getSubsystemNumber());
-		assertNull(calledAdd.getGlobalTitle());
-		callingAdd = msg.getCallingPartyAddress();
-		assertNotNull(callingAdd);
-		assertEquals(1, callingAdd.getSignalingPointCode());
-		assertEquals(6, callingAdd.getSubsystemNumber());
-		assertNull(callingAdd.getGlobalTitle());
-		assertNull(msg.getSegmentation());
-		assertNull(msg.getImportance());		
-		assertTrue(Arrays.equals(msg.getData(), getDataXudt1Src()));
+        buf = new ByteArrayInputStream(b);
+        type = buf.read();
+        msg = (SccpNoticeMessage) messageFactory.createMessage(type, 1, 2, 0, buf);
+        System.out.println(msg);
+        assertNotNull(msg);
+        assertEquals(ReturnCauseValue.MTP_FAILURE, msg.getReturnCause().getValue());
 
-	}
+        assertEquals(10, msg.getHopCounter().getValue());
+        calledAdd = msg.getCalledPartyAddress();
+        assertNotNull(calledAdd);
+        assertEquals(0, calledAdd.getSignalingPointCode());
+        assertEquals(8, calledAdd.getSubsystemNumber());
+        assertNull(calledAdd.getGlobalTitle());
+        callingAdd = msg.getCallingPartyAddress();
+        assertNotNull(callingAdd);
+        assertEquals(1, callingAdd.getSignalingPointCode());
+        assertEquals(6, callingAdd.getSubsystemNumber());
+        assertNull(callingAdd.getGlobalTitle());
+        assertNull(msg.getSegmentation());
+        assertNull(msg.getImportance());
+        assertTrue(Arrays.equals(msg.getData(), getDataXudt1Src()));
 
-	@Test
-	public void testEncode() throws Exception {
+    }
 
-		// ---- UDTS
-		this.stack.setRemoveSpc(false);
-		GlobalTitle gt = new GT0100(0, NumberingPlan.ISDN_TELEPHONY, NatureOfAddress.INTERNATIONAL, "999999999");
-		SccpAddress calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, gt, 146);
-		SccpAddress callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 1726, null, 146);
-		ReturnCause rc = new ReturnCauseImpl(ReturnCauseValue.NO_TRANSLATION_FOR_NATURE);
-		SccpNoticeMessageImpl msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_UDT, rc, calledAdd, callingAdd,
-				getDataUdtSSrc(), null, null);
+    @Test
+    public void testEncode() throws Exception {
 
-		EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(EncodingResult.Success, res.getEncodingResult());
-		assertTrue(Arrays.equals(res.getSolidData(), getDataUdtS()));
+        // ---- UDTS
+        this.stack.setRemoveSpc(false);
+        GlobalTitle gt = new GT0100(0, NumberingPlan.ISDN_TELEPHONY, NatureOfAddress.INTERNATIONAL, "999999999");
+        SccpAddress calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, gt, 146);
+        SccpAddress callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 1726, null, 146);
+        ReturnCause rc = new ReturnCauseImpl(ReturnCauseValue.NO_TRANSLATION_FOR_NATURE);
+        SccpNoticeMessageImpl msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_UDT, rc, calledAdd, callingAdd,
+                getDataUdtSSrc(), null, null);
 
-		// ---- UDTS
-		this.stack.setRemoveSpc(false);
+        EncodingResultData res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
+        assertEquals(EncodingResult.Success, res.getEncodingResult());
+        assertTrue(Arrays.equals(res.getSolidData(), getDataUdtS()));
 
-		// ---- XUDT without segm
-		calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);
-		callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 6);
-		HopCounter hc = new HopCounterImpl(15);
-		Importance imp = new ImportanceImpl((byte)7);
-		rc = new ReturnCauseImpl(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
-		msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_XUDT, rc, calledAdd, callingAdd,
-				getDataXudt1Src(), hc, imp);
+        // ---- UDTS
+        this.stack.setRemoveSpc(false);
 
-		res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
-		assertEquals(EncodingResult.Success, res.getEncodingResult());
-		assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
+        // ---- XUDT without segm
+        calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);
+        callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 6);
+        HopCounter hc = new HopCounterImpl(15);
+        Importance imp = new ImportanceImpl((byte) 7);
+        rc = new ReturnCauseImpl(ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);
+        msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_XUDT, rc, calledAdd, callingAdd,
+                getDataXudt1Src(), hc, imp);
 
-		// ---- LUDT without segm
-		calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);
-		callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 6);
-		hc = new HopCounterImpl(10);
-		rc = new ReturnCauseImpl(ReturnCauseValue.MTP_FAILURE);
-		msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_LUDT, rc, calledAdd, callingAdd,
-				getDataXudt1Src(), hc, null);
+        res = msg.encode(this.stack, LongMessageRuleType.XudtEnabled, 272, logger);
+        assertEquals(EncodingResult.Success, res.getEncodingResult());
+        assertTrue(Arrays.equals(res.getSolidData(), getDataUdt()));
 
-		res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
-		assertEquals(EncodingResult.Success, res.getEncodingResult());
-		assertTrue(Arrays.equals(res.getSolidData(), getDataLudt1()));
-	}
-	
+        // ---- LUDT without segm
+        calledAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 0, null, 8);
+        callingAdd = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 6);
+        hc = new HopCounterImpl(10);
+        rc = new ReturnCauseImpl(ReturnCauseValue.MTP_FAILURE);
+        msg = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(SccpMessage.MESSAGE_TYPE_LUDT, rc, calledAdd, callingAdd,
+                getDataXudt1Src(), hc, null);
+
+        res = msg.encode(this.stack, LongMessageRuleType.LudtEnabled, 2000, logger);
+        assertEquals(EncodingResult.Success, res.getEncodingResult());
+        assertTrue(Arrays.equals(res.getSolidData(), getDataLudt1()));
+    }
+
 }
 

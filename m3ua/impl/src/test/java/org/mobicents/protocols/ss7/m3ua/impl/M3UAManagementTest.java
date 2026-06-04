@@ -106,7 +106,7 @@ public class M3UAManagementTest {
 
         Association association = this.transportManagement.addAssociation(null, 0, null, 0, "ASPAssoc1");
 
-        RoutingContext rc = factory.createRoutingContext(new long[] { 1 });
+        RoutingContext rc = factory.createRoutingContext(new long[]{1});
         NetworkAppearance na = factory.createNetworkAppearance(12l);
         AsImpl as1 = (AsImpl) this.m3uaMgmt.createAs("AS1", Functionality.AS, ExchangeType.SE, null, rc, null, 1, na);
 

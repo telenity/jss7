@@ -43,7 +43,7 @@ import org.junit.Test;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class NettyManagementTest {
 
@@ -74,12 +74,12 @@ public class NettyManagementTest {
     /**
      * Test the creation of Server. Stop management and start, and Server should
      * be started automatically
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void testServerSctp() throws Exception {
-        
+
         if (NettySctpTransferTest.checkSctpEnabled())
             this.testServerByProtocol(IpChannelType.SCTP);
     }
@@ -87,7 +87,7 @@ public class NettyManagementTest {
     /**
      * Test the creation of Server. Stop management and start, and Server should
      * be started automatically
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -127,9 +127,9 @@ public class NettyManagementTest {
         management.addServerAssociation(CLIENT_HOST, CLIENT_PORT, SERVER_NAME, SERVER_ASSOCIATION_NAME, ipChannelType);
 
         assertEquals(management.getAssociations().size(), 1);
-        
+
         management.stopServer(SERVER_NAME);
-        
+
         // Try to delete and it should throw error
         try {
             management.removeServer(SERVER_NAME);
@@ -137,10 +137,10 @@ public class NettyManagementTest {
         } catch (Exception e) {
             assertEquals("Server=testserver has Associations. Remove all those Associations before removing Server", e.getMessage());
         }
-        
+
         //Try removing Association now
         // Remove Assoc
-        management.removeAssociation(SERVER_ASSOCIATION_NAME);      
+        management.removeAssociation(SERVER_ASSOCIATION_NAME);
 
         management.removeServer(SERVER_NAME);
 
@@ -153,7 +153,7 @@ public class NettyManagementTest {
 
     @Test
     public void testAssociationSctp() throws Exception {
-        
+
         if (NettySctpTransferTest.checkSctpEnabled())
             this.testAssociationByProtocol(IpChannelType.SCTP);
     }
@@ -199,17 +199,17 @@ public class NettyManagementTest {
         } catch (Exception e) {
             assertEquals("Already has association=ClientAssoc1 with same host address=localhost and port=2905", e.getMessage());
         }
-        
+
         //Test Serialization.
         management.stop();
-        
+
         management = new NettySctpManagementImpl("ManagementTest");
         // start again
         management.setPersistDir("target");
         management.start();
-        
-        Map<String, Association> associations  = management.getAssociations();
-        
+
+        Map<String, Association> associations = management.getAssociations();
+
         assertEquals(associations.size(), 1);
 
         // Remove Assoc
@@ -217,11 +217,11 @@ public class NettyManagementTest {
 
         management.stop();
     }
-    
+
 
     @Test
     public void testStopAssociationSctp() throws Exception {
-        
+
         if (NettySctpTransferTest.checkSctpEnabled())
             this.testStopAssociationByProtocol(IpChannelType.SCTP);
     }
@@ -270,37 +270,37 @@ public class NettyManagementTest {
         @Override
         public void onCommunicationUp(Association association, int maxInboundStreams, int maxOutboundStreams) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onCommunicationShutdown(Association association) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onCommunicationLost(Association association) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onCommunicationRestart(Association association) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onPayload(Association association, PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
     }
 
@@ -309,37 +309,37 @@ public class NettyManagementTest {
         @Override
         public void onCommunicationUp(Association association, int maxInboundStreams, int maxOutboundStreams) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onCommunicationShutdown(Association association) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onCommunicationLost(Association association) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onCommunicationRestart(Association association) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void onPayload(Association association, PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
     }
 }

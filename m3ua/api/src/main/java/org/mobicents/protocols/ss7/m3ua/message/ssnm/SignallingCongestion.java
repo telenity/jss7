@@ -41,9 +41,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
  * peer, indicating that the congestion level of the M3UA layer or the ASP has
  * changed.
  * </p>
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface SignallingCongestion extends M3UAMessage {
 

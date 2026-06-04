@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -24,30 +24,30 @@ package org.mobicents.protocols.ss7.sccp;
 import java.util.Map;
 
 /**
- * 
+ *
  * @author Amit Bhayani
  *
  */
 public interface Mtp3ServiceAccessPoint {
 
-	public int getMtp3Id();
+    public int getMtp3Id();
 
-	public int getOpc();
+    public int getOpc();
 
-	public int getNi();
+    public int getNi();
 
-	public Mtp3Destination getMtp3Destination(int destId);
+    public Mtp3Destination getMtp3Destination(int destId);
 
-	public Map<Integer, Mtp3Destination> getMtp3Destinations();
+    public Map<Integer, Mtp3Destination> getMtp3Destinations();
 
-	public void addMtp3Destination(int destId, int firstDpc, int lastDpc, int firstSls, int lastSls, int slsMask)
-			throws Exception;
+    public void addMtp3Destination(int destId, int firstDpc, int lastDpc, int firstSls, int lastSls, int slsMask)
+            throws Exception;
 
-	public void modifyMtp3Destination(int destId, int firstDpc, int lastDpc, int firstSls, int lastSls, int slsMask)
-			throws Exception;
+    public void modifyMtp3Destination(int destId, int firstDpc, int lastDpc, int firstSls, int lastSls, int slsMask)
+            throws Exception;
 
-	public void removeMtp3Destination(int destId) throws Exception;
+    public void removeMtp3Destination(int destId) throws Exception;
 
-	public boolean matches(int dpc, int sls);
+    public boolean matches(int dpc, int sls);
 
 }

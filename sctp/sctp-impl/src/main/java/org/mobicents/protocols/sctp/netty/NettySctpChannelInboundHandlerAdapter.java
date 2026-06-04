@@ -40,7 +40,7 @@ import com.sun.nio.sctp.ShutdownNotification;
 
 /**
  * @author <a href="mailto:amit.bhayani@telestax.com">Amit Bhayani</a>
- * 
+ *
  */
 public class NettySctpChannelInboundHandlerAdapter extends ChannelInboundHandlerAdapter {
 

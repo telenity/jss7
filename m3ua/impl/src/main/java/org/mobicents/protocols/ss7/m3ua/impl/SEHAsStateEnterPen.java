@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -29,38 +29,38 @@ import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSMState;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSMStateEventHandler;
 
 /**
- * 
+ *
  * @author amit bhayani
  *
  */
 public abstract class SEHAsStateEnterPen implements FSMStateEventHandler {
 
-	private static final Logger logger = Logger.getLogger(SEHAsStateEnterPen.class);
+    private static final Logger logger = Logger.getLogger(SEHAsStateEnterPen.class);
 
-	protected AsImpl asImpl = null;
-	private FSM fsm;
+    protected AsImpl asImpl = null;
+    private FSM fsm;
 
-	public SEHAsStateEnterPen(AsImpl asImpl, FSM fsm) {
-		this.asImpl = asImpl;
-		this.fsm = fsm;
-	}
+    public SEHAsStateEnterPen(AsImpl asImpl, FSM fsm) {
+        this.asImpl = asImpl;
+        this.fsm = fsm;
+    }
 
-	public void onEvent(FSMState state) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(String.format("Entered in PENDING state for As=%s", asImpl.getName()));
-		}
-		
-		if (!this.asImpl.state.getName().equals(State.STATE_PENDING)) {
-			AsState oldState = AsState.getState(this.asImpl.state.getName());
-			this.asImpl.state = AsState.PENDING;
+    public void onEvent(FSMState state) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Entered in PENDING state for As=%s", asImpl.getName()));
+        }
 
-			for (M3UAManagementEventListener m3uaManagementEventListener : this.asImpl.m3UAManagementImpl.managementEventListeners) {
-				try {
-					m3uaManagementEventListener.onAsPending(this.asImpl, oldState);
-				} catch (Throwable ee) {
-					logger.error("Exception while invoking onAsPending", ee);
-				}
-			}
-		}
-	}
+        if (!this.asImpl.state.getName().equals(State.STATE_PENDING)) {
+            AsState oldState = AsState.getState(this.asImpl.state.getName());
+            this.asImpl.state = AsState.PENDING;
+
+            for (M3UAManagementEventListener m3uaManagementEventListener : this.asImpl.m3UAManagementImpl.managementEventListeners) {
+                try {
+                    m3uaManagementEventListener.onAsPending(this.asImpl, oldState);
+                } catch (Throwable ee) {
+                    logger.error("Exception while invoking onAsPending", ee);
+                }
+            }
+        }
+    }
 }

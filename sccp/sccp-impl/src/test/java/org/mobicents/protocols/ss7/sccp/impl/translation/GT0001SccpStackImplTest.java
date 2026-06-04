@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -49,186 +49,183 @@ import org.junit.Test;
  */
 public class GT0001SccpStackImplTest extends SccpHarness {
 
-	private SccpAddress a1, a2;
+    private SccpAddress a1, a2;
 
-	public GT0001SccpStackImplTest() {
-	}
+    public GT0001SccpStackImplTest() {
+    }
 
-	@Before
-	public void setUpClass() throws Exception {
-		this.sccpStack1Name = "GT0001TestSccpStack1";
-		this.sccpStack2Name = "GT0001TestSccpStack2";
-	}
+    @Before
+    public void setUpClass() throws Exception {
+        this.sccpStack1Name = "GT0001TestSccpStack1";
+        this.sccpStack2Name = "GT0001TestSccpStack2";
+    }
 
-	@After
-	public void tearDownClass() throws Exception {
-	}
+    @After
+    public void tearDownClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
 
-	}
+    }
 
-	@After
-	public void tearDown() {
-		super.tearDown();
-	}
+    @After
+    public void tearDown() {
+        super.tearDown();
+    }
 
-	
-	protected static final String GT1_digits = "1234567890";
-	protected static final String GT2_digits = "0987654321";
-	
-	protected static final String GT1_pattern_digits = "1/???????/90";
-	protected static final String GT2_pattern_digits = "0/???????/21";
-	
-	@Test
-	public void testRemoteRoutingBasedOnGT_DPC_SSN() throws Exception {
-		
-		GT0001 gt1 = new GT0001(NatureOfAddress.NATIONAL,GT1_digits);
-		GT0001 gt2 = new GT0001(NatureOfAddress.NATIONAL,GT2_digits);
-		
-		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt1, getSSN());
-		a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt2, getSSN());
-		
-		//add addresses to translate
-		SccpAddress primary1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
-		SccpAddress primary2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
-		super.router1.addPrimaryAddress(22, primary1SccpAddress);
-		super.router2.addPrimaryAddress(33, primary2SccpAddress);
-		
-		SccpAddress rule1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL,GT2_pattern_digits), getSSN());
-		SccpAddress rule2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL,GT1_pattern_digits), getSSN());
-		super.router1.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule1SccpAddress, "K/R/K", 22, -1);
-		super.router2.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule2SccpAddress, "R/R/R", 33, -1);
-		
 
-		
-		
-		//now create users, we need to override matchX methods, since our rules do kinky stuff with digits, plus 
-		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2,getSSN()){
+    protected static final String GT1_digits = "1234567890";
+    protected static final String GT2_digits = "0987654321";
 
-	
-			protected boolean matchCalledPartyAddress() {
-				SccpMessage msg = messages.get(0);
-				SccpDataMessage udt = (SccpDataMessage) msg;
-				SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, getSSN());
-				if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
-					return false;
-				}
-				return true;
-			}
-			
-		};
-		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1,getSSN()){
+    protected static final String GT1_pattern_digits = "1/???????/90";
+    protected static final String GT2_pattern_digits = "0/???????/21";
 
-	
-			protected boolean matchCalledPartyAddress() {
-				SccpMessage msg = messages.get(0);
-				SccpDataMessage udt = (SccpDataMessage) msg;
-				SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), new GT0001(NatureOfAddress.NATIONAL,"021"), getSSN());
-				if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
-					return false;
-				}
-				return true;
-			}
-			
-		};
-		
-		u1.register();
-		u2.register();
-		
-		u1.send();
-		u2.send();
+    @Test
+    public void testRemoteRoutingBasedOnGT_DPC_SSN() throws Exception {
 
-		Thread.currentThread().sleep(3000);
+        GT0001 gt1 = new GT0001(NatureOfAddress.NATIONAL, GT1_digits);
+        GT0001 gt2 = new GT0001(NatureOfAddress.NATIONAL, GT2_digits);
 
-		assertTrue("Message not received",  u1.check());
-		assertTrue("Message not received",  u2.check());
-	}
-	
-	
-	@Test
-	public void testRemoteRoutingBasedOnGT() throws Exception {
+        a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt1, getSSN());
+        a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt2, getSSN());
 
-		//here we do as above, however receiving stack needs also rule, to match it localy.
-		GT0001 gt1 = new GT0001(NatureOfAddress.NATIONAL,GT1_digits);
-		GT0001 gt2 = new GT0001(NatureOfAddress.NATIONAL,GT2_digits);
+        //add addresses to translate
+        SccpAddress primary1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
+        SccpAddress primary2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
+        super.router1.addPrimaryAddress(22, primary1SccpAddress);
+        super.router2.addPrimaryAddress(33, primary2SccpAddress);
 
-		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt1, getSSN());
-		a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt2, getSSN());
+        SccpAddress rule1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL, GT2_pattern_digits), getSSN());
+        SccpAddress rule2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL, GT1_pattern_digits), getSSN());
+        super.router1.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule1SccpAddress, "K/R/K", 22, -1);
+        super.router2.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule2SccpAddress, "R/R/R", 33, -1);
 
-		//add addresses to translate
-		SccpAddress primary1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, getStack2PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
-		SccpAddress primary2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, getStack1PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
-		super.router1.addPrimaryAddress(22, primary1SccpAddress);
-		super.router2.addPrimaryAddress(33, primary2SccpAddress);
-		
-		SccpAddress rule1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL,GT2_pattern_digits), getSSN());
-		SccpAddress rule2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL,GT1_pattern_digits), getSSN());
-		super.router1.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule1SccpAddress, "K/R/K", 22, -1);
-		super.router2.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule2SccpAddress, "R/K/R", 33, -1);
-		
-		//add rules for incoming messages, 
-		
-		//1. add primary addresses
-		//NOTE PC passed in address match local PC for stack
-		primary1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
-		primary2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), GlobalTitle.getInstance("-/-"), getSSN());
-		super.router1.addPrimaryAddress(44, primary1SccpAddress);
-		super.router2.addPrimaryAddress(66, primary2SccpAddress);
-		//2. add rules to make translation to above
-		rule1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL,"23456/?/8"), getSSN());
-		rule2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL,"02/?"), getSSN());
-		super.router1.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule1SccpAddress, "K/K/K", 44, -1);
-		super.router2.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule2SccpAddress, "K/K", 66, -1);
-		
-		
-		//now create users, we need to override matchX methods, since our rules do kinky stuff with digits, plus 
-		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2,getSSN()){
 
-	
-			protected boolean matchCalledPartyAddress() {
-				SccpMessage msg = messages.get(0);
-				SccpDataMessage udt = (SccpDataMessage) msg;
-				//pc=1,ssn=8,gt=GLOBAL_TITLE_INCLUDES_NATURE_OF_ADDRESS_INDICATOR_ONLY 2345678
-				SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), new GT0001(NatureOfAddress.NATIONAL,"2345678"), getSSN());
-				if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
-					return false;
-				}
-				return true;
-			}
-			
-		};
-		
-		
-		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1,getSSN()){
+        //now create users, we need to override matchX methods, since our rules do kinky stuff with digits, plus
+        User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN()) {
 
-	
-			protected boolean matchCalledPartyAddress() {
-				SccpMessage msg = messages.get(0);
-				SccpDataMessage udt = (SccpDataMessage) msg;
-				SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), new GT0001(NatureOfAddress.NATIONAL,"021"), getSSN());
-				if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
-					return false;
-				}
-				return true;
-			}
-			
-		};
 
-		u1.register();
-		u2.register();
-		
-		u1.send();
-		u2.send();
+            protected boolean matchCalledPartyAddress() {
+                SccpMessage msg = messages.get(0);
+                SccpDataMessage udt = (SccpDataMessage) msg;
+                SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), null, getSSN());
+                if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
+                    return false;
+                }
+                return true;
+            }
 
-		Thread.currentThread().sleep(3000);
+        };
+        User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN()) {
 
-		assertTrue("Message not received",  u1.check());
-		assertTrue("Message not received",  u2.check());
-	}
-	
-	
+
+            protected boolean matchCalledPartyAddress() {
+                SccpMessage msg = messages.get(0);
+                SccpDataMessage udt = (SccpDataMessage) msg;
+                SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), new GT0001(NatureOfAddress.NATIONAL, "021"), getSSN());
+                if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
+                    return false;
+                }
+                return true;
+            }
+
+        };
+
+        u1.register();
+        u2.register();
+
+        u1.send();
+        u2.send();
+
+        Thread.currentThread().sleep(3000);
+
+        assertTrue("Message not received", u1.check());
+        assertTrue("Message not received", u2.check());
+    }
+
+
+    @Test
+    public void testRemoteRoutingBasedOnGT() throws Exception {
+
+        //here we do as above, however receiving stack needs also rule, to match it localy.
+        GT0001 gt1 = new GT0001(NatureOfAddress.NATIONAL, GT1_digits);
+        GT0001 gt2 = new GT0001(NatureOfAddress.NATIONAL, GT2_digits);
+
+        a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt1, getSSN());
+        a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, gt2, getSSN());
+
+        //add addresses to translate
+        SccpAddress primary1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, getStack2PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
+        SccpAddress primary2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, getStack1PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
+        super.router1.addPrimaryAddress(22, primary1SccpAddress);
+        super.router2.addPrimaryAddress(33, primary2SccpAddress);
+
+        SccpAddress rule1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL, GT2_pattern_digits), getSSN());
+        SccpAddress rule2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL, GT1_pattern_digits), getSSN());
+        super.router1.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule1SccpAddress, "K/R/K", 22, -1);
+        super.router2.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule2SccpAddress, "R/K/R", 33, -1);
+
+        //add rules for incoming messages,
+
+        //1. add primary addresses
+        //NOTE PC passed in address match local PC for stack
+        primary1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), GlobalTitle.getInstance("-/-/-"), getSSN());
+        primary2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), GlobalTitle.getInstance("-/-"), getSSN());
+        super.router1.addPrimaryAddress(44, primary1SccpAddress);
+        super.router2.addPrimaryAddress(66, primary2SccpAddress);
+        //2. add rules to make translation to above
+        rule1SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL, "23456/?/8"), getSSN());
+        rule2SccpAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, new GT0001(NatureOfAddress.NATIONAL, "02/?"), getSSN());
+        super.router1.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule1SccpAddress, "K/K/K", 44, -1);
+        super.router2.addRule(2, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, rule2SccpAddress, "K/K", 66, -1);
+
+
+        //now create users, we need to override matchX methods, since our rules do kinky stuff with digits, plus
+        User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN()) {
+
+
+            protected boolean matchCalledPartyAddress() {
+                SccpMessage msg = messages.get(0);
+                SccpDataMessage udt = (SccpDataMessage) msg;
+                //pc=1,ssn=8,gt=GLOBAL_TITLE_INCLUDES_NATURE_OF_ADDRESS_INDICATOR_ONLY 2345678
+                SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack1PC(), new GT0001(NatureOfAddress.NATIONAL, "2345678"), getSSN());
+                if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
+                    return false;
+                }
+                return true;
+            }
+
+        };
+
+
+        User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN()) {
+
+
+            protected boolean matchCalledPartyAddress() {
+                SccpMessage msg = messages.get(0);
+                SccpDataMessage udt = (SccpDataMessage) msg;
+                SccpAddress addressToMatch = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, getStack2PC(), new GT0001(NatureOfAddress.NATIONAL, "021"), getSSN());
+                if (!addressToMatch.equals(udt.getCalledPartyAddress())) {
+                    return false;
+                }
+                return true;
+            }
+
+        };
+
+        u1.register();
+        u2.register();
+
+        u1.send();
+        u2.send();
+
+        Thread.currentThread().sleep(3000);
+
+        assertTrue("Message not received", u1.check());
+        assertTrue("Message not received", u2.check());
+    }
+
 
 }

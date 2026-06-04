@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -26,30 +26,30 @@ import java.util.List;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 
 /**
- * 
+ *
  * @author Amit Bhayani
  *
  */
 public interface Rule {
-	
-	public String getMask();
-	
-	public RuleType getRuleType();
-	
-	public LoadSharingAlgorithm getLoadSharingAlgorithm();
 
-	public OriginationType getOriginationType();
-	
-	public SccpAddress getPattern();
-	
-	public int getPrimaryAddressId();
-	
-	public int getSecondaryAddressId();
+    public String getMask();
 
-	List<Integer> getLoadShareTable();
-	
-	public boolean matches(SccpAddress address, boolean isMtpOriginated);
-	
-	public SccpAddress translate(SccpAddress address, SccpAddress ruleAddress);
+    public RuleType getRuleType();
+
+    public LoadSharingAlgorithm getLoadSharingAlgorithm();
+
+    public OriginationType getOriginationType();
+
+    public SccpAddress getPattern();
+
+    public int getPrimaryAddressId();
+
+    public int getSecondaryAddressId();
+
+    List<Integer> getLoadShareTable();
+
+    public boolean matches(SccpAddress address, boolean isMtpOriginated);
+
+    public SccpAddress translate(SccpAddress address, SccpAddress ruleAddress);
 
 }

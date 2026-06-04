@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -42,80 +42,80 @@ import org.mobicents.protocols.ss7.mtp.Mtp3UserPartBaseImpl;
  * @author sergey vetyutnev
  */
 public class Mtp3UserPartImpl extends Mtp3UserPartBaseImpl {
-	
-	private Mtp3UserPartImpl otherPart;
-	private ArrayList<Mtp3TransferPrimitive> messages = new ArrayList<Mtp3TransferPrimitive>();
-	
-	protected boolean saveTrafficInFile = false;
 
-	public Mtp3UserPartImpl() {
-		try {
-			this.start();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void setOtherPart(Mtp3UserPartImpl otherPart) {
-		this.otherPart = otherPart;
-	}
+    private Mtp3UserPartImpl otherPart;
+    private ArrayList<Mtp3TransferPrimitive> messages = new ArrayList<Mtp3TransferPrimitive>();
 
-	public void sendMessage(Mtp3TransferPrimitive msg) throws IOException {
-		if (saveTrafficInFile) {
-			try {
-				byte[] txData = msg.encodeMtp3();
-				FileOutputStream fs = new FileOutputStream("MsgLog.txt", true);
-				int ln = txData.length;
-				fs.write(ln & 0xFF);
-				fs.write(ln >> 8);
-				fs.write(txData);
-				fs.close();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+    protected boolean saveTrafficInFile = false;
 
-		if (this.otherPart != null)
-			this.otherPart.sendTransferMessageToLocalUser(msg, msg.getSls());
-		else
-			this.messages.add(msg);
-	}
+    public Mtp3UserPartImpl() {
+        try {
+            this.start();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	public void sendTransferMessageToLocalUser(int opc, int dpc, byte[] data) {
-		int si = Mtp3._SI_SERVICE_SCCP;
-		int ni = 2;
-		int mp = 0;
-		int sls = 0;
-		Mtp3TransferPrimitiveFactory factory = this.getMtp3TransferPrimitiveFactory();
-		Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(si, ni, mp, opc, dpc, sls, data);
-		int seqControl = 0;
-		this.sendTransferMessageToLocalUser(msg, seqControl);
-	}	
+    public void setOtherPart(Mtp3UserPartImpl otherPart) {
+        this.otherPart = otherPart;
+    }
 
-	public void sendPauseMessageToLocalUser(int affectedDpc) {
-		Mtp3PausePrimitive msg = new Mtp3PausePrimitive(affectedDpc);
-		this.sendPauseMessageToLocalUser(msg);
-	}	
+    public void sendMessage(Mtp3TransferPrimitive msg) throws IOException {
+        if (saveTrafficInFile) {
+            try {
+                byte[] txData = msg.encodeMtp3();
+                FileOutputStream fs = new FileOutputStream("MsgLog.txt", true);
+                int ln = txData.length;
+                fs.write(ln & 0xFF);
+                fs.write(ln >> 8);
+                fs.write(txData);
+                fs.close();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
 
-	public void sendResumeMessageToLocalUser(int affectedDpc) {
-		Mtp3ResumePrimitive msg = new Mtp3ResumePrimitive(affectedDpc);
-		this.sendResumeMessageToLocalUser(msg);
-	}	
+        if (this.otherPart != null)
+            this.otherPart.sendTransferMessageToLocalUser(msg, msg.getSls());
+        else
+            this.messages.add(msg);
+    }
 
-	public void sendStatusMessageToLocalUser(int affectedDpc, Mtp3StatusCause cause, int congestionLevel) {
-		Mtp3StatusPrimitive msg = new Mtp3StatusPrimitive(affectedDpc, cause, congestionLevel);
-		this.sendStatusMessageToLocalUser(msg);
-	}
+    public void sendTransferMessageToLocalUser(int opc, int dpc, byte[] data) {
+        int si = Mtp3._SI_SERVICE_SCCP;
+        int ni = 2;
+        int mp = 0;
+        int sls = 0;
+        Mtp3TransferPrimitiveFactory factory = this.getMtp3TransferPrimitiveFactory();
+        Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(si, ni, mp, opc, dpc, sls, data);
+        int seqControl = 0;
+        this.sendTransferMessageToLocalUser(msg, seqControl);
+    }
 
-	public List<Mtp3TransferPrimitive> getMessages() {
-		return messages;
-	}
+    public void sendPauseMessageToLocalUser(int affectedDpc) {
+        Mtp3PausePrimitive msg = new Mtp3PausePrimitive(affectedDpc);
+        this.sendPauseMessageToLocalUser(msg);
+    }
 
-	@Override
-	public int getMaxUserDataLength(int dpc) {
-		return 1000;
-	}
+    public void sendResumeMessageToLocalUser(int affectedDpc) {
+        Mtp3ResumePrimitive msg = new Mtp3ResumePrimitive(affectedDpc);
+        this.sendResumeMessageToLocalUser(msg);
+    }
+
+    public void sendStatusMessageToLocalUser(int affectedDpc, Mtp3StatusCause cause, int congestionLevel) {
+        Mtp3StatusPrimitive msg = new Mtp3StatusPrimitive(affectedDpc, cause, congestionLevel);
+        this.sendStatusMessageToLocalUser(msg);
+    }
+
+    public List<Mtp3TransferPrimitive> getMessages() {
+        return messages;
+    }
+
+    @Override
+    public int getMaxUserDataLength(int dpc) {
+        return 1000;
+    }
 }
 

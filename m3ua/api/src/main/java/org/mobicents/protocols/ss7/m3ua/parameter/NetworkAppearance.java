@@ -36,7 +36,7 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * code advertised in those two networks could be duplicated because national
  * point codes are of local significance only.
  * </p>
- * 
+ *
  * @author amit bhayani
  * @author kulikov
  */
@@ -44,7 +44,7 @@ public interface NetworkAppearance extends Parameter {
 
     /**
      * A value in the range 1 to 4294967295 to be used in the Network Appearance
-     * 
+     *
      * @return
      */
     public long getNetApp();

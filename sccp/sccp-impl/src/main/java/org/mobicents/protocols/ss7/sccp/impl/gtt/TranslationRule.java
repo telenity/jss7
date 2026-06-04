@@ -24,98 +24,104 @@ package org.mobicents.protocols.ss7.sccp.impl.gtt;
 
 /**
  * Translation rule for the SCCP address.
- * 
- * One of the function of SCCP is to allow address to be translated to another address 
- * according to translation table. 
- * 
- * The rule is defined by three parameters: 
+ * <p>
+ * One of the function of SCCP is to allow address to be translated to another address
+ * according to translation table.
+ * <p>
+ * The rule is defined by three parameters:
  * <ul>
  * <li>address</li>
  * <li>dpc</li>
  * <li>ssn</li>
  * </ul>
- * 
- * Parameter <code>address</code> is a text string which defines the pattern for selecting rule 
+ * <p>
+ * Parameter <code>address</code> is a text string which defines the pattern for selecting rule
  * and at the same time defines the law of global title digits transformation.
- * 
+ * <p>
  * The common format of the address field is as follows:
  * mask[/ins(pos, seq)][/rem(pos, len)]
- * 
- * where mask consist of digits and/or wild card symbols(x, *). The wildcard symbol x means 
+ * <p>
+ * where mask consist of digits and/or wild card symbols(x, *). The wildcard symbol x means
  * any one digit in the current position. For example '01x' matches to the following sequence:
  * 010, 011, 012,..., 019. The '*' symbol means any digit sequence, for instance
  * 01* matches to the 010, 011, 01234, etc.
- * 
- * if digits of the GT to be translated match to the mask then transformation rules defined 
+ * <p>
+ * if digits of the GT to be translated match to the mask then transformation rules defined
  * in the address field will be applied subsequently
- * 
+ * <p>
  * ins (pos, seq) - inserts 'seq' into the postion specified by parameter <code>pos</code>
- * 
+ * <p>
  * example:
- * 
+ * <p>
  * 9023629581/ins(0,7) converts number 9023629581 to number 79023629581
- * 
+ *
  * @author kulikov
  */
 public class TranslationRule {
-    
-    /** Digit transformation pattern */
+
+    /**
+     * Digit transformation pattern
+     */
     private String address;
-    
-    /** point code to apply to the translated address */
+
+    /**
+     * point code to apply to the translated address
+     */
     private int dpc;
-    
-    /** subsystem number to apply to the translated address */
+
+    /**
+     * subsystem number to apply to the translated address
+     */
     private int ssn;
-    
+
     /**
      * Gets the rule for digits translation.
-     * 
+     *
      * @return the rule description.
      */
     public String getAddress() {
         return address;
     }
-    
+
     /**
      * Modifies digit translation rule.
-     * 
+     *
      * @param address the translation rule.
      */
     public void setAddress(String address) {
         this.address = address;
     }
-    
+
     /**
      * Gets the Destination Point code assigned to this rule.
-     * 
+     *
      * @return the point code value in decimal format
      */
     public int getDPC() {
         return dpc;
     }
-    
+
     /**
      * Modifies destionation point code assigned to this rule.
-     * 
+     *
      * @param dpc the new point code value in decimal format
      */
     public void setDPC(int dpc) {
         this.dpc = dpc;
     }
-    
+
     /**
      * Gets the current subsytem value associated with this rule.
-     * 
+     *
      * @return the subsytem number value.
      */
     public int getSSN() {
         return ssn;
     }
-    
+
     /**
      * Modifies subsystem value.
-     * 
+     *
      * @param ssn the subsytem value.
      */
     public void setSSN(int ssn) {

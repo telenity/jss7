@@ -27,54 +27,55 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
 
 /**
  * Thrown to indicate problems at parse time.
+ *
  * @author baranowb
  * @author sergey vetyutnev
  *
  */
 public class ParseException extends Exception {
 
-	private GeneralProblemType problem;
-	private PAbortCauseType pAbortCauseType;
-	private Integer invokeId;
+    private GeneralProblemType problem;
+    private PAbortCauseType pAbortCauseType;
+    private Integer invokeId;
 
-	public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem) {
-		this.problem = problem;
-		this.pAbortCauseType = pAbortCauseType;
-	}
+    public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem) {
+        this.problem = problem;
+        this.pAbortCauseType = pAbortCauseType;
+    }
 
-	public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem, String message) {
-		super(message);
-		this.problem = problem;
-		this.pAbortCauseType = pAbortCauseType;
-	}
+    public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem, String message) {
+        super(message);
+        this.problem = problem;
+        this.pAbortCauseType = pAbortCauseType;
+    }
 
-	public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem, Throwable cause) {
-		super(cause);
-		this.problem = problem;
-		this.pAbortCauseType = pAbortCauseType;
-	}
+    public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem, Throwable cause) {
+        super(cause);
+        this.problem = problem;
+        this.pAbortCauseType = pAbortCauseType;
+    }
 
-	public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem, String message, Throwable cause) {
-		super(message, cause);
-		this.problem = problem;
-		this.pAbortCauseType = pAbortCauseType;
-	}
+    public ParseException(PAbortCauseType pAbortCauseType, GeneralProblemType problem, String message, Throwable cause) {
+        super(message, cause);
+        this.problem = problem;
+        this.pAbortCauseType = pAbortCauseType;
+    }
 
-	public GeneralProblemType getProblem() {
-		return problem;
-	}
+    public GeneralProblemType getProblem() {
+        return problem;
+    }
 
-	public PAbortCauseType getPAbortCauseType() {
-		return pAbortCauseType;
-	}
+    public PAbortCauseType getPAbortCauseType() {
+        return pAbortCauseType;
+    }
 
-	public Integer getInvokeId() {
-		return invokeId;
-	}
+    public Integer getInvokeId() {
+        return invokeId;
+    }
 
-	public void setInvokeId(Integer val) {
-		invokeId = val;
-	}
+    public void setInvokeId(Integer val) {
+        invokeId = val;
+    }
 
 }
 

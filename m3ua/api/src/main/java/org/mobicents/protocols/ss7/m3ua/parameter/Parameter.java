@@ -24,7 +24,7 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
 
 /**
  * Defines list of valid parameters.
- * 
+ *
  * @author kulikov
  */
 public interface Parameter {

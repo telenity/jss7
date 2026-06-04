@@ -631,7 +631,7 @@ public class MultipleAspTest {
 
         public void sendPayload(int dpc) throws Exception {
             Mtp3TransferPrimitiveFactory factory = m3uaMgmt.getMtp3TransferPrimitiveFactory();
-            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, OPC, dpc, 1, new byte[] { 1, 2, 3, 4 });
+            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, OPC, dpc, 1, new byte[]{1, 2, 3, 4});
             m3uaMgmt.sendMessage(mtp3TransferPrimitive);
         }
 

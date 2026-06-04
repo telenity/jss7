@@ -25,6 +25,7 @@ package org.mobicents.protocols.ss7.sccp.impl.parameter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.mobicents.protocols.ss7.sccp.parameter.GT0010;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.utils.Utils;
@@ -35,29 +36,29 @@ import org.mobicents.protocols.ss7.utils.Utils;
  */
 public class GT0010Codec extends GTCodec {
 
-	private GT0010 gt;
+    private GT0010 gt;
 
-	public GT0010Codec() {
-	}
+    public GT0010Codec() {
+    }
 
-	public GT0010Codec(GT0010 gt) {
-		this.gt = gt;
-	}
+    public GT0010Codec(GT0010 gt) {
+        this.gt = gt;
+    }
 
-	public GlobalTitle decode(InputStream in) throws IOException {
-		int b = in.read() & 0xff;
-		int tt = b;
+    public GlobalTitle decode(InputStream in) throws IOException {
+        int b = in.read() & 0xff;
+        int tt = b;
 
-		return new GT0010(tt, Utils.toBCD(in, false));
-	}
+        return new GT0010(tt, Utils.toBCD(in, false));
+    }
 
-	public void encode(OutputStream out) throws IOException {
-		if (gt == null) {
-			throw new IOException("No GT to parse");
-		}
-		
-		out.write(gt.getTranslationType());
-		out.write(Utils.parseTBCD(gt.getDigits()));
-	}
+    public void encode(OutputStream out) throws IOException {
+        if (gt == null) {
+            throw new IOException("No GT to parse");
+        }
+
+        out.write(gt.getTranslationType());
+        out.write(Utils.parseTBCD(gt.getDigits()));
+    }
 
 }

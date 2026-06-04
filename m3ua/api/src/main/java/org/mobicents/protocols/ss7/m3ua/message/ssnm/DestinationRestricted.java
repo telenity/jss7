@@ -39,9 +39,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
  * the ASP, The MTP3-User should be informed that traffic to the affected
  * destination can be resumed. In this case, the M3UA layer should route the
  * traffic through the SG initiating the DRST message.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface DestinationRestricted extends M3UAMessage {
 

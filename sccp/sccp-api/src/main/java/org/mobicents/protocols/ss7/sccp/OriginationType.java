@@ -18,7 +18,7 @@ public enum OriginationType {
             return ALL;
         }
 
-        throw new IllegalArgumentException("Wrong value: '"+type+"'");
+        throw new IllegalArgumentException("Wrong value: '" + type + "'");
     }
 
     public String getValue() {

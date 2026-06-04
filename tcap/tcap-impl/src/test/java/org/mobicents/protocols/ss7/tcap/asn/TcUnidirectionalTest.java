@@ -36,75 +36,77 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
 import org.mobicents.protocols.ss7.tcap.asn.comp.TCUniMessage;
 
-import org.junit.Test; import static org.junit.Assert.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
-public class TcUnidirectionalTest  {
+public class TcUnidirectionalTest {
 
-	private byte[] getData() {
-		return new byte[] { 97, 45, 107, 27, 40, 25, 6, 7, 0, 17, -122, 5, 1, 2, 1, -96, 14, 96, 12, -128, 2, 7, -128, -95, 6, 6, 4, 40, 2, 3, 4, 108, 14, -95,
-				12, 2, 1, -128, 2, 2, 2, 79, 4, 3, 1, 2, 3 };
-	}
-	
-	@Test
-	public void testEncode() throws IOException, EncodeException {
+    private byte[] getData() {
+        return new byte[]{97, 45, 107, 27, 40, 25, 6, 7, 0, 17, -122, 5, 1, 2, 1, -96, 14, 96, 12, -128, 2, 7, -128, -95, 6, 6, 4, 40, 2, 3, 4, 108, 14, -95,
+                12, 2, 1, -128, 2, 2, 2, 79, 4, 3, 1, 2, 3};
+    }
 
-		byte[] expected = getData();
+    @Test
+    public void testEncode() throws IOException, EncodeException {
 
-		TCUniMessageImpl tcUniMessage = new TCUniMessageImpl();
+        byte[] expected = getData();
 
-		DialogPortion dp = TcapFactory.createDialogPortion();
-		dp.setUnidirectional(true);
-		DialogRequestAPDU dapdu = TcapFactory.createDialogAPDURequest();
-		ApplicationContextName acn = new ApplicationContextNameImpl();
-		acn.setOid(new long[] { 1, 0, 2, 3, 4 });
-		dapdu.setApplicationContextName(acn);
-		dp.setDialogAPDU(dapdu);
-		tcUniMessage.setDialogPortion(dp);
+        TCUniMessageImpl tcUniMessage = new TCUniMessageImpl();
 
-		Invoke invComp = TcapFactory.createComponentInvoke();
-		invComp.setInvokeId(-128);
-		OperationCode oc = TcapFactory.createOperationCode();
-		oc.setLocalOperationCode(591L);
-		invComp.setOperationCode(oc);
-		Parameter p = TcapFactory.createParameter();
-		p.setTagClass(Tag.CLASS_UNIVERSAL);
-		p.setTag(Tag.STRING_OCTET);
-		p.setData(new byte[] { 1, 2, 3 });
-		invComp.setParameter(p);
-		List<Component> comp = new ArrayList<>();
-		comp.add(invComp);
-		tcUniMessage.setComponent(comp);
-		
-		AsnOutputStream aos = new AsnOutputStream();
-		tcUniMessage.encode(aos);
-		byte[] data = aos.toByteArray();
-		TCAPTestUtils.compareArrays(expected, data);
-	}
-	
-	@Test
-	public void testDencode() throws IOException, ParseException {
-		
-		byte[] b = this.getData();
-		
-		AsnInputStream ais = new AsnInputStream(b);
-		int tag = ais.readTag();
-		assertEquals(TCUniMessage._TAG, tag);
-		TCUniMessage tcm = TcapFactory.createTCUniMessage(ais);
+        DialogPortion dp = TcapFactory.createDialogPortion();
+        dp.setUnidirectional(true);
+        DialogRequestAPDU dapdu = TcapFactory.createDialogAPDURequest();
+        ApplicationContextName acn = new ApplicationContextNameImpl();
+        acn.setOid(new long[]{1, 0, 2, 3, 4});
+        dapdu.setApplicationContextName(acn);
+        dp.setDialogAPDU(dapdu);
+        tcUniMessage.setDialogPortion(dp);
 
-		DialogPortion dp = tcm.getDialogPortion();
-		List<Component> comp = tcm.getComponent();
+        Invoke invComp = TcapFactory.createComponentInvoke();
+        invComp.setInvokeId(-128);
+        OperationCode oc = TcapFactory.createOperationCode();
+        oc.setLocalOperationCode(591L);
+        invComp.setOperationCode(oc);
+        Parameter p = TcapFactory.createParameter();
+        p.setTagClass(Tag.CLASS_UNIVERSAL);
+        p.setTag(Tag.STRING_OCTET);
+        p.setData(new byte[]{1, 2, 3});
+        invComp.setParameter(p);
+        List<Component> comp = new ArrayList<>();
+        comp.add(invComp);
+        tcUniMessage.setComponent(comp);
 
-		assertNotNull(dp);
-		assertNotNull(dp.getDialogAPDU());
-		assertEquals(true, dp.isUnidirectional());
-		assertEquals(DialogAPDUType.UniDirectional, dp.getDialogAPDU().getType());
+        AsnOutputStream aos = new AsnOutputStream();
+        tcUniMessage.encode(aos);
+        byte[] data = aos.toByteArray();
+        TCAPTestUtils.compareArrays(expected, data);
+    }
 
-		assertNotNull(comp);
-		assertEquals(1, comp.size());
-	}
+    @Test
+    public void testDencode() throws IOException, ParseException {
+
+        byte[] b = this.getData();
+
+        AsnInputStream ais = new AsnInputStream(b);
+        int tag = ais.readTag();
+        assertEquals(TCUniMessage._TAG, tag);
+        TCUniMessage tcm = TcapFactory.createTCUniMessage(ais);
+
+        DialogPortion dp = tcm.getDialogPortion();
+        List<Component> comp = tcm.getComponent();
+
+        assertNotNull(dp);
+        assertNotNull(dp.getDialogAPDU());
+        assertEquals(true, dp.isUnidirectional());
+        assertEquals(DialogAPDUType.UniDirectional, dp.getDialogAPDU().getType());
+
+        assertNotNull(comp);
+        assertEquals(1, comp.size());
+    }
 }

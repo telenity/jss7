@@ -35,77 +35,79 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.Problem;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Reject;
 
-import org.junit.Test; import static org.junit.Assert.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 
 /**
- * 
+ *
  * @author sergey vetyutnev
  *
  */
-public class RejectTest  {
-	
-	private byte[] getData() {
-		return new byte[] { (byte) 164, 6, 2, 1, 1, (byte) 129, 1, 2 };
-	}
-	
-	private byte[] getDataNullInvokeId() {
-		return new byte[] { -92, 5, 5, 0, -128, 1, 0 };
-	}
-	
-	@Test
-	public void testDecode() throws IOException, ParseException {
+public class RejectTest {
 
-		byte[] b = getData();
-		AsnInputStream asnIs = new AsnInputStream(b);
-		Component comp = TcapFactory.createComponent(asnIs);
+    private byte[] getData() {
+        return new byte[]{(byte) 164, 6, 2, 1, 1, (byte) 129, 1, 2};
+    }
 
-		assertEquals("Wrong component Type", ComponentType.Reject, comp.getType());
-		Reject rej = (Reject) comp;
-		assertEquals("Wrong invoke ID", new Integer(1), rej.getInvokeId());
-		Problem prb = rej.getProblem();
-		assertEquals(ProblemType.Invoke, prb.getType());
-		assertEquals(InvokeProblemType.MistypedParameter, prb.getInvokeProblemType());
+    private byte[] getDataNullInvokeId() {
+        return new byte[]{-92, 5, 5, 0, -128, 1, 0};
+    }
 
-		
-		b = getDataNullInvokeId();
-		asnIs = new AsnInputStream(b);
-		comp = TcapFactory.createComponent(asnIs);
+    @Test
+    public void testDecode() throws IOException, ParseException {
 
-		assertEquals(ComponentType.Reject, comp.getType());
-		rej = (Reject) comp;
-		assertNull(rej.getInvokeId());
-		prb = rej.getProblem();
-		assertEquals(ProblemType.General, prb.getType());
-		assertEquals(GeneralProblemType.UnrecognizedComponent, prb.getGeneralProblemType());
-	}
-	
-	
-	@Test
-	public void testEncode() throws IOException, EncodeException {
+        byte[] b = getData();
+        AsnInputStream asnIs = new AsnInputStream(b);
+        Component comp = TcapFactory.createComponent(asnIs);
 
-		byte[] expected = this.getData();
-		Reject rej = TcapFactory.createComponentReject();
-		rej.setInvokeId(1);
-		Problem prb = TcapFactory.createProblem(ProblemType.Invoke);
-		prb.setInvokeProblemType(InvokeProblemType.MistypedParameter);
-		rej.setProblem(prb);
-
-		AsnOutputStream asnos = new AsnOutputStream();
-		rej.encode(asnos);
-		byte[] encodedData = asnos.toByteArray();
-		assertTrue(Arrays.equals(expected, encodedData));
+        assertEquals("Wrong component Type", ComponentType.Reject, comp.getType());
+        Reject rej = (Reject) comp;
+        assertEquals("Wrong invoke ID", new Integer(1), rej.getInvokeId());
+        Problem prb = rej.getProblem();
+        assertEquals(ProblemType.Invoke, prb.getType());
+        assertEquals(InvokeProblemType.MistypedParameter, prb.getInvokeProblemType());
 
 
-		expected = this.getDataNullInvokeId();
-		rej = TcapFactory.createComponentReject();
-		prb = TcapFactory.createProblem(ProblemType.General);
-		prb.setGeneralProblemType(GeneralProblemType.UnrecognizedComponent);
-		rej.setProblem(prb);
+        b = getDataNullInvokeId();
+        asnIs = new AsnInputStream(b);
+        comp = TcapFactory.createComponent(asnIs);
 
-		asnos = new AsnOutputStream();
-		rej.encode(asnos);
-		encodedData = asnos.toByteArray();
-		assertTrue(Arrays.equals(expected, encodedData));
-	}
+        assertEquals(ComponentType.Reject, comp.getType());
+        rej = (Reject) comp;
+        assertNull(rej.getInvokeId());
+        prb = rej.getProblem();
+        assertEquals(ProblemType.General, prb.getType());
+        assertEquals(GeneralProblemType.UnrecognizedComponent, prb.getGeneralProblemType());
+    }
+
+
+    @Test
+    public void testEncode() throws IOException, EncodeException {
+
+        byte[] expected = this.getData();
+        Reject rej = TcapFactory.createComponentReject();
+        rej.setInvokeId(1);
+        Problem prb = TcapFactory.createProblem(ProblemType.Invoke);
+        prb.setInvokeProblemType(InvokeProblemType.MistypedParameter);
+        rej.setProblem(prb);
+
+        AsnOutputStream asnos = new AsnOutputStream();
+        rej.encode(asnos);
+        byte[] encodedData = asnos.toByteArray();
+        assertTrue(Arrays.equals(expected, encodedData));
+
+
+        expected = this.getDataNullInvokeId();
+        rej = TcapFactory.createComponentReject();
+        prb = TcapFactory.createProblem(ProblemType.General);
+        prb.setGeneralProblemType(GeneralProblemType.UnrecognizedComponent);
+        rej.setProblem(prb);
+
+        asnos = new AsnOutputStream();
+        rej.encode(asnos);
+        encodedData = asnos.toByteArray();
+        assertTrue(Arrays.equals(expected, encodedData));
+    }
 }

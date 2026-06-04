@@ -29,9 +29,9 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * Diagnostic Information parameter with a zero length parameter is not
  * considered an error (this means that the Length field in the TLV will be set
  * to 4).
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface DiagnosticInfo extends Parameter {
     public String getInfo();

@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -37,64 +37,62 @@ import org.junit.Test;
  *
  */
 public class SccpStackTest {
-	
-	private SccpStackImpl sccpStackImpl = null;
 
-	/**
-	 * 
-	 */
-	public SccpStackTest() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
+    private SccpStackImpl sccpStackImpl = null;
 
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
+    /**
+     *
+     */
+    public SccpStackTest() {
+        // TODO Auto-generated constructor stub
+    }
 
-	@Before
-	public void setUp() throws IOException {
-		
-		
-	
-		
-	}
-	
-	@After
-	public void tearDown() {
-		this.sccpStackImpl.stop();
-	}
-	
-	@Test
-	public void testSerialization() throws Exception {
-		this.sccpStackImpl = new SccpStackImpl("SccpStackTest");
-		this.sccpStackImpl.setPersistDir(Util.getTmpTestDir());
-		this.sccpStackImpl.start();
-		
-		this.sccpStackImpl.setZMarginXudtMessage(160);
-		this.sccpStackImpl.setReassemblyTimerDelay(10000);
-		this.sccpStackImpl.setMaxDataMessage(3952);
-		this.sccpStackImpl.setRemoveSpc(false);
-		this.sccpStackImpl.setSstTimerDuration_Min(5000);
-		this.sccpStackImpl.setSstTimerDuration_Max(1200000);
-		this.sccpStackImpl.setSstTimerDuration_IncreaseFactor(1.0);
-		
-		this.sccpStackImpl.stop();
-		
-		this.sccpStackImpl.start();
-		
-		assertEquals(160, this.sccpStackImpl.getZMarginXudtMessage());
-		assertEquals(10000, this.sccpStackImpl.getReassemblyTimerDelay());
-		assertEquals(3952, this.sccpStackImpl.getMaxDataMessage());
-		assertEquals(false, this.sccpStackImpl.isRemoveSpc());
-		assertEquals(5000, this.sccpStackImpl.getSstTimerDuration_Min());
-		assertEquals(1200000, this.sccpStackImpl.getSstTimerDuration_Max());
-		assertEquals(1.0, this.sccpStackImpl.getSstTimerDuration_IncreaseFactor(), 0.0);
-		
-		this.sccpStackImpl.stop();
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() throws IOException {
+
+
+    }
+
+    @After
+    public void tearDown() {
+        this.sccpStackImpl.stop();
+    }
+
+    @Test
+    public void testSerialization() throws Exception {
+        this.sccpStackImpl = new SccpStackImpl("SccpStackTest");
+        this.sccpStackImpl.setPersistDir(Util.getTmpTestDir());
+        this.sccpStackImpl.start();
+
+        this.sccpStackImpl.setZMarginXudtMessage(160);
+        this.sccpStackImpl.setReassemblyTimerDelay(10000);
+        this.sccpStackImpl.setMaxDataMessage(3952);
+        this.sccpStackImpl.setRemoveSpc(false);
+        this.sccpStackImpl.setSstTimerDuration_Min(5000);
+        this.sccpStackImpl.setSstTimerDuration_Max(1200000);
+        this.sccpStackImpl.setSstTimerDuration_IncreaseFactor(1.0);
+
+        this.sccpStackImpl.stop();
+
+        this.sccpStackImpl.start();
+
+        assertEquals(160, this.sccpStackImpl.getZMarginXudtMessage());
+        assertEquals(10000, this.sccpStackImpl.getReassemblyTimerDelay());
+        assertEquals(3952, this.sccpStackImpl.getMaxDataMessage());
+        assertEquals(false, this.sccpStackImpl.isRemoveSpc());
+        assertEquals(5000, this.sccpStackImpl.getSstTimerDuration_Min());
+        assertEquals(1200000, this.sccpStackImpl.getSstTimerDuration_Max());
+        assertEquals(1.0, this.sccpStackImpl.getSstTimerDuration_IncreaseFactor(), 0.0);
+
+        this.sccpStackImpl.stop();
+    }
 
 }

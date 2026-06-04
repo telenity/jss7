@@ -73,255 +73,252 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
  * As per the Table 36/Q.773 – Unidialogue-As-ID Value is represented as OID.
  * Please look {@link DialogPortionImpl._DIALG_UNI}
  * </p>
- * 
- * 
- * 
+ *
  * @author baranowb
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public class DialogPortionImpl implements DialogPortion {
 
-	//Encoded OID, dont like this....
-	private static final long[] _DIALG_UNI = new long[]{0, 0, 17, 773, 1, 2, 1};
-	private static final long[] _DIALG_STRUCTURED = new long[]{0, 0, 17, 773, 1, 1, 1};
+    //Encoded OID, dont like this....
+    private static final long[] _DIALG_UNI = new long[]{0, 0, 17, 773, 1, 2, 1};
+    private static final long[] _DIALG_STRUCTURED = new long[]{0, 0, 17, 773, 1, 1, 1};
 
-	// MANDATORY - in sequence, our payload
-	private DialogAPDU dialogAPDU;
+    // MANDATORY - in sequence, our payload
+    private DialogAPDU dialogAPDU;
 
-	private boolean uniDirectional;
+    private boolean uniDirectional;
 
-	private External ext = new External();
+    private External ext = new External();
 
-	public DialogPortionImpl() {
-		super();
-		// our defs, will be those are overiden on read in super class, but for
-		// DialogPortion, this is what we want.
-		setOid(true);
-		setAsn(true);
-	}
+    public DialogPortionImpl() {
+        super();
+        // our defs, will be those are overiden on read in super class, but for
+        // DialogPortion, this is what we want.
+        setOid(true);
+        setAsn(true);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.DialogPortion#isUnidirectional()
-	 */
-	public boolean isUnidirectional() {
-		return this.uniDirectional;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.DialogPortion#isUnidirectional()
+     */
+    public boolean isUnidirectional() {
+        return this.uniDirectional;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.DialogPortion#setUnidirectional(
-	 * boolean)
-	 */
-	public void setUnidirectional(boolean flag) {
-		if (flag) {
-			ext.setOidValue(_DIALG_UNI);
-			// super.oidValue = _DIALG_UNI;
-		} else {
-			ext.setOidValue(_DIALG_STRUCTURED);
-			// super.oidValue = _DIALG_STRUCTURED;
-		}
-		this.uniDirectional = flag;
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.DialogPortion#setUnidirectional(
+     * boolean)
+     */
+    public void setUnidirectional(boolean flag) {
+        if (flag) {
+            ext.setOidValue(_DIALG_UNI);
+            // super.oidValue = _DIALG_UNI;
+        } else {
+            ext.setOidValue(_DIALG_STRUCTURED);
+            // super.oidValue = _DIALG_STRUCTURED;
+        }
+        this.uniDirectional = flag;
 
-	}
+    }
 
-	/**
-	 * @return the dialogAPDU
-	 */
-	public DialogAPDU getDialogAPDU() {
-		return dialogAPDU;
-	}
+    /**
+     * @return the dialogAPDU
+     */
+    public DialogAPDU getDialogAPDU() {
+        return dialogAPDU;
+    }
 
-	/**
-	 * @param dialogAPDU
-	 *            the dialogAPDU to set
-	 */
-	public void setDialogAPDU(DialogAPDU dialogAPDU) {
-		// FIXME: check content VS apdu TYPE ?
-		this.dialogAPDU = dialogAPDU;
-	}
+    /**
+     * @param dialogAPDU the dialogAPDU to set
+     */
+    public void setDialogAPDU(DialogAPDU dialogAPDU) {
+        // FIXME: check content VS apdu TYPE ?
+        this.dialogAPDU = dialogAPDU;
+    }
 
-	
-	public String toString() {
-		return "DialogPortion[dialogAPDU=" + dialogAPDU + ", uniDirectional=" + uniDirectional + "]";
-	}
 
-	public void encode(AsnOutputStream aos) throws EncodeException {
-		
-		try {
-			aos.writeTag(Tag.CLASS_APPLICATION, false, _TAG);
-			int pos = aos.StartContentDefiniteLength();
+    public String toString() {
+        return "DialogPortion[dialogAPDU=" + dialogAPDU + ", uniDirectional=" + uniDirectional + "]";
+    }
 
-			if (this.dialogAPDU == null) {
-				throw new EncodeException("No APDU in DialogPortion is defined when encoding DialogPortion");
-			}
+    public void encode(AsnOutputStream aos) throws EncodeException {
 
-			if (this.getOidValue() == null) {
-				throw new EncodeException("No setUnidirectional() for DialogPortion is defined when encoding DialogPortion");
-			}
+        try {
+            aos.writeTag(Tag.CLASS_APPLICATION, false, _TAG);
+            int pos = aos.StartContentDefiniteLength();
 
-			AsnOutputStream aos2 = new AsnOutputStream();
-			dialogAPDU.encode(aos2);
-			ext.setEncodeType(aos2.toByteArray());
+            if (this.dialogAPDU == null) {
+                throw new EncodeException("No APDU in DialogPortion is defined when encoding DialogPortion");
+            }
 
-			ext.encode(aos);
-			
-			aos.FinalizeContent(pos);
-			
-		} catch (AsnException e) {
-			throw new EncodeException("AsnException when encoding DialogPortion: " + e.getMessage(), e);
-		}
-	}
+            if (this.getOidValue() == null) {
+                throw new EncodeException("No setUnidirectional() for DialogPortion is defined when encoding DialogPortion");
+            }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.asn.External#decode(org.mobicents.protocols.asn
-	 * .AsnInputStream)
-	 */
-	
-	public void decode(AsnInputStream aisA) throws ParseException {
+            AsnOutputStream aos2 = new AsnOutputStream();
+            dialogAPDU.encode(aos2);
+            ext.setEncodeType(aos2.toByteArray());
 
-		// TAG has been decoded already, now, lets get LEN
-		try {
-			AsnInputStream ais = aisA.readSequenceStream();
+            ext.encode(aos);
 
-			int tag = ais.readTag();
-			if (tag != Tag.EXTERNAL)
-				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-						"Error decoding DialogPortion: wrong value of tag, expected EXTERNAL, found: " + tag);
-			
-			ext.decode(ais);
+            aos.FinalizeContent(pos);
 
-			if (!isAsn() || !isOid()) {
-				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Error decoding DialogPortion: Oid and Asd parts not found");
-			}
+        } catch (AsnException e) {
+            throw new EncodeException("AsnException when encoding DialogPortion: " + e.getMessage(), e);
+        }
+    }
 
-			// Check Oid
-			if (Arrays.equals(_DIALG_UNI, this.getOidValue()))
-				this.uniDirectional = true;
-			else if (Arrays.equals(_DIALG_STRUCTURED, this.getOidValue()))
-				this.uniDirectional = false;
-			else
-				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Error decoding DialogPortion: bad Oid value");
-			
-			AsnInputStream localAsnIS = new AsnInputStream(ext.getEncodeType());
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.asn.External#decode(org.mobicents.protocols.asn
+     * .AsnInputStream)
+     */
 
-			// now lets get APDU
-			tag = localAsnIS.readTag();
-			this.dialogAPDU = TcapFactory.createDialogAPDU(localAsnIS, tag, isUnidirectional());
-			
-		} catch (IOException e) {
-			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException when decoding DialogPortion: " + e.getMessage(), e);
-		} catch (AsnException e) {
-			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "AsnException when decoding DialogPortion: " + e.getMessage(), e);
-		}
-	}
+    public void decode(AsnInputStream aisA) throws ParseException {
 
-	@Override
-	public byte[] getEncodeType() throws AsnException {
-		return ext.getEncodeType();
-	}
+        // TAG has been decoded already, now, lets get LEN
+        try {
+            AsnInputStream ais = aisA.readSequenceStream();
 
-	@Override
-	public void setEncodeType(byte[] data) {
-		ext.setEncodeType(data);
-	}
+            int tag = ais.readTag();
+            if (tag != Tag.EXTERNAL)
+                throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
+                        "Error decoding DialogPortion: wrong value of tag, expected EXTERNAL, found: " + tag);
 
-	@Override
-	public BitSetStrictLength getEncodeBitStringType() throws AsnException {
-		return ext.getEncodeBitStringType();
-	}
+            ext.decode(ais);
 
-	@Override
-	public void setEncodeBitStringType(BitSetStrictLength data) {
-		ext.setEncodeBitStringType(data);
-	}
+            if (!isAsn() || !isOid()) {
+                throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Error decoding DialogPortion: Oid and Asd parts not found");
+            }
 
-	@Override
-	public boolean isOid() {
-		return ext.isOid();
-	}
+            // Check Oid
+            if (Arrays.equals(_DIALG_UNI, this.getOidValue()))
+                this.uniDirectional = true;
+            else if (Arrays.equals(_DIALG_STRUCTURED, this.getOidValue()))
+                this.uniDirectional = false;
+            else
+                throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Error decoding DialogPortion: bad Oid value");
 
-	@Override
-	public void setOid(boolean oid) {
-		ext.setOid(oid);
-	}
+            AsnInputStream localAsnIS = new AsnInputStream(ext.getEncodeType());
 
-	@Override
-	public boolean isInteger() {
-		return ext.isInteger();
-	}
+            // now lets get APDU
+            tag = localAsnIS.readTag();
+            this.dialogAPDU = TcapFactory.createDialogAPDU(localAsnIS, tag, isUnidirectional());
 
-	@Override
-	public void setInteger(boolean integer) {
-		ext.setInteger(integer);
-	}
+        } catch (IOException e) {
+            throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException when decoding DialogPortion: " + e.getMessage(), e);
+        } catch (AsnException e) {
+            throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "AsnException when decoding DialogPortion: " + e.getMessage(), e);
+        }
+    }
 
-	@Override
-	public boolean isObjDescriptor() {
-		return ext.isObjDescriptor();
-	}
+    @Override
+    public byte[] getEncodeType() throws AsnException {
+        return ext.getEncodeType();
+    }
 
-	@Override
-	public void setObjDescriptor(boolean objDescriptor) {
-		ext.setObjDescriptor(objDescriptor);
-	}
+    @Override
+    public void setEncodeType(byte[] data) {
+        ext.setEncodeType(data);
+    }
 
-	@Override
-	public long[] getOidValue() {
-		return ext.getOidValue();
-	}
+    @Override
+    public BitSetStrictLength getEncodeBitStringType() throws AsnException {
+        return ext.getEncodeBitStringType();
+    }
 
-	@Override
-	public void setOidValue(long[] oidValue) {
-		ext.setOidValue(oidValue);
-	}
+    @Override
+    public void setEncodeBitStringType(BitSetStrictLength data) {
+        ext.setEncodeBitStringType(data);
+    }
 
-	@Override
-	public long getIndirectReference() {
-		return ext.getIndirectReference();
-	}
+    @Override
+    public boolean isOid() {
+        return ext.isOid();
+    }
 
-	@Override
-	public void setIndirectReference(long indirectReference) {
-		ext.setIndirectReference(indirectReference);
-	}
+    @Override
+    public void setOid(boolean oid) {
+        ext.setOid(oid);
+    }
 
-	@Override
-	public boolean isAsn() {
-		return ext.isAsn();
-	}
+    @Override
+    public boolean isInteger() {
+        return ext.isInteger();
+    }
 
-	@Override
-	public void setAsn(boolean asn) {
-		ext.setAsn(asn);
-	}
+    @Override
+    public void setInteger(boolean integer) {
+        ext.setInteger(integer);
+    }
 
-	@Override
-	public boolean isOctet() {
-		return ext.isOctet();
-	}
+    @Override
+    public boolean isObjDescriptor() {
+        return ext.isObjDescriptor();
+    }
 
-	@Override
-	public void setOctet(boolean octet) {
-		ext.setOctet(octet);
-	}
+    @Override
+    public void setObjDescriptor(boolean objDescriptor) {
+        ext.setObjDescriptor(objDescriptor);
+    }
 
-	@Override
-	public boolean isArbitrary() {
-		return ext.isArbitrary();
-	}
+    @Override
+    public long[] getOidValue() {
+        return ext.getOidValue();
+    }
 
-	@Override
-	public void setArbitrary(boolean arbitrary) {
-		ext.setArbitrary(arbitrary);
-	}
+    @Override
+    public void setOidValue(long[] oidValue) {
+        ext.setOidValue(oidValue);
+    }
+
+    @Override
+    public long getIndirectReference() {
+        return ext.getIndirectReference();
+    }
+
+    @Override
+    public void setIndirectReference(long indirectReference) {
+        ext.setIndirectReference(indirectReference);
+    }
+
+    @Override
+    public boolean isAsn() {
+        return ext.isAsn();
+    }
+
+    @Override
+    public void setAsn(boolean asn) {
+        ext.setAsn(asn);
+    }
+
+    @Override
+    public boolean isOctet() {
+        return ext.isOctet();
+    }
+
+    @Override
+    public void setOctet(boolean octet) {
+        ext.setOctet(octet);
+    }
+
+    @Override
+    public boolean isArbitrary() {
+        return ext.isArbitrary();
+    }
+
+    @Override
+    public void setArbitrary(boolean arbitrary) {
+        ext.setArbitrary(arbitrary);
+    }
 }

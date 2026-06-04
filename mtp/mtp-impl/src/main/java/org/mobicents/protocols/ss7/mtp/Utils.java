@@ -105,9 +105,10 @@ public class Utils {
         createTrace(t, sb, true);
         return sb.toString();
     }
-    
+
     /**
      * Construct a String containing a hex-dump of a byte array
+     *
      * @param label the label of the hexdump or null
      * @param bytes the data to dump
      * @return a string containing the hexdump

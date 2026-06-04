@@ -32,48 +32,48 @@ import io.netty.buffer.ByteBuf;
  */
 public abstract class ParameterImpl implements Parameter {
 
-	protected volatile short tag;
-	protected volatile short length;
+    protected volatile short tag;
+    protected volatile short length;
 
-	public short getTag() {
-		return tag;
-	}
+    public short getTag() {
+        return tag;
+    }
 
-	protected abstract byte[] getValue();
+    protected abstract byte[] getValue();
 
-	public void write(ByteBuf buffer) {
-		// obtain encoded value
-		byte[] value = getValue();
-		
-		// encode tag
-		buffer.writeByte((byte) (tag >> 8));
-		buffer.writeByte((byte) (tag));
+    public void write(ByteBuf buffer) {
+        // obtain encoded value
+        byte[] value = getValue();
 
-		// encode length including value, tag and length field itself
-		length = (short) (value.length + 4);
+        // encode tag
+        buffer.writeByte((byte) (tag >> 8));
+        buffer.writeByte((byte) (tag));
 
-		buffer.writeByte((byte) (length >> 8));
-		buffer.writeByte((byte) (length));
+        // encode length including value, tag and length field itself
+        length = (short) (value.length + 4);
 
-		// encode value
-		buffer.writeBytes(value);
+        buffer.writeByte((byte) (length >> 8));
+        buffer.writeByte((byte) (length));
 
-		/*
-		 * The total length of a parameter (including Tag, Parameter Length, and
-		 * Value fields) MUST be a multiple of 4 octets. If the length of the
-		 * parameter is not a multiple of 4 octets, the sender pads the
-		 * Parameter at the end (i.e., after the Parameter Value field) with all
-		 * zero octets. The length of the padding is NOT included in the
-		 * parameter length field. A sender MUST NOT pad with more than 3
-		 * octets. The receiver MUST ignore the padding octets.
-		 */
-		int remainder = (4 - length % 4);
-		if (remainder < 4) {
-			while (remainder > 0) {
-				buffer.writeByte((byte) 0x00);
-				remainder--;
-			}
-		}
-	}
+        // encode value
+        buffer.writeBytes(value);
+
+        /*
+         * The total length of a parameter (including Tag, Parameter Length, and
+         * Value fields) MUST be a multiple of 4 octets. If the length of the
+         * parameter is not a multiple of 4 octets, the sender pads the
+         * Parameter at the end (i.e., after the Parameter Value field) with all
+         * zero octets. The length of the padding is NOT included in the
+         * parameter length field. A sender MUST NOT pad with more than 3
+         * octets. The receiver MUST ignore the padding octets.
+         */
+        int remainder = (4 - length % 4);
+        if (remainder < 4) {
+            while (remainder > 0) {
+                buffer.writeByte((byte) 0x00);
+                remainder--;
+            }
+        }
+    }
 
 }

@@ -30,22 +30,22 @@ import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
  *
  * @author kulikov
  */
-public interface ParameterFactory extends Serializable  {
+public interface ParameterFactory extends Serializable {
 
-	/**
-	 * Create SccpAddress parameter
-	 * 
-	 * @param ri
-	 * @param dpc
-	 * @param gt
-	 * @param ssn
-	 * @return
-	 */
-	public SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, GlobalTitle gt, int ssn);
-	
+    /**
+     * Create SccpAddress parameter
+     *
+     * @param ri
+     * @param dpc
+     * @param gt
+     * @param ssn
+     * @return
+     */
+    public SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, GlobalTitle gt, int ssn);
+
     /**
      * Create Importance parameter.
-     * 
+     *
      * @param value the value of this parameter
      * @return parameter
      */
@@ -56,7 +56,7 @@ public interface ParameterFactory extends Serializable  {
      */
     public HopCounter createHopCounter(int hopCount);
 
-    
+
 //    public ReturnCause createReturnCause(int cause);
 //  /** 
 //  * Creates protocol class parameter.

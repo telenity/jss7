@@ -23,6 +23,7 @@
 package org.mobicents.protocols.ss7.sccp.impl.parameter;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -36,54 +37,53 @@ import org.mobicents.protocols.ss7.sccp.parameter.GT0010;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class GT0010Test {
-	private byte[] data = new byte[] { 3, 0x09, 0x32, 0x26, 0x59, 0x18 };
-	private GT0010Codec codec = new GT0010Codec();
+    private byte[] data = new byte[]{3, 0x09, 0x32, 0x26, 0x59, 0x18};
+    private GT0010Codec codec = new GT0010Codec();
 
-	public GT0010Test() {
-	}
+    public GT0010Test() {
+    }
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
 
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() {
-	}
+    @Before
+    public void setUp() {
+    }
 
-	@After
-	public void tearDown() {
-	}
+    @After
+    public void tearDown() {
+    }
 
 
+    @Test
+    public void testSerialization() throws Exception {
+        GT0010 gt = new GT0010(0, "9023629581");
 
-	@Test
-	public void testSerialization() throws Exception {
-		GT0010 gt = new GT0010(0, "9023629581");
+        // Writes
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
+        writer.setIndentation("\t"); // Optional (use tabulation for
+        // indentation).
+        writer.write(gt, "GT0010", GT0010.class);
+        writer.close();
 
-		// Writes
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
-		writer.setIndentation("\t"); // Optional (use tabulation for
-		// indentation).
-		writer.write(gt, "GT0010", GT0010.class);
-		writer.close();
+        System.out.println(output.toString());
 
-		System.out.println(output.toString());
+        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        XMLObjectReader reader = XMLObjectReader.newInstance(input);
+        GT0010 aiOut = reader.read("GT0010", GT0010.class);
 
-		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-		XMLObjectReader reader = XMLObjectReader.newInstance(input);
-		GT0010 aiOut = reader.read("GT0010", GT0010.class);
-
-		// check results
-		assertEquals(0, aiOut.getTranslationType());
-		assertEquals("9023629581", aiOut.getDigits());
-	}
+        // check results
+        assertEquals(0, aiOut.getTranslationType());
+        assertEquals("9023629581", aiOut.getDigits());
+    }
 
 }

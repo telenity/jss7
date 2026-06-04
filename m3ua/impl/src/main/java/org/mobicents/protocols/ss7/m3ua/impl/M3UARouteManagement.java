@@ -158,19 +158,19 @@ public class M3UARouteManagement {
      * from xml file.
      */
     protected void reset() {
-        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end;) {
+        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end; ) {
             RouteKey key = e.getKey();
             As[] asList = e.getValue();
 
             try {
                 for (int i = 0; i < asList.length; i++) {
-                    AsImpl asImpl = (AsImpl)asList[i];
+                    AsImpl asImpl = (AsImpl) asList[i];
                     if (asImpl != null) {
                         this.addAsToDPC(key.getDpc(), asImpl);
                     }
                 }
             } catch (Exception ex) {
-				logger.error(String.format("Error while adding key=%s to As list=%s", key, Arrays.toString(asList)));
+                logger.error(String.format("Error while adding key=%s to As list=%s", key, Arrays.toString(asList)));
             }
         }
     }
@@ -183,9 +183,8 @@ public class M3UARouteManagement {
      * @param opc
      * @param si
      * @param asName
-     * @throws Exception
-     * If corresponding {@link AsImpl} doesn't exist or
-     * {@link AsImpl} already added
+     * @throws Exception If corresponding {@link AsImpl} doesn't exist or
+     *                   {@link AsImpl} already added
      */
     protected void addRoute(int dpc, int opc, int si, String asName) throws Exception {
         AsImpl asImpl = this.findAsOrThrow(asName);
@@ -197,7 +196,7 @@ public class M3UARouteManagement {
         if (asArray != null) {
             // check is this As is already added
             for (int i = 0; i < asArray.length; i++) {
-                AsImpl asTemp = (AsImpl)asArray[i];
+                AsImpl asTemp = (AsImpl) asArray[i];
                 if (asTemp != null && asImpl.equals(asTemp)) {
                     throw new Exception(String.format("As=%s already added for dpc=%d opc=%d si=%d", asImpl.getName(),
                             dpc, opc, si));
@@ -229,8 +228,7 @@ public class M3UARouteManagement {
      * @param opc
      * @param si
      * @param asName
-     * @throws Exception
-     * If no As found, or this As is not serving this key
+     * @throws Exception If no As found, or this As is not serving this key
      *
      */
     protected void removeRoute(int dpc, int opc, int si, String asName) throws Exception {
@@ -246,7 +244,7 @@ public class M3UARouteManagement {
         }
 
         for (int i = 0; i < asArray.length; i++) {
-            AsImpl asTemp = (AsImpl)asArray[i];
+            AsImpl asTemp = (AsImpl) asArray[i];
             if (asTemp != null && asImpl.equals(asTemp)) {
                 asArray[i] = null;
                 this.m3uaManagement.store();
@@ -267,12 +265,12 @@ public class M3UARouteManagement {
      * Checks if the given AsImpl is still configured for any route combination
      * that uses the specified DPC.
      *
-     * @param dpc The DPC to check against.
+     * @param dpc    The DPC to check against.
      * @param asImpl The AsImpl to look for.
      * @return true if the AsImpl is found in any route for the given DPC, false otherwise.
      */
     protected boolean isAsStillUsedForDpc(int dpc, AsImpl asImpl) {
-        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end;) {
+        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end; ) {
             RouteKey key = e.getKey();
             if (key.getDpc() == dpc) {
                 As[] asList = e.getValue();
@@ -289,7 +287,7 @@ public class M3UARouteManagement {
 
     private AsImpl findAsOrThrow(String asName) throws Exception {
         for (FastList.Node<As> n = this.m3uaManagement.appServers.head(), end = this.m3uaManagement.appServers.tail();
-                (n = n.getNext()) != end;) {
+             (n = n.getNext()) != end; ) {
             As as = n.getValue();
             if (as.getName().compareTo(asName) == 0) {
                 return (AsImpl) as;
@@ -346,7 +344,7 @@ public class M3UARouteManagement {
         // Attempt to find an active AS, starting from the calculated index and wrapping around
         for (int i = 0; i < maxAttempts; i++) {
             int currentIndex = (startIndex + i) % maxAttempts;
-            AsImpl asImpl = (AsImpl)asArray[currentIndex];
+            AsImpl asImpl = (AsImpl) asArray[currentIndex];
             if (this.isAsActive(asImpl)) {
                 return asImpl; // Found an active AS
             }
@@ -393,7 +391,7 @@ public class M3UARouteManagement {
     /**
      * Adds an AsImpl to the RouteRow for the given DPC. Creates a new RouteRow if none exists for the DPC.
      *
-     * @param dpc The DPC.
+     * @param dpc    The DPC.
      * @param asImpl The AsImpl to add.
      */
     private void addAsToDPC(int dpc, AsImpl asImpl) {
@@ -413,7 +411,7 @@ public class M3UARouteManagement {
      * used for any route combination for that DPC. Removes the RouteRow if it becomes empty.
      * This method is called internally after verifying the AS is not used for any other route for this DPC.
      *
-     * @param dpc The DPC.
+     * @param dpc    The DPC.
      * @param asImpl The AsImpl to remove.
      */
     private void removeAsFromDPC(int dpc, AsImpl asImpl) {

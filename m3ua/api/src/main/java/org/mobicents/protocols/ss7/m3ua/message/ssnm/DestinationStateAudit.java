@@ -32,9 +32,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
  * Destination State Audit (DAUD) MAY be sent from the ASP to the SGP to audit
  * the availability/congestion state of SS7 routes from the SG to one or more
  * affected destinations.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface DestinationStateAudit extends M3UAMessage {
 

@@ -34,38 +34,38 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
  * -- APDU, or by the TC-User in which case it could be either an ABRT APDU or data in some user-defined
  * -- abstract syntax.
  * </pre>
- * 
+ * <p>
  * .......
- * 
+ *
  * @author amit bhayani
  * @author baranowb
  */
 public interface TCUserAbortRequest extends DialogRequest {
 
-	public void setReturnMessageOnError(boolean val);
+    public void setReturnMessageOnError(boolean val);
 
-	public boolean getReturnMessageOnError();
+    public boolean getReturnMessageOnError();
 
-	SccpAddress getOriginatingAddress();
+    SccpAddress getOriginatingAddress();
 
-	void setOriginatingAddress(SccpAddress dest);
+    void setOriginatingAddress(SccpAddress dest);
 
-	public ApplicationContextName getApplicationContextName();
+    public ApplicationContextName getApplicationContextName();
 
-	public void setApplicationContextName(ApplicationContextName acn);
+    public void setApplicationContextName(ApplicationContextName acn);
 
-	public UserInformation getUserInformation();
+    public UserInformation getUserInformation();
 
-	public void setUserInformation(UserInformation acn);
+    public void setUserInformation(UserInformation acn);
 
-	/**
-	 * Setting of {@link DialogServiceUserType} will create the AARE else ABRT
-	 * is formed
-	 * 
-	 * @param dialogServiceUserType
-	 */
-	public void setDialogServiceUserType(DialogServiceUserType dialogServiceUserType);
+    /**
+     * Setting of {@link DialogServiceUserType} will create the AARE else ABRT
+     * is formed
+     *
+     * @param dialogServiceUserType
+     */
+    public void setDialogServiceUserType(DialogServiceUserType dialogServiceUserType);
 
-	public DialogServiceUserType getDialogServiceUserType();
+    public DialogServiceUserType getDialogServiceUserType();
 
 }

@@ -35,7 +35,7 @@ import org.mobicents.protocols.api.IpChannelType;
 
 /**
  * @author <a href="mailto:amit.bhayani@telestax.com">Amit Bhayani</a>
- * 
+ *
  */
 public class NettySctpServerHandler extends NettySctpChannelInboundHandlerAdapter {
 
@@ -45,7 +45,7 @@ public class NettySctpServerHandler extends NettySctpChannelInboundHandlerAdapte
     private final NettySctpManagementImpl managementImpl;
 
     /**
-     * 
+     *
      */
     public NettySctpServerHandler(NettyServerImpl serverImpl, NettySctpManagementImpl managementImpl) {
         this.serverImpl = serverImpl;

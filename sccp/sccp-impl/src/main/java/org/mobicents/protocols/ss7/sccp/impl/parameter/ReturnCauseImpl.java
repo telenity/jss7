@@ -30,58 +30,58 @@ import org.mobicents.protocols.ss7.sccp.parameter.ReturnCause;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 
 /**
- * 
+ *
  * @author baranowb
  * @author sergey vetyutnev
  */
 public class ReturnCauseImpl extends AbstractParameter implements ReturnCause {
 
-	private ReturnCauseValue value;
+    private ReturnCauseValue value;
 
-	public ReturnCauseImpl() {
-		value = ReturnCauseValue.UNQALIFIED;
-	}
+    public ReturnCauseImpl() {
+        value = ReturnCauseValue.UNQALIFIED;
+    }
 
-	public ReturnCauseImpl(ReturnCauseValue value) {
-		this.value = value;
-	}
+    public ReturnCauseImpl(ReturnCauseValue value) {
+        this.value = value;
+    }
 
-	public ReturnCauseValue getValue() {
-		return value;
-	}
+    public ReturnCauseValue getValue() {
+        return value;
+    }
 
-	public void decode(InputStream in) throws IOException {
-		if (in.read() != 1) {
-			throw new IOException();
-		}
+    public void decode(InputStream in) throws IOException {
+        if (in.read() != 1) {
+            throw new IOException();
+        }
 
-		int b = in.read() & 0xFf;
+        int b = in.read() & 0xFf;
 
-		this.value = ReturnCauseValue.getInstance(b);
-	}
+        this.value = ReturnCauseValue.getInstance(b);
+    }
 
-	public void encode(OutputStream out) throws IOException {
-		byte b = (byte) (this.value.getCode());
-		out.write(1);
-		out.write(b);
-	}
+    public void encode(OutputStream out) throws IOException {
+        byte b = (byte) (this.value.getCode());
+        out.write(1);
+        out.write(b);
+    }
 
-	public void decode(byte[] bb) throws IOException {
-		int b = bb[0] & 0xff;
+    public void decode(byte[] bb) throws IOException {
+        int b = bb[0] & 0xff;
 
-		this.value = ReturnCauseValue.getInstance(b);
-	}
+        this.value = ReturnCauseValue.getInstance(b);
+    }
 
-	public byte[] encode() throws IOException {
-		return new byte[] { (byte) this.value.getCode() };
-	}
+    public byte[] encode() throws IOException {
+        return new byte[]{(byte) this.value.getCode()};
+    }
 
-	public String toString() {
-		if(this.value!=null)
-			return this.value.toString();
-		else
-			return "???";
-		
+    public String toString() {
+        if (this.value != null)
+            return this.value.toString();
+        else
+            return "???";
+
 //		switch (this.value) {
 //		case NO_TRANSLATION_FOR_NATURE:
 //			return "NO_TRANSLATION_FOR_NATURE";
@@ -117,6 +117,6 @@ public class ReturnCauseImpl extends AbstractParameter implements ReturnCause {
 //			return ("Unidentified ReturnCause" + this.value);
 //
 //		}
-	}
+    }
 }
 

@@ -24,20 +24,20 @@ package org.mobicents.protocols.ss7.sccp.parameter;
 
 /**
  * Segmentation parameter.
- * 
+ *
  * @author baranowb
  * @author kulikov
  */
-public interface Segmentation extends Parameter{
-	
-	public final static int PARAMETER_CODE = 0x10;
+public interface Segmentation extends Parameter {
 
-	public boolean isFirstSegIndication();
+    public final static int PARAMETER_CODE = 0x10;
 
-	public boolean isClass1Selected();
+    public boolean isFirstSegIndication();
 
-	public byte getRemainingSegments();
+    public boolean isClass1Selected();
 
-	public int getSegmentationLocalRef();
+    public byte getRemainingSegments();
+
+    public int getSegmentationLocalRef();
 
 }

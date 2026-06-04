@@ -25,9 +25,9 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
 /**
  * The Unavailability Cause and MTP3-User Identity fields, associated with the
  * Affected PC in the Affected Point Code parameter
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface UserCause extends Parameter {
 
@@ -44,7 +44,7 @@ public interface UserCause extends Parameter {
      * <li>2 Inaccessible Remote User</li>
      * </ul>
      * </p>
-     * 
+     *
      * @return
      */
     public int getCause();
@@ -71,7 +71,7 @@ public interface UserCause extends Parameter {
      * <li>15 Reserved</li>
      * </ul>
      * </p>
-     * 
+     *
      * @return
      */
     public int getUser();

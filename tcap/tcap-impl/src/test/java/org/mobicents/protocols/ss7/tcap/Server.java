@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -42,65 +42,63 @@ import java.util.List;
  */
 public class Server extends EventTestHarness {
 
-	private List<Component> components;
+    private List<Component> components;
 
-	/**
-	 * @param stack
-	 * @param thisAddress
-	 * @param remoteAddress
-	 */
-	public Server(TCAPStack stack, SccpAddress thisAddress, SccpAddress remoteAddress) {
-		super(stack, thisAddress, remoteAddress);
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     * @param stack
+     * @param thisAddress
+     * @param remoteAddress
+     */
+    public Server(TCAPStack stack, SccpAddress thisAddress, SccpAddress remoteAddress) {
+        super(stack, thisAddress, remoteAddress);
+        // TODO Auto-generated constructor stub
+    }
 
-	@Override
-	public void onTCBegin(TCBeginIndication ind) {
-		// TODO Auto-generated method stub
-		super.onTCBegin(ind);
-		this.components = ind.getComponents();
-	}
+    @Override
+    public void onTCBegin(TCBeginIndication ind) {
+        // TODO Auto-generated method stub
+        super.onTCBegin(ind);
+        this.components = ind.getComponents();
+    }
 
-	@Override
-	public void sendContinue() throws TCAPSendException, TCAPException {
-		if (components == null || components.size() != 2) {
-			throw new TCAPSendException("Bad comps!");
-		}
-		Component c = components.get(0);
-		if(c.getType()!= ComponentType.Invoke)
-		{
-			throw new TCAPSendException("Bad type: "+c.getType());
-		}
-		//lets kill this Invoke - sending ReturnResultLast
-		Invoke invoke = (Invoke) c;
-		ReturnResultLast rrlast = this.tcapProvider.getComponentPrimitiveFactory().createTCResultLastRequest();
-		rrlast.setInvokeId(invoke.getInvokeId());
-		// we need not set operationCode here because of no Parameter is sent and ReturnResultLast will not carry ReturnResultLast value
+    @Override
+    public void sendContinue() throws TCAPSendException, TCAPException {
+        if (components == null || components.size() != 2) {
+            throw new TCAPSendException("Bad comps!");
+        }
+        Component c = components.get(0);
+        if (c.getType() != ComponentType.Invoke) {
+            throw new TCAPSendException("Bad type: " + c.getType());
+        }
+        //lets kill this Invoke - sending ReturnResultLast
+        Invoke invoke = (Invoke) c;
+        ReturnResultLast rrlast = this.tcapProvider.getComponentPrimitiveFactory().createTCResultLastRequest();
+        rrlast.setInvokeId(invoke.getInvokeId());
+        // we need not set operationCode here because of no Parameter is sent and ReturnResultLast will not carry ReturnResultLast value
 //		rrlast.setOperationCode(invoke.getOperationCode());
-		super.dialog.sendComponent(rrlast);
+        super.dialog.sendComponent(rrlast);
 
-		c = components.get(1);
-		if(c.getType()!= ComponentType.Invoke)
-		{
-			throw new TCAPSendException("Bad type: "+c.getType());
-		}
+        c = components.get(1);
+        if (c.getType() != ComponentType.Invoke) {
+            throw new TCAPSendException("Bad type: " + c.getType());
+        }
 
-		//lets kill this Invoke - sending Invoke with linkedId
-		invoke = (Invoke) c;
-		Invoke invoke2 = this.tcapProvider.getComponentPrimitiveFactory().createTCInvokeRequest(InvokeClass.Class1);
-		invoke2.setInvokeId(this.dialog.getNewInvokeId());
-		invoke2.setLinkedId(invoke.getInvokeId());
-		OperationCode oc = this.tcapProvider.getComponentPrimitiveFactory().createOperationCode();
-		oc.setLocalOperationCode(new Long(14));
-		invoke2.setOperationCode(oc);
-		//no parameter
-		this.dialog.sendComponent(invoke2);
-		
-		super.sendContinue();
-	}
+        //lets kill this Invoke - sending Invoke with linkedId
+        invoke = (Invoke) c;
+        Invoke invoke2 = this.tcapProvider.getComponentPrimitiveFactory().createTCInvokeRequest(InvokeClass.Class1);
+        invoke2.setInvokeId(this.dialog.getNewInvokeId());
+        invoke2.setLinkedId(invoke.getInvokeId());
+        OperationCode oc = this.tcapProvider.getComponentPrimitiveFactory().createOperationCode();
+        oc.setLocalOperationCode(new Long(14));
+        invoke2.setOperationCode(oc);
+        //no parameter
+        this.dialog.sendComponent(invoke2);
 
-	public void sendContinue2() throws TCAPSendException, TCAPException {
-		super.sendContinue();
-	}
+        super.sendContinue();
+    }
+
+    public void sendContinue2() throws TCAPSendException, TCAPException {
+        super.sendContinue();
+    }
 }
 

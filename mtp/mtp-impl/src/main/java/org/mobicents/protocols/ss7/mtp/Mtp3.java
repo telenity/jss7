@@ -23,7 +23,7 @@
 package org.mobicents.protocols.ss7.mtp;
 
 /**
- * 
+ *
  * @author kulikov
  * @author baranowb
  */
@@ -55,32 +55,33 @@ public final class Mtp3 {
     public static final int sls(byte[] sif, int shift) {
         int sls = (sif[3 + shift] & 0xf0) >>> 4;
         return sls;
-    }    
+    }
 
     public static final int si(byte[] data) {
-        
+
         int serviceIndicator = data[0] & 0x0f;
         return serviceIndicator;
     }
-    
+
     public static final int ssi(byte[] data) {
         //see Q.704.14.2 
         int subserviceIndicator = (data[0] >> 4) & 0x0F;
         return subserviceIndicator;
     }
-    
+
     public static void writeRoutingLabel(byte[] data, int si, int ssi, int sls, int dpc, int opc) {
         //see Q.704.14.2 
-        writeRoutingLabel(0,data, si, ssi, sls, dpc, opc);
-        
-    }   
+        writeRoutingLabel(0, data, si, ssi, sls, dpc, opc);
+
+    }
+
     public static void writeRoutingLabel(int shift, byte[] data, int si, int ssi, int sls, int dpc, int opc) {
         //see Q.704.14.2 
-        data[0+shift] = (byte) (((ssi & 0x0F) << 4) | (si & 0x0F));
-        data[1+shift] = (byte) dpc;
-        data[2+shift] = (byte) (((dpc >> 8) & 0x3F) | ((opc & 0x03) << 6));
-        data[3+shift] = (byte) (opc >> 2);
-        data[4+shift] = (byte) (((opc >> 10) & 0x0F) | ((sls & 0x0F) << 4));
-        
-    } 
+        data[0 + shift] = (byte) (((ssi & 0x0F) << 4) | (si & 0x0F));
+        data[1 + shift] = (byte) dpc;
+        data[2 + shift] = (byte) (((dpc >> 8) & 0x3F) | ((opc & 0x03) << 6));
+        data[3 + shift] = (byte) (opc >> 2);
+        data[4 + shift] = (byte) (((opc >> 10) & 0x0F) | ((sls & 0x0F) << 4));
+
+    }
 }

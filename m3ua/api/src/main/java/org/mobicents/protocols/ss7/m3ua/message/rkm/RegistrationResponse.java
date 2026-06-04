@@ -31,9 +31,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.RegistrationResult;
  * success/failure for registration requests and returns a unique Routing
  * Context value for successful registration requests, to be used in subsequent
  * M3UA Traffic Management protocol.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface RegistrationResponse extends M3UAMessage {
     public RegistrationResult getRegistrationResult();

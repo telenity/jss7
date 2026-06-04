@@ -33,225 +33,227 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.PAbortCauseType;
 /**
  * @author baranowb
  * @author sergey vetyutnev
- * 
+ *
  */
 public class DialogResponseAPDUImpl implements DialogResponseAPDU {
 
-	//mandatory
-	private ApplicationContextName acn;
-	private Result result;
-	private ResultSourceDiagnostic diagnostic;
-	private ProtocolVersion protocolVersion = null;
-	private boolean doNotSendProtocolVersion = false;
-	
-	//optional
-	private UserInformation ui;
+    //mandatory
+    private ApplicationContextName acn;
+    private Result result;
+    private ResultSourceDiagnostic diagnostic;
+    private ProtocolVersion protocolVersion = null;
+    private boolean doNotSendProtocolVersion = false;
 
-	public void setDoNotSendProtocolVersion(boolean val) {
-		doNotSendProtocolVersion = val;
-	}
+    //optional
+    private UserInformation ui;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#
-	 * getApplicationContextName()
-	 */
-	public ApplicationContextName getApplicationContextName() {
-		return acn;
-	}
+    public void setDoNotSendProtocolVersion(boolean val) {
+        doNotSendProtocolVersion = val;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#getProtocolVersion
-	 * ()
-	 */
-	public ProtocolVersion getProtocolVersion() {
+    /*
+     * (non-Javadoc)
+     *
+     * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#
+     * getApplicationContextName()
+     */
+    public ApplicationContextName getApplicationContextName() {
+        return acn;
+    }
 
-		return protocolVersion;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#getProtocolVersion
+     * ()
+     */
+    public ProtocolVersion getProtocolVersion() {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#getUserInformation
-	 * ()
-	 */
-	public UserInformation getUserInformation() {
-		return this.ui;
-	}
+        return protocolVersion;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#
-	 * setApplicationContextName
-	 * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
-	 */
-	public void setApplicationContextName(ApplicationContextName acn) {
-		this.acn = acn;
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#getUserInformation
+     * ()
+     */
+    public UserInformation getUserInformation() {
+        return this.ui;
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @seeorg.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#
+     * setApplicationContextName
+     * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
+     */
+    public void setApplicationContextName(ApplicationContextName acn) {
+        this.acn = acn;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#setUserInformation
-	 * (org.mobicents.protocols.ss7.tcap.asn.UserInformation[])
-	 */
-	public void setUserInformation(UserInformation ui) {
-		this.ui = ui;
+    }
 
-	}
-	public Result getResult() {
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.DialogRequestAPDU#setUserInformation
+     * (org.mobicents.protocols.ss7.tcap.asn.UserInformation[])
+     */
+    public void setUserInformation(UserInformation ui) {
+        this.ui = ui;
 
-		return this.result;
-	}
+    }
 
-	public ResultSourceDiagnostic getResultSourceDiagnostic() {
-		return this.diagnostic;
-	}
+    public Result getResult() {
 
-	public void setResult(Result acn) {
-		this.result = acn;
+        return this.result;
+    }
 
-	}
+    public ResultSourceDiagnostic getResultSourceDiagnostic() {
+        return this.diagnostic;
+    }
 
-	public void setResultSourceDiagnostic(ResultSourceDiagnostic acn) {
-		this.diagnostic = acn;
+    public void setResult(Result acn) {
+        this.result = acn;
 
-	}
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogAPDU#getType()
-	 */
-	public DialogAPDUType getType() {
+    }
 
-		return DialogAPDUType.Response;
-	}
+    public void setResultSourceDiagnostic(ResultSourceDiagnostic acn) {
+        this.diagnostic = acn;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mobicents.protocols.ss7.tcap.asn.DialogAPDU#isUniDirectional()
-	 */
-	public boolean isUniDirectional() {
+    }
 
-		return false;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.DialogAPDU#getType()
+     */
+    public DialogAPDUType getType() {
 
-	
-	public String toString() {
-		return "DialogResponseAPDU[acn=" + acn + ", result=" + result + ", diagnostic=" + diagnostic + ", ui=" + ui + "]";
-	}
+        return DialogAPDUType.Response;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols
-	 * .asn.AsnInputStream)
-	 */
-	public void decode(AsnInputStream ais) throws ParseException {
-		
-		try {
-			AsnInputStream localAis = ais.readSequenceStream();
-			
-			int tag = localAis.readTag();
-			// optional protocol version
-			if (tag == ProtocolVersion._TAG_PROTOCOL_VERSION && localAis.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
-				// we have protocol version on a
-				// decode it
-				this.protocolVersion = TcapFactory.createProtocolVersion(localAis);
-				tag = localAis.readTag();
-			}
-			
-			//mandatory
-			if (tag != ApplicationContextName._TAG || localAis.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC)
-				throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-						"Error decoding DialogResponseAPDU.application-context-name: bad tag or tagClass, found tag=" + tag + ", tagClass="
-								+ localAis.getTagClass());
-			this.acn = TcapFactory.createApplicationContextName(localAis);
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.mobicents.protocols.ss7.tcap.asn.DialogAPDU#isUniDirectional()
+     */
+    public boolean isUniDirectional() {
 
-			// optional sequence ?
-			if (localAis.available() > 0) {
-				tag = localAis.readTag();
-				if (tag != Result._TAG) {
-					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result tag, found: " + tag);
-				}
-				this.result = TcapFactory.createResult(localAis);
-			}
+        return false;
+    }
 
-			// optional sequence ?
-			if (localAis.available() > 0) {
-				tag = localAis.readTag();
-				if (tag != ResultSourceDiagnostic._TAG) {
-					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result Source Diagnotstic tag, found: " + tag);
-				}
-				this.diagnostic = TcapFactory.createResultSourceDiagnostic(localAis);
-			}
-			
-			// optional sequence.
-			if (localAis.available() > 0) {
-				tag = localAis.readTag();
-				if (tag != UserInformation._TAG || localAis.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC)
-					throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
-							"Error decoding DialogResponseAPDU.user-information: bad tag or tagClass, found tag=" + tag + ", tagClass="
-									+ localAis.getTagClass());
-				this.ui = TcapFactory.createUserInformation(localAis);
-			}
-			
-		} catch (IOException e) {
-			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException while decoding DialogResponseAPDU: " + e.getMessage(), e);
-		} catch (AsnException e) {
-			throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "AsnException while decoding DialogResponseAPDU: " + e.getMessage(), e);
-		}
 
-	}
+    public String toString() {
+        return "DialogResponseAPDU[acn=" + acn + ", result=" + result + ", diagnostic=" + diagnostic + ", ui=" + ui + "]";
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols
-	 * .asn.AsnOutputStream)
-	 */
-	public void encode(AsnOutputStream aos) throws EncodeException {
-		
-		if (acn == null)
-			throw new EncodeException("Error encoding DialogResponseAPDU: Application Context Name must not be null");
-		if (result == null)
-			throw new EncodeException("Error encoding DialogResponseAPDU: Result must not be null");
-		if (diagnostic == null)
-			throw new EncodeException("Error encoding DialogResponseAPDU: Result-source-diagnostic must not be null");
-		
-		try {
-			
-			aos.writeTag(Tag.CLASS_APPLICATION, false, _TAG_RESPONSE);
-			int pos = aos.StartContentDefiniteLength();
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols
+     * .asn.AsnInputStream)
+     */
+    public void decode(AsnInputStream ais) throws ParseException {
 
-			if (!doNotSendProtocolVersion) {
-				this.protocolVersion = new ProtocolVersionImpl();
-				this.protocolVersion.encode(aos);
-			}
-			this.acn.encode(aos);
-			this.result.encode(aos);
-			this.diagnostic.encode(aos);
-			
-			if (ui != null)
-				ui.encode(aos);
-			
-			aos.FinalizeContent(pos);
+        try {
+            AsnInputStream localAis = ais.readSequenceStream();
 
-		} catch (AsnException e) {
-			throw new EncodeException("AsnException while encoding DialogResponseAPDU: " + e.getMessage(), e);
-		}
+            int tag = localAis.readTag();
+            // optional protocol version
+            if (tag == ProtocolVersion._TAG_PROTOCOL_VERSION && localAis.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
+                // we have protocol version on a
+                // decode it
+                this.protocolVersion = TcapFactory.createProtocolVersion(localAis);
+                tag = localAis.readTag();
+            }
 
-	}
+            //mandatory
+            if (tag != ApplicationContextName._TAG || localAis.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC)
+                throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
+                        "Error decoding DialogResponseAPDU.application-context-name: bad tag or tagClass, found tag=" + tag + ", tagClass="
+                                + localAis.getTagClass());
+            this.acn = TcapFactory.createApplicationContextName(localAis);
+
+            // optional sequence ?
+            if (localAis.available() > 0) {
+                tag = localAis.readTag();
+                if (tag != Result._TAG) {
+                    throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result tag, found: " + tag);
+                }
+                this.result = TcapFactory.createResult(localAis);
+            }
+
+            // optional sequence ?
+            if (localAis.available() > 0) {
+                tag = localAis.readTag();
+                if (tag != ResultSourceDiagnostic._TAG) {
+                    throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Expected Result Source Diagnotstic tag, found: " + tag);
+                }
+                this.diagnostic = TcapFactory.createResultSourceDiagnostic(localAis);
+            }
+
+            // optional sequence.
+            if (localAis.available() > 0) {
+                tag = localAis.readTag();
+                if (tag != UserInformation._TAG || localAis.getTagClass() != Tag.CLASS_CONTEXT_SPECIFIC)
+                    throw new ParseException(PAbortCauseType.IncorrectTxPortion, null,
+                            "Error decoding DialogResponseAPDU.user-information: bad tag or tagClass, found tag=" + tag + ", tagClass="
+                                    + localAis.getTagClass());
+                this.ui = TcapFactory.createUserInformation(localAis);
+            }
+
+        } catch (IOException e) {
+            throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "IOException while decoding DialogResponseAPDU: " + e.getMessage(), e);
+        } catch (AsnException e) {
+            throw new ParseException(PAbortCauseType.BadlyFormattedTxPortion, null, "AsnException while decoding DialogResponseAPDU: " + e.getMessage(), e);
+        }
+
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols
+     * .asn.AsnOutputStream)
+     */
+    public void encode(AsnOutputStream aos) throws EncodeException {
+
+        if (acn == null)
+            throw new EncodeException("Error encoding DialogResponseAPDU: Application Context Name must not be null");
+        if (result == null)
+            throw new EncodeException("Error encoding DialogResponseAPDU: Result must not be null");
+        if (diagnostic == null)
+            throw new EncodeException("Error encoding DialogResponseAPDU: Result-source-diagnostic must not be null");
+
+        try {
+
+            aos.writeTag(Tag.CLASS_APPLICATION, false, _TAG_RESPONSE);
+            int pos = aos.StartContentDefiniteLength();
+
+            if (!doNotSendProtocolVersion) {
+                this.protocolVersion = new ProtocolVersionImpl();
+                this.protocolVersion.encode(aos);
+            }
+            this.acn.encode(aos);
+            this.result.encode(aos);
+            this.diagnostic.encode(aos);
+
+            if (ui != null)
+                ui.encode(aos);
+
+            aos.FinalizeContent(pos);
+
+        } catch (AsnException e) {
+            throw new EncodeException("AsnException while encoding DialogResponseAPDU: " + e.getMessage(), e);
+        }
+
+    }
 }
 

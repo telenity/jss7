@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.asn;
 
@@ -31,14 +31,16 @@ package org.mobicents.protocols.ss7.tcap.asn;
  */
 public interface DialogAbortAPDU extends DialogAPDU {
 
-	//mandatory
-	public void setAbortSource(AbortSource as);
-	public AbortSource getAbortSource();
-	
-	
-	//opt
-	public UserInformation getUserInformation();
-	public void setUserInformation(UserInformation ui);
+    //mandatory
+    public void setAbortSource(AbortSource as);
+
+    public AbortSource getAbortSource();
+
+
+    //opt
+    public UserInformation getUserInformation();
+
+    public void setUserInformation(UserInformation ui);
 }
 
 

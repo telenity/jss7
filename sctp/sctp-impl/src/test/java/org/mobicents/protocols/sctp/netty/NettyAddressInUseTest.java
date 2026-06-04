@@ -42,9 +42,9 @@ import org.junit.Test;
 import com.sun.nio.sctp.SctpServerChannel;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public class NettyAddressInUseTest {
     private static final String SERVER_NAME = "testserver";
@@ -146,7 +146,7 @@ public class NettyAddressInUseTest {
             doInitSocketServerSctp();
         }
         Thread.sleep(100);
-        
+
         this.clientAssociation.setAssociationListener(new ClientAssociationListener());
         this.management.startAssociation(CLIENT_ASSOCIATION_NAME);
 
@@ -180,7 +180,7 @@ public class NettyAddressInUseTest {
         assertTrue(serverAssocDown);
         assertFalse(this.clientAssociation.isConnected());
         assertFalse(this.serverAssociation.isConnected());
-        
+
         this.management.stopAssociation(SERVER_ASSOCIATION_NAME);
         this.management.stopServer(SERVER_NAME);
 
@@ -193,7 +193,7 @@ public class NettyAddressInUseTest {
 
     private ServerSocketChannel dirtyServerTcp;
     private SctpServerChannel dirtyServerSctp;
-    
+
     private void doInitSocketServerTcp() throws IOException {
         dirtyServerTcp = ServerSocketChannel.open();
         dirtyServerTcp.configureBlocking(false);
@@ -212,14 +212,14 @@ public class NettyAddressInUseTest {
         InetSocketAddress isa = new InetSocketAddress(CLIENT_HOST, CLIENT_PORT);
         dirtyServerSctp.bind(isa);
     }
-    
+
     private class ClientAssociationListener implements AssociationListener {
-        
+
         private final Logger logger = Logger.getLogger(ClientAssociationListener.class);
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationUp
          * (org.mobicents.protocols.sctp.Association)
@@ -233,7 +233,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationShutdown
          * (org.mobicents.protocols.sctp.Association)
@@ -246,7 +246,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationLost
          * (org.mobicents.protocols.sctp.Association)
@@ -258,7 +258,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationRestart
          * (org.mobicents.protocols.sctp.Association)
@@ -270,7 +270,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onPayload(org.mobicents
          * .protocols.sctp.Association,
@@ -286,7 +286,7 @@ public class NettyAddressInUseTest {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
     }
@@ -297,7 +297,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationUp
          * (org.mobicents.protocols.sctp.Association)
@@ -311,7 +311,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationShutdown
          * (org.mobicents.protocols.sctp.Association)
@@ -324,7 +324,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationLost
          * (org.mobicents.protocols.sctp.Association)
@@ -336,7 +336,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationRestart
          * (org.mobicents.protocols.sctp.Association)
@@ -348,7 +348,7 @@ public class NettyAddressInUseTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onPayload(org.mobicents
          * .protocols.sctp.Association,
@@ -364,7 +364,7 @@ public class NettyAddressInUseTest {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
     }

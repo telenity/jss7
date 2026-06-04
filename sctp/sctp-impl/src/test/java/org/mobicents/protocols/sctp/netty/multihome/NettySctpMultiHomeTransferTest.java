@@ -24,6 +24,7 @@ package org.mobicents.protocols.sctp.netty.multihome;
 
 import static org.mobicents.protocols.sctp.netty.SctpTestSupport.await;
 import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -51,9 +52,9 @@ import org.junit.Test;
  * <p>
  * This is not automated test. Please don't add in automation.
  * </p>
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class NettySctpMultiHomeTransferTest {
     private static final String SERVER_NAME = "testserver";
@@ -116,11 +117,11 @@ public class NettySctpMultiHomeTransferTest {
         this.management.removeAllResourses();
 
         this.server = (NettyServerImpl) this.management.addServer(SERVER_NAME, SERVER_HOST, SERVER_PORT, ipChannelType, false,
-                0, new String[] { SERVER_HOST1 });
+                0, new String[]{SERVER_HOST1});
         this.serverAssociation = (NettyAssociationImpl) this.management.addServerAssociation(CLIENT_HOST, CLIENT_PORT,
                 SERVER_NAME, SERVER_ASSOCIATION_NAME, ipChannelType);
         this.clientAssociation = (NettyAssociationImpl) this.management.addAssociation(CLIENT_HOST, CLIENT_PORT, SERVER_HOST,
-                SERVER_PORT, CLIENT_ASSOCIATION_NAME, ipChannelType, new String[] { CLIENT_HOST1 });
+                SERVER_PORT, CLIENT_ASSOCIATION_NAME, ipChannelType, new String[]{CLIENT_HOST1});
     }
 
     public void tearDown() throws Exception {
@@ -142,7 +143,7 @@ public class NettySctpMultiHomeTransferTest {
         // Testing only is sctp is enabled
         if (!NettySctpTransferTest.checkSctpEnabled())
             return;
-        
+
         this.setUp(IpChannelType.SCTP);
 
         this.management.startServer(SERVER_NAME);
@@ -180,12 +181,12 @@ public class NettySctpMultiHomeTransferTest {
 
     private class ClientAssociationListener implements AssociationListener {
         private final Logger logger = Logger.getLogger(ClientAssociationListener.class);
-        
+
         private LoadGenerator loadGenerator = null;
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationUp
          * (org.mobicents.protocols.sctp.Association)
@@ -202,21 +203,21 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationShutdown
          * (org.mobicents.protocols.sctp.Association)
          */
         @Override
         public void onCommunicationShutdown(Association association) {
-            logger.warn( " onCommunicationShutdown");
+            logger.warn(" onCommunicationShutdown");
             clientAssocDown = true;
             loadGenerator.stop();
         }
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationLost
          * (org.mobicents.protocols.sctp.Association)
@@ -229,7 +230,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationRestart
          * (org.mobicents.protocols.sctp.Association)
@@ -241,7 +242,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onPayload(org.mobicents
          * .protocols.sctp.Association,
@@ -263,7 +264,7 @@ public class NettySctpMultiHomeTransferTest {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
     }
@@ -285,7 +286,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.lang.Runnable#run()
          */
         @Override
@@ -315,7 +316,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationUp
          * (org.mobicents.protocols.sctp.Association)
@@ -332,7 +333,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationShutdown
          * (org.mobicents.protocols.sctp.Association)
@@ -346,7 +347,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationLost
          * (org.mobicents.protocols.sctp.Association)
@@ -359,7 +360,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationRestart
          * (org.mobicents.protocols.sctp.Association)
@@ -371,7 +372,7 @@ public class NettySctpMultiHomeTransferTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onPayload(org.mobicents
          * .protocols.sctp.Association,
@@ -392,7 +393,7 @@ public class NettySctpMultiHomeTransferTest {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
     }

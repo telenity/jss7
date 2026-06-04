@@ -27,16 +27,16 @@ import java.util.Map;
 import org.mobicents.protocols.ss7.sccp.SccpProvider;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public class TCAPStackImplWrapper extends TCAPStackImpl {
 
-	public TCAPStackImplWrapper(SccpProvider sccpProvider, int ssn) {
-		super();
-		
-		this.tcapProvider = new TCAPProviderImplWrapper(sccpProvider, this, ssn);
-	}
+    public TCAPStackImplWrapper(SccpProvider sccpProvider, int ssn) {
+        super();
+
+        this.tcapProvider = new TCAPProviderImplWrapper(sccpProvider, this, ssn);
+    }
 
 }

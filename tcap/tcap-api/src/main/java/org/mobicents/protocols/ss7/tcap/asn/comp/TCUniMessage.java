@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.asn.comp;
 
@@ -36,15 +36,18 @@ import java.util.List;
  *
  */
 public interface TCUniMessage extends Encodable {
-	
-	public static final int _TAG = 0x01;
-	public static final boolean _TAG_PC_PRIMITIVE = false;
-	public static final int _TAG_CLASS = Tag.CLASS_APPLICATION;
-	
-	//opt FIXME: make this External?
-	public DialogPortion getDialogPortion();
-	public void setDialogPortion(DialogPortion dp);
-	//mandatory
-	public List<Component> getComponent();
-	public void setComponent(List<Component> c);
+
+    public static final int _TAG = 0x01;
+    public static final boolean _TAG_PC_PRIMITIVE = false;
+    public static final int _TAG_CLASS = Tag.CLASS_APPLICATION;
+
+    //opt FIXME: make this External?
+    public DialogPortion getDialogPortion();
+
+    public void setDialogPortion(DialogPortion dp);
+
+    //mandatory
+    public List<Component> getComponent();
+
+    public void setComponent(List<Component> c);
 }

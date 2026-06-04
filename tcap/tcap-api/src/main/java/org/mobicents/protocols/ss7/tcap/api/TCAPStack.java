@@ -29,104 +29,107 @@ package org.mobicents.protocols.ss7.tcap.api;
  */
 public interface TCAPStack {
 
-	/**
-	 * Returns stack provider.
-	 * @return
-	 */
-	public TCAPProvider getProvider();
-	/**
-	 * Stops this stack and transport layer(SCCP)
-	 */
-	public void stop();
-	/**
-	 * Start stack and transport layer(SCCP)
-	 * @throws Exception - if stack is already running or not configured
-	 */
-	public void start() throws Exception;
+    /**
+     * Returns stack provider.
+     *
+     * @return
+     */
+    public TCAPProvider getProvider();
 
-	public boolean isStarted();
+    /**
+     * Stops this stack and transport layer(SCCP)
+     */
+    public void stop();
 
-	/**
-	 * Sets millisecond value for dialog timeout. It specifies how long dialog
-	 * can be idle - not receive/send any messages.
-	 * 
-	 * @param l
-	 */
-	public void setDialogIdleTimeout(long l);
+    /**
+     * Start stack and transport layer(SCCP)
+     *
+     * @throws Exception - if stack is already running or not configured
+     */
+    public void start() throws Exception;
 
-	public long getDialogIdleTimeout();
-	
-	public void setInvokeTimeout(long v); 
+    public boolean isStarted();
 
-	public long getInvokeTimeout();
-	
-	/**
-	* Sets the maximum number of dialogs allowed to be alive at a given time.
-	* If not set, a default value of 5000 dialogs will be used.
-	*
-	* Important a: Default value may vary depending on the future
-	* implementations or changes to current implementation.
-	*
-	* Important b: If stack ranges provided, maximum number dialogs naturally
-	* cannot be greater than the provided range, thus, it will be normalized to
-	* range delta (end - start).
-	*
-	*
-	* @param v number of dialogs
-	*/
-	public void setMaxDialogs(int v); 
+    /**
+     * Sets millisecond value for dialog timeout. It specifies how long dialog
+     * can be idle - not receive/send any messages.
+     *
+     * @param l
+     */
+    public void setDialogIdleTimeout(long l);
 
-	/**
-	*
-	* @return Maximum number of allowed concurrent dialogs.
-	*/
-	public int getMaxDialogs();
+    public long getDialogIdleTimeout();
 
-	/**
-	* Sets the start of the range of the generated dialog ids.
-	*/
-	public void setDialogIdRangeStart(long val);
+    public void setInvokeTimeout(long v);
 
-	/**
-	* Sets the start of the range of the generated dialog ids.
-	*/
-	public void setDialogIdRangeEnd(long val);
+    public long getInvokeTimeout();
 
-	/**
-	*
-	* @return starting dialog id within the range
-	*/
-	public long getDialogIdRangeStart();
+    /**
+     * Sets the maximum number of dialogs allowed to be alive at a given time.
+     * If not set, a default value of 5000 dialogs will be used.
+     * <p>
+     * Important a: Default value may vary depending on the future
+     * implementations or changes to current implementation.
+     * <p>
+     * Important b: If stack ranges provided, maximum number dialogs naturally
+     * cannot be greater than the provided range, thus, it will be normalized to
+     * range delta (end - start).
+     *
+     * @param v number of dialogs
+     */
+    public void setMaxDialogs(int v);
 
-	/**
-	*     
-	* @return ending dialog id within the range
-	*/
-	public long getDialogIdRangeEnd();
+    /**
+     *
+     * @return Maximum number of allowed concurrent dialogs.
+     */
+    public int getMaxDialogs();
 
-	/**
-	* previewMode is needed for special processing mode
-	* When PreviewMode in TCAP level we have:
- * - we only listen incoming messages and sends nothing. send(),
-	 *   close(), sendComponent() and other such methods do nothing.
-	 * - A TCAP Dialog is temporary. TCAP Dialog is discarded after any
-	 *   incoming message like TC-BEGIN or TC-CONTINUE has been processed
-	 * - for any incoming messages (including TC-CONTINUE, TC-END, TC-ABORT)
-	 *   a new TCAP Dialog is created (and then deleted).
-	* - no timers and timeouts
-	* 
-	* default state: no previewMode
-	*/
-	public void setPreviewMode(boolean val);
+    /**
+     * Sets the start of the range of the generated dialog ids.
+     */
+    public void setDialogIdRangeStart(long val);
 
-	/**
-	*     
-	* @return if previewMode is active
-	*/
-	public boolean getPreviewMode();
+    /**
+     * Sets the start of the range of the generated dialog ids.
+     */
+    public void setDialogIdRangeEnd(long val);
 
-	void setDoNotSendProtocolVersion(boolean val);
+    /**
+     *
+     * @return starting dialog id within the range
+     */
+    public long getDialogIdRangeStart();
 
-	boolean getDoNotSendProtocolVersion();
-	
+    /**
+     *
+     * @return ending dialog id within the range
+     */
+    public long getDialogIdRangeEnd();
+
+    /**
+     * previewMode is needed for special processing mode
+     * When PreviewMode in TCAP level we have:
+     * - we only listen incoming messages and sends nothing. send(),
+     * close(), sendComponent() and other such methods do nothing.
+     * - A TCAP Dialog is temporary. TCAP Dialog is discarded after any
+     * incoming message like TC-BEGIN or TC-CONTINUE has been processed
+     * - for any incoming messages (including TC-CONTINUE, TC-END, TC-ABORT)
+     * a new TCAP Dialog is created (and then deleted).
+     * - no timers and timeouts
+     * <p>
+     * default state: no previewMode
+     */
+    public void setPreviewMode(boolean val);
+
+    /**
+     *
+     * @return if previewMode is active
+     */
+    public boolean getPreviewMode();
+
+    void setDoNotSendProtocolVersion(boolean val);
+
+    boolean getDoNotSendProtocolVersion();
+
 }

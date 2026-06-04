@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -28,58 +28,64 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog;
 
 /**
- * 
+ *
  * @author baranowb
- * 
+ *
  */
 public interface TCAPProvider extends Serializable {
 
-	/**
-	 * Create new structured dialog.
-	 * @param localAddress - desired local address
-	 * @param remoteAddress - initial remote address, it can change after first TCContinue. 
-	 * @return
-	 */
-	public Dialog getNewDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException;
+    /**
+     * Create new structured dialog.
+     *
+     * @param localAddress  - desired local address
+     * @param remoteAddress - initial remote address, it can change after first TCContinue.
+     * @return
+     */
+    public Dialog getNewDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException;
 
-	/**
-	 * Create new structured dialog.
-	 * @param localAddress - desired local address
-	 * @param remoteAddress - initial remote address, it can change after first TCContinue.
-	 * @param protocolClass - protocol class (0 or 1)
-	 * @return
-	 */
-	public Dialog getNewDialog(SccpAddress localAddress, SccpAddress remoteAddress, int protocolClass) throws TCAPException;
+    /**
+     * Create new structured dialog.
+     *
+     * @param localAddress  - desired local address
+     * @param remoteAddress - initial remote address, it can change after first TCContinue.
+     * @param protocolClass - protocol class (0 or 1)
+     * @return
+     */
+    public Dialog getNewDialog(SccpAddress localAddress, SccpAddress remoteAddress, int protocolClass) throws TCAPException;
 
-	/**
-	 * Create new unstructured dialog.
-	 * @param localAddress
-	 * @param remoteAddress
-	 * @return
-	 * @throws TCAPException
-	 */
-	public Dialog getNewUnstructuredDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException;
+    /**
+     * Create new unstructured dialog.
+     *
+     * @param localAddress
+     * @param remoteAddress
+     * @return
+     * @throws TCAPException
+     */
+    public Dialog getNewUnstructuredDialog(SccpAddress localAddress, SccpAddress remoteAddress) throws TCAPException;
 
-	///////////////
-	// Factories //
-	///////////////
-	
-	public DialogPrimitiveFactory getDialogPrimitiveFactory();
-	public ComponentPrimitiveFactory getComponentPrimitiveFactory();
-	
-	///////////////
-	// Listeners //
-	///////////////	
-	
-	public void addTCListener(TCListener lst);
+    ///////////////
+    // Factories //
 
-	public void removeTCListener(TCListener lst);
+    /// ////////////
 
-	public boolean getPreviewMode();
+    public DialogPrimitiveFactory getDialogPrimitiveFactory();
 
-	/**
-	 * @return current count of active TCAP dialogs
-	 */
-	int getCurrentDialogsCount();
+    public ComponentPrimitiveFactory getComponentPrimitiveFactory();
+
+    ///////////////
+    // Listeners //
+
+    /// ////////////
+
+    public void addTCListener(TCListener lst);
+
+    public void removeTCListener(TCListener lst);
+
+    public boolean getPreviewMode();
+
+    /**
+     * @return current count of active TCAP dialogs
+     */
+    int getCurrentDialogsCount();
 
 }

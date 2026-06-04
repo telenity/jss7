@@ -46,12 +46,12 @@ public class UtilsTest {
     @Test
     public void testEncodeTransactionId_Boundaries() {
         Assert.assertArrayEquals(
-                new byte[]{0,0,0,0},
+                new byte[]{0, 0, 0, 0},
                 Utils.encodeTransactionId(0)
         );
 
         Assert.assertArrayEquals(
-                new byte[]{(byte)0xFF,(byte)0xFF,(byte)0xFF,(byte)0xFF},
+                new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF},
                 Utils.encodeTransactionId(0xFFFFFFFFL)
         );
     }
@@ -62,11 +62,11 @@ public class UtilsTest {
 
     @Test
     public void testDecodeTransactionId_Basic() {
-        byte[] data = new byte[] {
-                (byte)0x11,
-                (byte)0x22,
-                (byte)0x33,
-                (byte)0x44
+        byte[] data = new byte[]{
+                (byte) 0x11,
+                (byte) 0x22,
+                (byte) 0x33,
+                (byte) 0x44
         };
 
         long val = Utils.decodeTransactionId(data);
@@ -76,9 +76,9 @@ public class UtilsTest {
 
     @Test
     public void testDecodeTransactionId_ShortArray() {
-        byte[] data = new byte[] {
-                (byte)0xAA,
-                (byte)0xBB
+        byte[] data = new byte[]{
+                (byte) 0xAA,
+                (byte) 0xBB
         };
 
         long val = Utils.decodeTransactionId(data);
@@ -109,7 +109,7 @@ public class UtilsTest {
     @Test
     public void testDecodeTransactionId_LeadingZeros() {
 
-        byte[] data = new byte[] {
+        byte[] data = new byte[]{
                 0x00,
                 0x00,
                 0x12,
@@ -128,11 +128,11 @@ public class UtilsTest {
     @Test
     public void testDecodeTransactionId_AllFF() {
 
-        byte[] data = new byte[] {
-                (byte)0xFF,
-                (byte)0xFF,
-                (byte)0xFF,
-                (byte)0xFF
+        byte[] data = new byte[]{
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF,
+                (byte) 0xFF
         };
 
         long val = Utils.decodeTransactionId(data);
@@ -142,7 +142,7 @@ public class UtilsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testDecodeTransactionId_OverlongArray() {
-        Utils.decodeTransactionId(new byte[] {
+        Utils.decodeTransactionId(new byte[]{
                 0x01, 0x02, 0x03, 0x04, 0x05,
                 0x06, 0x07, 0x08, 0x09
         });

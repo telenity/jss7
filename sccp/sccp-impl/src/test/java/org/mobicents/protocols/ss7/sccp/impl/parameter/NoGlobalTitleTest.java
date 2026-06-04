@@ -29,58 +29,60 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
+
 import org.mobicents.protocols.ss7.sccp.parameter.NoGlobalTitle;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class NoGlobalTitleTest {
 
-	/**
-	 * 
-	 */
-	public NoGlobalTitleTest() {
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     *
+     */
+    public NoGlobalTitleTest() {
+        // TODO Auto-generated constructor stub
+    }
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
 
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() {
-	}
+    @Before
+    public void setUp() {
+    }
 
-	@After
-	public void tearDown() {
-	}
+    @After
+    public void tearDown() {
+    }
 
-	@Test
-	public void testSerialization() throws Exception {
-		NoGlobalTitle gt = new NoGlobalTitle("9023629581");
+    @Test
+    public void testSerialization() throws Exception {
+        NoGlobalTitle gt = new NoGlobalTitle("9023629581");
 
-		// Writes
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
-		writer.setIndentation("\t"); // Optional (use tabulation for
-		// indentation).
-		writer.write(gt, "NoGlobalTitle", NoGlobalTitle.class);
-		writer.close();
+        // Writes
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
+        writer.setIndentation("\t"); // Optional (use tabulation for
+        // indentation).
+        writer.write(gt, "NoGlobalTitle", NoGlobalTitle.class);
+        writer.close();
 
-		System.out.println(output.toString());
+        System.out.println(output.toString());
 
-		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-		XMLObjectReader reader = XMLObjectReader.newInstance(input);
-		NoGlobalTitle aiOut = reader.read("NoGlobalTitle", NoGlobalTitle.class);
+        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        XMLObjectReader reader = XMLObjectReader.newInstance(input);
+        NoGlobalTitle aiOut = reader.read("NoGlobalTitle", NoGlobalTitle.class);
 
-		// check results
-		assertEquals("9023629581", aiOut.getDigits());
-	}
+        // check results
+        assertEquals("9023629581", aiOut.getDigits());
+    }
 
 }

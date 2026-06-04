@@ -31,7 +31,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 /**
- * 
+ *
  * @author amit bhayani
  *
  */
@@ -45,7 +45,7 @@ public class DeregistrationResultImpl extends ParameterImpl implements
     private ByteBuf buf = Unpooled.buffer(16);
 
     public DeregistrationResultImpl(RoutingContext rc,
-            DeregistrationStatus status) {
+                                    DeregistrationStatus status) {
         this.tag = Parameter.Deregistration_Result;
         this.rc = rc;
         this.status = status;
@@ -67,13 +67,13 @@ public class DeregistrationResultImpl extends ParameterImpl implements
             pos += len;
             // parameters.put(tag, factory.createParameter(tag, value));
             switch (tag) {
-            case ParameterImpl.Routing_Context:
-                this.rc = new RoutingContextImpl(value);
-                break;
+                case ParameterImpl.Routing_Context:
+                    this.rc = new RoutingContextImpl(value);
+                    break;
 
-            case ParameterImpl.Deregistration_Status:
-                this.status = new DeregistrationStatusImpl(value);
-                break;
+                case ParameterImpl.Deregistration_Status:
+                    this.status = new DeregistrationStatusImpl(value);
+                    break;
 
             }
 

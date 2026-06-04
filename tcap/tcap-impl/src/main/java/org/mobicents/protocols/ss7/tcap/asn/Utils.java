@@ -23,46 +23,48 @@
 package org.mobicents.protocols.ss7.tcap.asn;
 
 import java.io.IOException;
+
 import org.mobicents.protocols.asn.AsnException;
 import org.mobicents.protocols.asn.AsnInputStream;
 import org.mobicents.protocols.asn.AsnOutputStream;
 
 /**
  * Class with some utility methods.
+ *
  * @author baranowb
  *
  */
 public final class Utils {
 
-	private Utils() {
-	}
+    private Utils() {
+    }
 
-	public static long readTransactionId(AsnInputStream ais) throws AsnException, IOException {
-		// here we have AIS, with txid - this is integer, but its coded as
-		// octet string so no extra byte is added...
-		return decodeTransactionId(ais.readOctetString());
-	}
+    public static long readTransactionId(AsnInputStream ais) throws AsnException, IOException {
+        // here we have AIS, with txid - this is integer, but its coded as
+        // octet string so no extra byte is added...
+        return decodeTransactionId(ais.readOctetString());
+    }
 
-	public static void writeTransactionId(AsnOutputStream aos, long txId, int tagClass, int tag) throws AsnException, IOException {
-		aos.writeOctetString(tagClass, tag, encodeTransactionId(txId));
-	}
+    public static void writeTransactionId(AsnOutputStream aos, long txId, int tagClass, int tag) throws AsnException, IOException {
+        aos.writeOctetString(tagClass, tag, encodeTransactionId(txId));
+    }
 
-	public static long decodeTransactionId(byte[] data) {
-		// Big-endian interpretation of up to 8 bytes; existing callers expect unsigned-style padding on the left.
-		if (data.length > 4) {
-			throw new IllegalArgumentException("Transaction ID length must not exceed 4 bytes");
-		}
+    public static long decodeTransactionId(byte[] data) {
+        // Big-endian interpretation of up to 8 bytes; existing callers expect unsigned-style padding on the left.
+        if (data.length > 4) {
+            throw new IllegalArgumentException("Transaction ID length must not exceed 4 bytes");
+        }
 
-		long v = 0;
-		for (int i = 0; i < data.length; i++) {
-			v = (v << 8) | (data[i] & 0xffL);
-		}
-		return v;
-	}
+        long v = 0;
+        for (int i = 0; i < data.length; i++) {
+            v = (v << 8) | (data[i] & 0xffL);
+        }
+        return v;
+    }
 
-	public static byte[] encodeTransactionId(long txId) {
-		// txId may only be up to 4 bytes, that is 0xFF FF FF FF
-		return new byte[] { (byte) (txId >> 24), (byte) (txId >> 16), (byte) (txId >> 8), (byte) txId };
-	}
+    public static byte[] encodeTransactionId(long txId) {
+        // txId may only be up to 4 bytes, that is 0xFF FF FF FF
+        return new byte[]{(byte) (txId >> 24), (byte) (txId >> 16), (byte) (txId >> 8), (byte) txId};
+    }
 
 }

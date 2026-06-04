@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.tc.dialog.events;
 
@@ -34,127 +34,127 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 /**
  * @author baranowb
  * @author sergey vetyutnev
- * 
+ *
  */
 public class TCBeginRequestImpl extends DialogRequestImpl implements TCBeginRequest {
 
-	private boolean returnMessageOnError;
-	private SccpAddress originatingAddress, destinationAddress;
+    private boolean returnMessageOnError;
+    private SccpAddress originatingAddress, destinationAddress;
 
-	// fields
-	private ApplicationContextName applicationContextName;
-	private UserInformation userInformation;
+    // fields
+    private ApplicationContextName applicationContextName;
+    private UserInformation userInformation;
 
-	
-	TCBeginRequestImpl() {
-		super(EventType.Begin);
-		// TODO Auto-generated constructor stub
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * getApplicationContextName()
-	 */
-	public ApplicationContextName getApplicationContextName() {
-		return applicationContextName;
-	}
+    TCBeginRequestImpl() {
+        super(EventType.Begin);
+        // TODO Auto-generated constructor stub
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * getDestinationAddress()
-	 */
-	public SccpAddress getDestinationAddress() {
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * getApplicationContextName()
+     */
+    public ApplicationContextName getApplicationContextName() {
+        return applicationContextName;
+    }
 
-		return this.destinationAddress;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * getDestinationAddress()
+     */
+    public SccpAddress getDestinationAddress() {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * getOriginatingAddress()
-	 */
-	public SccpAddress getOriginatingAddress() {
+        return this.destinationAddress;
+    }
 
-		return this.originatingAddress;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * getOriginatingAddress()
+     */
+    public SccpAddress getOriginatingAddress() {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * getUserInformation()
-	 */
-	public UserInformation getUserInformation() {
+        return this.originatingAddress;
+    }
 
-		return this.userInformation;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * getUserInformation()
+     */
+    public UserInformation getUserInformation() {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * setApplicationContextName
-	 * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
-	 */
-	public void setApplicationContextName(ApplicationContextName acn) {
-		this.applicationContextName = acn;
+        return this.userInformation;
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * setApplicationContextName
+     * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
+     */
+    public void setApplicationContextName(ApplicationContextName acn) {
+        this.applicationContextName = acn;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * setDestinationAddress
-	 * (org.mobicents.protocols.ss7.sccp.parameter.SccpAddress)
-	 */
-	public void setDestinationAddress(SccpAddress dest) {
-		this.destinationAddress = dest;
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * setDestinationAddress
+     * (org.mobicents.protocols.ss7.sccp.parameter.SccpAddress)
+     */
+    public void setDestinationAddress(SccpAddress dest) {
+        this.destinationAddress = dest;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * setOriginatingAddress
-	 * (org.mobicents.protocols.ss7.sccp.parameter.SccpAddress)
-	 */
-	public void setOriginatingAddress(SccpAddress dest) {
-		this.originatingAddress = dest;
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * setOriginatingAddress
+     * (org.mobicents.protocols.ss7.sccp.parameter.SccpAddress)
+     */
+    public void setOriginatingAddress(SccpAddress dest) {
+        this.originatingAddress = dest;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * setUserInformation(org.mobicents.protocols.ss7.tcap.asn.UserInformation)
-	 */
-	public void setUserInformation(UserInformation ui) {
-		this.userInformation = ui;
+    }
 
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * setUserInformation(org.mobicents.protocols.ss7.tcap.asn.UserInformation)
+     */
+    public void setUserInformation(UserInformation ui) {
+        this.userInformation = ui;
 
-	public void setReturnMessageOnError(boolean val) {
-		returnMessageOnError = val;
-	}
+    }
 
-	public boolean getReturnMessageOnError() {
-		return returnMessageOnError;
-	}
+    public void setReturnMessageOnError(boolean val) {
+        returnMessageOnError = val;
+    }
+
+    public boolean getReturnMessageOnError() {
+        return returnMessageOnError;
+    }
 
 }

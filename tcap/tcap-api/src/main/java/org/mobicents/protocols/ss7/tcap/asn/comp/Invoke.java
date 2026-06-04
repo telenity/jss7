@@ -28,25 +28,25 @@ import org.mobicents.protocols.ss7.tcap.api.tc.component.InvokeClass;
 /**
  * @author baranowb
  * @author amit bhayani
- * 
+ *
  */
 public interface Invoke extends Component {
-	// FIXME: add dialog field!
-	// this is sequence
-	public static final int _TAG = 0x01;
-	public static final boolean _TAG_PC_PRIMITIVE = false;
-	public static final int _TAG_CLASS = Tag.CLASS_CONTEXT_SPECIFIC;
+    // FIXME: add dialog field!
+    // this is sequence
+    public static final int _TAG = 0x01;
+    public static final boolean _TAG_PC_PRIMITIVE = false;
+    public static final int _TAG_CLASS = Tag.CLASS_CONTEXT_SPECIFIC;
 
-	public static final int _TAG_IID = 0x02;
-	public static final boolean _TAG_IID_PC_PRIMITIVE = true;
-	public static final int _TAG_IID_CLASS = Tag.CLASS_UNIVERSAL;
+    public static final int _TAG_IID = 0x02;
+    public static final boolean _TAG_IID_PC_PRIMITIVE = true;
+    public static final int _TAG_IID_CLASS = Tag.CLASS_UNIVERSAL;
 
-	public static final int _TAG_LID = 0x00;
-	public static final boolean _TAG_LID_PC_PRIMITIVE = true;
-	public static final int _TAG_LID_CLASS = Tag.CLASS_CONTEXT_SPECIFIC;
+    public static final int _TAG_LID = 0x00;
+    public static final boolean _TAG_LID_PC_PRIMITIVE = true;
+    public static final int _TAG_LID_CLASS = Tag.CLASS_CONTEXT_SPECIFIC;
 
-	// local, relevant only for send
-	public InvokeClass getInvokeClass();
+    // local, relevant only for send
+    public InvokeClass getInvokeClass();
 
 //	/**
 //	 * @return the invokeTimeout
@@ -55,42 +55,43 @@ public interface Invoke extends Component {
 //
 //	/**
 //	 * Sets timeout for this invoke operation in milliseconds. If no indication
-	//	 * on operation status is received, before this value passes, operation
-	//	 * times out.
+    //	 * on operation status is received, before this value passes, operation
+    //	 * times out.
 //	 * 
 //	 * @param invokeTimeout
 //	 *            the invokeTimeout to set
 //	 */
 //	public void setInvokeTimeout(long invokeTimeout);
 
-	// optional
-	public void setLinkedId(Integer i);
+    // optional
+    public void setLinkedId(Integer i);
 
-	public Integer getLinkedId();
+    public Integer getLinkedId();
 
-	public Invoke getLinkedInvoke();
+    public Invoke getLinkedInvoke();
 
-	public void setLinkedInvoke(Invoke val);
+    public void setLinkedInvoke(Invoke val);
 
-	// mandatory
-	public void setOperationCode(OperationCode i);
+    // mandatory
+    public void setOperationCode(OperationCode i);
 
-	public OperationCode getOperationCode();
+    public OperationCode getOperationCode();
 
-	// optional
-	public void setParameter(Parameter p);
+    // optional
+    public void setParameter(Parameter p);
 
-	public Parameter getParameter();
-	
-	/**
-	 * @return the current invokeTimeout value
-	 */
-	public long getTimeout();
-	
-	/**
-	 * Setting the Invoke timeout in milliseconds
-	 * Must be invoked before sendComponent() invoking
-	 * @param invokeTimeout
-	 */
-	public void setTimeout(long invokeTimeout);
+    public Parameter getParameter();
+
+    /**
+     * @return the current invokeTimeout value
+     */
+    public long getTimeout();
+
+    /**
+     * Setting the Invoke timeout in milliseconds
+     * Must be invoked before sendComponent() invoking
+     *
+     * @param invokeTimeout
+     */
+    public void setTimeout(long invokeTimeout);
 }

@@ -23,7 +23,6 @@
 package org.mobicents.protocols.ss7.indicator;
 
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -31,78 +30,79 @@ import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class AddressIndicatorTest {
 
-	/**
-	 * 
-	 */
-	public AddressIndicatorTest() {
-		// TODO Auto-generated constructor stub
-	}
+    /**
+     *
+     */
+    public AddressIndicatorTest() {
+        // TODO Auto-generated constructor stub
+    }
 
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-	}
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
 
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() {
-	}
+    @Before
+    public void setUp() {
+    }
 
-	@After
-	public void tearDown() {
-	}
+    @After
+    public void tearDown() {
+    }
 
-	@Test
-	public void testDecode() throws Exception {
-		byte b = 0x42;
-		AddressIndicator ai = new AddressIndicator(b);
-		assertFalse(ai.pcPresent());
-		assertTrue(ai.ssnPresent());
-		assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, ai.getGlobalTitleIndicator());
-		assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, ai.getRoutingIndicator());
-	}
+    @Test
+    public void testDecode() throws Exception {
+        byte b = 0x42;
+        AddressIndicator ai = new AddressIndicator(b);
+        assertFalse(ai.pcPresent());
+        assertTrue(ai.ssnPresent());
+        assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, ai.getGlobalTitleIndicator());
+        assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, ai.getRoutingIndicator());
+    }
 
-	@Test
-	public void testEncode() throws Exception {
-		AddressIndicator ai = new AddressIndicator(false, true, RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN,
-				GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
-		assertEquals(66, (int)ai.getValue());
-	}
-	
-	@Test
-	public void testSerialize() throws Exception {
-		AddressIndicator ai = new AddressIndicator(false, true, RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN,
-				GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
-		
-		// Writes
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
-		writer.setIndentation("\t"); // Optional (use tabulation for
-		// indentation).
-		writer.write(ai, "AddressIndicator", AddressIndicator.class);
-		writer.close();
-		
-		System.out.println(output.toString());
-		
+    @Test
+    public void testEncode() throws Exception {
+        AddressIndicator ai = new AddressIndicator(false, true, RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN,
+                GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
+        assertEquals(66, (int) ai.getValue());
+    }
 
-		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-		XMLObjectReader reader = XMLObjectReader.newInstance(input);
-		AddressIndicator aiOut = reader.read("AddressIndicator", AddressIndicator.class);
-		
-		assertFalse(aiOut.pcPresent());
-		assertTrue(aiOut.ssnPresent());
-		assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, aiOut.getGlobalTitleIndicator());
-		assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, aiOut.getRoutingIndicator());
-	}
+    @Test
+    public void testSerialize() throws Exception {
+        AddressIndicator ai = new AddressIndicator(false, true, RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN,
+                GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED);
+
+        // Writes
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
+        writer.setIndentation("\t"); // Optional (use tabulation for
+        // indentation).
+        writer.write(ai, "AddressIndicator", AddressIndicator.class);
+        writer.close();
+
+        System.out.println(output.toString());
+
+
+        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        XMLObjectReader reader = XMLObjectReader.newInstance(input);
+        AddressIndicator aiOut = reader.read("AddressIndicator", AddressIndicator.class);
+
+        assertFalse(aiOut.pcPresent());
+        assertTrue(aiOut.ssnPresent());
+        assertEquals(GlobalTitleIndicator.NO_GLOBAL_TITLE_INCLUDED, aiOut.getGlobalTitleIndicator());
+        assertEquals(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, aiOut.getRoutingIndicator());
+    }
 
 }

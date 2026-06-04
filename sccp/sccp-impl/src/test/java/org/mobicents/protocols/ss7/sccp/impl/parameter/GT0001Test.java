@@ -28,6 +28,7 @@
 package org.mobicents.protocols.ss7.sccp.impl.parameter;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
@@ -48,10 +49,10 @@ import org.mobicents.protocols.ss7.sccp.parameter.GT0001;
  */
 public class GT0001Test {
 
-	private byte[] dataEven = new byte[] {              3,0x09,0x32,0x26,0x59,0x18};
-	private byte[] dataOdd = new byte[] {(byte)(3 | 0x80),0x09,0x32,0x26,0x59,0x08};
+    private byte[] dataEven = new byte[]{3, 0x09, 0x32, 0x26, 0x59, 0x18};
+    private byte[] dataOdd = new byte[]{(byte) (3 | 0x80), 0x09, 0x32, 0x26, 0x59, 0x08};
     private GT0001Codec codec = new GT0001Codec();
-    
+
     public GT0001Test() {
     }
 
@@ -78,10 +79,10 @@ public class GT0001Test {
     public void testDecodeEven() throws Exception {
         //wrap data with input stream
         ByteArrayInputStream in = new ByteArrayInputStream(dataEven);
-        
+
         //create GT object and read data from stream
         GT0001 gt1 = (GT0001) codec.decode(in);
-        
+
         //check results
         assertEquals(NatureOfAddress.NATIONAL, gt1.getNoA());
         assertEquals("9023629581", gt1.getDigits());
@@ -94,15 +95,15 @@ public class GT0001Test {
     public void testEncodeEven() throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         GT0001 gt = new GT0001(NatureOfAddress.NATIONAL, "9023629581");
-        
+
         codec.encode(gt, bout);
-        
+
         byte[] res = bout.toByteArray();
-        
-        boolean correct = Arrays.equals(dataEven, res);        
-        assertTrue("Incorrect encoding",  correct);
+
+        boolean correct = Arrays.equals(dataEven, res);
+        assertTrue("Incorrect encoding", correct);
     }
-    
+
 
     /**
      * Test of decode method, of class GT0001Codec.
@@ -111,10 +112,10 @@ public class GT0001Test {
     public void testDecodeOdd() throws Exception {
         //wrap data with input stream
         ByteArrayInputStream in = new ByteArrayInputStream(dataOdd);
-        
+
         //create GT object and read data from stream
         GT0001 gt1 = (GT0001) codec.decode(in);
-        
+
         //check results
         assertEquals(NatureOfAddress.NATIONAL, gt1.getNoA());
         assertEquals("902362958", gt1.getDigits());
@@ -127,35 +128,35 @@ public class GT0001Test {
     public void testEncodeOdd() throws Exception {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         GT0001 gt = new GT0001(NatureOfAddress.NATIONAL, "902362958");
-        
+
         codec.encode(gt, bout);
-        
+
         byte[] res = bout.toByteArray();
-        
-        boolean correct = Arrays.equals(dataOdd, res);        
-        assertTrue("Incorrect encoding",  correct);
+
+        boolean correct = Arrays.equals(dataOdd, res);
+        assertTrue("Incorrect encoding", correct);
     }
-    
-    
+
+
     @Test
     public void testSerialization() throws Exception {
-    	GT0001 gt = new GT0001(NatureOfAddress.NATIONAL, "9023629581");
-    	
-    	// Writes
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
-		writer.setIndentation("\t"); // Optional (use tabulation for
-		// indentation).
-		writer.write(gt, "GT0001", GT0001.class);
-		writer.close();
-		
-		System.out.println(output.toString());
-		
+        GT0001 gt = new GT0001(NatureOfAddress.NATIONAL, "9023629581");
 
-		ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
-		XMLObjectReader reader = XMLObjectReader.newInstance(input);
-		GT0001 aiOut = reader.read("GT0001", GT0001.class);
-		
+        // Writes
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        XMLObjectWriter writer = XMLObjectWriter.newInstance(output);
+        writer.setIndentation("\t"); // Optional (use tabulation for
+        // indentation).
+        writer.write(gt, "GT0001", GT0001.class);
+        writer.close();
+
+        System.out.println(output.toString());
+
+
+        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        XMLObjectReader reader = XMLObjectReader.newInstance(input);
+        GT0001 aiOut = reader.read("GT0001", GT0001.class);
+
         //check results
         assertEquals(NatureOfAddress.NATIONAL, aiOut.getNoA());
         assertEquals("9023629581", aiOut.getDigits());

@@ -31,9 +31,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.InfoString;
  * adaptation layer is ready to receive any ASPSM/ASPTM messages for all Routing
  * Keys that the ASP is configured to serve. Both ASP Identifier and INFO String
  * are optional
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface ASPUp extends M3UAMessage {
 

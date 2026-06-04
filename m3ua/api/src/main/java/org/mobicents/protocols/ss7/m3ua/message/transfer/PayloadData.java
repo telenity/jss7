@@ -44,9 +44,9 @@ public interface PayloadData extends M3UAMessage {
     public ProtocolData getData();
 
     public void setData(ProtocolData p);
-    
+
     public CorrelationId getCorrelationId();
-    
+
     public void setCorrelationId(CorrelationId corrId);
 
 }

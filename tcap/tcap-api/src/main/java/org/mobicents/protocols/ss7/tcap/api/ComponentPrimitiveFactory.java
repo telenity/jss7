@@ -35,52 +35,51 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResult;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
 /**
- * 
+ *
  * @author amit bhayani
  * @author baranowb
  */
 public interface ComponentPrimitiveFactory {
 
-	/**
-	 * Create a new Invoke. Class of this Invoke will be 1
-	 * 
-	 * @return return new instance of ({@link Invoke}
-	 */
-	public Invoke createTCInvokeRequest();
+    /**
+     * Create a new Invoke. Class of this Invoke will be 1
+     *
+     * @return return new instance of ({@link Invoke}
+     */
+    public Invoke createTCInvokeRequest();
 
-	/**
-	 * <p>
-	 * Create a new {@link Invoke}. Set the {@link InvokeClass} as per below
-	 * consideration
-	 * </p>
-	 * <ul>
-	 * <li>Class 1 – Both success and failure are reported.</li>
-	 * <li>Class 2 – Only failure is reported.</li>
-	 * <li>Class 3 – Only success is reported.</li>
-	 * <li>Class 4 – Neither success, nor failure is reported.</li>
-	 * </ul>
-	 * 
-	 * @param invokeClass
-	 *            The Class of Operation
-	 * @return new instance of ({@link Invoke}
-	 */
-	public Invoke createTCInvokeRequest(InvokeClass invokeClass);
+    /**
+     * <p>
+     * Create a new {@link Invoke}. Set the {@link InvokeClass} as per below
+     * consideration
+     * </p>
+     * <ul>
+     * <li>Class 1 – Both success and failure are reported.</li>
+     * <li>Class 2 – Only failure is reported.</li>
+     * <li>Class 3 – Only success is reported.</li>
+     * <li>Class 4 – Neither success, nor failure is reported.</li>
+     * </ul>
+     *
+     * @param invokeClass The Class of Operation
+     * @return new instance of ({@link Invoke}
+     */
+    public Invoke createTCInvokeRequest(InvokeClass invokeClass);
 
-	public Reject createTCRejectRequest();
+    public Reject createTCRejectRequest();
 
-	public ReturnResultLast createTCResultLastRequest();
+    public ReturnResultLast createTCResultLastRequest();
 
-	public ReturnResult createTCResultRequest();
+    public ReturnResult createTCResultRequest();
 
-	public ReturnError createTCReturnErrorRequest();
+    public ReturnError createTCReturnErrorRequest();
 
-	public OperationCode createOperationCode();
+    public OperationCode createOperationCode();
 
-	public ErrorCode createErrorCode();
+    public ErrorCode createErrorCode();
 
-	public Parameter createParameter();
+    public Parameter createParameter();
 
-	public Parameter createParameter(int tag, int tagClass, boolean isPrimitive);
+    public Parameter createParameter(int tag, int tagClass, boolean isPrimitive);
 
-	public Problem createProblem(ProblemType pt);
+    public Problem createProblem(ProblemType pt);
 }

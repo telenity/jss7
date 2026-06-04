@@ -29,19 +29,22 @@ import java.util.List;
 
 public interface DialogIndication {
 
-	
-	/**
-	 * Return dialog for this indication
-	 * @return
-	 */
-	public Dialog getDialog();
-	/**
-	 * get components if present, if there are none, it will return null;
-	 * @return
-	 */
-	public List<Component> getComponents();
-	
-	public EventType getType();
-	
-	public Byte getQos();
+
+    /**
+     * Return dialog for this indication
+     *
+     * @return
+     */
+    public Dialog getDialog();
+
+    /**
+     * get components if present, if there are none, it will return null;
+     *
+     * @return
+     */
+    public List<Component> getComponents();
+
+    public EventType getType();
+
+    public Byte getQos();
 }

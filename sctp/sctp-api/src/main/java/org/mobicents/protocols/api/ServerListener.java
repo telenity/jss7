@@ -25,10 +25,10 @@ package org.mobicents.protocols.api;
 /**
  *
  * @author sergey vetyutnev
- * 
+ *
  */
 public interface ServerListener {
 
-	public void onNewRemoteConnection(Server server, Association association);
+    public void onNewRemoteConnection(Server server, Association association);
 
 }

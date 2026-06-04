@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -27,77 +27,77 @@ import java.io.IOException;
 /**
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public interface Mtp3UserPart {
 
-	/**
-	 * Add {@link Mtp3UserPartListener}
-	 * 
-	 * @param listener
-	 */
-	public void addMtp3UserPartListener(Mtp3UserPartListener listener);
+    /**
+     * Add {@link Mtp3UserPartListener}
+     *
+     * @param listener
+     */
+    public void addMtp3UserPartListener(Mtp3UserPartListener listener);
 
-	/**
-	 * Remove {@link Mtp3UserPartListener}
-	 * 
-	 * @param listener
-	 */
-	public void removeMtp3UserPartListener(Mtp3UserPartListener listener);
+    /**
+     * Remove {@link Mtp3UserPartListener}
+     *
+     * @param listener
+     */
+    public void removeMtp3UserPartListener(Mtp3UserPartListener listener);
 
-	/**
-	 * return RoutingLabelFormat
-	 * 
-	 * @return
-	 */
-	public RoutingLabelFormat getRoutingLabelFormat();
+    /**
+     * return RoutingLabelFormat
+     *
+     * @return
+     */
+    public RoutingLabelFormat getRoutingLabelFormat();
 
-	/**
-	 * Set RoutingLabelFormat
-	 * 
-	 * @param routingLabelFormat
-	 */
-	public void setRoutingLabelFormat(RoutingLabelFormat routingLabelFormat);
+    /**
+     * Set RoutingLabelFormat
+     *
+     * @param routingLabelFormat
+     */
+    public void setRoutingLabelFormat(RoutingLabelFormat routingLabelFormat);
 
-	/**
-	 * Get the Mtp3TransferPrimitiveFactory
-	 * 
-	 * @return
-	 */
-	public Mtp3TransferPrimitiveFactory getMtp3TransferPrimitiveFactory();
+    /**
+     * Get the Mtp3TransferPrimitiveFactory
+     *
+     * @return
+     */
+    public Mtp3TransferPrimitiveFactory getMtp3TransferPrimitiveFactory();
 
-	/**
-	 * Return the maximum data field length of the MTP-TRANSFER message to the
-	 * DPC
-	 * 
-	 * @param dpc
-	 * @return
-	 */
-	public int getMaxUserDataLength(int dpc);
+    /**
+     * Return the maximum data field length of the MTP-TRANSFER message to the
+     * DPC
+     *
+     * @param dpc
+     * @return
+     */
+    public int getMaxUserDataLength(int dpc);
 
-	/**
-	 * If message delivering failed: MTP-PAUSE or MTP-STATUS indication will be
-	 * sent
-	 * 
-	 * @param msg
-	 * 
-	 */
-	public void sendMessage(Mtp3TransferPrimitive msg) throws IOException;
+    /**
+     * If message delivering failed: MTP-PAUSE or MTP-STATUS indication will be
+     * sent
+     *
+     * @param msg
+     *
+     */
+    public void sendMessage(Mtp3TransferPrimitive msg) throws IOException;
 
-	/**
-	 * If set to true, lowest bit of SLS is used for load balancing between
-	 * Linkset else highest bit of SLS is used.
-	 * 
-	 * @param useLsbForLinksetSelection
-	 */
-	public void setUseLsbForLinksetSelection(boolean useLsbForLinksetSelection);
+    /**
+     * If set to true, lowest bit of SLS is used for load balancing between
+     * Linkset else highest bit of SLS is used.
+     *
+     * @param useLsbForLinksetSelection
+     */
+    public void setUseLsbForLinksetSelection(boolean useLsbForLinksetSelection);
 
-	/**
-	 * Returns true if lowest bit of SLS is used for load balancing between
-	 * Linkset else returns false
-	 * 
-	 * @return
-	 */
-	public boolean isUseLsbForLinksetSelection();
+    /**
+     * Returns true if lowest bit of SLS is used for load balancing between
+     * Linkset else returns false
+     *
+     * @return
+     */
+    public boolean isUseLsbForLinksetSelection();
 
 }

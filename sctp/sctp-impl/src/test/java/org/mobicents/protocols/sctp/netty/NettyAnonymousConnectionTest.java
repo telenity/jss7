@@ -43,9 +43,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public class NettyAnonymousConnectionTest implements ServerListener {
     private static final String SERVER_NAME = "testserver";
@@ -57,7 +57,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
     private static final String CLIENT_ASSOCIATION_NAME3 = "clientAssociation3";
 
     private static final String CLIENT_HOST = "127.0.0.1";
-//  private static final int CLIENT_PORT1 = 2355;
+    //  private static final int CLIENT_PORT1 = 2355;
     private static final int CLIENT_PORT1 = 0;
     private static final int CLIENT_PORT2 = 0;
     private static final int CLIENT_PORT3 = 0;
@@ -65,7 +65,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
     private final byte[] CLIENT_MESSAGE = "Client says Hi".getBytes();
     private final byte[] CLIENT_MESSAGE2 = "Client says Hi ones moew".getBytes();
     private final byte[] SERVER_MESSAGE = "Server says Hi".getBytes();
-    
+
     private final int CONNECT_DELAY = 500;
 
     private NettySctpManagementImpl management = null;
@@ -80,11 +80,11 @@ public class NettyAnonymousConnectionTest implements ServerListener {
     private NettyAssociationImpl clientAssociation3 = null;
 
     private boolean rejectConn;
-    
-    private AssociationData assDataClt1; 
-    private AssociationData assDataClt2; 
-    private AssociationData assDataClt3; 
-    private ArrayList<AssociationData> assDataSrv = new ArrayList<>(); 
+
+    private AssociationData assDataClt1;
+    private AssociationData assDataClt2;
+    private AssociationData assDataClt3;
+    private ArrayList<AssociationData> assDataSrv = new ArrayList<>();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -220,7 +220,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
         this.management.startAssociation(CLIENT_ASSOCIATION_NAME1);
         await(() -> this.server.anonymAssociations.size() == 1 && this.assDataSrv.size() == 1
                 && this.assDataClt1.rsvdMsg != null && this.assDataSrv.get(0).rsvdMsg != null, 5000);
-        
+
         assertEquals(this.server.anonymAssociations.size(), 1);
         assertEquals(this.assDataSrv.size(), 1);
         assertTrue(this.assDataClt1.assocUp);
@@ -386,7 +386,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
         @Override
         public void onCommunicationUp(Association association, int maxInboundStreams, int maxOutboundStreams) {
             System.out.println(this + " onCommunicationUp");
-            
+
             assData.assocUp = true;
 
             PayloadData payloadData = new PayloadData(SERVER_MESSAGE.length, SERVER_MESSAGE, true, false, 3, 1);
@@ -424,7 +424,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
     }
 
@@ -441,7 +441,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
         @Override
         public void onCommunicationUp(Association association, int maxInboundStreams, int maxOutboundStreams) {
             System.out.println(this + " onCommunicationUp");
-            
+
             assData.assocUp = true;
 
             PayloadData payloadData = new PayloadData(CLIENT_MESSAGE.length, CLIENT_MESSAGE, true, false, 3, 1);
@@ -479,7 +479,7 @@ public class NettyAnonymousConnectionTest implements ServerListener {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
     }
 

@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.asn.comp;
 
@@ -37,7 +37,7 @@ import org.mobicents.protocols.ss7.tcap.asn.Encodable;
  * <ul>
  * <li><br>
  * byte[] as primitive -
- * 
+ *
  * <pre>
  * Parameter p = ....
  *  p.setTag(0x01);
@@ -45,11 +45,11 @@ import org.mobicents.protocols.ss7.tcap.asn.Encodable;
  *  p.setData(new byte[]{ENCODED});
  *  p.setPrimitive(true);
  * </pre>
- * 
+ *
  * </li>
  * <li><br>
  * byte[] as constructed
- * 
+ *
  * <pre>
  * Parameter p = ....
  *  p.setTag(0x01);
@@ -57,11 +57,11 @@ import org.mobicents.protocols.ss7.tcap.asn.Encodable;
  *  p.setData(new byte[]{ENCODED});
  *  p.setPrimitive(false);
  * </pre>
- * 
+ *
  * </li>
  * <li><br>
  * As constructed, with Parameter[] -
- * 
+ *
  * <pre>
  * Parameter[] params = ....;
  *  Parameter p = ....
@@ -70,90 +70,93 @@ import org.mobicents.protocols.ss7.tcap.asn.Encodable;
  *  //This sets primitive explicitly to false, it must be constructed type.
  *  p.setParameters(params);
  * </pre>
- * 
+ *
  * </li>
  * </ul>
  * Note that on read only byte[] is filled! In case TC-USER makes call to
  * {@link #getParameters()} method - it triggers parsing to array, so it is
  * perfectly legal to obtain byte[], rather than Parameter[].
- * 
+ *
  * @author baranowb
- * 
+ *
  */
 public interface Parameter extends Encodable {
-	// public static final int _TAG = 0x02;
-	// public static final boolean _TAG_PRIMITIVE = true;
+    // public static final int _TAG = 0x02;
+    // public static final boolean _TAG_PRIMITIVE = true;
 
-	public byte[] getData();
-	/**
-	 * Sets content as raw byte[]. invocation parameter must be encoded by user.
-	 * @param b
-	 */
-	public void setData(byte[] b);
+    public byte[] getData();
 
-	/**
-	 * Return the length value that was encoded in ASN.1 stream
-	 * Usually this value ==getData().length and we can use "getData().length" as the length value
-	 * Checking this field makes sense when special cases when "encoded length value"!=getData().length
-	 * 
-	 * @return
-	 */
-	public int getEncodingLength();
+    /**
+     * Sets content as raw byte[]. invocation parameter must be encoded by user.
+     * @param b
+     */
+    public void setData(byte[] b);
 
-	/**
-	 * Set a length that will be encoded when ASN.1 parameter encoding
-	 * Usually this length is equal getData().length and we need not set this
-	 * You can use this only when "encoded length value"!=getData().length
-	 * If setEncodingLength() has not been invoked the value for length encoding will be ==getData().length 
-	 * 
-	 * @param val
-	 */
-	public void setEncodingLength(int val);
+    /**
+     * Return the length value that was encoded in ASN.1 stream
+     * Usually this value ==getData().length and we can use "getData().length" as the length value
+     * Checking this field makes sense when special cases when "encoded length value"!=getData().length
+     *
+     * @return
+     */
+    public int getEncodingLength();
 
-	/**
-	 * Determine if this parameter is of primitive type - not constructed.
-	 * @return
-	 */
-	public boolean isPrimitive();
+    /**
+     * Set a length that will be encoded when ASN.1 parameter encoding
+     * Usually this length is equal getData().length and we need not set this
+     * You can use this only when "encoded length value"!=getData().length
+     * If setEncodingLength() has not been invoked the value for length encoding will be ==getData().length
+     *
+     * @param val
+     */
+    public void setEncodingLength(int val);
 
-	public void setPrimitive(boolean b);
+    /**
+     * Determine if this parameter is of primitive type - not constructed.
+     * @return
+     */
+    public boolean isPrimitive();
 
-	/**
-	 * @return the tag
-	 */
-	public int getTag();
+    public void setPrimitive(boolean b);
 
-	/**
-	 * @param tag
-	 *            the tag to set
-	 */
-	public void setTag(int tag);
+    /**
+     * @return the tag
+     */
+    public int getTag();
 
-	/**
-	 * @return the tagClass
-	 */
-	public int getTagClass();
+    /**
+     * @param tag
+     *            the tag to set
+     */
+    public void setTag(int tag);
 
-	/**
-	 * @param tagClass
-	 *            the tagClass to set
-	 */
-	public void setTagClass(int tagClass);
-	/**
-	 * Return decoded raw byte[] data.
-	 * @return
-	 */
-	public Parameter[] getParameters();
-	/**
-	 * Sets Parameter[]. Automaticly marks this object as constructed - {@link #isPrimitive()} will return false.
-	 * @param paramss
-	 */
-	public void setParameters(Parameter[] paramss);
+    /**
+     * @return the tagClass
+     */
+    public int getTagClass();
 
-	public void setSingleParameterInAsn();
+    /**
+     * @param tagClass
+     *            the tagClass to set
+     */
+    public void setTagClass(int tagClass);
 
-	public boolean isWithoutTagAndLength();
+    /**
+     * Return decoded raw byte[] data.
+     * @return
+     */
+    public Parameter[] getParameters();
 
-	public void setWithoutTagAndLength(boolean withoutTagAndLength);
+    /**
+     * Sets Parameter[]. Automaticly marks this object as constructed - {@link #isPrimitive()} will return false.
+     * @param paramss
+     */
+    public void setParameters(Parameter[] paramss);
+
+    public void setSingleParameterInAsn();
+
+    public boolean isWithoutTagAndLength();
+
+    public void setWithoutTagAndLength(boolean withoutTagAndLength);
 
 }

@@ -31,36 +31,38 @@ import java.io.Serializable;
 public class Pattern implements Serializable {
     private String pattern;
     private String template;
-    
-    /** Creates a new instance of Pattern */
+
+    /**
+     * Creates a new instance of Pattern
+     */
     public Pattern(String pattern) {
         this.pattern = pattern;
         this.template = toRegExpression(pattern.split("/")[0]);
     }
-    
+
     private String toRegExpression(String pattern) {
         pattern = pattern.replaceAll("x", "\\\\d");
         pattern = pattern.replaceAll("\\*", "\\\\d*");
         return pattern;
     }
-    
+
     public String getResult(String number) {
         String[] parts = pattern.split("/");
         if (parts.length == 1) {
             return number;
         }
-        
+
         int i = 1;
         Object expression = number;
-        
-        while ( i < parts.length) {
+
+        while (i < parts.length) {
             String operationExpression = parts[i];
-            
+
             String[] oparts = operationExpression.split(" ");
-            
+
             String name = oparts[0];
             String[] args = oparts[1].split(",");
-            
+
             Object[] argv = new Object[args.length + 1];
             argv[0] = expression;
             System.arraycopy(args, 0, argv, 1, args.length);
@@ -69,11 +71,11 @@ public class Pattern implements Serializable {
         }
         return ((Action) expression).execute();
     }
-    
+
     public boolean matches(String pattern) {
         return pattern.matches(template);
     }
-    
+
     public static void main(String[] args) {
         Pattern pattern = new Pattern("1101/rem 0,4/ins 0,9023629581");
         System.out.println(pattern.getResult("1101"));

@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  
+ * TeleStax, Open Source Cloud Communications
  * Copyright 2012, Telestax Inc and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -21,7 +21,6 @@
  */
 
 package org.mobicents.protocols.ss7.tcap;
-
 
 
 import static org.junit.Assert.*;
@@ -52,13 +51,14 @@ import org.junit.Test;
 
 /**
  * Test for call flow.
+ *
  * @author baranowb
  *
  */
 public class TCAPFunctionalTest extends SccpHarness {
-	public static final long WAIT_TIME = 500;
-	private static final int _WAIT_TIMEOUT = 90000;
-	private static final int _WAIT_REMOVE = 30000;
+    public static final long WAIT_TIME = 500;
+    private static final int _WAIT_TIMEOUT = 90000;
+    private static final int _WAIT_REMOVE = 30000;
     public static final long[] _ACN_ = new long[]{0, 4, 0, 0, 1, 0, 19, 2};
     private TCAPStackImpl tcapStack1;
     private TCAPStackImpl tcapStack2;
@@ -68,36 +68,36 @@ public class TCAPFunctionalTest extends SccpHarness {
     private Server server;
     private TCAPListenerWrapper tcapListenerWrapper;
 
-    public TCAPFunctionalTest(){
-    	
-    }
-    	    
-	@Before
-	public void setUpClass() {
-		this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
-		this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
-		System.out.println("setUpClass");
-	}
+    public TCAPFunctionalTest() {
 
-	@After
-	public void tearDownClass() throws Exception {
-		System.out.println("tearDownClass");
-	}
+    }
+
+    @Before
+    public void setUpClass() {
+        this.sccpStack1Name = "TCAPFunctionalTestSccpStack1";
+        this.sccpStack2Name = "TCAPFunctionalTestSccpStack2";
+        System.out.println("setUpClass");
+    }
+
+    @After
+    public void tearDownClass() throws Exception {
+        System.out.println("tearDownClass");
+    }
 
     /* (non-Javadoc)
      * @see junit.framework.TestCase#setUp()
      */
-	@Before
-	public void setUp() throws Exception {
-		System.out.println("setUp");
+    @Before
+    public void setUp() throws Exception {
+        System.out.println("setUp");
         super.setUp();
-       
+
         peer1Address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 8);
-        peer2Address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2,  null, 8);
-        
+        peer2Address = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
+
         this.tcapStack1 = new TCAPStackImpl(this.sccpProvider1, 8);
         this.tcapStack2 = new TCAPStackImpl(this.sccpProvider2, 8);
-        
+
         this.tcapListenerWrapper = new TCAPListenerWrapper();
         this.tcapStack1.getProvider().addTCListener(tcapListenerWrapper);
 
@@ -112,18 +112,19 @@ public class TCAPFunctionalTest extends SccpHarness {
         this.server = new Server(this.tcapStack2, peer2Address, peer1Address);
 
     }
+
     /* (non-Javadoc)
      * @see junit.framework.TestCase#tearDown()
      */
-	@After
-	public void tearDown() {
+    @After
+    public void tearDown() {
         this.tcapStack1.stop();
         this.tcapStack2.stop();
         super.tearDown();
 
     }
 
-	@Test
+    @Test
     public void simpleTCWithDialogTest() throws Exception {
 
         long stamp = System.currentTimeMillis();
@@ -175,23 +176,23 @@ public class TCAPFunctionalTest extends SccpHarness {
 
     }
 
-	@Test
-    public void uniMsgTest() throws Exception{
+    @Test
+    public void uniMsgTest() throws Exception {
 
         long stamp = System.currentTimeMillis();
         List<TestEvent> clientExpectedEvents = new ArrayList<>();
-		TestEvent te = TestEvent.createSentEvent(EventType.Uni, null, 0, stamp);
-		clientExpectedEvents.add(te);
-		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 1, stamp);
-		clientExpectedEvents.add(te);
+        TestEvent te = TestEvent.createSentEvent(EventType.Uni, null, 0, stamp);
+        clientExpectedEvents.add(te);
+        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 1, stamp);
+        clientExpectedEvents.add(te);
 
         List<TestEvent> serverExpectedEvents = new ArrayList<>();
-        te = TestEvent.createReceivedEvent(EventType.Uni, null, 0,stamp);
+        te = TestEvent.createReceivedEvent(EventType.Uni, null, 0, stamp);
         serverExpectedEvents.add(te);
-		te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 1, stamp);
-		serverExpectedEvents.add(te);
+        te = TestEvent.createReceivedEvent(EventType.DialogRelease, null, 1, stamp);
+        serverExpectedEvents.add(te);
 
-    	client.startUniDialog();
+        client.startUniDialog();
         client.sendUni();
         client.waitFor(WAIT_TIME);
 
@@ -207,20 +208,20 @@ public class TCAPFunctionalTest extends SccpHarness {
             fail("Interrupted on wait!");
         }
     }
-    
+
     private class TCAPListenerWrapper implements TCListener {
 
-		@Override
-		public void onTCUni(TCUniIndication ind) {
-			// TODO Auto-generated method stub
-			
-		}
+        @Override
+        public void onTCUni(TCUniIndication ind) {
+            // TODO Auto-generated method stub
 
-		@Override
-		public void onTCBegin(TCBeginIndication ind) {
-			// TODO Auto-generated method stub
-			
-		}
+        }
+
+        @Override
+        public void onTCBegin(TCBeginIndication ind) {
+            // TODO Auto-generated method stub
+
+        }
 
         @Override
         public void onTCContinue(TCContinueIndication ind) {
@@ -243,47 +244,47 @@ public class TCAPFunctionalTest extends SccpHarness {
             assertEquals((long) linkedInv.getOperationCode().getLocalOperationCode(), 13);
         }
 
-		@Override
-		public void onTCEnd(TCEndIndication ind) {
-			// TODO Auto-generated method stub
-			
-		}
+        @Override
+        public void onTCEnd(TCEndIndication ind) {
+            // TODO Auto-generated method stub
 
-		@Override
-		public void onTCUserAbort(TCUserAbortIndication ind) {
-			// TODO Auto-generated method stub
-			
-		}
+        }
 
-		@Override
-		public void onTCPAbort(TCPAbortIndication ind) {
-			// TODO Auto-generated method stub
-			
-		}
+        @Override
+        public void onTCUserAbort(TCUserAbortIndication ind) {
+            // TODO Auto-generated method stub
 
-		@Override
-		public void onTCNotice(TCNoticeIndication ind) {
-			// TODO Auto-generated method stub
-			
-		}
+        }
 
-		@Override
-		public void onDialogReleased(Dialog d) {
-			// TODO Auto-generated method stub
-			
-		}
+        @Override
+        public void onTCPAbort(TCPAbortIndication ind) {
+            // TODO Auto-generated method stub
 
-		@Override
-		public void onInvokeTimeout(Invoke tcInvokeRequest) {
-			// TODO Auto-generated method stub
-			
-		}
+        }
 
-		@Override
-		public void onDialogTimeout(Dialog d) {
-			// TODO Auto-generated method stub
-			
-		}
-    	
+        @Override
+        public void onTCNotice(TCNoticeIndication ind) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onDialogReleased(Dialog d) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onInvokeTimeout(Invoke tcInvokeRequest) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onDialogTimeout(Dialog d) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 }

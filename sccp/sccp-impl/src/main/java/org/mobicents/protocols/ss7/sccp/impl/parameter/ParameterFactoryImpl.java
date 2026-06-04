@@ -39,29 +39,28 @@ import org.mobicents.protocols.ss7.sccp.parameter.HopCounter;
  */
 public class ParameterFactoryImpl implements ParameterFactory {
 
-	public SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, GlobalTitle gt, int ssn) {
-		return new SccpAddress(ri, dpc, gt, ssn);
-	}
+    public SccpAddress createSccpAddress(RoutingIndicator ri, int dpc, GlobalTitle gt, int ssn) {
+        return new SccpAddress(ri, dpc, gt, ssn);
+    }
 
     public Importance createImportance(int value) {
-        return new ImportanceImpl((byte)value);
+        return new ImportanceImpl((byte) value);
     }
 
-    public HopCounter createHopCounter(int hopCount)
-    {
-    	return new HopCounterImpl(hopCount);
+    public HopCounter createHopCounter(int hopCount) {
+        return new HopCounterImpl(hopCount);
     }
 
-	public ProtocolClass createProtocolClass(int pClass, boolean returnMessageOnError) {
-		return new ProtocolClassImpl(pClass, returnMessageOnError);
-	}
+    public ProtocolClass createProtocolClass(int pClass, boolean returnMessageOnError) {
+        return new ProtocolClassImpl(pClass, returnMessageOnError);
+    }
 
     public Segmentation createSegmentation() {
         return new SegmentationImpl();
     }
 
-	public ReturnCause createReturnCause(ReturnCauseValue cause) {
-		return new ReturnCauseImpl(cause);
-	}
-    
+    public ReturnCause createReturnCause(ReturnCauseValue cause) {
+        return new ReturnCauseImpl(cause);
+    }
+
 }

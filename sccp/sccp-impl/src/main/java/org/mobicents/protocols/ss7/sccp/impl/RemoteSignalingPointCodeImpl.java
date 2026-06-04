@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -30,102 +30,102 @@ import org.mobicents.protocols.ss7.sccp.RemoteSignalingPointCode;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class RemoteSignalingPointCodeImpl implements XMLSerializable, RemoteSignalingPointCode {
-	private static final String REMOTE_SPC = "remoteSpc";
-	private static final String REMOTE_SPC_FLAG = "remoteSpcFlag";
-	private static final String MASK = "mask";
+    private static final String REMOTE_SPC = "remoteSpc";
+    private static final String REMOTE_SPC_FLAG = "remoteSpcFlag";
+    private static final String MASK = "mask";
 
-	private int remoteSpc;
-	private int remoteSpcFlag;
-	private int mask;
-	private volatile boolean remoteSpcProhibited = true;
-	private volatile boolean remoteSccpProhibited = true;
-	
-	public RemoteSignalingPointCodeImpl() {
-	}
+    private int remoteSpc;
+    private int remoteSpcFlag;
+    private int mask;
+    private volatile boolean remoteSpcProhibited = true;
+    private volatile boolean remoteSccpProhibited = true;
 
-	public RemoteSignalingPointCodeImpl(int remoteSpc, int remoteSpcFlag, int mask, boolean isProhibited) {
-		this.remoteSpc = remoteSpc;
-		this.remoteSpcFlag = remoteSpcFlag;
-		this.mask = mask;
-		this.remoteSpcProhibited = isProhibited;
-		this.remoteSccpProhibited = isProhibited;
-	}
+    public RemoteSignalingPointCodeImpl() {
+    }
 
-	public int getRemoteSpc() {
-		return remoteSpc;
-	}
+    public RemoteSignalingPointCodeImpl(int remoteSpc, int remoteSpcFlag, int mask, boolean isProhibited) {
+        this.remoteSpc = remoteSpc;
+        this.remoteSpcFlag = remoteSpcFlag;
+        this.mask = mask;
+        this.remoteSpcProhibited = isProhibited;
+        this.remoteSccpProhibited = isProhibited;
+    }
 
-	public int getRemoteSpcFlag() {
-		return remoteSpcFlag;
-	}
+    public int getRemoteSpc() {
+        return remoteSpc;
+    }
 
-	public int getMask() {
-		return mask;
-	}
+    public int getRemoteSpcFlag() {
+        return remoteSpcFlag;
+    }
 
-	public boolean isRemoteSpcProhibited() {
-		return remoteSpcProhibited;
-	}
+    public int getMask() {
+        return mask;
+    }
 
-	public boolean isRemoteSccpProhibited() {
-		return remoteSccpProhibited;
-	}
+    public boolean isRemoteSpcProhibited() {
+        return remoteSpcProhibited;
+    }
 
-	protected void setRemoteSpcProhibited(boolean remoteSpcProhibited) {
-		this.remoteSpcProhibited = remoteSpcProhibited;
-	}
+    public boolean isRemoteSccpProhibited() {
+        return remoteSccpProhibited;
+    }
 
-	protected void setRemoteSccpProhibited(boolean remoteSccpProhibited) {
-		this.remoteSccpProhibited = remoteSccpProhibited;
-	}
+    protected void setRemoteSpcProhibited(boolean remoteSpcProhibited) {
+        this.remoteSpcProhibited = remoteSpcProhibited;
+    }
 
-	/**
-	 * @param remoteSpc the remoteSpc to set
-	 */
-	protected void setRemoteSpc(int remoteSpc) {
-		this.remoteSpc = remoteSpc;
-	}
+    protected void setRemoteSccpProhibited(boolean remoteSccpProhibited) {
+        this.remoteSccpProhibited = remoteSccpProhibited;
+    }
 
-	/**
-	 * @param remoteSpcFlag the remoteSpcFlag to set
-	 */
-	protected void setRemoteSpcFlag(int remoteSpcFlag) {
-		this.remoteSpcFlag = remoteSpcFlag;
-	}
+    /**
+     * @param remoteSpc the remoteSpc to set
+     */
+    protected void setRemoteSpc(int remoteSpc) {
+        this.remoteSpc = remoteSpc;
+    }
 
-	/**
-	 * @param mask the mask to set
-	 */
-	protected void setMask(int mask) {
-		this.mask = mask;
-	}
+    /**
+     * @param remoteSpcFlag the remoteSpcFlag to set
+     */
+    protected void setRemoteSpcFlag(int remoteSpcFlag) {
+        this.remoteSpcFlag = remoteSpcFlag;
+    }
 
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("rsp=").append(this.remoteSpc).append(" rsp-flag=").append(this.remoteSpcFlag).append(" mask=").append(this.mask).append(" rsp-prohibited=")
-				.append(this.remoteSpcProhibited).append(" rsccp-prohibited=").append(this.remoteSccpProhibited);
-		return sb.toString();
-	}
+    /**
+     * @param mask the mask to set
+     */
+    protected void setMask(int mask) {
+        this.mask = mask;
+    }
 
-	protected static final XMLFormat<RemoteSignalingPointCodeImpl> XML = new XMLFormat<RemoteSignalingPointCodeImpl>(
-			RemoteSignalingPointCodeImpl.class) {
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("rsp=").append(this.remoteSpc).append(" rsp-flag=").append(this.remoteSpcFlag).append(" mask=").append(this.mask).append(" rsp-prohibited=")
+                .append(this.remoteSpcProhibited).append(" rsccp-prohibited=").append(this.remoteSccpProhibited);
+        return sb.toString();
+    }
 
-		public void write(RemoteSignalingPointCodeImpl ai, OutputElement xml) throws XMLStreamException {
-			xml.setAttribute(REMOTE_SPC, ai.remoteSpc);
-			xml.setAttribute(REMOTE_SPC_FLAG, ai.remoteSpcFlag);
-			xml.setAttribute(MASK, ai.mask);
+    protected static final XMLFormat<RemoteSignalingPointCodeImpl> XML = new XMLFormat<RemoteSignalingPointCodeImpl>(
+            RemoteSignalingPointCodeImpl.class) {
 
-		}
+        public void write(RemoteSignalingPointCodeImpl ai, OutputElement xml) throws XMLStreamException {
+            xml.setAttribute(REMOTE_SPC, ai.remoteSpc);
+            xml.setAttribute(REMOTE_SPC_FLAG, ai.remoteSpcFlag);
+            xml.setAttribute(MASK, ai.mask);
 
-		public void read(InputElement xml, RemoteSignalingPointCodeImpl ai) throws XMLStreamException {
-			ai.remoteSpc = xml.getAttribute(REMOTE_SPC).toInt();
-			ai.remoteSpcFlag = xml.getAttribute(REMOTE_SPC_FLAG).toInt();
-			ai.mask = xml.getAttribute(MASK).toInt();
-		}
-	};
+        }
+
+        public void read(InputElement xml, RemoteSignalingPointCodeImpl ai) throws XMLStreamException {
+            ai.remoteSpc = xml.getAttribute(REMOTE_SPC).toInt();
+            ai.remoteSpcFlag = xml.getAttribute(REMOTE_SPC_FLAG).toInt();
+            ai.mask = xml.getAttribute(MASK).toInt();
+        }
+    };
 
 }

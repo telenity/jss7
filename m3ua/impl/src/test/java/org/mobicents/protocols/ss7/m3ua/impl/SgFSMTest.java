@@ -166,14 +166,14 @@ public class SgFSMTest {
         TestAssociation testAssociation = (TestAssociation) this.transportManagement.addAssociation(null, 0, null, 0,
                 "testAssoc1");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = parmFactory.createRoutingContext(new long[]{100});
 
         // As remAs = sgw.createAppServer("testas", rc, rKey, trModType);
         AsImpl remAs = (AsImpl) serverM3UAMgmt.createAs("testas", Functionality.SGW, ExchangeType.SE, null, rc, null, 1, null);
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         FSM asLocalFSM = remAs.getLocalFSM();
 
@@ -181,13 +181,13 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactoryImpl }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactoryImpl}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp = serverM3UAMgmt.assignAspToAs("testas", "testasp");
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp}, m3uaManagementEventsSeq++)));
 
         // Create Route
         this.serverM3UAMgmt.addRoute(2, -1, -1, "testas");
@@ -208,14 +208,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // also the AS should be INACTIVE now
         assertEquals(AsState.INACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_INACTIVE));
 
@@ -227,14 +227,14 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // also the AS should be ACTIVE now
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_ACTIVE));
 
@@ -262,14 +262,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE_ACK, -1, -1));
 
         // also the AS should be PENDING now
         assertEquals(AsState.PENDING, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_PENDING);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsPending, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_PENDING));
 
@@ -279,7 +279,7 @@ public class SgFSMTest {
         assertEquals(AspState.DOWN, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspDown, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_DOWN_ACK, -1, -1));
 
         // lets wait for 3 seconds to receive the MTP3 primitive before giving
@@ -288,7 +288,7 @@ public class SgFSMTest {
 
         assertEquals(remAs.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsDown, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         mtp3Primitive = this.mtp3UserPartListener.rxMtp3PrimitivePoll();
         assertNotNull(mtp3Primitive);
@@ -314,7 +314,7 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         FSM asLocalFSM = remAs.getLocalFSM();
 
@@ -322,13 +322,13 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactoryImpl }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactoryImpl}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp = serverM3UAMgmt.assignAspToAs("testas", "testasp");
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp}, m3uaManagementEventsSeq++)));
 
         // Create Route
         this.serverM3UAMgmt.addRoute(2, -1, -1, "testas");
@@ -347,14 +347,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // also the AS should be INACTIVE now
         assertEquals(AsState.INACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_INACTIVE));
 
@@ -365,14 +365,14 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // also the AS should be ACTIVE now
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_ACTIVE));
 
@@ -399,14 +399,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE_ACK, -1, -1));
 
         // also the AS should be PENDING now
         assertEquals(AsState.PENDING, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_PENDING);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsPending, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_PENDING));
 
@@ -417,7 +417,7 @@ public class SgFSMTest {
         assertEquals(AspState.DOWN, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspDown, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_DOWN_ACK, -1, -1));
 
         // lets wait for 3 seconds to receive the MTP3 primitive before giving
@@ -426,7 +426,7 @@ public class SgFSMTest {
 
         assertEquals(remAs.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsDown, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         mtp3Primitive = this.mtp3UserPartListener.rxMtp3PrimitivePoll();
         assertNotNull(mtp3Primitive);
@@ -449,7 +449,7 @@ public class SgFSMTest {
                 "testAssoc1");
 
         // Define 1st AS
-        RoutingContext rc1 = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc1 = parmFactory.createRoutingContext(new long[]{100});
 
         // As remAs1 = sgw.createAppServer("testas1", rc1, rKey1, trModType1);
         AsImpl remAs1 = (AsImpl) serverM3UAMgmt.createAs("testas1", Functionality.SGW, ExchangeType.SE, null, rc1, null, 1,
@@ -457,12 +457,12 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1}, m3uaManagementEventsSeq++)));
 
         FSM as1LocalFSM = remAs1.getLocalFSM();
 
         // Define 2nd AS
-        RoutingContext rc2 = parmFactory.createRoutingContext(new long[] { 200 });
+        RoutingContext rc2 = parmFactory.createRoutingContext(new long[]{200});
 
         // As remAs2 = sgw.createAppServer("testas2", rc2, rKey2, trModType2);
         AsImpl remAs2 = (AsImpl) serverM3UAMgmt.createAs("testas2", Functionality.SGW, ExchangeType.SE, null, rc2, null, 1,
@@ -470,7 +470,7 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs2}, m3uaManagementEventsSeq++)));
 
         FSM as2LocalFSM = remAs2.getLocalFSM();
 
@@ -480,7 +480,7 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactoryImpl }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactoryImpl}, m3uaManagementEventsSeq++)));
 
         // Both ASP uses same underlying M3UAChannel
         AspImpl remAsp1 = serverM3UAMgmt.assignAspToAs("testas1", "testasp");
@@ -488,9 +488,9 @@ public class SgFSMTest {
 
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs1, remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1, remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs2, remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs2, remAsp2}, m3uaManagementEventsSeq++)));
 
         FSM asp1PeerFSM = remAsp1.getPeerFSM();
         FSM asp2PeerFSM = remAsp2.getPeerFSM();
@@ -511,16 +511,16 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1}, m3uaManagementEventsSeq++)));
 
         assertEquals(AspState.INACTIVE, this.getAspState(asp2PeerFSM));
         assertEquals(remAsp2.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs2}, m3uaManagementEventsSeq++)));
 
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
@@ -537,24 +537,24 @@ public class SgFSMTest {
 
         // Check for ASP_ACTIVE for both Routing Contexts
         message = messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE);
-        ((ASPActiveImpl) message).setRoutingContext(this.parmFactory.createRoutingContext(new long[] { 100, 200 }));
+        ((ASPActiveImpl) message).setRoutingContext(this.parmFactory.createRoutingContext(new long[]{100, 200}));
         aspFactoryImpl.read(message);
 
         assertEquals(AspState.ACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1}, m3uaManagementEventsSeq++)));
 
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         assertEquals(AspState.ACTIVE, this.getAspState(asp2PeerFSM));
         assertEquals(remAsp2.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs2}, m3uaManagementEventsSeq++)));
 
         // also both the AS should be ACTIVE now
         assertEquals(AsState.ACTIVE, this.getAsState(as1LocalFSM));
@@ -571,13 +571,13 @@ public class SgFSMTest {
 
         // Check for ASP_INACTIVE for ASP1
         message = messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE);
-        ((ASPInactiveImpl) message).setRoutingContext(this.parmFactory.createRoutingContext(new long[] { 100 }));
+        ((ASPInactiveImpl) message).setRoutingContext(this.parmFactory.createRoutingContext(new long[]{100}));
         aspFactoryImpl.read(message);
 
         assertEquals(AspState.INACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
 
         // The ASP2 should still be ACTIVE as we sent ASP_INACTIVE only for 100
         // RC
@@ -587,7 +587,7 @@ public class SgFSMTest {
         assertEquals(AsState.PENDING, this.getAsState(as1LocalFSM));
         assertEquals(remAs1.getState().getName(), State.STATE_PENDING);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsPending, System
-                .currentTimeMillis(), new Object[] { remAs1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation, MessageClass.MANAGEMENT, MessageType.NOTIFY, Status.STATUS_AS_State_Change,
                 Status.INFO_AS_PENDING));
 
@@ -601,12 +601,12 @@ public class SgFSMTest {
         assertEquals(AspState.DOWN, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspDown, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
 
         assertEquals(AspState.DOWN, this.getAspState(asp2PeerFSM));
         assertEquals(remAsp2.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspDown, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
 
         assertTrue(validateMessage(testAssociation, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_DOWN_ACK, -1, -1));
 
@@ -638,7 +638,7 @@ public class SgFSMTest {
         TestAssociation testAssociation2 = (TestAssociation) this.transportManagement.addAssociation(null, 0, null, 0,
                 "testAssoc2");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = parmFactory.createRoutingContext(new long[]{100});
         TrafficModeType overrideMode = parmFactory.createTrafficModeType(TrafficModeType.Override);
 
         // As remAs = sgw.createAppServer("testas", rc, rKey, trModType);
@@ -646,7 +646,7 @@ public class SgFSMTest {
                 1, null);
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         FSM asLocalFSM = remAs.getLocalFSM();
 
@@ -654,20 +654,20 @@ public class SgFSMTest {
         AspFactoryImpl aspFactory1 = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp1", "testAssoc1", false);
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactory1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactory1}, m3uaManagementEventsSeq++)));
 
         // Create Second ASPFactory
         AspFactoryImpl aspFactory2 = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp2", "testAssoc2", false);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactory2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactory2}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp1 = serverM3UAMgmt.assignAspToAs("testas", "testasp1");
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp1}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp2 = serverM3UAMgmt.assignAspToAs("testas", "testasp2");
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp2}, m3uaManagementEventsSeq++)));
 
         FSM asp1PeerFSM = remAsp1.getPeerFSM();
         FSM asp2PeerFSM = remAsp2.getPeerFSM();
@@ -687,14 +687,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // also the AS should be INACTIVE now
         assertEquals(AsState.INACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_INACTIVE));
 
@@ -704,7 +704,7 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(asp2PeerFSM));
         assertEquals(remAsp2.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation2, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // AS is still INACTIVE now
@@ -722,7 +722,7 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // also the AS should be ACTIVE now and NOTIFY ACTIVE should be delivered to
@@ -730,7 +730,7 @@ public class SgFSMTest {
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_ACTIVE));
         assertTrue(validateMessage(testAssociation2, MessageClass.MANAGEMENT, MessageType.NOTIFY,
@@ -745,7 +745,7 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE_ACK, -1, -1));
 
         // also the AS should be PENDING now and should send PENDING NTFY to
@@ -753,7 +753,7 @@ public class SgFSMTest {
         assertEquals(AsState.PENDING, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_PENDING);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsPending, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_PENDING));
         assertTrue(validateMessage(testAssociation2, MessageClass.MANAGEMENT, MessageType.NOTIFY,
@@ -767,7 +767,7 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(asp2PeerFSM));
         assertEquals(remAsp2.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
 
         assertTrue(validateMessage(testAssociation2, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
@@ -776,7 +776,7 @@ public class SgFSMTest {
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation2, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_ACTIVE));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
@@ -791,7 +791,7 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(asp1PeerFSM));
         assertEquals(remAsp1.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // The AS remains ACTIVE and sends NTFY(Alt ASP-Act) to ASP2
@@ -804,7 +804,7 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(asp2PeerFSM));
         assertEquals(remAsp2.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
 
         assertNull(testAssociation1.txPoll());
         assertNull(testAssociation2.txPoll());
@@ -848,23 +848,23 @@ public class SgFSMTest {
         AsImpl remAs1 = (AsImpl) this.serverM3UAMgmt.createAs("testas1", Functionality.SGW, ExchangeType.SE, null, null, null,
                 1, null);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1}, m3uaManagementEventsSeq++)));
 
         // Define 2nd AS
         AsImpl remAs2 = (AsImpl) serverM3UAMgmt.createAs("testas2", Functionality.SGW, ExchangeType.SE, null, null, null, 1,
                 null);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs2}, m3uaManagementEventsSeq++)));
 
         // Define AspFactory 1
         AspFactoryImpl aspFactoryImpl1 = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp1", "testAssoc1", false);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactoryImpl1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactoryImpl1}, m3uaManagementEventsSeq++)));
 
         // Define AspFactory 2
         AspFactoryImpl aspFactoryImpl2 = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp2", "testAssoc2", false);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactoryImpl2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactoryImpl2}, m3uaManagementEventsSeq++)));
 
         // TODO : Call start from management
         aspFactoryImpl1.start();
@@ -872,11 +872,11 @@ public class SgFSMTest {
 
         AspImpl remAsp1 = serverM3UAMgmt.assignAspToAs("testas1", "testasp1");
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs1, remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs1, remAsp1}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp2 = serverM3UAMgmt.assignAspToAs("testas2", "testasp2");
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs2, remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs2, remAsp2}, m3uaManagementEventsSeq++)));
 
         // Create Route
         this.serverM3UAMgmt.addRoute(2, -1, -1, "testas1");
@@ -921,8 +921,8 @@ public class SgFSMTest {
         testAssociation2.clearRxMessages();
 
         for (int sls = 0; sls < 256; sls++) {
-            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[] {
-                    1, 2, 3, 4 });
+            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[]{
+                    1, 2, 3, 4});
             serverM3UAMgmt.sendMessage(mtp3TransferPrimitive);
         }
 
@@ -957,8 +957,8 @@ public class SgFSMTest {
         testAssociation2.clearRxMessages();
 
         for (int sls = 0; sls < 256; sls++) {
-            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[] {
-                    1, 2, 3, 4 });
+            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[]{
+                    1, 2, 3, 4});
             serverM3UAMgmt.sendMessage(mtp3TransferPrimitive);
         }
 
@@ -1004,11 +1004,11 @@ public class SgFSMTest {
         TestAssociation testAssociation2 = (TestAssociation) this.transportManagement.addAssociation(null, 0, null, 0,
                 "testAssoc2");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = parmFactory.createRoutingContext(new long[]{100});
 
-        DestinationPointCode[] dpcObj = new DestinationPointCode[] { parmFactory.createDestinationPointCode(123, (short) 0) };
+        DestinationPointCode[] dpcObj = new DestinationPointCode[]{parmFactory.createDestinationPointCode(123, (short) 0)};
 
-        ServiceIndicators[] servInds = new ServiceIndicators[] { parmFactory.createServiceIndicators(new short[] { 3 }) };
+        ServiceIndicators[] servInds = new ServiceIndicators[]{parmFactory.createServiceIndicators(new short[]{3})};
 
         TrafficModeType trModType = parmFactory.createTrafficModeType(TrafficModeType.Loadshare);
         LocalRKIdentifier lRkId = parmFactory.createLocalRKIdentifier(1);
@@ -1019,7 +1019,7 @@ public class SgFSMTest {
                 null);
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         serverM3UAMgmt.addRoute(dpc, opc, si, "testas");
 
@@ -1031,20 +1031,20 @@ public class SgFSMTest {
         AspFactoryImpl aspFactory1 = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp1", "testAssoc1", false);
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactory1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactory1}, m3uaManagementEventsSeq++)));
 
         AspFactoryImpl aspFactory2 = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp2", "testAssoc2", false);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactory2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactory2}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp1 = serverM3UAMgmt.assignAspToAs("testas", "testasp1");
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp1}, m3uaManagementEventsSeq++)));
         AspImpl remAsp2 = serverM3UAMgmt.assignAspToAs("testas", "testasp2");
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp2}, m3uaManagementEventsSeq++)));
 
         FSM aspPeerFSM1 = remAsp1.getPeerFSM();
         FSM aspPeerFSM2 = remAsp2.getPeerFSM();
@@ -1063,14 +1063,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM1));
         assertEquals(remAsp1.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // also the AS should be INACTIVE now
         assertEquals(AsState.INACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_INACTIVE));
 
@@ -1081,7 +1081,7 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM2));
         assertEquals(remAsp2.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation2, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // AS is still INACTIVE
@@ -1098,7 +1098,7 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(aspPeerFSM1));
         assertEquals(remAsp1.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // But AS still INACTIVE as atleast 2 ASP's should be ACTIVE
@@ -1113,14 +1113,14 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(aspPeerFSM2));
         assertEquals(remAsp2.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation2, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // Now AS will be ACTIVE and send NTFY to both the ASP's
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_ACTIVE));
         assertTrue(validateMessage(testAssociation2, MessageClass.MANAGEMENT, MessageType.NOTIFY,
@@ -1130,8 +1130,8 @@ public class SgFSMTest {
         // int si, int ni, int mp, int opc, int dpc, int sls, byte[] data,
         // RoutingLabelFormat pointCodeFormat
         for (int sls = 0; sls < 256; sls++) {
-            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[] {
-                    1, 2, 3, 4 });
+            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[]{
+                    1, 2, 3, 4});
             serverM3UAMgmt.sendMessage(mtp3TransferPrimitive);
         }
 
@@ -1151,7 +1151,7 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM1));
         assertEquals(remAsp1.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE_ACK, -1, -1));
 
         // ASP1 also receives NTFY Ins ASP Resource as we have fallen bellow
@@ -1167,8 +1167,8 @@ public class SgFSMTest {
         // int si, int ni, int mp, int opc, int dpc, int sls, byte[] data,
         // RoutingLabelFormat pointCodeFormat
         for (int sls = 0; sls < 256; sls++) {
-            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[] {
-                    1, 2, 3, 4 });
+            Mtp3TransferPrimitive mtp3TransferPrimitive = factory.createMtp3TransferPrimitive(3, 1, 0, 1, 2, sls, new byte[]{
+                    1, 2, 3, 4});
             serverM3UAMgmt.sendMessage(mtp3TransferPrimitive);
         }
 
@@ -1182,7 +1182,7 @@ public class SgFSMTest {
         assertEquals(AspState.DOWN, this.getAspState(aspPeerFSM1));
         assertEquals(remAsp1.getState().getName(), State.STATE_DOWN);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspDown, System
-                .currentTimeMillis(), new Object[] { remAsp1 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp1}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_DOWN_ACK, -1, -1));
         assertNull(testAssociation1.txPoll());
 
@@ -1199,14 +1199,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM2));
         assertEquals(remAsp2.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp2 }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp2}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation2, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE_ACK, -1, -1));
 
         // AS becomes PENDING
         assertEquals(AsState.PENDING, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_PENDING);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsPending, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
 
         // AS state change NTFY message
         assertTrue(validateMessage(testAssociation2, MessageClass.MANAGEMENT, MessageType.NOTIFY,
@@ -1229,11 +1229,11 @@ public class SgFSMTest {
                 "testAssoc1");
 
         // 4.3.4.1. ASP Up Procedures from http://tools.ietf.org/html/rfc4666
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = parmFactory.createRoutingContext(new long[]{100});
 
-        DestinationPointCode[] dpc = new DestinationPointCode[] { parmFactory.createDestinationPointCode(123, (short) 0) };
+        DestinationPointCode[] dpc = new DestinationPointCode[]{parmFactory.createDestinationPointCode(123, (short) 0)};
 
-        ServiceIndicators[] servInds = new ServiceIndicators[] { parmFactory.createServiceIndicators(new short[] { 3 }) };
+        ServiceIndicators[] servInds = new ServiceIndicators[]{parmFactory.createServiceIndicators(new short[]{3})};
 
         TrafficModeType trModType = parmFactory.createTrafficModeType(TrafficModeType.Override);
         LocalRKIdentifier lRkId = parmFactory.createLocalRKIdentifier(1);
@@ -1310,11 +1310,11 @@ public class SgFSMTest {
         TestAssociation testAssociation1 = (TestAssociation) this.transportManagement.addAssociation(null, 0, null, 0,
                 "testAssoc1");
 
-        RoutingContext rc = parmFactory.createRoutingContext(new long[] { 100 });
+        RoutingContext rc = parmFactory.createRoutingContext(new long[]{100});
 
-        DestinationPointCode[] dpc = new DestinationPointCode[] { parmFactory.createDestinationPointCode(123, (short) 0) };
+        DestinationPointCode[] dpc = new DestinationPointCode[]{parmFactory.createDestinationPointCode(123, (short) 0)};
 
-        ServiceIndicators[] servInds = new ServiceIndicators[] { parmFactory.createServiceIndicators(new short[] { 3 }) };
+        ServiceIndicators[] servInds = new ServiceIndicators[]{parmFactory.createServiceIndicators(new short[]{3})};
 
         TrafficModeType trModType = parmFactory.createTrafficModeType(TrafficModeType.Override);
         LocalRKIdentifier lRkId = parmFactory.createLocalRKIdentifier(1);
@@ -1324,18 +1324,18 @@ public class SgFSMTest {
                 null);
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsCreated, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         FSM asLocalFSM = remAs.getLocalFSM();
 
         AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) serverM3UAMgmt.createAspFactory("testasp", "testAssoc1", false);
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspFactoryCreated, System
-                .currentTimeMillis(), new Object[] { aspFactoryImpl }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{aspFactoryImpl}, m3uaManagementEventsSeq++)));
 
         AspImpl remAsp = serverM3UAMgmt.assignAspToAs("testas", "testasp");
         // Check if M3UAManagementEventListener received event
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspAssignedToAs, System
-                .currentTimeMillis(), new Object[] { remAs, remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs, remAsp}, m3uaManagementEventsSeq++)));
 
         FSM aspPeerFSM = remAsp.getPeerFSM();
 
@@ -1351,14 +1351,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_STATE_MAINTENANCE, MessageType.ASP_UP_ACK, -1, -1));
 
         // also the AS should be INACTIVE now
         assertEquals(AsState.INACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsInactive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_INACTIVE));
 
@@ -1370,14 +1370,14 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // also the AS should be ACTIVE now
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_ACTIVE));
 
@@ -1389,14 +1389,14 @@ public class SgFSMTest {
         assertEquals(AspState.INACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_INACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspInactive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_INACTIVE_ACK, -1, -1));
 
         // also the AS should be PENDING now
         assertEquals(AsState.PENDING, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_PENDING);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsPending, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_PENDING));
 
@@ -1404,7 +1404,7 @@ public class SgFSMTest {
         PayloadDataImpl payload = (PayloadDataImpl) messageFactory.createMessage(MessageClass.TRANSFER_MESSAGES,
                 MessageType.PAYLOAD);
         ProtocolDataImpl p1 = (ProtocolDataImpl) parmFactory.createProtocolData(1408, 123, 3, 1, 0, 1,
-                new byte[] { 1, 2, 3, 4 });
+                new byte[]{1, 2, 3, 4});
         payload.setRoutingContext(rc);
         payload.setData(p1);
 
@@ -1418,14 +1418,14 @@ public class SgFSMTest {
         assertEquals(AspState.ACTIVE, this.getAspState(aspPeerFSM));
         assertEquals(remAsp.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AspActive, System
-                .currentTimeMillis(), new Object[] { remAsp }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAsp}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.ASP_TRAFFIC_MAINTENANCE, MessageType.ASP_ACTIVE_ACK, -1, -1));
 
         // also the AS should be ACTIVE now
         assertEquals(AsState.ACTIVE, this.getAsState(asLocalFSM));
         assertEquals(remAs.getState().getName(), State.STATE_ACTIVE);
         assertTrue(this.m3uaManagementEventListenerImpl.validateEvent(new TestEvent(TestEventType.AsActive, System
-                .currentTimeMillis(), new Object[] { remAs }, m3uaManagementEventsSeq++)));
+                .currentTimeMillis(), new Object[]{remAs}, m3uaManagementEventsSeq++)));
         assertTrue(validateMessage(testAssociation1, MessageClass.MANAGEMENT, MessageType.NOTIFY,
                 Status.STATUS_AS_State_Change, Status.INFO_AS_ACTIVE));
 
@@ -1448,8 +1448,8 @@ public class SgFSMTest {
      * @param factory
      * @param msgClass
      * @param msgType
-     * @param type The type for Notify message Or Error Code for Error Messages
-     * @param info The Info for Notify message Or RoutingContext for Error Message
+     * @param type     The type for Notify message Or Error Code for Error Messages
+     * @param info     The Info for Notify message Or RoutingContext for Error Message
      * @return
      */
     private boolean validateMessage(TestAssociation testAssociation, int msgClass, int msgType, int type, int info) {
@@ -1883,14 +1883,14 @@ public class SgFSMTest {
 
         @Override
         public void onAsCreated(As as) {
-            TestEvent testEvent = new TestEvent(TestEventType.AsCreated, System.currentTimeMillis(), new Object[] { as },
+            TestEvent testEvent = new TestEvent(TestEventType.AsCreated, System.currentTimeMillis(), new Object[]{as},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAsDestroyed(As as) {
-            TestEvent testEvent = new TestEvent(TestEventType.AsDestroyed, System.currentTimeMillis(), new Object[] { as },
+            TestEvent testEvent = new TestEvent(TestEventType.AsDestroyed, System.currentTimeMillis(), new Object[]{as},
                     sequence++);
             this.testEvents.add(testEvent);
         }
@@ -1898,28 +1898,28 @@ public class SgFSMTest {
         @Override
         public void onAspFactoryCreated(AspFactory aspFactory) {
             TestEvent testEvent = new TestEvent(TestEventType.AspFactoryCreated, System.currentTimeMillis(),
-                    new Object[] { aspFactory }, sequence++);
+                    new Object[]{aspFactory}, sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspFactoryDestroyed(AspFactory aspFactory) {
             TestEvent testEvent = new TestEvent(TestEventType.AspFactoryDestroyed, System.currentTimeMillis(),
-                    new Object[] { aspFactory }, sequence++);
+                    new Object[]{aspFactory}, sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspAssignedToAs(As as, Asp asp) {
-            TestEvent testEvent = new TestEvent(TestEventType.AspAssignedToAs, System.currentTimeMillis(), new Object[] { as,
-                    asp }, sequence++);
+            TestEvent testEvent = new TestEvent(TestEventType.AspAssignedToAs, System.currentTimeMillis(), new Object[]{as,
+                    asp}, sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspUnassignedFromAs(As as, Asp asp) {
-            TestEvent testEvent = new TestEvent(TestEventType.AspUnassignedFromAs, System.currentTimeMillis(), new Object[] {
-                    as, asp }, sequence++);
+            TestEvent testEvent = new TestEvent(TestEventType.AspUnassignedFromAs, System.currentTimeMillis(), new Object[]{
+                    as, asp}, sequence++);
             this.testEvents.add(testEvent);
         }
 
@@ -1932,62 +1932,62 @@ public class SgFSMTest {
         @Override
         public void onAspFactoryStarted(AspFactory aspFactory) {
             TestEvent testEvent = new TestEvent(TestEventType.AspFactoryStarted, System.currentTimeMillis(),
-                    new Object[] { aspFactory }, sequence++);
+                    new Object[]{aspFactory}, sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspFactoryStopped(AspFactory aspFactory) {
             TestEvent testEvent = new TestEvent(TestEventType.AspFactoryStopped, System.currentTimeMillis(),
-                    new Object[] { aspFactory }, sequence++);
+                    new Object[]{aspFactory}, sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspActive(Asp asp, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AspActive, System.currentTimeMillis(), new Object[] { asp },
+            TestEvent testEvent = new TestEvent(TestEventType.AspActive, System.currentTimeMillis(), new Object[]{asp},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspInactive(Asp asp, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AspInactive, System.currentTimeMillis(), new Object[] { asp },
+            TestEvent testEvent = new TestEvent(TestEventType.AspInactive, System.currentTimeMillis(), new Object[]{asp},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAspDown(Asp asp, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AspDown, System.currentTimeMillis(), new Object[] { asp },
+            TestEvent testEvent = new TestEvent(TestEventType.AspDown, System.currentTimeMillis(), new Object[]{asp},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAsActive(As as, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AsActive, System.currentTimeMillis(), new Object[] { as },
+            TestEvent testEvent = new TestEvent(TestEventType.AsActive, System.currentTimeMillis(), new Object[]{as},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAsPending(As as, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AsPending, System.currentTimeMillis(), new Object[] { as },
+            TestEvent testEvent = new TestEvent(TestEventType.AsPending, System.currentTimeMillis(), new Object[]{as},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAsInactive(As as, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AsInactive, System.currentTimeMillis(), new Object[] { as },
+            TestEvent testEvent = new TestEvent(TestEventType.AsInactive, System.currentTimeMillis(), new Object[]{as},
                     sequence++);
             this.testEvents.add(testEvent);
         }
 
         @Override
         public void onAsDown(As as, State oldState) {
-            TestEvent testEvent = new TestEvent(TestEventType.AsDown, System.currentTimeMillis(), new Object[] { as },
+            TestEvent testEvent = new TestEvent(TestEventType.AsDown, System.currentTimeMillis(), new Object[]{as},
                     sequence++);
             this.testEvents.add(testEvent);
         }

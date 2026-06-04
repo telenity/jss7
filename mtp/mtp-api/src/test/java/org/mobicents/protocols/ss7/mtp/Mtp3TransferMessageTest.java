@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -31,49 +31,49 @@ import org.junit.Test;
 
 /**
  * @author sergey vetyutnev
- * 
+ *
  */
 public class Mtp3TransferMessageTest {
 
-	private byte[] getMsg() {
-		return new byte[] { (byte) 0x83, (byte) 232, 3, (byte) 244, (byte) 161, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	}
+    private byte[] getMsg() {
+        return new byte[]{(byte) 0x83, (byte) 232, 3, (byte) 244, (byte) 161, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    }
 
-	private byte[] getData() {
-		return new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	}
+    private byte[] getData() {
+        return new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
+    }
 
-	// si = 3 (SCCP)
-	// ni = 2
-	// mp = 0
-	// sio = (si + (ni << 6) + (mt << 4))
-	// dpc = 1000
-	// opc = 2000
-	// sls = 10
+    // si = 3 (SCCP)
+    // ni = 2
+    // mp = 0
+    // sio = (si + (ni << 6) + (mt << 4))
+    // dpc = 1000
+    // opc = 2000
+    // sls = 10
 
-	@Test
-	public void testDecode() throws Exception {
-		Mtp3TransferPrimitiveFactory factory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
-		Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(getMsg());
+    @Test
+    public void testDecode() throws Exception {
+        Mtp3TransferPrimitiveFactory factory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
+        Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(getMsg());
 
-		assertEquals(3, msg.getSi());
-		assertEquals(2, msg.getNi());
-		assertEquals(0, msg.getMp());
-		assertEquals(1000, msg.getDpc());
-		assertEquals(2000, msg.getOpc());
-		assertEquals(10, msg.getSls());
-		assertTrue(Arrays.equals(msg.getData(), this.getData()));
+        assertEquals(3, msg.getSi());
+        assertEquals(2, msg.getNi());
+        assertEquals(0, msg.getMp());
+        assertEquals(1000, msg.getDpc());
+        assertEquals(2000, msg.getOpc());
+        assertEquals(10, msg.getSls());
+        assertTrue(Arrays.equals(msg.getData(), this.getData()));
 
-	}
+    }
 
-	@Test
-	public void testEncode() throws Exception {
-		Mtp3TransferPrimitiveFactory factory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
-		Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(3, 2, 0, 2000, 1000, 10, this.getData());
+    @Test
+    public void testEncode() throws Exception {
+        Mtp3TransferPrimitiveFactory factory = new Mtp3TransferPrimitiveFactory(RoutingLabelFormat.ITU);
+        Mtp3TransferPrimitive msg = factory.createMtp3TransferPrimitive(3, 2, 0, 2000, 1000, 10, this.getData());
 
-		byte[] res = msg.encodeMtp3();
+        byte[] res = msg.encodeMtp3();
 
-		assertTrue(Arrays.equals(res, this.getMsg()));
+        assertTrue(Arrays.equals(res, this.getMsg()));
 
-	}
+    }
 }

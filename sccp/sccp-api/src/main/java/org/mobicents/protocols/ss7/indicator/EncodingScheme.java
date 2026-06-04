@@ -31,7 +31,7 @@ import java.io.OutputStream;
 /**
  * The Encoding Scheme (ES) tells the receiving node how to translate the digits
  * from binary code
- * 
+ *
  * @author kulikov
  */
 public enum EncodingScheme {
@@ -49,14 +49,14 @@ public enum EncodingScheme {
 
     public static EncodingScheme valueOf(int v) {
         switch (v) {
-        case 0:
-            return UNKNOWN;
-        case 1:
-            return BCD_ODD;
-        case 2:
-            return BCD_EVEN;
-        default:
-            return null;
+            case 0:
+                return UNKNOWN;
+            case 1:
+                return BCD_ODD;
+            case 2:
+                return BCD_EVEN;
+            default:
+                return null;
         }
     }
 

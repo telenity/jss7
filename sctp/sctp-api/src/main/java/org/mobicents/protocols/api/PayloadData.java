@@ -28,31 +28,25 @@ import io.netty.util.ReferenceCountUtil;
 
 /**
  * The actual pay load data received or to be sent from/to underlying socket
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class PayloadData {
-	private final int dataLength;
-	private final ByteBuf byteBuf;
-	private final boolean complete;
-	private final boolean unordered;
-	private final int payloadProtocolId;
-	private final int streamNumber;
+    private final int dataLength;
+    private final ByteBuf byteBuf;
+    private final boolean complete;
+    private final boolean unordered;
+    private final int payloadProtocolId;
+    private final int streamNumber;
 
     /**
-     * @param dataLength
-     *            Length of byte[] data
-     * @param byteBuf
-     *            the payload data
-     * @param complete
-     *            if this data represents complete protocol data
-     * @param unordered
-     *            set to true if we don't care for order
-     * @param payloadProtocolId
-     *            protocol ID of the data carried
-     * @param streamNumber
-     *            the SCTP stream number
+     * @param dataLength        Length of byte[] data
+     * @param byteBuf           the payload data
+     * @param complete          if this data represents complete protocol data
+     * @param unordered         set to true if we don't care for order
+     * @param payloadProtocolId protocol ID of the data carried
+     * @param streamNumber      the SCTP stream number
      */
     public PayloadData(int dataLength, ByteBuf byteBuf, boolean complete, boolean unordered, int payloadProtocolId, int streamNumber) {
         this.dataLength = dataLength;
@@ -64,18 +58,12 @@ public class PayloadData {
     }
 
     /**
-     * @param dataLength
-     *            Length of byte[] data
-     * @param data
-     *            the payload data
-     * @param complete
-     *            if this data represents complete protocol data
-     * @param unordered
-     *            set to true if we don't care for order
-     * @param payloadProtocolId
-     *            protocol ID of the data carried
-     * @param streamNumber
-     *            the SCTP stream number
+     * @param dataLength        Length of byte[] data
+     * @param data              the payload data
+     * @param complete          if this data represents complete protocol data
+     * @param unordered         set to true if we don't care for order
+     * @param payloadProtocolId protocol ID of the data carried
+     * @param streamNumber      the SCTP stream number
      */
     public PayloadData(int dataLength, byte[] data, boolean complete, boolean unordered, int payloadProtocolId, int streamNumber) {
         this.dataLength = dataLength;
@@ -86,12 +74,12 @@ public class PayloadData {
         this.streamNumber = streamNumber;
     }
 
-	/**
-	 * @return the dataLength
-	 */
-	public int getDataLength() {
-		return dataLength;
-	}
+    /**
+     * @return the dataLength
+     */
+    public int getDataLength() {
+        return dataLength;
+    }
 
     /**
      * @return the byteBuf
@@ -110,77 +98,77 @@ public class PayloadData {
         return array;
     }
 
-	/**
-	 * @return the complete
-	 */
-	public boolean isComplete() {
-		return complete;
-	}
+    /**
+     * @return the complete
+     */
+    public boolean isComplete() {
+        return complete;
+    }
 
-	/**
-	 * @return the unordered
-	 */
-	public boolean isUnordered() {
-		return unordered;
-	}
+    /**
+     * @return the unordered
+     */
+    public boolean isUnordered() {
+        return unordered;
+    }
 
-	/**
-	 * @return the payloadProtocolId
-	 */
-	public int getPayloadProtocolId() {
-		return payloadProtocolId;
-	}
+    /**
+     * @return the payloadProtocolId
+     */
+    public int getPayloadProtocolId() {
+        return payloadProtocolId;
+    }
 
-	/**
-	 * <p>
-	 * This is SCTP Stream sequence identifier.
-	 * </p>
-	 * <p>
-	 * While sending PayloadData to SCTP Association, this value should be set
-	 * by SCTP user. If value greater than or equal to maxOutboundStreams or
-	 * lesser than 0 is used, packet will be dropped and error message will be
-	 * logged
-	 * </p>
-	 * </p> While PayloadData is received from underlying SCTP socket, this
-	 * value indicates stream identifier on which data was received. Its
-	 * guaranteed that this value will be greater than 0 and less than
-	 * maxInboundStreams
-	 * <p>
-	 * 
-	 * @return the streamNumber
-	 */
-	public int getStreamNumber() {
-		return streamNumber;
-	}
+    /**
+     * <p>
+     * This is SCTP Stream sequence identifier.
+     * </p>
+     * <p>
+     * While sending PayloadData to SCTP Association, this value should be set
+     * by SCTP user. If value greater than or equal to maxOutboundStreams or
+     * lesser than 0 is used, packet will be dropped and error message will be
+     * logged
+     * </p>
+     * </p> While PayloadData is received from underlying SCTP socket, this
+     * value indicates stream identifier on which data was received. Its
+     * guaranteed that this value will be greater than 0 and less than
+     * maxInboundStreams
+     * <p>
+     *
+     * @return the streamNumber
+     */
+    public int getStreamNumber() {
+        return streamNumber;
+    }
 
-	/* Hex chars */
-	private static final byte[] HEX_CHAR = new byte[]
-			{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    /* Hex chars */
+    private static final byte[] HEX_CHAR = new byte[]
+            {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-	/*
-	 * Helper function that dumps an array of bytes in the hexadecimal format.
-	 */
-	public static final String dumpBytes(byte[] buffer) {
-		if (buffer == null) {
-			return "";
-		}
+    /*
+     * Helper function that dumps an array of bytes in the hexadecimal format.
+     */
+    public static final String dumpBytes(byte[] buffer) {
+        if (buffer == null) {
+            return "";
+        }
 
-		StringBuilder sb = new StringBuilder ();
+        StringBuilder sb = new StringBuilder();
 
-		for (int i = 0; i < buffer.length; i++) {
-			sb.append ("0x").append ((char) (HEX_CHAR[(buffer[i] & 0x00F0) >> 4])).append (
-					(char) (HEX_CHAR[buffer[i] & 0x000F])).append (' ');
-		}
+        for (int i = 0; i < buffer.length; i++) {
+            sb.append("0x").append((char) (HEX_CHAR[(buffer[i] & 0x00F0) >> 4])).append(
+                    (char) (HEX_CHAR[buffer[i] & 0x000F])).append(' ');
+        }
 
-		return sb.toString ();
-	}
+        return sb.toString();
+    }
 
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("PayloadData [dataLength=").append(dataLength).append(", complete=").append(complete).append(", unordered=")
-				.append(unordered).append(", payloadProtocolId=").append(payloadProtocolId).append(", streamNumber=")
-				.append(streamNumber).append("]");
-		return sb.toString();
-	}
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        sb.append("PayloadData [dataLength=").append(dataLength).append(", complete=").append(complete).append(", unordered=")
+                .append(unordered).append(", payloadProtocolId=").append(payloadProtocolId).append(", streamNumber=")
+                .append(streamNumber).append("]");
+        return sb.toString();
+    }
 
 }

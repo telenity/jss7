@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -39,76 +39,76 @@ import org.mobicents.protocols.ss7.sccp.impl.router.RouterImpl;
 
 /**
  * @author baranowb
- * 
+ *
  */
 public class SccpStackImplProxy extends SccpStackImpl {
 
-	/**
-	 * 
-	 */
-	public SccpStackImplProxy(String name) {
-		super(name);
-	}
+    /**
+     *
+     */
+    public SccpStackImplProxy(String name) {
+        super(name);
+    }
 
-	public SccpManagementProxy getManagementProxy() {
-		return (SccpManagementProxy) super.sccpManagement;
-	}
+    public SccpManagementProxy getManagementProxy() {
+        return (SccpManagementProxy) super.sccpManagement;
+    }
 
-	@Override
-	public void start() {
-		this.messageFactory = new MessageFactoryImpl(this);
+    @Override
+    public void start() {
+        this.messageFactory = new MessageFactoryImpl(this);
 
-		this.sccpProvider = new SccpProviderImpl(this);
+        this.sccpProvider = new SccpProviderImpl(this);
 
-		super.sccpManagement = new SccpManagementProxy(this.getName(), sccpProvider, this);
-		super.sccpRoutingControl = new SccpRoutingControl(sccpProvider, this);
+        super.sccpManagement = new SccpManagementProxy(this.getName(), sccpProvider, this);
+        super.sccpRoutingControl = new SccpRoutingControl(sccpProvider, this);
 
-		super.sccpManagement.setSccpRoutingControl(sccpRoutingControl);
-		super.sccpRoutingControl.setSccpManagement(sccpManagement);
+        super.sccpManagement.setSccpRoutingControl(sccpRoutingControl);
+        super.sccpRoutingControl.setSccpManagement(sccpManagement);
 
-		this.router = new RouterImpl(this.getName(), this);
-		this.router.setPersistDir(Util.getTmpTestDir());
-		this.router.start();
+        this.router = new RouterImpl(this.getName(), this);
+        this.router.setPersistDir(Util.getTmpTestDir());
+        this.router.start();
 
-		this.sccpResource = new SccpResourceImpl(this.getName());
-		this.sccpResource.setPersistDir(Util.getTmpTestDir());
-		this.sccpResource.start();
+        this.sccpResource = new SccpResourceImpl(this.getName());
+        this.sccpResource.setPersistDir(Util.getTmpTestDir());
+        this.sccpResource.start();
 
-		this.sccpRoutingControl.start();
-		this.sccpManagement.start();
+        this.sccpRoutingControl.start();
+        this.sccpManagement.start();
 
-		this.timerExecutors = Executors.newScheduledThreadPool(1);
+        this.timerExecutors = Executors.newScheduledThreadPool(1);
 
-		Iterator<Mtp3UserPart> mtp3Iterator = this.mtp3UserParts.values().iterator();
-		while (mtp3Iterator.hasNext()) {
-			Mtp3UserPart mup = mtp3Iterator.next();
-			mup.addMtp3UserPartListener(this);
-		}
+        Iterator<Mtp3UserPart> mtp3Iterator = this.mtp3UserParts.values().iterator();
+        while (mtp3Iterator.hasNext()) {
+            Mtp3UserPart mup = mtp3Iterator.next();
+            mup.addMtp3UserPartListener(this);
+        }
 
-		int maxSls = 16;
-		slsFilter = 0x0f;
-		this.slsTable = new int[maxSls];
-		this.createSLSTable(maxSls, this.deliveryTransferMessageThreadCount);
-		this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
-		for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
-			this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
-					"SccpTransit-DeliveryExecutor-" + i));
-		}
+        int maxSls = 16;
+        slsFilter = 0x0f;
+        this.slsTable = new int[maxSls];
+        this.createSLSTable(maxSls, this.deliveryTransferMessageThreadCount);
+        this.msgDeliveryExecutors = new ExecutorService[this.deliveryTransferMessageThreadCount];
+        for (int i = 0; i < this.deliveryTransferMessageThreadCount; i++) {
+            this.msgDeliveryExecutors[i] = Executors.newFixedThreadPool(1, new DefaultThreadFactory(
+                    "SccpTransit-DeliveryExecutor-" + i));
+        }
 
-		this.state = State.RUNNING;
-	}
+        this.state = State.RUNNING;
+    }
 
-	public int getReassemblyCacheSize() {
-		return reassemblyCache.size();
-	}
+    public int getReassemblyCacheSize() {
+        return reassemblyCache.size();
+    }
 
-	@Override
-	public void setReassemblyTimerDelay(int reassemblyTimerDelay) {
-		this.reassemblyTimerDelay = reassemblyTimerDelay;
-	}
+    @Override
+    public void setReassemblyTimerDelay(int reassemblyTimerDelay) {
+        this.reassemblyTimerDelay = reassemblyTimerDelay;
+    }
 
-	public void setSstTimerDurationMinForTest(int sstTimerDurationMin) {
-		this.sstTimerDuration_Min = sstTimerDurationMin;
-	}
+    public void setSstTimerDurationMinForTest(int sstTimerDurationMin) {
+        this.sstTimerDuration_Min = sstTimerDurationMin;
+    }
 
 }

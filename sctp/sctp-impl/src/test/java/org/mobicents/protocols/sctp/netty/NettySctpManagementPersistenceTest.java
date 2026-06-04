@@ -55,10 +55,10 @@ public class NettySctpManagementPersistenceTest {
             management.start();
             management.setConnectDelay(1234);
             management.addServer("server1", "127.0.0.1", 3010, IpChannelType.TCP, true, 3,
-                    new String[] { "127.0.0.2", "127.0.0.3" });
+                    new String[]{"127.0.0.2", "127.0.0.3"});
             management.addServerAssociation("127.0.0.10", 3020, "server1", "serverAssoc", IpChannelType.TCP);
             management.addAssociation("127.0.0.11", 3030, "127.0.0.12", 3040, "clientAssoc", IpChannelType.TCP,
-                    new String[] { "127.0.0.13" }, "127.0.0.14");
+                    new String[]{"127.0.0.13"}, "127.0.0.14");
             management.stop();
         } finally {
             stopIfStarted(management);
@@ -82,7 +82,7 @@ public class NettySctpManagementPersistenceTest {
             assertEquals(IpChannelType.TCP, server.getIpChannelType());
             assertTrue(server.isAcceptAnonymousConnections());
             assertEquals(3, server.getMaxConcurrentConnectionsCount());
-            assertArrayEquals(new String[] { "127.0.0.2", "127.0.0.3" }, server.getExtraHostAddresses());
+            assertArrayEquals(new String[]{"127.0.0.2", "127.0.0.3"}, server.getExtraHostAddresses());
             assertEquals(1, server.getAssociations().size());
             assertEquals("serverAssoc", server.getAssociations().get(0));
 
@@ -103,7 +103,7 @@ public class NettySctpManagementPersistenceTest {
             assertEquals(3030, clientAssociation.getHostPort());
             assertEquals("127.0.0.12", clientAssociation.getPeerAddress());
             assertEquals(3040, clientAssociation.getPeerPort());
-            assertArrayEquals(new String[] { "127.0.0.13" }, clientAssociation.getExtraHostAddresses());
+            assertArrayEquals(new String[]{"127.0.0.13"}, clientAssociation.getExtraHostAddresses());
             assertEquals("127.0.0.14", ((NettyAssociationImpl) clientAssociation).secondaryPeerAddress);
         } finally {
             stopIfStarted(loadedManagement);

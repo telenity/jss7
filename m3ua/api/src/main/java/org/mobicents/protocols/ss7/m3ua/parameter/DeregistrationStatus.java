@@ -27,7 +27,7 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * The Deregistration Result Status field indicates the success or the reason
  * for failure of the deregistration.
  * </p>
- * 
+ *
  * <p>
  * Its values may be:
  * <ul>
@@ -39,9 +39,9 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * <li>5 Error - ASP Currently Active for Routing Context</li>
  * </ul>
  * </p>
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface DeregistrationStatus extends Parameter {
     public int getStatus();

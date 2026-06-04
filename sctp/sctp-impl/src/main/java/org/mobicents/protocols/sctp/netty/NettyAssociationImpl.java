@@ -139,7 +139,7 @@ public class NettyAssociationImpl implements Association {
      * @throws IOException
      */
     public NettyAssociationImpl(String hostAddress, int hostPort, String peerAddress, int peerPort, String assocName,
-            IpChannelType ipChannelType, String[] extraHostAddresses, String secondaryPeerAddress) throws IOException {
+                                IpChannelType ipChannelType, String[] extraHostAddresses, String secondaryPeerAddress) throws IOException {
         this();
         this.hostAddress = hostAddress;
         this.hostPort = hostPort;
@@ -165,7 +165,7 @@ public class NettyAssociationImpl implements Association {
      * @param ipChannelType
      */
     public NettyAssociationImpl(String peerAddress, int peerPort, String serverName, String assocName,
-            IpChannelType ipChannelType) {
+                                IpChannelType ipChannelType) {
         this();
         this.peerAddress = peerAddress;
         this.peerPort = peerPort;
@@ -194,7 +194,7 @@ public class NettyAssociationImpl implements Association {
      * @param ipChannelType
      */
     protected NettyAssociationImpl(String peerAddress, int peerPort, String serverName, IpChannelType ipChannelType,
-            NettyServerImpl server) {
+                                   NettyServerImpl server) {
         this();
         this.peerAddress = peerAddress;
         this.peerPort = peerPort;
@@ -224,78 +224,78 @@ public class NettyAssociationImpl implements Association {
         }
     }
 
-        @Override
+    @Override
     public IpChannelType getIpChannelType() {
         return this.ipChannelType;
     }
 
-        @Override
+    @Override
     public AssociationType getAssociationType() {
         return this.type;
     }
 
-        @Override
+    @Override
     public String getName() {
         return this.name;
     }
 
-        @Override
+    @Override
     public boolean isStarted() {
         return started.get();
     }
 
-        @Override
+    @Override
     public boolean isConnected() {
         return started.get() && up.get();
     }
 
-        @Override
+    @Override
     public boolean isUp() {
         return up.get();
     }
 
-        @Override
+    @Override
     public AssociationListener getAssociationListener() {
         return this.associationListener;
     }
 
-        @Override
+    @Override
     public void setAssociationListener(AssociationListener associationListener) {
         this.associationListener = associationListener;
 
     }
 
-        @Override
+    @Override
     public String getHostAddress() {
         return hostAddress;
     }
 
-        @Override
+    @Override
     public int getHostPort() {
         return hostPort;
     }
 
-        @Override
+    @Override
     public String getPeerAddress() {
         return peerAddress;
     }
 
-        @Override
+    @Override
     public int getPeerPort() {
         return peerPort;
     }
 
-        @Override
+    @Override
     public String getServerName() {
         return serverName;
     }
 
-        @Override
+    @Override
     public String[] getExtraHostAddresses() {
         return extraHostAddresses;
     }
 
-        @Override
+    @Override
     public void send(PayloadData payloadData) throws Exception {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Tx : Ass=%s %s", this.getName(), payloadData));
@@ -329,7 +329,7 @@ public class NettyAssociationImpl implements Association {
             return null;
     }
 
-        @Override
+    @Override
     public void acceptAnonymousAssociation(AssociationListener associationListener) throws Exception {
         this.associationListener = associationListener;
 
@@ -341,11 +341,11 @@ public class NettyAssociationImpl implements Association {
         this.start();
     }
 
-        @Override
+    @Override
     public void rejectAnonymousAssociation() {
     }
 
-        @Override
+    @Override
     public void stopAnonymousAssociation() throws Exception {
         if (this.getAssociationType() != AssociationType.ANONYMOUS_SERVER) {
             throw new UnsupportedOperationException(
@@ -355,7 +355,7 @@ public class NettyAssociationImpl implements Association {
         this.stop();
     }
 
-        @Override
+    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("NettyAssociationImpl{");
         sb.append("name='").append(name).append('\'');

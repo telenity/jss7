@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -35,250 +35,250 @@ import javolution.xml.stream.XMLStreamException;
 import org.apache.log4j.Logger;
 
 /**
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class SccpResource {
-	private static final Logger logger = Logger.getLogger(SccpResource.class);
+    private static final Logger logger = Logger.getLogger(SccpResource.class);
 
-	private static final String SCCP_RESOURCE_PERSIST_DIR_KEY = "sccpresource.persist.dir";
-	private static final String USER_DIR_KEY = "user.dir";
-	private static final String PERSIST_FILE_NAME = "sccpresource.xml";
+    private static final String SCCP_RESOURCE_PERSIST_DIR_KEY = "sccpresource.persist.dir";
+    private static final String USER_DIR_KEY = "user.dir";
+    private static final String PERSIST_FILE_NAME = "sccpresource.xml";
 
-	private static final String REMOTE_SSN = "remoteSsns";
-	private static final String REMOTE_SPC = "remoteSpcs";
-	private static final String CONCERNED_SPC = "concernedSpcs";
+    private static final String REMOTE_SSN = "remoteSsns";
+    private static final String REMOTE_SPC = "remoteSpcs";
+    private static final String CONCERNED_SPC = "concernedSpcs";
 
-	private final StringBuilder persistFile = new StringBuilder();
+    private final StringBuilder persistFile = new StringBuilder();
 
-	private static final SccpResourceXMLBinding binding = new SccpResourceXMLBinding();
-	private static final String TAB_INDENT = "\t";
-	private static final String CLASS_ATTRIBUTE = "type";
+    private static final SccpResourceXMLBinding binding = new SccpResourceXMLBinding();
+    private static final String TAB_INDENT = "\t";
+    private static final String CLASS_ATTRIBUTE = "type";
 
-	private String persistDir;
+    private String persistDir;
 
-	private RemoteSubSystemMap<Integer, RemoteSubSystemImpl> remoteSsns = new RemoteSubSystemMap<>();
-	private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> remoteSpcs = new RemoteSignalingPointCodeMap<>();
-	private ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> concernedSpcs = new ConcernedSignalingPointCodeMap<>();
-	
-	private final String name;
+    private RemoteSubSystemMap<Integer, RemoteSubSystemImpl> remoteSsns = new RemoteSubSystemMap<>();
+    private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> remoteSpcs = new RemoteSignalingPointCodeMap<>();
+    private ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 
-	public SccpResource(String name) {
-		this.name = name;
-		binding.setClassAttribute(CLASS_ATTRIBUTE);
-		binding.setAlias(RemoteSubSystemImpl.class, "remoteSubSystem");
-	}
+    private final String name;
 
-	public String getPersistDir() {
-		return persistDir;
-	}
+    public SccpResource(String name) {
+        this.name = name;
+        binding.setClassAttribute(CLASS_ATTRIBUTE);
+        binding.setAlias(RemoteSubSystemImpl.class, "remoteSubSystem");
+    }
 
-	public void setPersistDir(String persistDir) {
-		this.persistDir = persistDir;
-	}
+    public String getPersistDir() {
+        return persistDir;
+    }
 
-	public void start() {
-		this.persistFile.setLength(0);
+    public void setPersistDir(String persistDir) {
+        this.persistDir = persistDir;
+    }
 
-		if (persistDir != null) {
-			this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
-		} else {
-			persistFile.append(System.getProperty(SCCP_RESOURCE_PERSIST_DIR_KEY, System.getProperty(USER_DIR_KEY)))
-					.append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
-		}
+    public void start() {
+        this.persistFile.setLength(0);
 
-		logger.info(String.format("SCCP Resource configuration file path %s", persistFile));
+        if (persistDir != null) {
+            this.persistFile.append(persistDir).append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
+        } else {
+            persistFile.append(System.getProperty(SCCP_RESOURCE_PERSIST_DIR_KEY, System.getProperty(USER_DIR_KEY)))
+                    .append(File.separator).append(this.name).append("_").append(PERSIST_FILE_NAME);
+        }
 
-		try {
-			this.load();
-		} catch (IOException e) {
-			logger.warn("Failed to load the SS7 configuration file", e);
-		}
+        logger.info(String.format("SCCP Resource configuration file path %s", persistFile));
 
-		logger.info("Started Sccp Resource");
-	}
+        try {
+            this.load();
+        } catch (IOException e) {
+            logger.warn("Failed to load the SS7 configuration file", e);
+        }
 
-	public void stop() {
-		this.store();
-	}
+        logger.info("Started Sccp Resource");
+    }
 
-	public void addRemoteSsn(int remoteSsnid, RemoteSubSystemImpl remoteSsn) {
-		synchronized (this) {
-			RemoteSubSystemMap<Integer, RemoteSubSystemImpl> newRemoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystemImpl>();
-			newRemoteSsns.putAll(this.remoteSsns);
-			newRemoteSsns.put(remoteSsnid, remoteSsn);
-			this.remoteSsns = newRemoteSsns;
-			this.store();
-		}
-	}
+    public void stop() {
+        this.store();
+    }
 
-	public void removeRemoteSsn(int remoteSsnid) {
-		synchronized (this) {
-			RemoteSubSystemMap<Integer, RemoteSubSystemImpl> newRemoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystemImpl>();
-			newRemoteSsns.putAll(this.remoteSsns);
-			newRemoteSsns.remove(remoteSsnid);
-			this.remoteSsns = newRemoteSsns;
-			this.store();
-		}
-	}
+    public void addRemoteSsn(int remoteSsnid, RemoteSubSystemImpl remoteSsn) {
+        synchronized (this) {
+            RemoteSubSystemMap<Integer, RemoteSubSystemImpl> newRemoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystemImpl>();
+            newRemoteSsns.putAll(this.remoteSsns);
+            newRemoteSsns.put(remoteSsnid, remoteSsn);
+            this.remoteSsns = newRemoteSsns;
+            this.store();
+        }
+    }
 
-	public RemoteSubSystemImpl getRemoteSsn(int remoteSsnid) {
-		return this.remoteSsns.get(remoteSsnid);
-	}
+    public void removeRemoteSsn(int remoteSsnid) {
+        synchronized (this) {
+            RemoteSubSystemMap<Integer, RemoteSubSystemImpl> newRemoteSsns = new RemoteSubSystemMap<Integer, RemoteSubSystemImpl>();
+            newRemoteSsns.putAll(this.remoteSsns);
+            newRemoteSsns.remove(remoteSsnid);
+            this.remoteSsns = newRemoteSsns;
+            this.store();
+        }
+    }
 
-	public RemoteSubSystemImpl getRemoteSsn(int spc, int remoteSsn) {
+    public RemoteSubSystemImpl getRemoteSsn(int remoteSsnid) {
+        return this.remoteSsns.get(remoteSsnid);
+    }
 
-		for (FastMap.Entry<Integer, RemoteSubSystemImpl> e = this.remoteSsns.head(), end = this.remoteSsns.tail(); (e = e.getNext()) != end;) {
-			RemoteSubSystemImpl remoteSubSystem = e.getValue();
-			if (remoteSubSystem.getRemoteSpc() == spc && remoteSsn == remoteSubSystem.getRemoteSsn()) {
-				return remoteSubSystem;
-			}
+    public RemoteSubSystemImpl getRemoteSsn(int spc, int remoteSsn) {
 
-		}
-		return null;
-	}
+        for (FastMap.Entry<Integer, RemoteSubSystemImpl> e = this.remoteSsns.head(), end = this.remoteSsns.tail(); (e = e.getNext()) != end; ) {
+            RemoteSubSystemImpl remoteSubSystem = e.getValue();
+            if (remoteSubSystem.getRemoteSpc() == spc && remoteSsn == remoteSubSystem.getRemoteSsn()) {
+                return remoteSubSystem;
+            }
 
-	public FastMap<Integer, RemoteSubSystemImpl> getRemoteSsns() {
-		return remoteSsns;
-	}
+        }
+        return null;
+    }
 
-	public void addRemoteSpc(int remoteSpcId, RemoteSignalingPointCodeImpl remoteSpc) {
-		synchronized (this) {
-			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl>(); 
-			newRemoteSpcs.putAll(this.remoteSpcs);
-			newRemoteSpcs.put(remoteSpcId, remoteSpc);
-			this.remoteSpcs = newRemoteSpcs; 
-			this.store();
-		}
-	}
+    public FastMap<Integer, RemoteSubSystemImpl> getRemoteSsns() {
+        return remoteSsns;
+    }
 
-	public void removeRemoteSpc(int remoteSpcId) {
-		synchronized (this) {
-			RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl>(); 
-			newRemoteSpcs.putAll(this.remoteSpcs);
-			newRemoteSpcs.remove(remoteSpcId);
-			this.remoteSpcs = newRemoteSpcs; 
-			this.store();
-		}
-	}
+    public void addRemoteSpc(int remoteSpcId, RemoteSignalingPointCodeImpl remoteSpc) {
+        synchronized (this) {
+            RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl>();
+            newRemoteSpcs.putAll(this.remoteSpcs);
+            newRemoteSpcs.put(remoteSpcId, remoteSpc);
+            this.remoteSpcs = newRemoteSpcs;
+            this.store();
+        }
+    }
 
-	public RemoteSignalingPointCodeImpl getRemoteSpc(int remoteSpcId) {
-		return this.remoteSpcs.get(remoteSpcId);
-	}
+    public void removeRemoteSpc(int remoteSpcId) {
+        synchronized (this) {
+            RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl> newRemoteSpcs = new RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCodeImpl>();
+            newRemoteSpcs.putAll(this.remoteSpcs);
+            newRemoteSpcs.remove(remoteSpcId);
+            this.remoteSpcs = newRemoteSpcs;
+            this.store();
+        }
+    }
 
-	public RemoteSignalingPointCodeImpl getRemoteSpcByPC(int remotePC) {
-		for (FastMap.Entry<Integer, RemoteSignalingPointCodeImpl> e = this.remoteSpcs.head(), end = this.remoteSpcs.tail(); (e = e
-				.getNext()) != end;) {
-			RemoteSignalingPointCodeImpl remoteSubSystem = e.getValue();
-			if (remoteSubSystem.getRemoteSpc() == remotePC ) {
-				return remoteSubSystem;
-			}
+    public RemoteSignalingPointCodeImpl getRemoteSpc(int remoteSpcId) {
+        return this.remoteSpcs.get(remoteSpcId);
+    }
 
-		}
-		return null;
-	}
-	
-	public FastMap<Integer, RemoteSignalingPointCodeImpl> getRemoteSpcs() {
-		return remoteSpcs;
-	}
+    public RemoteSignalingPointCodeImpl getRemoteSpcByPC(int remotePC) {
+        for (FastMap.Entry<Integer, RemoteSignalingPointCodeImpl> e = this.remoteSpcs.head(), end = this.remoteSpcs.tail(); (e = e
+                .getNext()) != end; ) {
+            RemoteSignalingPointCodeImpl remoteSubSystem = e.getValue();
+            if (remoteSubSystem.getRemoteSpc() == remotePC) {
+                return remoteSubSystem;
+            }
 
-	public void addConcernedSpc(int concernedSpcId, ConcernedSignalingPointCodeImpl concernedSpc) {
-		synchronized (this) {
-			ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> newConcernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl>(); 
-			newConcernedSpcs.putAll(this.concernedSpcs);
-			newConcernedSpcs.put(concernedSpcId, concernedSpc);
-			this.concernedSpcs = newConcernedSpcs; 
-			this.store();
-		}
-	}
+        }
+        return null;
+    }
 
-	public void removeConcernedSpc(int concernedSpcId) {
-		synchronized (this) {
-			ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> newConcernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl>(); 
-			newConcernedSpcs.putAll(this.concernedSpcs);
-			newConcernedSpcs.remove(concernedSpcId);
-			this.concernedSpcs = newConcernedSpcs; 
-			this.store();
-		}
-	}
+    public FastMap<Integer, RemoteSignalingPointCodeImpl> getRemoteSpcs() {
+        return remoteSpcs;
+    }
 
-	public ConcernedSignalingPointCodeImpl getConcernedSpc(int concernedSpcId) {
-		return this.concernedSpcs.get(concernedSpcId);
-	}
+    public void addConcernedSpc(int concernedSpcId, ConcernedSignalingPointCodeImpl concernedSpc) {
+        synchronized (this) {
+            ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> newConcernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl>();
+            newConcernedSpcs.putAll(this.concernedSpcs);
+            newConcernedSpcs.put(concernedSpcId, concernedSpc);
+            this.concernedSpcs = newConcernedSpcs;
+            this.store();
+        }
+    }
 
-	public ConcernedSignalingPointCodeImpl getConcernedSpcByPC(int remotePC) {
-		for (FastMap.Entry<Integer, ConcernedSignalingPointCodeImpl> e = this.concernedSpcs.head(), end = this.concernedSpcs.tail(); (e = e.getNext()) != end;) {
-			ConcernedSignalingPointCodeImpl concernedSubSystem = e.getValue();
-			if (concernedSubSystem.getRemoteSpc() == remotePC) {
-				return concernedSubSystem;
-			}
+    public void removeConcernedSpc(int concernedSpcId) {
+        synchronized (this) {
+            ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl> newConcernedSpcs = new ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCodeImpl>();
+            newConcernedSpcs.putAll(this.concernedSpcs);
+            newConcernedSpcs.remove(concernedSpcId);
+            this.concernedSpcs = newConcernedSpcs;
+            this.store();
+        }
+    }
 
-		}
-		return null;
-	}
-	
-	public FastMap<Integer, ConcernedSignalingPointCodeImpl> getConcernedSpcs() {
-		return concernedSpcs;
-	}
+    public ConcernedSignalingPointCodeImpl getConcernedSpc(int concernedSpcId) {
+        return this.concernedSpcs.get(concernedSpcId);
+    }
 
-	public void removeAllResourses() {
+    public ConcernedSignalingPointCodeImpl getConcernedSpcByPC(int remotePC) {
+        for (FastMap.Entry<Integer, ConcernedSignalingPointCodeImpl> e = this.concernedSpcs.head(), end = this.concernedSpcs.tail(); (e = e.getNext()) != end; ) {
+            ConcernedSignalingPointCodeImpl concernedSubSystem = e.getValue();
+            if (concernedSubSystem.getRemoteSpc() == remotePC) {
+                return concernedSubSystem;
+            }
 
-		synchronized (this) {
-			if (this.remoteSsns.size() == 0 && this.remoteSpcs.size() == 0 && this.concernedSpcs.size() == 0)
-				// no resources allocated - nothing to do
-				return;
+        }
+        return null;
+    }
 
-			remoteSsns = new RemoteSubSystemMap<>();
-			remoteSpcs = new RemoteSignalingPointCodeMap<>();
-			concernedSpcs = new ConcernedSignalingPointCodeMap<>();
+    public FastMap<Integer, ConcernedSignalingPointCodeImpl> getConcernedSpcs() {
+        return concernedSpcs;
+    }
 
-			// We store the cleared state
-			this.store();
-		}
-	}
+    public void removeAllResourses() {
 
-	/**
-	 * Persist
-	 */
-	public void store() {
+        synchronized (this) {
+            if (this.remoteSsns.size() == 0 && this.remoteSpcs.size() == 0 && this.concernedSpcs.size() == 0)
+                // no resources allocated - nothing to do
+                return;
 
-		// TODO : Should we keep reference to Objects rather than recreating
-		// everytime?
-		try {
-			XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
-			writer.setBinding(binding);
-			// Enables cross-references.
-			// writer.setReferenceResolver(new XMLReferenceResolver());
-			writer.setIndentation(TAB_INDENT);
-			writer.write(remoteSsns, REMOTE_SSN, RemoteSubSystemMap.class);
-			writer.write(remoteSpcs, REMOTE_SPC, RemoteSignalingPointCodeMap.class);
-			writer.write(concernedSpcs, CONCERNED_SPC, ConcernedSignalingPointCodeMap.class);
+            remoteSsns = new RemoteSubSystemMap<>();
+            remoteSpcs = new RemoteSignalingPointCodeMap<>();
+            concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 
-			writer.close();
-		} catch (Exception e) {
-			logger.error("Error while persisting the Sccp Resource state in file", e);
-		}
-	}
+            // We store the cleared state
+            this.store();
+        }
+    }
 
-	/**
-	 * Load and create LinkSets and Link from persisted file
-	 * 
-	 * @throws Exception
-	 */
-	private void load() throws IOException {
+    /**
+     * Persist
+     */
+    public void store() {
 
-		XMLObjectReader reader = null;
-		try {
-			reader = XMLObjectReader.newInstance(Files.newInputStream(Paths.get(persistFile.toString())));
+        // TODO : Should we keep reference to Objects rather than recreating
+        // everytime?
+        try {
+            XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
+            writer.setBinding(binding);
+            // Enables cross-references.
+            // writer.setReferenceResolver(new XMLReferenceResolver());
+            writer.setIndentation(TAB_INDENT);
+            writer.write(remoteSsns, REMOTE_SSN, RemoteSubSystemMap.class);
+            writer.write(remoteSpcs, REMOTE_SPC, RemoteSignalingPointCodeMap.class);
+            writer.write(concernedSpcs, CONCERNED_SPC, ConcernedSignalingPointCodeMap.class);
 
-			reader.setBinding(binding);
-			remoteSsns = reader.read(REMOTE_SSN, RemoteSubSystemMap.class);
-			remoteSpcs = reader.read(REMOTE_SPC, RemoteSignalingPointCodeMap.class);
-			concernedSpcs = reader.read(CONCERNED_SPC, ConcernedSignalingPointCodeMap.class);
-		} catch (XMLStreamException ex) {
-			// this.logger.info(
-			// "Error while re-creating Linksets from persisted file", ex);
-		}
-	}
+            writer.close();
+        } catch (Exception e) {
+            logger.error("Error while persisting the Sccp Resource state in file", e);
+        }
+    }
+
+    /**
+     * Load and create LinkSets and Link from persisted file
+     *
+     * @throws Exception
+     */
+    private void load() throws IOException {
+
+        XMLObjectReader reader = null;
+        try {
+            reader = XMLObjectReader.newInstance(Files.newInputStream(Paths.get(persistFile.toString())));
+
+            reader.setBinding(binding);
+            remoteSsns = reader.read(REMOTE_SSN, RemoteSubSystemMap.class);
+            remoteSpcs = reader.read(REMOTE_SPC, RemoteSignalingPointCodeMap.class);
+            concernedSpcs = reader.read(CONCERNED_SPC, ConcernedSignalingPointCodeMap.class);
+        } catch (XMLStreamException ex) {
+            // this.logger.info(
+            // "Error while re-creating Linksets from persisted file", ex);
+        }
+    }
 }

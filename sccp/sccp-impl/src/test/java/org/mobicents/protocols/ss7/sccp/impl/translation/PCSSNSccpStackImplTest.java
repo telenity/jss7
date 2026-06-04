@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -42,52 +42,52 @@ import org.junit.Test;
  */
 public class PCSSNSccpStackImplTest extends SccpHarness {
 
-	private SccpAddress a1, a2;
+    private SccpAddress a1, a2;
 
-	public PCSSNSccpStackImplTest() {
-	}
+    public PCSSNSccpStackImplTest() {
+    }
 
-	@Before
-	public void setUpClass() throws Exception {
-		this.sccpStack1Name = "PCSSNSccTestSccpStack1";
-		this.sccpStack2Name = "PCSSNSccTestSccpStack2";
-	}
+    @Before
+    public void setUpClass() throws Exception {
+        this.sccpStack1Name = "PCSSNSccTestSccpStack1";
+        this.sccpStack2Name = "PCSSNSccTestSccpStack2";
+    }
 
-	@After
-	public void tearDownClass() throws Exception {
-	}
+    @After
+    public void tearDownClass() throws Exception {
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		super.setUp();
-	}
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
 
-	@After
-	public void tearDown() {
-		super.tearDown();
-	}
+    @After
+    public void tearDown() {
+        super.tearDown();
+    }
 
-	/**
-	 * Test of configure method, of class SccpStackImpl.
-	 */
-	@Test
-	public void testRemoteRoutingBasedOnSsn() throws Exception {
-		a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 8);
-		a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
-		
-		User u1 = new User(sccpStack1.getSccpProvider(), a1, a2,getSSN());
-		User u2 = new User(sccpStack2.getSccpProvider(), a2, a1,getSSN());
+    /**
+     * Test of configure method, of class SccpStackImpl.
+     */
+    @Test
+    public void testRemoteRoutingBasedOnSsn() throws Exception {
+        a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 1, null, 8);
+        a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
 
-		u1.register();
-		u2.register();
-		
-		u1.send();
-		u2.send();
+        User u1 = new User(sccpStack1.getSccpProvider(), a1, a2, getSSN());
+        User u2 = new User(sccpStack2.getSccpProvider(), a2, a1, getSSN());
 
-		Thread.currentThread().sleep(3000);
+        u1.register();
+        u2.register();
 
-		assertTrue("Message not received",  u1.check());
-		assertTrue("Message not received",  u2.check());
-	}
-	
+        u1.send();
+        u2.send();
+
+        Thread.currentThread().sleep(3000);
+
+        assertTrue("Message not received", u1.check());
+        assertTrue("Message not received", u2.check());
+    }
+
 }

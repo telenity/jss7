@@ -30,9 +30,9 @@ public interface TCContinueIndication extends DialogIndication {
 
 //	public Byte getQOS();
 
-	public ApplicationContextName getApplicationContextName();
+    public ApplicationContextName getApplicationContextName();
 
-	public UserInformation getUserInformation();
+    public UserInformation getUserInformation();
 
-	public SccpAddress getOriginatingAddress();
+    public SccpAddress getOriginatingAddress();
 }

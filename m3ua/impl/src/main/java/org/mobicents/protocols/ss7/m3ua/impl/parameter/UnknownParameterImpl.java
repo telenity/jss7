@@ -36,12 +36,12 @@ public class UnknownParameterImpl extends ParameterImpl {
         this.length = (short) length;
         this.value = value;
     }
-    
+
     @Override
     protected byte[] getValue() {
         return value;
     }
-    
+
     @Override
     public String toString() {
         return String.format("Unknown parameter: tag=%d, length=%d", tag, length);

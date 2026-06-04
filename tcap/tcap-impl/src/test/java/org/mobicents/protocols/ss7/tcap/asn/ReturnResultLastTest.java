@@ -35,161 +35,163 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResult;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ReturnResultLast;
 
-import org.junit.Test; import static org.junit.Assert.*;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
- * 
+ *
  * @author amit bhayani
  * @author sergey vetyutnev
  *
  */
-public class ReturnResultLastTest  {
+public class ReturnResultLastTest {
 
-	private byte[] getLDataEmpty() {
-		return new byte[] { (byte) 162, 3, 2, 1, 0 };
-	}	
+    private byte[] getLDataEmpty() {
+        return new byte[]{(byte) 162, 3, 2, 1, 0};
+    }
 
-	private byte[] getNLDataEmpty() {
-		return new byte[] { (byte) 167, 3, 2, 1, 0 };
-	}	
+    private byte[] getNLDataEmpty() {
+        return new byte[]{(byte) 167, 3, 2, 1, 0};
+    }
 
-	private byte[] getLDataCommon() {
-		return new byte[] { (byte) 162, 19, 2, 1, 1, 48, 14, 2, 1, 45, 48, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	}	
+    private byte[] getLDataCommon() {
+        return new byte[]{(byte) 162, 19, 2, 1, 1, 48, 14, 2, 1, 45, 48, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    }
 
-	private byte[] getNLDataCommon() {
-		return new byte[] { (byte) 167, 19, 2, 1, 1, 48, 14, 2, 1, 45, 48, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	}	
+    private byte[] getNLDataCommon() {
+        return new byte[]{(byte) 167, 19, 2, 1, 1, 48, 14, 2, 1, 45, 48, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    }
 
-	private byte[] getParameterData() {
-		return new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-	}	
-	
+    private byte[] getParameterData() {
+        return new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
+    }
 
-	@Test
-	public void testDecodeWithParaSequ() throws IOException, ParseException {
-		
-		byte[] b = this.getLDataEmpty();
-		AsnInputStream asnIs = new AsnInputStream(b);
-		Component comp = TcapFactory.createComponent(asnIs);
-		assertEquals(ComponentType.ReturnResultLast, comp.getType());
 
-		ReturnResultLast rrl = (ReturnResultLast) comp;
-		assertTrue(0L == rrl.getInvokeId());
-		OperationCode oc = rrl.getOperationCode();
-		assertNull(oc);
-		Parameter p = rrl.getParameter();
-		assertNull(p);
-		
-		
-		b = this.getNLDataEmpty();
-		asnIs = new AsnInputStream(b);
-		comp = TcapFactory.createComponent(asnIs);
-		assertEquals(ComponentType.ReturnResult, comp.getType());
+    @Test
+    public void testDecodeWithParaSequ() throws IOException, ParseException {
 
-		ReturnResult rr = (ReturnResult) comp;
-		assertTrue(0L == rr.getInvokeId());
-		oc = rr.getOperationCode();
-		assertNull(oc);
-		p = rr.getParameter();
-		assertNull(p);
+        byte[] b = this.getLDataEmpty();
+        AsnInputStream asnIs = new AsnInputStream(b);
+        Component comp = TcapFactory.createComponent(asnIs);
+        assertEquals(ComponentType.ReturnResultLast, comp.getType());
 
-		
-		b = this.getLDataCommon();
-		asnIs = new AsnInputStream(b);
-		comp = TcapFactory.createComponent(asnIs);
-		assertEquals(ComponentType.ReturnResultLast, comp.getType());
+        ReturnResultLast rrl = (ReturnResultLast) comp;
+        assertTrue(0L == rrl.getInvokeId());
+        OperationCode oc = rrl.getOperationCode();
+        assertNull(oc);
+        Parameter p = rrl.getParameter();
+        assertNull(p);
 
-		rrl = (ReturnResultLast) comp;
-		assertTrue(1L == rrl.getInvokeId());
-		oc = rrl.getOperationCode();
-		assertNotNull(oc);
-		assertTrue(45 == oc.getLocalOperationCode());
-		p = rrl.getParameter();
-		assertNotNull(p);
-		assertEquals(Tag.CLASS_UNIVERSAL, p.getTagClass());
-		assertEquals(false, p.isPrimitive());
-		assertEquals(Tag.SEQUENCE, p.getTag());
-		assertTrue(Arrays.equals(this.getParameterData(), p.getData()));
 
-		
-		b = this.getNLDataCommon();
-		asnIs = new AsnInputStream(b);
-		comp = TcapFactory.createComponent(asnIs);
-		assertEquals(ComponentType.ReturnResult, comp.getType());
+        b = this.getNLDataEmpty();
+        asnIs = new AsnInputStream(b);
+        comp = TcapFactory.createComponent(asnIs);
+        assertEquals(ComponentType.ReturnResult, comp.getType());
 
-		rr = (ReturnResult) comp;
-		assertTrue(1L == rr.getInvokeId());
-		oc = rr.getOperationCode();
-		assertNotNull(oc);
-		assertTrue(45 == oc.getLocalOperationCode());
-		p = rr.getParameter();
-		assertNotNull(p);
-		assertEquals(Tag.CLASS_UNIVERSAL, p.getTagClass());
-		assertEquals(false, p.isPrimitive());
-		assertEquals(Tag.SEQUENCE, p.getTag());
-		assertTrue(Arrays.equals(this.getParameterData(), p.getData()));
-	}
-	
-	@Test
-	public void testEncode() throws IOException, EncodeException {
+        ReturnResult rr = (ReturnResult) comp;
+        assertTrue(0L == rr.getInvokeId());
+        oc = rr.getOperationCode();
+        assertNull(oc);
+        p = rr.getParameter();
+        assertNull(p);
 
-		byte[] expected = this.getLDataEmpty();
-		ReturnResultLast rrl = TcapFactory.createComponentReturnResultLast();
-		rrl.setInvokeId(0);
 
-		AsnOutputStream asnos = new AsnOutputStream();
-		rrl.encode(asnos);
-		byte[] encodedData = asnos.toByteArray();
-		assertTrue(Arrays.equals(expected, encodedData));
+        b = this.getLDataCommon();
+        asnIs = new AsnInputStream(b);
+        comp = TcapFactory.createComponent(asnIs);
+        assertEquals(ComponentType.ReturnResultLast, comp.getType());
 
-		
-		expected = this.getNLDataEmpty();
-		ReturnResult rr = TcapFactory.createComponentReturnResult();
-		rr.setInvokeId(0);
+        rrl = (ReturnResultLast) comp;
+        assertTrue(1L == rrl.getInvokeId());
+        oc = rrl.getOperationCode();
+        assertNotNull(oc);
+        assertTrue(45 == oc.getLocalOperationCode());
+        p = rrl.getParameter();
+        assertNotNull(p);
+        assertEquals(Tag.CLASS_UNIVERSAL, p.getTagClass());
+        assertEquals(false, p.isPrimitive());
+        assertEquals(Tag.SEQUENCE, p.getTag());
+        assertTrue(Arrays.equals(this.getParameterData(), p.getData()));
 
-		asnos = new AsnOutputStream();
-		rr.encode(asnos);
-		encodedData = asnos.toByteArray();
-		assertTrue(Arrays.equals(expected, encodedData));
 
-		
-		expected = this.getLDataCommon();
-		rrl = TcapFactory.createComponentReturnResultLast();
-		rrl.setInvokeId(1);
-		OperationCode oc = TcapFactory.createOperationCode();
-		oc.setLocalOperationCode(45L);
-		rrl.setOperationCode(oc);
-		Parameter pm = TcapFactory.createParameter();
-		pm.setTagClass(Tag.CLASS_UNIVERSAL);
-		pm.setTag(Tag.SEQUENCE);
-		pm.setPrimitive(false);
-		pm.setData(getParameterData());
-		rrl.setParameter(pm);
+        b = this.getNLDataCommon();
+        asnIs = new AsnInputStream(b);
+        comp = TcapFactory.createComponent(asnIs);
+        assertEquals(ComponentType.ReturnResult, comp.getType());
 
-		asnos = new AsnOutputStream();
-		rrl.encode(asnos);
-		encodedData = asnos.toByteArray();
-		assertTrue(Arrays.equals(expected, encodedData));
+        rr = (ReturnResult) comp;
+        assertTrue(1L == rr.getInvokeId());
+        oc = rr.getOperationCode();
+        assertNotNull(oc);
+        assertTrue(45 == oc.getLocalOperationCode());
+        p = rr.getParameter();
+        assertNotNull(p);
+        assertEquals(Tag.CLASS_UNIVERSAL, p.getTagClass());
+        assertEquals(false, p.isPrimitive());
+        assertEquals(Tag.SEQUENCE, p.getTag());
+        assertTrue(Arrays.equals(this.getParameterData(), p.getData()));
+    }
 
-		
-		expected = this.getNLDataCommon();
-		rr = TcapFactory.createComponentReturnResult();
-		rr.setInvokeId(1);
-		oc = TcapFactory.createOperationCode();
-		oc.setLocalOperationCode(45L);
-		rr.setOperationCode(oc);
-		pm = TcapFactory.createParameter();
-		pm.setTagClass(Tag.CLASS_UNIVERSAL);
-		pm.setTag(Tag.SEQUENCE);
-		pm.setPrimitive(false);
-		pm.setData(getParameterData());
-		rr.setParameter(pm);
+    @Test
+    public void testEncode() throws IOException, EncodeException {
 
-		asnos = new AsnOutputStream();
-		rr.encode(asnos);
-		encodedData = asnos.toByteArray();
-		assertTrue(Arrays.equals(expected, encodedData));
-	}	
-	
+        byte[] expected = this.getLDataEmpty();
+        ReturnResultLast rrl = TcapFactory.createComponentReturnResultLast();
+        rrl.setInvokeId(0);
+
+        AsnOutputStream asnos = new AsnOutputStream();
+        rrl.encode(asnos);
+        byte[] encodedData = asnos.toByteArray();
+        assertTrue(Arrays.equals(expected, encodedData));
+
+
+        expected = this.getNLDataEmpty();
+        ReturnResult rr = TcapFactory.createComponentReturnResult();
+        rr.setInvokeId(0);
+
+        asnos = new AsnOutputStream();
+        rr.encode(asnos);
+        encodedData = asnos.toByteArray();
+        assertTrue(Arrays.equals(expected, encodedData));
+
+
+        expected = this.getLDataCommon();
+        rrl = TcapFactory.createComponentReturnResultLast();
+        rrl.setInvokeId(1);
+        OperationCode oc = TcapFactory.createOperationCode();
+        oc.setLocalOperationCode(45L);
+        rrl.setOperationCode(oc);
+        Parameter pm = TcapFactory.createParameter();
+        pm.setTagClass(Tag.CLASS_UNIVERSAL);
+        pm.setTag(Tag.SEQUENCE);
+        pm.setPrimitive(false);
+        pm.setData(getParameterData());
+        rrl.setParameter(pm);
+
+        asnos = new AsnOutputStream();
+        rrl.encode(asnos);
+        encodedData = asnos.toByteArray();
+        assertTrue(Arrays.equals(expected, encodedData));
+
+
+        expected = this.getNLDataCommon();
+        rr = TcapFactory.createComponentReturnResult();
+        rr.setInvokeId(1);
+        oc = TcapFactory.createOperationCode();
+        oc.setLocalOperationCode(45L);
+        rr.setOperationCode(oc);
+        pm = TcapFactory.createParameter();
+        pm.setTagClass(Tag.CLASS_UNIVERSAL);
+        pm.setTag(Tag.SEQUENCE);
+        pm.setPrimitive(false);
+        pm.setData(getParameterData());
+        rr.setParameter(pm);
+
+        asnos = new AsnOutputStream();
+        rr.encode(asnos);
+        encodedData = asnos.toByteArray();
+        assertTrue(Arrays.equals(expected, encodedData));
+    }
+
 }

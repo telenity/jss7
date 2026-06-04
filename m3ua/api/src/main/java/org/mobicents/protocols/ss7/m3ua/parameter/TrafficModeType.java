@@ -35,12 +35,12 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * <li>3 Broadcast</li>
  * </ul>
  * </p>
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface TrafficModeType extends Parameter {
-    
+
     public static final int Override = 1;
     public static final int Loadshare = 2;
     public static final int Broadcast = 3;

@@ -26,9 +26,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.CongestedIndication;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 
 /**
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class CongestedIndicationImpl extends ParameterImpl implements
         CongestedIndication {

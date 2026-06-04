@@ -27,8 +27,10 @@ package org.mobicents.protocols.ss7.sccp.impl.gtt;
  * @author kulikov
  */
 public class Remove extends Action {
-    
-    /** Creates a new instance of RemoveOperation */
+
+    /**
+     * Creates a new instance of RemoveOperation
+     */
     public Remove() {
     }
 
@@ -40,12 +42,12 @@ public class Remove extends Action {
         String subj = args[0];
         int pos = Integer.parseInt(args[1]);
         int len = Integer.parseInt(args[2]);
-        
+
         String left = subj.substring(0, pos);
         String right = subj.substring(pos);
-        
+
         return left + right.substring(len);
     }
-    
+
 }
 

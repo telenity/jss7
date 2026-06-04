@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.api.tc.dialog.events;
 
@@ -31,48 +31,48 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 
 /**
  * See Q.771 3.1.2.2.1
- * 
+ *
  * @author baranowb
- * 
+ *
  */
 public interface TCUniRequest extends DialogRequest {
 
-	public void setReturnMessageOnError(boolean val);
+    public void setReturnMessageOnError(boolean val);
 
-	public boolean getReturnMessageOnError();
+    public boolean getReturnMessageOnError();
 
-	/**
-	 * Destination address. If this address is different than one in dialog,
-	 * this value will overwrite dialog value.
-	 */
-	public SccpAddress getDestinationAddress();
+    /**
+     * Destination address. If this address is different than one in dialog,
+     * this value will overwrite dialog value.
+     */
+    public SccpAddress getDestinationAddress();
 
-	public void setDestinationAddress(SccpAddress dest);
+    public void setDestinationAddress(SccpAddress dest);
 
-	/**
-	 * Origin address. If this address is different than one in dialog, this
-	 * value will overwrite dialog value.
-	 */
-	public SccpAddress getOriginatingAddress();
+    /**
+     * Origin address. If this address is different than one in dialog, this
+     * value will overwrite dialog value.
+     */
+    public SccpAddress getOriginatingAddress();
 
-	public void setOriginatingAddress(SccpAddress dest);
+    public void setOriginatingAddress(SccpAddress dest);
 
-	/**
-	 * Application context name for this dialog.
-	 * 
-	 * @return
-	 */
-	public ApplicationContextName getApplicationContextName();
+    /**
+     * Application context name for this dialog.
+     *
+     * @return
+     */
+    public ApplicationContextName getApplicationContextName();
 
-	public void setApplicationContextName(ApplicationContextName acn);
+    public void setApplicationContextName(ApplicationContextName acn);
 
-	/**
-	 * User information for this dialog.
-	 * 
-	 * @return
-	 */
-	public UserInformation getUserInformation();
+    /**
+     * User information for this dialog.
+     *
+     * @return
+     */
+    public UserInformation getUserInformation();
 
-	public void setUserInformation(UserInformation acn);
+    public void setUserInformation(UserInformation acn);
 
 }

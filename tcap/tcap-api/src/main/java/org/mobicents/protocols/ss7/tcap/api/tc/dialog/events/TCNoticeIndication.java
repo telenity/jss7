@@ -30,23 +30,27 @@ import org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog;
  * @author baranowb
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public interface TCNoticeIndication {
 
-	public SccpAddress getLocalAddress();
-	public void setLocalAddress(SccpAddress val);
+    public SccpAddress getLocalAddress();
 
-	public SccpAddress getRemoteAddress();
-	public void setRemoteAddress(SccpAddress val);
+    public void setLocalAddress(SccpAddress val);
 
-	public ReturnCauseValue getReportCause();
-	public void setReportCause(ReturnCauseValue val);
+    public SccpAddress getRemoteAddress();
 
-	/* 
-	 * This value can be equal null if TCAP can not match any existant Dialog to the incoming data 
-	 */
-	public Dialog getDialog();
-	public void setDialog(Dialog val);
+    public void setRemoteAddress(SccpAddress val);
+
+    public ReturnCauseValue getReportCause();
+
+    public void setReportCause(ReturnCauseValue val);
+
+    /*
+     * This value can be equal null if TCAP can not match any existant Dialog to the incoming data
+     */
+    public Dialog getDialog();
+
+    public void setDialog(Dialog val);
 
 }

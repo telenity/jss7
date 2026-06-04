@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -26,32 +26,25 @@ import org.mobicents.protocols.ss7.m3ua.parameter.CongestedIndication.Congestion
 
 /**
  * Constructs parameters.
- * 
+ *
  * @author amit bhayani
  * @author kulikov
  */
 public interface ParameterFactory {
     /**
      * Constructs Protocol Data parameter.
-     * 
-     * @param opc
-     *            the origination point code
-     * @param dpc
-     *            the destination point code
-     * @param si
-     *            the service indicator
-     * @param ni
-     *            the network indicator
-     * @param mp
-     *            the message priority indicator
-     * @param sls
-     *            the signaling link selection
-     * @param data
-     *            message payload
+     *
+     * @param opc  the origination point code
+     * @param dpc  the destination point code
+     * @param si   the service indicator
+     * @param ni   the network indicator
+     * @param mp   the message priority indicator
+     * @param sls  the signaling link selection
+     * @param data message payload
      * @return Protocol data parameter
      */
     public ProtocolData createProtocolData(int opc, int dpc, int si, int ni,
-            int mp, int sls, byte[] data);
+                                           int mp, int sls, byte[] data);
 
 
     public ProtocolData createProtocolData(byte[] payloadData);
@@ -82,16 +75,16 @@ public interface ParameterFactory {
 
     public ServiceIndicators createServiceIndicators(short[] inds);
 
-    public TrafficModeType createTrafficModeType(int mode); 
+    public TrafficModeType createTrafficModeType(int mode);
 
     public RegistrationStatus createRegistrationStatus(int status);
 
     public DiagnosticInfo createDiagnosticInfo(String info);
 
     public RoutingKey createRoutingKey(LocalRKIdentifier localRkId,
-            RoutingContext rc, TrafficModeType trafMdTy,
-            NetworkAppearance netApp, DestinationPointCode[] dpc,
-            ServiceIndicators[] servInds, OPCList[] opcList);
+                                       RoutingContext rc, TrafficModeType trafMdTy,
+                                       NetworkAppearance netApp, DestinationPointCode[] dpc,
+                                       ServiceIndicators[] servInds, OPCList[] opcList);
 
     public RegistrationResult createRegistrationResult(
             LocalRKIdentifier localRkId, RegistrationStatus status,
@@ -100,12 +93,12 @@ public interface ParameterFactory {
     public DeregistrationStatus createDeregistrationStatus(int status);
 
     public DeregistrationResult createDeregistrationResult(RoutingContext rc,
-            DeregistrationStatus status);
+                                                           DeregistrationStatus status);
 
     public ErrorCode createErrorCode(int code);
 
     public Status createStatus(int type, int info);
-    
+
     public HeartbeatData createHeartbeatData(byte[] data);
 
 }

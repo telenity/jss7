@@ -40,74 +40,74 @@ import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 
 /**
- * 
+ *
  * @author Oleg Kulikov
  * @author baranowb
  */
 public class SccpProviderImpl implements SccpProvider, Serializable {
-	private static final Logger logger = Logger.getLogger(SccpProviderImpl.class);
+    private static final Logger logger = Logger.getLogger(SccpProviderImpl.class);
 
-	private transient SccpStackImpl stack;
-	protected Map<Integer, SccpListener> ssnToListener = new ConcurrentHashMap<>();
+    private transient SccpStackImpl stack;
+    protected Map<Integer, SccpListener> ssnToListener = new ConcurrentHashMap<>();
 
-	private MessageFactoryImpl messageFactory;
-	private ParameterFactoryImpl parameterFactory;
+    private MessageFactoryImpl messageFactory;
+    private ParameterFactoryImpl parameterFactory;
 
-	SccpProviderImpl(SccpStackImpl stack) {
-		this.stack = stack;
-		this.messageFactory = stack.messageFactory;
-		this.parameterFactory = new ParameterFactoryImpl();
-	}
+    SccpProviderImpl(SccpStackImpl stack) {
+        this.stack = stack;
+        this.messageFactory = stack.messageFactory;
+        this.parameterFactory = new ParameterFactoryImpl();
+    }
 
-	public MessageFactory getMessageFactory() {
-		return messageFactory;
-	}
+    public MessageFactory getMessageFactory() {
+        return messageFactory;
+    }
 
-	public ParameterFactory getParameterFactory() {
-		return parameterFactory;
-	}
+    public ParameterFactory getParameterFactory() {
+        return parameterFactory;
+    }
 
-	public void registerSccpListener(int ssn, SccpListener listener) {
-		synchronized (this) {
-			SccpListener existingListener = ssnToListener.get(ssn);
-			if (existingListener != null) {
-				if (logger.isEnabledFor(Level.WARN)) {
-					logger.warn(String.format("Registering SccpListener=%s for already existing SccpListener=%s for SSN=%d", listener, existingListener, ssn));
-				}
-			}
-			ssnToListener.put(ssn, listener);
-			
-			this.stack.broadcastChangedSsnState(ssn, true);
-		}
-	}
+    public void registerSccpListener(int ssn, SccpListener listener) {
+        synchronized (this) {
+            SccpListener existingListener = ssnToListener.get(ssn);
+            if (existingListener != null) {
+                if (logger.isEnabledFor(Level.WARN)) {
+                    logger.warn(String.format("Registering SccpListener=%s for already existing SccpListener=%s for SSN=%d", listener, existingListener, ssn));
+                }
+            }
+            ssnToListener.put(ssn, listener);
 
-	public void deregisterSccpListener(int ssn) {
-		synchronized (this) {
-			SccpListener existingListener = ssnToListener.remove(ssn);
-			if (existingListener == null) {
-				if (logger.isEnabledFor(Level.WARN)) {
-					logger.warn(String.format("No existing SccpListener=%s for SSN=%d", existingListener, ssn));
-				}
-			}
-			this.stack.broadcastChangedSsnState(ssn, false);
-		}
-	}
-	
-	protected SccpListener getSccpListener(int ssn) {
-		return ssnToListener.get(ssn);
-	}
+            this.stack.broadcastChangedSsnState(ssn, true);
+        }
+    }
 
-	protected Map<Integer, SccpListener> getAllSccpListeners() {
-		return ssnToListener;
-	}
+    public void deregisterSccpListener(int ssn) {
+        synchronized (this) {
+            SccpListener existingListener = ssnToListener.remove(ssn);
+            if (existingListener == null) {
+                if (logger.isEnabledFor(Level.WARN)) {
+                    logger.warn(String.format("No existing SccpListener=%s for SSN=%d", existingListener, ssn));
+                }
+            }
+            this.stack.broadcastChangedSsnState(ssn, false);
+        }
+    }
 
-	public void send(SccpDataMessage message) throws IOException {
+    protected SccpListener getSccpListener(int ssn) {
+        return ssnToListener.get(ssn);
+    }
 
-		SccpDataMessageImpl msg = ((SccpDataMessageImpl) message);
-		stack.send(msg);
-	}
+    protected Map<Integer, SccpListener> getAllSccpListeners() {
+        return ssnToListener;
+    }
 
-	public int getMaxUserDataLength(SccpAddress calledPartyAddress, SccpAddress callingPartyAddress) {
-		return this.stack.getMaxUserDataLength(calledPartyAddress, callingPartyAddress);
-	}
+    public void send(SccpDataMessage message) throws IOException {
+
+        SccpDataMessageImpl msg = ((SccpDataMessageImpl) message);
+        stack.send(msg);
+    }
+
+    public int getMaxUserDataLength(SccpAddress calledPartyAddress, SccpAddress callingPartyAddress) {
+        return this.stack.getMaxUserDataLength(calledPartyAddress, callingPartyAddress);
+    }
 }

@@ -28,9 +28,9 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * and the status information field. The status information field provides the
  * current state of the entity identified in the routing context of the notify
  * message.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface Status extends Parameter {
 

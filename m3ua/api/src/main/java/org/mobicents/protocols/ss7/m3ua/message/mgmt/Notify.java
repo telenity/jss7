@@ -31,9 +31,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.Status;
 /**
  * The Notify message used to provide an autonomous indication of M3UA events to
  * an M3UA peer.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface Notify extends M3UAMessage {
     public Status getStatus();

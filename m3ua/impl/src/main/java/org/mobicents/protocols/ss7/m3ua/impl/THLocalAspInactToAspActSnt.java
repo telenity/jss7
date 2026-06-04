@@ -7,18 +7,18 @@ import org.mobicents.protocols.ss7.m3ua.impl.fsm.TransitionHandler;
 
 public class THLocalAspInactToAspActSnt implements TransitionHandler {
 
-	private AspImpl aspImpl;
-	private FSM fsm;
-	private static final Logger logger = Logger.getLogger(THLocalAspInactToAspActSnt.class);
+    private AspImpl aspImpl;
+    private FSM fsm;
+    private static final Logger logger = Logger.getLogger(THLocalAspInactToAspActSnt.class);
 
-	public THLocalAspInactToAspActSnt(AspImpl aspImpl, FSM fsm) {
-		this.aspImpl = aspImpl;
-		this.fsm = fsm;
-	}
+    public THLocalAspInactToAspActSnt(AspImpl aspImpl, FSM fsm) {
+        this.aspImpl = aspImpl;
+        this.fsm = fsm;
+    }
 
-	public boolean process(FSMState state) {
-		this.aspImpl.getAspFactory().sendAspActive(aspImpl.getAs());
-		return true;
-	}
+    public boolean process(FSMState state) {
+        this.aspImpl.getAspFactory().sendAspActive(aspImpl.getAs());
+        return true;
+    }
 
 }

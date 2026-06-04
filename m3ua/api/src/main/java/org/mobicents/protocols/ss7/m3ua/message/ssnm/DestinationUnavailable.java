@@ -37,9 +37,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
  * <p>
  * look at section 3.4.1 in RFC 4666
  * </p>
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface DestinationUnavailable extends M3UAMessage {
 

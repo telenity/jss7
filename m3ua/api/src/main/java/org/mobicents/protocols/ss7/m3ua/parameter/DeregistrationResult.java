@@ -28,12 +28,12 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * single DEREG RSP message MAY be anywhere from one to the total number of
  * number of Routing Context values found in the corresponding DEREG REQ
  * message.
- * 
+ * <p>
  * Where multiple DEREG RSP messages are used in reply to DEREG REQ message, a
  * specific result SHOULD be in only one DEREG RSP message.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface DeregistrationResult extends Parameter {
     public RoutingContext getRoutingContext();

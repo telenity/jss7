@@ -50,7 +50,7 @@ import org.mobicents.protocols.api.Server;
 
 /**
  * @author <a href="mailto:amit.bhayani@telestax.com">Amit Bhayani</a>
- * 
+ *
  */
 public class NettyServerImpl implements Server {
 
@@ -90,7 +90,7 @@ public class NettyServerImpl implements Server {
     private NioServerSocketChannel serverChannelTcp;
 
     /**
-     * 
+     *
      */
     public NettyServerImpl() {
     }
@@ -106,7 +106,7 @@ public class NettyServerImpl implements Server {
      * @throws IOException
      */
     public NettyServerImpl(String name, String hostAddress, int hostport, IpChannelType ipChannelType,
-            boolean acceptAnonymousConnections, int maxConcurrentConnectionsCount, String[] extraHostAddresses)
+                           boolean acceptAnonymousConnections, int maxConcurrentConnectionsCount, String[] extraHostAddresses)
             throws IOException {
         this.name = name;
         this.hostAddress = hostAddress;
@@ -117,57 +117,57 @@ public class NettyServerImpl implements Server {
         this.extraHostAddresses = extraHostAddresses;
     }
 
-        @Override
+    @Override
     public IpChannelType getIpChannelType() {
         return this.ipChannelType;
     }
 
-        @Override
+    @Override
     public boolean isAcceptAnonymousConnections() {
         return acceptAnonymousConnections;
     }
 
-        @Override
+    @Override
     public int getMaxConcurrentConnectionsCount() {
         return this.maxConcurrentConnectionsCount;
     }
 
-        @Override
+    @Override
     public void setMaxConcurrentConnectionsCount(int val) {
         this.maxConcurrentConnectionsCount = val;
     }
 
-        @Override
+    @Override
     public String getName() {
         return this.name;
     }
 
-        @Override
+    @Override
     public String getHostAddress() {
         return this.hostAddress;
     }
 
-        @Override
+    @Override
     public int getHostport() {
         return this.hostport;
     }
 
-        @Override
+    @Override
     public String[] getExtraHostAddresses() {
         return this.extraHostAddresses;
     }
 
-        @Override
+    @Override
     public boolean isStarted() {
         return this.started;
     }
 
-        @Override
+    @Override
     public List<String> getAssociations() {
         return Collections.unmodifiableList(this.associations);
     }
 
-        @Override
+    @Override
     public List<Association> getAnonymAssociations() {
         return Collections.unmodifiableList(this.anonymAssociations);
     }

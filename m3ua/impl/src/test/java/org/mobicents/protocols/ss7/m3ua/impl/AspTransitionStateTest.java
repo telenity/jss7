@@ -25,6 +25,7 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 import java.io.IOException;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 import org.mobicents.protocols.ss7.m3ua.impl.message.M3UAMessageImpl;
@@ -36,7 +37,7 @@ import org.mobicents.protocols.ss7.m3ua.message.MessageType;
 import org.mobicents.protocols.ss7.m3ua.parameter.Status;
 
 /**
- * 
+ *
  * @author amit bhayani
  *
  */
@@ -196,7 +197,7 @@ public class AspTransitionStateTest {
         msg.setStatus(status);
         transition = TransitionState.getTransition(msg);
         assertEquals(TransitionState.OTHER_ALTERNATE_ASP_FAILURE, transition);
-        
+
         //TODO Error
 
     }

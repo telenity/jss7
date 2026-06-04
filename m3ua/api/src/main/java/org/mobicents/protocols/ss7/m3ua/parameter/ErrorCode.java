@@ -24,9 +24,9 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
 
 /**
  * The Error Code parameter indicates the reason for the Error Message.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface ErrorCode extends Parameter {
     public static final int Invalid_Version = 0x01;

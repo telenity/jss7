@@ -28,18 +28,20 @@ import java.io.Serializable;
  *
  * @author kulikov
  */
-public abstract class Action implements Serializable  {
-    
+public abstract class Action implements Serializable {
+
     private Object[] args;
-    
-    /** Creates a new instance of Action */
+
+    /**
+     * Creates a new instance of Action
+     */
     public Action() {
     }
-    
+
     public Action(Object[] args) {
         this.args = args;
     }
-    
+
     public static Action getInstance(String name, Object[] args) {
         if (name.equals("rem")) {
             return new Remove(args);
@@ -48,24 +50,24 @@ public abstract class Action implements Serializable  {
         }
         return null;
     }
-    
+
     public abstract String doExecute(String[] args);
-    
+
     public String execute() {
         String argv[] = new String[args.length];
         int i = 0;
         if (args[0] instanceof Action) {
-           argv[0] = ((Action)args[0]).execute();
-           i++;
-        }
-        
-        while (i < args.length) {
-            argv[i] = (String)args[i];
+            argv[0] = ((Action) args[0]).execute();
             i++;
         }
-        
+
+        while (i < args.length) {
+            argv[i] = (String) args[i];
+            i++;
+        }
+
         return doExecute(argv);
     }
-    
+
 }
 

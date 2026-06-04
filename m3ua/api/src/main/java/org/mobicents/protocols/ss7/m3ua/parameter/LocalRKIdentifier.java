@@ -28,9 +28,9 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
  * correlate the response in an REG RSP message with the original registration
  * request. The Identifier value must remain unique until the REG RSP message is
  * received.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface LocalRKIdentifier extends Parameter {
 

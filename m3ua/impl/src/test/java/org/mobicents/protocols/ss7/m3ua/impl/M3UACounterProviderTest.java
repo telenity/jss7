@@ -80,8 +80,8 @@ public class M3UACounterProviderTest {
         Map<String, Counter> snapshot = provider.getPacketsPerAssTx();
         assertEquals(1, snapshot.size());
         assertEquals(
-            threadCount * incrementsPerThread,
-            snapshot.get(assocName).getAndReset());
+                threadCount * incrementsPerThread,
+                snapshot.get(assocName).getAndReset());
     }
 
     @Test

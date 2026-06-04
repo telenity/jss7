@@ -36,180 +36,180 @@ import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
  */
 public abstract class SccpHarness {
 
-	/**
-	 * RouterImpl/SccpResource use a static XMLBinding configured in their constructors.
-	 * Parallel TestNG suites must not start stacks concurrently.
-	 */
-	private static final Object STACK_SETUP_LOCK = new Object();
+    /**
+     * RouterImpl/SccpResource use a static XMLBinding configured in their constructors.
+     * Parallel TestNG suites must not start stacks concurrently.
+     */
+    private static final Object STACK_SETUP_LOCK = new Object();
 
-	protected String sccpStack1Name = null;
-	protected String sccpStack2Name = null;
+    protected String sccpStack1Name = null;
+    protected String sccpStack2Name = null;
 
-	protected SccpStackImpl sccpStack1;
-	protected SccpProvider sccpProvider1;
+    protected SccpStackImpl sccpStack1;
+    protected SccpProvider sccpProvider1;
 
-	protected SccpStackImpl sccpStack2;
-	protected SccpProvider sccpProvider2;
+    protected SccpStackImpl sccpStack2;
+    protected SccpProvider sccpProvider2;
 
-	protected Mtp3UserPartImpl mtp3UserPart1 = new Mtp3UserPartImpl();
-	protected Mtp3UserPartImpl mtp3UserPart2 = new Mtp3UserPartImpl();
+    protected Mtp3UserPartImpl mtp3UserPart1 = new Mtp3UserPartImpl();
+    protected Mtp3UserPartImpl mtp3UserPart2 = new Mtp3UserPartImpl();
 
-	protected Router router1 = null;
-	protected Router router2 = null;
+    protected Router router1 = null;
+    protected Router router2 = null;
 
-	protected SccpResource resource1 = null;
-	protected SccpResource resource2 = null;
+    protected SccpResource resource1 = null;
+    protected SccpResource resource2 = null;
 
-	/**
-	 *
-	 */
-	public SccpHarness() {
-		mtp3UserPart1.setOtherPart(mtp3UserPart2);
-		mtp3UserPart2.setOtherPart(mtp3UserPart1);
-	}
+    /**
+     *
+     */
+    public SccpHarness() {
+        mtp3UserPart1.setOtherPart(mtp3UserPart2);
+        mtp3UserPart2.setOtherPart(mtp3UserPart1);
+    }
 
-	protected void createStack1() {
-		sccpStack1 = createStack(sccpStack1Name);
+    protected void createStack1() {
+        sccpStack1 = createStack(sccpStack1Name);
 
-	}
+    }
 
-	protected void createStack2() {
-		sccpStack2 = createStack(sccpStack2Name);
-	}
+    protected void createStack2() {
+        sccpStack2 = createStack(sccpStack2Name);
+    }
 
-	protected SccpStackImpl createStack(final String name) {
-		SccpStackImpl stack = new SccpStackImpl(name);
-		final String dir = Util.getTmpTestDir();
-		if (dir != null) {
-			stack.setPersistDir(dir);
-		}
-		return stack;
-	}
+    protected SccpStackImpl createStack(final String name) {
+        SccpStackImpl stack = new SccpStackImpl(name);
+        final String dir = Util.getTmpTestDir();
+        if (dir != null) {
+            stack.setPersistDir(dir);
+        }
+        return stack;
+    }
 
-	protected void setUpStack1() throws Exception {
-		createStack1();
+    protected void setUpStack1() throws Exception {
+        createStack1();
 
-		sccpStack1.setMtp3UserPart(1, mtp3UserPart1);
-		sccpStack1.start();
-		sccpStack1.removeAllResourses();
-		sccpStack1.getRouter().addMtp3ServiceAccessPoint(1, 1, getStack1PC(), 2);
-		sccpStack1.getRouter().addMtp3Destination(1, 1, getStack2PC(), getStack2PC(), 0, 255, 255);
+        sccpStack1.setMtp3UserPart(1, mtp3UserPart1);
+        sccpStack1.start();
+        sccpStack1.removeAllResourses();
+        sccpStack1.getRouter().addMtp3ServiceAccessPoint(1, 1, getStack1PC(), 2);
+        sccpStack1.getRouter().addMtp3Destination(1, 1, getStack2PC(), getStack2PC(), 0, 255, 255);
 
-		sccpProvider1 = sccpStack1.getSccpProvider();
+        sccpProvider1 = sccpStack1.getSccpProvider();
 
-		router1 = sccpStack1.getRouter();
+        router1 = sccpStack1.getRouter();
 
-		resource1 = sccpStack1.getSccpResource();
+        resource1 = sccpStack1.getSccpResource();
 
-		resource1.addRemoteSpc(1, getStack2PC(), 0, 0);
-		resource1.addRemoteSsn(1, getStack2PC(), getSSN(), 0, false);
+        resource1.addRemoteSpc(1, getStack2PC(), 0, 0);
+        resource1.addRemoteSsn(1, getStack2PC(), getSSN(), 0, false);
 
-	}
+    }
 
-	protected void setUpStack2() throws Exception {
-		createStack2();
+    protected void setUpStack2() throws Exception {
+        createStack2();
 
-		sccpStack2.setMtp3UserPart(1, mtp3UserPart2);
-		sccpStack2.start();
-		sccpStack2.removeAllResourses();
-		sccpStack2.getRouter().addMtp3ServiceAccessPoint(1, 1, getStack2PC(), 2);
-		sccpStack2.getRouter().addMtp3Destination(1, 1, getStack1PC(), getStack1PC(), 0, 255, 255);
+        sccpStack2.setMtp3UserPart(1, mtp3UserPart2);
+        sccpStack2.start();
+        sccpStack2.removeAllResourses();
+        sccpStack2.getRouter().addMtp3ServiceAccessPoint(1, 1, getStack2PC(), 2);
+        sccpStack2.getRouter().addMtp3Destination(1, 1, getStack1PC(), getStack1PC(), 0, 255, 255);
 
-		sccpProvider2 = sccpStack2.getSccpProvider();
+        sccpProvider2 = sccpStack2.getSccpProvider();
 
-		router2 = sccpStack2.getRouter();
+        router2 = sccpStack2.getRouter();
 
-		resource2 = sccpStack2.getSccpResource();
+        resource2 = sccpStack2.getSccpResource();
 
-		resource2.addRemoteSpc(02, getStack1PC(), 0, 0);
-		resource2.addRemoteSsn(1, getStack1PC(), getSSN(), 0, false);
+        resource2.addRemoteSpc(02, getStack1PC(), 0, 0);
+        resource2.addRemoteSsn(1, getStack1PC(), getSSN(), 0, false);
 
-	}
+    }
 
-	private void tearDownStack1() {
-		sccpStack1.removeAllResourses();
-		sccpStack1.stop();
-	}
+    private void tearDownStack1() {
+        sccpStack1.removeAllResourses();
+        sccpStack1.stop();
+    }
 
-	private void tearDownStack2() {
-		sccpStack2.removeAllResourses();
-		sccpStack2.stop();
-	}
+    private void tearDownStack2() {
+        sccpStack2.removeAllResourses();
+        sccpStack2.stop();
+    }
 
-	protected int getStack1PC() {
-		return 1;
-	}
+    protected int getStack1PC() {
+        return 1;
+    }
 
-	protected int getStack2PC() {
-		return 2;
-	}
+    protected int getStack2PC() {
+        return 2;
+    }
 
-	protected int getSSN() {
-		return 8;
-	}
+    protected int getSSN() {
+        return 8;
+    }
 
-	public void setUp() throws Exception {
-		synchronized (STACK_SETUP_LOCK) {
-			this.setUpStack1();
-			this.setUpStack2();
-		}
-	}
+    public void setUp() throws Exception {
+        synchronized (STACK_SETUP_LOCK) {
+            this.setUpStack1();
+            this.setUpStack2();
+        }
+    }
 
-	public void tearDown() {
-		this.tearDownStack1();
-		this.tearDownStack2();
-	}
+    public void tearDown() {
+        this.tearDownStack1();
+        this.tearDownStack2();
+    }
 
-	/**
-	 * After this method invoking all MTP traffic will be save into the file "MsgLog.txt" file format:
-	 * [message][message]...[message] [message] ::= { byte-length low byte, byte-length high byte, byte[] message }
-	 */
-	public void saveTrafficInFile() {
-		((Mtp3UserPartImpl) this.mtp3UserPart1).saveTrafficInFile = true;
-		((Mtp3UserPartImpl) this.mtp3UserPart2).saveTrafficInFile = true;
+    /**
+     * After this method invoking all MTP traffic will be save into the file "MsgLog.txt" file format:
+     * [message][message]...[message] [message] ::= { byte-length low byte, byte-length high byte, byte[] message }
+     */
+    public void saveTrafficInFile() {
+        ((Mtp3UserPartImpl) this.mtp3UserPart1).saveTrafficInFile = true;
+        ((Mtp3UserPartImpl) this.mtp3UserPart2).saveTrafficInFile = true;
 
-		try {
+        try {
 //            String tmpDir = Util.getTmpTestDir();
 //            if (tmpDir != null)
 //                tmpDir = tmpDir + File.separator;
 //            else
 //                tmpDir = "";
 //            FileOutputStream fs = new FileOutputStream(tmpDir + "MsgLog.pcap", false);
-			FileOutputStream fs = new FileOutputStream("MsgLog.pcap", false);
+            FileOutputStream fs = new FileOutputStream("MsgLog.pcap", false);
 
-			// pcap global header
-			fs.write(0xd4);
-			fs.write(0xc3);
-			fs.write(0xb2);
-			fs.write(0xa1);
+            // pcap global header
+            fs.write(0xd4);
+            fs.write(0xc3);
+            fs.write(0xb2);
+            fs.write(0xa1);
 
-			fs.write(2);
-			fs.write(0);
-			fs.write(4);
-			fs.write(0);
+            fs.write(2);
+            fs.write(0);
+            fs.write(4);
+            fs.write(0);
 
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
 
-			fs.write(0xFF);
-			fs.write(0xFF);
-			fs.write(0);
-			fs.write(0);
-			fs.write(1);
-			fs.write(0);
-			fs.write(0);
-			fs.write(0);
+            fs.write(0xFF);
+            fs.write(0xFF);
+            fs.write(0);
+            fs.write(0);
+            fs.write(1);
+            fs.write(0);
+            fs.write(0);
+            fs.write(0);
 
-			fs.close();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+            fs.close();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

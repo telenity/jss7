@@ -28,26 +28,26 @@ import org.mobicents.protocols.ss7.sccp.parameter.Segmentation;
 
 /**
  *
- * This interface represents SCCP a connectionless notice message (UDTS, XUDTS and LUDTS) 
- * 
+ * This interface represents SCCP a connectionless notice message (UDTS, XUDTS and LUDTS)
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public interface SccpNoticeMessage extends SccpAddressedMessage {
 
-	public ReturnCause getReturnCause();
+    public ReturnCause getReturnCause();
 
-	public byte[] getData();
+    public byte[] getData();
 
-	public Segmentation getSegmentation();
+    public Segmentation getSegmentation();
 
-	public Importance getImportance();
-	
+    public Importance getImportance();
 
-	public void setReturnCause(ReturnCause rc);
 
-	public void setData(byte[] data);
+    public void setReturnCause(ReturnCause rc);
 
-	public void setImportance(Importance p);
+    public void setData(byte[] data);
+
+    public void setImportance(Importance p);
 
 }

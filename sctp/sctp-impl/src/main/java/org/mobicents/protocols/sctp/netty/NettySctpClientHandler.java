@@ -34,9 +34,9 @@ import org.mobicents.protocols.api.IpChannelType;
 /**
  * Handler implementation for the SCTP echo client. It initiates the ping-pong traffic between the echo client and server by
  * sending the first message to the server.
- * 
+ *
  * @author <a href="mailto:amit.bhayani@telestax.com">Amit Bhayani</a>
- * 
+ *
  */
 public class NettySctpClientHandler extends NettySctpChannelInboundHandlerAdapter {
 

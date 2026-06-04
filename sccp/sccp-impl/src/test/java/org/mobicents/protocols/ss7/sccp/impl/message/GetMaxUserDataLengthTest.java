@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -39,79 +39,79 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public class GetMaxUserDataLengthTest {
 
-	private SccpStackImpl stack = new SccpStackImpl("TestStack");
+    private SccpStackImpl stack = new SccpStackImpl("TestStack");
 
-	@Before
-	public void setUp() {
-		stack.setPersistDir(Util.getTmpTestDir());
-		stack.start();
-		stack.removeAllResourses();
-	}
+    @Before
+    public void setUp() {
+        stack.setPersistDir(Util.getTmpTestDir());
+        stack.start();
+        stack.removeAllResourses();
+    }
 
-	@After
-	public void tearDown() {
-	}
+    @After
+    public void tearDown() {
+    }
 
-	@Test
-	public void testMessageLength() throws Exception {
+    @Test
+    public void testMessageLength() throws Exception {
 
-		SccpAddress a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
-		SccpAddress a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(0,
-				"1122334455"), 18);
+        SccpAddress a1 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_DPC_AND_SSN, 2, null, 8);
+        SccpAddress a2 = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(0,
+                "1122334455"), 18);
 
-		Mtp3UserPartImpl_2 mtp3UserPart = new Mtp3UserPartImpl_2();
-		stack.setMtp3UserPart(1, mtp3UserPart);
-		stack.getRouter().addMtp3ServiceAccessPoint(1, 1, 1, 2);
+        Mtp3UserPartImpl_2 mtp3UserPart = new Mtp3UserPartImpl_2();
+        stack.setMtp3UserPart(1, mtp3UserPart);
+        stack.getRouter().addMtp3ServiceAccessPoint(1, 1, 1, 2);
 
-		stack.getRouter().addMtp3Destination(1, 1, 2, 2, 0, 255, 255);
+        stack.getRouter().addMtp3Destination(1, 1, 2, 2, 0, 255, 255);
 
-		SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 2,
-				GlobalTitle.getInstance(0, "1122334455"), 18);
-		stack.getRouter().addPrimaryAddress(1, primaryAddress);
-		SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 2,
-				GlobalTitle.getInstance(0, "1122334455"), 18);
-		stack.getRouter().addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, -1);
+        SccpAddress primaryAddress = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 2,
+                GlobalTitle.getInstance(0, "1122334455"), 18);
+        stack.getRouter().addPrimaryAddress(1, primaryAddress);
+        SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 2,
+                GlobalTitle.getInstance(0, "1122334455"), 18);
+        stack.getRouter().addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, -1);
 
-		int len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(248, len);
+        int len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
+        assertEquals(248, len);
 
-		len = stack.getSccpProvider().getMaxUserDataLength(a2, a1);
-		assertEquals(248, len);
+        len = stack.getSccpProvider().getMaxUserDataLength(a2, a1);
+        assertEquals(248, len);
 
-		stack.getRouter().addLongMessageRule(1, 2, 2, LongMessageRuleType.XudtEnabled);
+        stack.getRouter().addLongMessageRule(1, 2, 2, LongMessageRuleType.XudtEnabled);
 
-		len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(2560, len);
-		stack.getRouter().removeLongMessageRule(1);
-		stack.getRouter().addLongMessageRule(1, 2, 2, LongMessageRuleType.LudtEnabled);
+        len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
+        assertEquals(2560, len);
+        stack.getRouter().removeLongMessageRule(1);
+        stack.getRouter().addLongMessageRule(1, 2, 2, LongMessageRuleType.LudtEnabled);
 
-		len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(231, len);
+        len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
+        assertEquals(231, len);
 
-		mtp3UserPart.setMtpMsgLen(4000);
-		len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
-		assertEquals(2560, len);
+        mtp3UserPart.setMtpMsgLen(4000);
+        len = stack.getSccpProvider().getMaxUserDataLength(a1, a2);
+        assertEquals(2560, len);
 
-	}
+    }
 
-	private class Mtp3UserPartImpl_2 extends Mtp3UserPartImpl {
+    private class Mtp3UserPartImpl_2 extends Mtp3UserPartImpl {
 
-		private int mtpMsgLen = 268;
+        private int mtpMsgLen = 268;
 
-		public void setMtpMsgLen(int mtpMsgLen) {
-			this.mtpMsgLen = mtpMsgLen;
-		}
+        public void setMtpMsgLen(int mtpMsgLen) {
+            this.mtpMsgLen = mtpMsgLen;
+        }
 
-		@Override
-		public int getMaxUserDataLength(int dpc) {
-			return mtpMsgLen;
-		}
+        @Override
+        public int getMaxUserDataLength(int dpc) {
+            return mtpMsgLen;
+        }
 
-	}
+    }
 }

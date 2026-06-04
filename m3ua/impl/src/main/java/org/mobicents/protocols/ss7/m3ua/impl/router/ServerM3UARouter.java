@@ -55,16 +55,16 @@ public class ServerM3UARouter {
 
     /**
      * <p>
-	 * Create a Tree structure adding the reference to passed As. The Tree is
-	 * created starting from {@link DPCNode} as parent node containing 'n'
-	 * {@link OPCNode} leafs where 'n' is list of OPC passed. For each
-	 * {@link OPCNode} there will be 'm' {@link SINode} leafs where 'm' is
-	 * number of Service Indicator passed.
+     * Create a Tree structure adding the reference to passed As. The Tree is
+     * created starting from {@link DPCNode} as parent node containing 'n'
+     * {@link OPCNode} leafs where 'n' is list of OPC passed. For each
+     * {@link OPCNode} there will be 'm' {@link SINode} leafs where 'm' is
+     * number of Service Indicator passed.
      * </p>
      *
      * <p>
-	 * DPC is mandatory while OPC and SI list are optional. If OPC or SI is not
-	 * passed the wild card '-1' leaf will be added to parent node
+     * DPC is mandatory while OPC and SI list are optional. If OPC or SI is not
+     * passed the wild card '-1' leaf will be added to parent node
      * </p>
      *
      * @param rk
@@ -100,14 +100,14 @@ public class ServerM3UARouter {
 
     /**
      * <p>
-	 * Match the passed dpc, opc and si with Tree structure and return the As
-	 * from corresponding matched {@link SINode}.
+     * Match the passed dpc, opc and si with Tree structure and return the As
+     * from corresponding matched {@link SINode}.
      * </p>
      *
      * <p>
-	 * For example if AS1 is added for Routing Key with DPC=123 only. The tree
-	 * will be formed with 123 as {@link DPCNode} parent node and -1 as
-	 * {@link OPCNode} leaf and within {@link OPCNode} -1 as {@link SINode}
+     * For example if AS1 is added for Routing Key with DPC=123 only. The tree
+     * will be formed with 123 as {@link DPCNode} parent node and -1 as
+     * {@link OPCNode} leaf and within {@link OPCNode} -1 as {@link SINode}
      * </p>
      *
      * @param dpc

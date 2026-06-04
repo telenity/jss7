@@ -35,106 +35,102 @@ import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 /**
  * @author baranowb
  * @author sergey vetyutnev
- * 
+ *
  */
 public class ErrorCodeImpl implements ErrorCode {
-	private ErrorCodeType type;
-	private Long localErrorCode;
-	private long[] globalErrorCode;
-
-	
-	
-	public void setErrorCodeType(ErrorCodeType type) {
-		this.type = type;
-	}
-	
-	public void setLocalErrorCode(Long localErrorCode) {
-		this.localErrorCode = localErrorCode;
-		this.globalErrorCode = null;
-		this.type = ErrorCodeType.Local;
-	}
-
-	public void setGlobalErrorCode(long[] globalErrorCode) {
-		this.localErrorCode = null;
-		this.globalErrorCode = globalErrorCode;
-		this.type = ErrorCodeType.Global;
-	}
+    private ErrorCodeType type;
+    private Long localErrorCode;
+    private long[] globalErrorCode;
 
 
+    public void setErrorCodeType(ErrorCodeType type) {
+        this.type = type;
+    }
 
-	public Long getLocalErrorCode() {
-		return this.localErrorCode;
-	}
-	
-	public long[] getGlobalErrorCode() {
-		return this.globalErrorCode;
-	}
-	
-	public ErrorCodeType getErrorType() {
-		return type;
-	}
+    public void setLocalErrorCode(Long localErrorCode) {
+        this.localErrorCode = localErrorCode;
+        this.globalErrorCode = null;
+        this.type = ErrorCodeType.Local;
+    }
 
-	public String toString() {
-		if (this.localErrorCode != null)
-			return "ErrorCode[errorType=Local, data=" + this.localErrorCode + "]";
-		else if (this.globalErrorCode != null)
-			return "ErrorCode[errorType=Global, data=" + Arrays.toString(this.globalErrorCode) + "]";
-		else
-			return "ErrorCode[empty]";
-	}
+    public void setGlobalErrorCode(long[] globalErrorCode) {
+        this.localErrorCode = null;
+        this.globalErrorCode = globalErrorCode;
+        this.type = ErrorCodeType.Global;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols
-	 * .asn.AsnInputStream)
-	 */
-	public void decode(AsnInputStream ais) throws ParseException {
 
-		try {
-			if( this.type == ErrorCodeType.Global ) {
-				this.globalErrorCode = ais.readObjectIdentifier();
-			} else if( this.type == ErrorCodeType.Local ) {
-				this.localErrorCode = ais.readInteger();
-			} else
-			{
-				throw new ParseException(null, GeneralProblemType.MistypedComponent);
-			}
-		} catch (IOException e) {
-			throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while parsing ErrorCode: " + e.getMessage(), e);
-		} catch (AsnException e) {
-			throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while parsing ErrorCode: " + e.getMessage(), e);
-		}
-	}
+    public Long getLocalErrorCode() {
+        return this.localErrorCode;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols
-	 * .asn.AsnOutputStream)
-	 */
-	public void encode(AsnOutputStream aos) throws EncodeException {
+    public long[] getGlobalErrorCode() {
+        return this.globalErrorCode;
+    }
 
-		if (this.localErrorCode == null && this.globalErrorCode == null)
-			throw new EncodeException("Error code: No error code set!");
+    public ErrorCodeType getErrorType() {
+        return type;
+    }
 
-		try {
-			if( this.type == ErrorCodeType.Local ) {
-				aos.writeInteger(this.localErrorCode);
-			} else if( this.type == ErrorCodeType.Global ) {
-				aos.writeObjectIdentifier(this.globalErrorCode);
-			} else
-			{
-				throw new EncodeException();
-			}
+    public String toString() {
+        if (this.localErrorCode != null)
+            return "ErrorCode[errorType=Local, data=" + this.localErrorCode + "]";
+        else if (this.globalErrorCode != null)
+            return "ErrorCode[errorType=Global, data=" + Arrays.toString(this.globalErrorCode) + "]";
+        else
+            return "ErrorCode[empty]";
+    }
 
-		} catch (IOException e) {
-			throw new EncodeException(e);
-		} catch (AsnException e) {
-			throw new EncodeException(e);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.Encodable#decode(org.mobicents.protocols
+     * .asn.AsnInputStream)
+     */
+    public void decode(AsnInputStream ais) throws ParseException {
+
+        try {
+            if (this.type == ErrorCodeType.Global) {
+                this.globalErrorCode = ais.readObjectIdentifier();
+            } else if (this.type == ErrorCodeType.Local) {
+                this.localErrorCode = ais.readInteger();
+            } else {
+                throw new ParseException(null, GeneralProblemType.MistypedComponent);
+            }
+        } catch (IOException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while parsing ErrorCode: " + e.getMessage(), e);
+        } catch (AsnException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while parsing ErrorCode: " + e.getMessage(), e);
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.asn.Encodable#encode(org.mobicents.protocols
+     * .asn.AsnOutputStream)
+     */
+    public void encode(AsnOutputStream aos) throws EncodeException {
+
+        if (this.localErrorCode == null && this.globalErrorCode == null)
+            throw new EncodeException("Error code: No error code set!");
+
+        try {
+            if (this.type == ErrorCodeType.Local) {
+                aos.writeInteger(this.localErrorCode);
+            } else if (this.type == ErrorCodeType.Global) {
+                aos.writeObjectIdentifier(this.globalErrorCode);
+            } else {
+                throw new EncodeException();
+            }
+
+        } catch (IOException e) {
+            throw new EncodeException(e);
+        } catch (AsnException e) {
+            throw new EncodeException(e);
+        }
+    }
 
 }

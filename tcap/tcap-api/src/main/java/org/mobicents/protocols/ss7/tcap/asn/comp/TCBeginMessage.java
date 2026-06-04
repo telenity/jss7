@@ -34,23 +34,28 @@ import java.util.List;
  */
 public interface TCBeginMessage extends Encodable {
 
-	
-	public static final int _TAG = 0x02;
-	public static final boolean _TAG_PC_PRIMITIVE = false;
-	public static final int _TAG_CLASS = Tag.CLASS_APPLICATION;
-	
-	public static final int _TAG_OTX = 0x08;
-	public static final boolean _TAG_OTX_PC_PRIMITIVE = true;
-	public static final int _TAG_CLASS_OTX = Tag.CLASS_APPLICATION;
-	//mandatory
-	public byte[] getOriginatingTransactionId();
-	public void setOriginatingTransactionId(byte[] t);
-	
-	//opt FIXME: make this External?
-	public DialogPortion getDialogPortion();
-	public void setDialogPortion(DialogPortion dp);
-	//opt
-	public List<Component> getComponent();
-	public void setComponent(List<Component> c);
-	
+
+    public static final int _TAG = 0x02;
+    public static final boolean _TAG_PC_PRIMITIVE = false;
+    public static final int _TAG_CLASS = Tag.CLASS_APPLICATION;
+
+    public static final int _TAG_OTX = 0x08;
+    public static final boolean _TAG_OTX_PC_PRIMITIVE = true;
+    public static final int _TAG_CLASS_OTX = Tag.CLASS_APPLICATION;
+
+    //mandatory
+    public byte[] getOriginatingTransactionId();
+
+    public void setOriginatingTransactionId(byte[] t);
+
+    //opt FIXME: make this External?
+    public DialogPortion getDialogPortion();
+
+    public void setDialogPortion(DialogPortion dp);
+
+    //opt
+    public List<Component> getComponent();
+
+    public void setComponent(List<Component> c);
+
 }

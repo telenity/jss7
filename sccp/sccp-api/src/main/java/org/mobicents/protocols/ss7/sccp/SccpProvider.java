@@ -31,54 +31,53 @@ import org.mobicents.protocols.ss7.sccp.parameter.ParameterFactory;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 
 /**
- * 
+ *
  * @author Oleg Kulikov
  * @author baranowb
  */
 public interface SccpProvider extends Serializable {
 
-	/**
-	 * Gets the access to message factory.
-	 * 
-	 * @return message factory.
-	 */
-	public MessageFactory getMessageFactory();
+    /**
+     * Gets the access to message factory.
+     *
+     * @return message factory.
+     */
+    public MessageFactory getMessageFactory();
 
-	/**
-	 * Gets the access to parameter factory.
-	 * 
-	 * @return parameter factory
-	 */
-	public ParameterFactory getParameterFactory();
+    /**
+     * Gets the access to parameter factory.
+     *
+     * @return parameter factory
+     */
+    public ParameterFactory getParameterFactory();
 
-	/**
-	 * Register listener for some adddress.
-	 * 
-	 * @param listener
-	 */
-	public void registerSccpListener(int ssn, SccpListener listener);
+    /**
+     * Register listener for some adddress.
+     *
+     * @param listener
+     */
+    public void registerSccpListener(int ssn, SccpListener listener);
 
-	/**
-	 * Removes listener
-	 */
-	public void deregisterSccpListener(int ssn);
+    /**
+     * Removes listener
+     */
+    public void deregisterSccpListener(int ssn);
 
-	/**
-	 * Sends message.
-	 * 
-	 * @param message
-	 *            Message to be sent
-	 * @throws IOException
-	 */
-	public void send(SccpDataMessage message) throws IOException;
+    /**
+     * Sends message.
+     *
+     * @param message Message to be sent
+     * @throws IOException
+     */
+    public void send(SccpDataMessage message) throws IOException;
 
-	/**
-	 * Return the maximum length (in bytes) of the sccp message data
-	 * 
-	 * @param calledPartyAddress
-	 * @param callingPartyAddress
-	 * @return
-	 */
-	public int getMaxUserDataLength(SccpAddress calledPartyAddress, SccpAddress callingPartyAddress);
+    /**
+     * Return the maximum length (in bytes) of the sccp message data
+     *
+     * @param calledPartyAddress
+     * @param callingPartyAddress
+     * @return
+     */
+    public int getMaxUserDataLength(SccpAddress calledPartyAddress, SccpAddress callingPartyAddress);
 
 }

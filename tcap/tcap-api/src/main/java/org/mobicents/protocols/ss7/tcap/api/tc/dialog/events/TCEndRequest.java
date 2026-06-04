@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.api.tc.dialog.events;
 
@@ -31,50 +31,50 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 
 /**
  * @author baranowb
- * 
+ *
  */
 public interface TCEndRequest extends DialogRequest {
 
-	public void setReturnMessageOnError(boolean val);
+    public void setReturnMessageOnError(boolean val);
 
-	public boolean getReturnMessageOnError();
+    public boolean getReturnMessageOnError();
 
-	/**
-	 * Sets origin address. This parameter is used only in first TCEnd, sent as response to TCBegin. This parameter, if
-	 * set, changes local peer address(remote end will send request to value set by this method).
-	 *
-	 * @return
-	 */
-	SccpAddress getOriginatingAddress();
+    /**
+     * Sets origin address. This parameter is used only in first TCEnd, sent as response to TCBegin. This parameter, if
+     * set, changes local peer address(remote end will send request to value set by this method).
+     *
+     * @return
+     */
+    SccpAddress getOriginatingAddress();
 
-	void setOriginatingAddress(SccpAddress dest);
+    void setOriginatingAddress(SccpAddress dest);
 
-	/**
-	 * Application context name for this dialog.
-	 * 
-	 * @return
-	 */
-	public ApplicationContextName getApplicationContextName();
+    /**
+     * Application context name for this dialog.
+     *
+     * @return
+     */
+    public ApplicationContextName getApplicationContextName();
 
-	public void setApplicationContextName(ApplicationContextName acn);
+    public void setApplicationContextName(ApplicationContextName acn);
 
-	/**
-	 * User information for this dialog.
-	 * 
-	 * @return
-	 */
-	public UserInformation getUserInformation();
+    /**
+     * User information for this dialog.
+     *
+     * @return
+     */
+    public UserInformation getUserInformation();
 
-	public void setUserInformation(UserInformation acn);
+    public void setUserInformation(UserInformation acn);
 
-	/**
-	 * Type of termination. See values of
-	 * {@link org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TerminationType
-	 * TerminationType} enum.
-	 * 
-	 * @param t
-	 */
-	public void setTermination(TerminationType t);
+    /**
+     * Type of termination. See values of
+     * {@link org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TerminationType
+     * TerminationType} enum.
+     *
+     * @param t
+     */
+    public void setTermination(TerminationType t);
 
-	public TerminationType getTerminationType();
+    public TerminationType getTerminationType();
 }

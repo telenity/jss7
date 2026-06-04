@@ -24,15 +24,15 @@ package org.mobicents.protocols.ss7.sccp.parameter;
 
 /**
  * Return cause values parameter for connectionless message
- * 
+ *
  * @author baranowb
  * @author sergey vetyutnev
  */
-public interface ReturnCause extends Parameter{
-	
-	public final static int PARAMETER_CODE = 0xB;
-	
-	
+public interface ReturnCause extends Parameter {
+
+    public final static int PARAMETER_CODE = 0xB;
+
+
 //	public final static int NO_TRANSLATION_FOR_NATURE = 0x0;
 //	public final static int NO_TRANSLATION_FOR_ADDRESS = 0x1;
 //	public final static int SUBSYSTEM_CONGESTION = 0x2;
@@ -48,10 +48,10 @@ public interface ReturnCause extends Parameter{
 //	public final static int HOP_COUNTER_VIOLATION = 0xC;
 //	public final static int SEG_NOT_SUPPORTED = 0xD;
 //	public final static int SEG_FAILURE = 0xE;
-	
+
     /**
      * Gets the value of this parameter.
-     * 
+     *
      * @return the value of this parameter.
      */
     public ReturnCauseValue getValue();

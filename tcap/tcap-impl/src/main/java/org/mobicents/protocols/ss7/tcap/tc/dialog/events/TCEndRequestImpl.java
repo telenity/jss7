@@ -21,7 +21,7 @@
  */
 
 /**
- * 
+ *
  */
 package org.mobicents.protocols.ss7.tcap.tc.dialog.events;
 
@@ -35,96 +35,96 @@ import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 /**
  * @author baranowb
  * @author sergey vetyutnev
- * 
+ *
  */
 public class TCEndRequestImpl extends DialogRequestImpl implements TCEndRequest {
 
-	private boolean returnMessageOnError;
-	private SccpAddress originatingAddress;
-	private TerminationType terminationType;
+    private boolean returnMessageOnError;
+    private SccpAddress originatingAddress;
+    private TerminationType terminationType;
 
-	// fields
-	private ApplicationContextName applicationContextName;
-	private UserInformation userInformation;
+    // fields
+    private ApplicationContextName applicationContextName;
+    private UserInformation userInformation;
 
-	TCEndRequestImpl() {
-		super(EventType.End);
-	}
+    TCEndRequestImpl() {
+        super(EventType.End);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * getApplicationContextName()
-	 */
-	public ApplicationContextName getApplicationContextName() {
-		return applicationContextName;
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * getApplicationContextName()
+     */
+    public ApplicationContextName getApplicationContextName() {
+        return applicationContextName;
+    }
 
-	public SccpAddress getOriginatingAddress() {
+    public SccpAddress getOriginatingAddress() {
 
-		return this.originatingAddress;
-	}
+        return this.originatingAddress;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * getUserInformation()
-	 */
-	public UserInformation getUserInformation() {
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * getUserInformation()
+     */
+    public UserInformation getUserInformation() {
 
-		return this.userInformation;
-	}
+        return this.userInformation;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * setApplicationContextName
-	 * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
-	 */
-	public void setApplicationContextName(ApplicationContextName acn) {
-		this.applicationContextName = acn;
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * setApplicationContextName
+     * (org.mobicents.protocols.ss7.tcap.asn.ApplicationContextName)
+     */
+    public void setApplicationContextName(ApplicationContextName acn) {
+        this.applicationContextName = acn;
 
-	}
+    }
 
-	public void setOriginatingAddress(SccpAddress dest) {
-		this.originatingAddress = dest;
+    public void setOriginatingAddress(SccpAddress dest) {
+        this.originatingAddress = dest;
 
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
-	 * setUserInformation(org.mobicents.protocols.ss7.tcap.asn.UserInformation)
-	 */
-	public void setUserInformation(UserInformation acn) {
-		this.userInformation = acn;
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.mobicents.protocols.ss7.tcap.api.tc.dialog.events.TCBeginRequest#
+     * setUserInformation(org.mobicents.protocols.ss7.tcap.asn.UserInformation)
+     */
+    public void setUserInformation(UserInformation acn) {
+        this.userInformation = acn;
 
-	}
+    }
 
-	public TerminationType getTerminationType() {
+    public TerminationType getTerminationType() {
 
-		return this.terminationType;
-	}
+        return this.terminationType;
+    }
 
-	public void setTermination(TerminationType t) {
-		this.terminationType = t;
+    public void setTermination(TerminationType t) {
+        this.terminationType = t;
 
-	}
+    }
 
-	public void setReturnMessageOnError(boolean val) {
-		returnMessageOnError = val;
-	}
+    public void setReturnMessageOnError(boolean val) {
+        returnMessageOnError = val;
+    }
 
-	public boolean getReturnMessageOnError() {
-		return returnMessageOnError;
-	}
+    public boolean getReturnMessageOnError() {
+        return returnMessageOnError;
+    }
 
 }

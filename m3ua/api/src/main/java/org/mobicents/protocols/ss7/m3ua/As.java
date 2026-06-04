@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -37,109 +37,109 @@ import org.mobicents.protocols.ss7.m3ua.parameter.TrafficModeType;
  * more unique Application Server Processes, of which one or more is normally
  * actively processing traffic
  * </p>
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 
 public interface As {
 
-	/**
-	 * Each As in M3UA stack is uniquely identified by its name
-	 * 
-	 * @return name of this As
-	 */
-	public String getName();
+    /**
+     * Each As in M3UA stack is uniquely identified by its name
+     *
+     * @return name of this As
+     */
+    public String getName();
 
-	/**
-	 * Returns true if atleast one {@link Asp} in this As is ACTIVE and
-	 * exchanging payload
-	 * 
-	 * @return
-	 */
-	public boolean isConnected();
+    /**
+     * Returns true if atleast one {@link Asp} in this As is ACTIVE and
+     * exchanging payload
+     *
+     * @return
+     */
+    public boolean isConnected();
 
-	/**
-	 * Returns true if state of this As is ACTIVE
-	 * 
-	 * @return
-	 */
-	public boolean isUp();
+    /**
+     * Returns true if state of this As is ACTIVE
+     *
+     * @return
+     */
+    public boolean isUp();
 
-	/**
-	 * {@link RoutingContext} associated with this As. Configuring routing
-	 * context is optional and can return null if not configured. Note that
-	 * there is a 1:1 relationship between an AS and a Routing Key
-	 * 
-	 * @return Routing Key
-	 */
-	public RoutingContext getRoutingContext();
+    /**
+     * {@link RoutingContext} associated with this As. Configuring routing
+     * context is optional and can return null if not configured. Note that
+     * there is a 1:1 relationship between an AS and a Routing Key
+     *
+     * @return Routing Key
+     */
+    public RoutingContext getRoutingContext();
 
-	/**
-	 * The {@link Functionality} of this As
-	 * 
-	 * @return
-	 */
-	public Functionality getFunctionality();
+    /**
+     * The {@link Functionality} of this As
+     *
+     * @return
+     */
+    public Functionality getFunctionality();
 
-	/**
-	 * {@link ExchangeType} for this As
-	 * 
-	 * @return
-	 */
-	public ExchangeType getExchangeType();
+    /**
+     * {@link ExchangeType} for this As
+     *
+     * @return
+     */
+    public ExchangeType getExchangeType();
 
-	/**
-	 * {@link IPSPType} for this As. This is useful only if
-	 * {@link Functionality} for this As is IPSP
-	 * 
-	 * @return
-	 */
-	public IPSPType getIpspType();
+    /**
+     * {@link IPSPType} for this As. This is useful only if
+     * {@link Functionality} for this As is IPSP
+     *
+     * @return
+     */
+    public IPSPType getIpspType();
 
-	/**
-	 * {@link NetworkAppearance} for this As
-	 * 
-	 * @return
-	 */
-	public NetworkAppearance getNetworkAppearance();
+    /**
+     * {@link NetworkAppearance} for this As
+     *
+     * @return
+     */
+    public NetworkAppearance getNetworkAppearance();
 
-	/**
-	 * {@link TrafficModeType} for this As
-	 * 
-	 * @return
-	 */
-	public TrafficModeType getTrafficModeType();
+    /**
+     * {@link TrafficModeType} for this As
+     *
+     * @return
+     */
+    public TrafficModeType getTrafficModeType();
 
-	/**
-	 * Default {@link TrafficModeType} that this As will assume if
-	 * TrafficModeType is not negotiated or not set when defining this As
-	 * 
-	 * @return
-	 */
-	public TrafficModeType getDefaultTrafficModeType();
+    /**
+     * Default {@link TrafficModeType} that this As will assume if
+     * TrafficModeType is not negotiated or not set when defining this As
+     *
+     * @return
+     */
+    public TrafficModeType getDefaultTrafficModeType();
 
-	/**
-	 * The minimu number of {@link Asp} that should be ACTIVE before this As
-	 * becomes ACTIVE. This value is useful only if {@link TrafficModeType} is
-	 * loadshare
-	 * 
-	 * @return
-	 */
-	public int getMinAspActiveForLb();
+    /**
+     * The minimu number of {@link Asp} that should be ACTIVE before this As
+     * becomes ACTIVE. This value is useful only if {@link TrafficModeType} is
+     * loadshare
+     *
+     * @return
+     */
+    public int getMinAspActiveForLb();
 
-	/**
-	 * Number of {@link Asp} assigned to this As
-	 * 
-	 * @return
-	 */
-	public List<Asp> getAspList();
+    /**
+     * Number of {@link Asp} assigned to this As
+     *
+     * @return
+     */
+    public List<Asp> getAspList();
 
-	/**
-	 * Current state of this As
-	 * 
-	 * @return
-	 */
-	public State getState();
+    /**
+     * Current state of this As
+     *
+     * @return
+     */
+    public State getState();
 
 }

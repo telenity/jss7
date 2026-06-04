@@ -169,7 +169,7 @@ public class NettyByteBufLifecycleTest {
     }
 
     private void runByteBufRoundTrip(IpChannelType ipChannelType, String managementName, String serverName, int serverPort,
-            int clientPort, String serverAssocName, String clientAssocName) throws Exception {
+                                     int clientPort, String serverAssocName, String clientAssocName) throws Exception {
         initManagement(managementName, 1, 2, 1);
 
         try {
@@ -195,7 +195,7 @@ public class NettyByteBufLifecycleTest {
     }
 
     private void runReconnectAfterServerAssociationRestart(IpChannelType ipChannelType, String managementName,
-            String serverName, int serverPort, int clientPort, String serverAssocName, String clientAssocName)
+                                                           String serverName, int serverPort, int clientPort, String serverAssocName, String clientAssocName)
             throws Exception {
         initManagement(managementName, 1, 2, 1);
         CountingAssociationListener serverListener = new CountingAssociationListener();
@@ -247,7 +247,7 @@ public class NettyByteBufLifecycleTest {
     }
 
     private void runConnectCycle(NettySctpManagementImpl mgmt, IpChannelType ipChannelType, String serverName,
-            int serverPort, int clientPort, String serverAssocName, String clientAssocName) throws Exception {
+                                 int serverPort, int clientPort, String serverAssocName, String clientAssocName) throws Exception {
         if (!mgmt.isStarted()) {
             mgmt.start();
             mgmt.setConnectDelay(500);

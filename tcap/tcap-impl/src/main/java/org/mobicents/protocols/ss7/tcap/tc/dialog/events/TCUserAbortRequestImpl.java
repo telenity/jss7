@@ -30,66 +30,66 @@ import org.mobicents.protocols.ss7.tcap.asn.DialogServiceUserType;
 import org.mobicents.protocols.ss7.tcap.asn.UserInformation;
 
 /**
- * 
+ *
  * @author amit bhayani
  * @author sergey vetyutnev
- * 
+ *
  */
 public class TCUserAbortRequestImpl extends DialogRequestImpl implements TCUserAbortRequest {
 
-	private boolean returnMessageOnError;
+    private boolean returnMessageOnError;
 
-	private SccpAddress originatingAddress;
+    private SccpAddress originatingAddress;
 
-	// fields
-	private ApplicationContextName applicationContextName;
-	private UserInformation userInformation;
+    // fields
+    private ApplicationContextName applicationContextName;
+    private UserInformation userInformation;
 
-	private DialogServiceUserType dialogServiceUserType;
+    private DialogServiceUserType dialogServiceUserType;
 
-	TCUserAbortRequestImpl() {
-		super(EventType.UAbort);
-	}
+    TCUserAbortRequestImpl() {
+        super(EventType.UAbort);
+    }
 
-	public ApplicationContextName getApplicationContextName() {
-		return this.applicationContextName;
-	}
+    public ApplicationContextName getApplicationContextName() {
+        return this.applicationContextName;
+    }
 
-	public SccpAddress getOriginatingAddress() {
-		return this.originatingAddress;
-	}
+    public SccpAddress getOriginatingAddress() {
+        return this.originatingAddress;
+    }
 
-	public UserInformation getUserInformation() {
-		return this.userInformation;
-	}
+    public UserInformation getUserInformation() {
+        return this.userInformation;
+    }
 
-	public void setApplicationContextName(ApplicationContextName acn) {
-		this.applicationContextName = acn;
-	}
+    public void setApplicationContextName(ApplicationContextName acn) {
+        this.applicationContextName = acn;
+    }
 
-	public void setOriginatingAddress(SccpAddress dest) {
-		this.originatingAddress = dest;
-	}
+    public void setOriginatingAddress(SccpAddress dest) {
+        this.originatingAddress = dest;
+    }
 
-	public void setUserInformation(UserInformation userInformation) {
-		this.userInformation = userInformation;
+    public void setUserInformation(UserInformation userInformation) {
+        this.userInformation = userInformation;
 
-	}
+    }
 
-	public void setDialogServiceUserType(DialogServiceUserType dialogServiceUserType) {
-		this.dialogServiceUserType = dialogServiceUserType;
-	}
+    public void setDialogServiceUserType(DialogServiceUserType dialogServiceUserType) {
+        this.dialogServiceUserType = dialogServiceUserType;
+    }
 
-	public DialogServiceUserType getDialogServiceUserType() {
-		return this.dialogServiceUserType;
-	}
+    public DialogServiceUserType getDialogServiceUserType() {
+        return this.dialogServiceUserType;
+    }
 
-	public void setReturnMessageOnError(boolean val) {
-		returnMessageOnError = val;
-	}
+    public void setReturnMessageOnError(boolean val) {
+        returnMessageOnError = val;
+    }
 
-	public boolean getReturnMessageOnError() {
-		return returnMessageOnError;
-	}
+    public boolean getReturnMessageOnError() {
+        return returnMessageOnError;
+    }
 
 }

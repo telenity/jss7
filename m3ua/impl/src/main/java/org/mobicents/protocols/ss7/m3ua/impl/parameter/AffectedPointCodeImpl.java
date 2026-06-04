@@ -28,9 +28,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.AffectedPointCode;
 import org.mobicents.protocols.ss7.m3ua.parameter.Parameter;
 
 /**
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public class AffectedPointCodeImpl extends ParameterImpl implements
         AffectedPointCode {

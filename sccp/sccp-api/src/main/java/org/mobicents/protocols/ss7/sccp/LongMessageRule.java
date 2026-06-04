@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -22,17 +22,17 @@
 package org.mobicents.protocols.ss7.sccp;
 
 /**
- * 
+ *
  * @author Amit Bhayani
- * 
+ *
  */
 public interface LongMessageRule {
-	public LongMessageRuleType getLongMessageRuleType();
+    public LongMessageRuleType getLongMessageRuleType();
 
-	public int getFirstSpc();
+    public int getFirstSpc();
 
-	public int getLastSpc();
+    public int getLastSpc();
 
-	public boolean matches(int dpc);
+    public boolean matches(int dpc);
 
 }

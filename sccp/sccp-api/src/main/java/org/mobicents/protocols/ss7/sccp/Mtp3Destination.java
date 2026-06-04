@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -22,21 +22,21 @@
 package org.mobicents.protocols.ss7.sccp;
 
 /**
- * 
+ *
  * @author Amit Bhayani
  *
  */
 public interface Mtp3Destination {
 
-	public int getFirstDpc();
+    public int getFirstDpc();
 
-	public int getLastDpc();
+    public int getLastDpc();
 
-	public int getFirstSls();
+    public int getFirstSls();
 
-	public int getLastSls();
+    public int getLastSls();
 
-	public int getSlsMask();
+    public int getSlsMask();
 
-	public boolean match(int dpc, int sls);
+    public boolean match(int dpc, int sls);
 }

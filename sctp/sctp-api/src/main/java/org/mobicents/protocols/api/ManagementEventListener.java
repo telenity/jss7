@@ -1,5 +1,5 @@
 /*
- * TeleStax, Open Source Cloud Communications  Copyright 2012. 
+ * TeleStax, Open Source Cloud Communications  Copyright 2012.
  * and individual contributors
  * by the @authors tag. See the copyright.txt in the distribution for a
  * full listing of individual contributors.
@@ -23,32 +23,32 @@
 package org.mobicents.protocols.api;
 
 /**
- * 
+ *
  * @author sergey vetyutnev
- * 
+ *
  */
 public interface ManagementEventListener {
 
-	public void onServiceStarted();
+    public void onServiceStarted();
 
-	public void onServiceStopped();
+    public void onServiceStopped();
 
-	public void onRemoveAllResources();
+    public void onRemoveAllResources();
 
-	public void onServerAdded(Server server);
+    public void onServerAdded(Server server);
 
-	public void onServerRemoved(Server serverName);
+    public void onServerRemoved(Server serverName);
 
-	public void onAssociationAdded(Association association);
+    public void onAssociationAdded(Association association);
 
-	public void onAssociationRemoved(Association association);
+    public void onAssociationRemoved(Association association);
 
-	public void onAssociationStarted(Association association);
+    public void onAssociationStarted(Association association);
 
-	public void onAssociationStopped(Association association);
+    public void onAssociationStopped(Association association);
 
-	public void onAssociationUp(Association association);
+    public void onAssociationUp(Association association);
 
-	public void onAssociationDown(Association association);
-	
+    public void onAssociationDown(Association association);
+
 }

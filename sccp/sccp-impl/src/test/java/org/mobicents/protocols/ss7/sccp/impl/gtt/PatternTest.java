@@ -28,6 +28,7 @@
 package org.mobicents.protocols.ss7.sccp.impl.gtt;
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 /**

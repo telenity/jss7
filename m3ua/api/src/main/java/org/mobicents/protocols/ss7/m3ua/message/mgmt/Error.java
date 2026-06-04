@@ -34,9 +34,9 @@ import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
  * an incoming message. For example, the message type might be unexpected given
  * the current state, or a parameter value might be invalid. Error messages MUST
  * NOT be generated in response to other Error messages.
- * 
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface Error extends M3UAMessage {
 

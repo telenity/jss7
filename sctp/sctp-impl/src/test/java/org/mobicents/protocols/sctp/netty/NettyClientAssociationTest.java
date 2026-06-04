@@ -38,7 +38,7 @@ import org.junit.Test;
 
 /**
  * @author amit bhayani
- * 
+ *
  */
 public class NettyClientAssociationTest {
 
@@ -116,12 +116,12 @@ public class NettyClientAssociationTest {
     /**
      * In this test client association is started without server being started.
      * Client keeps attempting to connect to server, till server comes up
-     * 
+     *
      * @throws Exception
      */
     @Test
     public void testConnectAttemptsSctp() throws Exception {
-        
+
         if (NettySctpTransferTest.checkSctpEnabled())
             this.testConnectAttemptsByProtoclol(IpChannelType.SCTP);
     }
@@ -129,7 +129,7 @@ public class NettyClientAssociationTest {
     /**
      * In this test client association is started without server being started.
      * Client keeps attempting to connect to server, till server comes up
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -180,7 +180,7 @@ public class NettyClientAssociationTest {
         assertTrue(serverAssocDown);
 
         Runtime runtime = Runtime.getRuntime();
-        
+
         this.tearDown();
     }
 
@@ -188,7 +188,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationUp
          * (org.mobicents.protocols.sctp.Association)
@@ -210,7 +210,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationShutdown
          * (org.mobicents.protocols.sctp.Association)
@@ -223,7 +223,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationLost
          * (org.mobicents.protocols.sctp.Association)
@@ -235,7 +235,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationRestart
          * (org.mobicents.protocols.sctp.Association)
@@ -247,7 +247,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onPayload(org.mobicents
          * .protocols.sctp.Association,
@@ -270,7 +270,7 @@ public class NettyClientAssociationTest {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
     }
@@ -279,7 +279,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationUp
          * (org.mobicents.protocols.sctp.Association)
@@ -301,7 +301,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationShutdown
          * (org.mobicents.protocols.sctp.Association)
@@ -314,7 +314,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationLost
          * (org.mobicents.protocols.sctp.Association)
@@ -326,7 +326,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onCommunicationRestart
          * (org.mobicents.protocols.sctp.Association)
@@ -338,7 +338,7 @@ public class NettyClientAssociationTest {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.mobicents.protocols.sctp.AssociationListener#onPayload(org.mobicents
          * .protocols.sctp.Association,
@@ -360,7 +360,7 @@ public class NettyClientAssociationTest {
         @Override
         public void inValidStreamId(PayloadData payloadData) {
             // TODO Auto-generated method stub
-            
+
         }
 
     }

@@ -24,10 +24,10 @@ package org.mobicents.protocols.ss7.m3ua.parameter;
 
 /**
  * The routing key is used to associate traffic with the proper application
- * server and ASP. 
- * 
+ * server and ASP.
+ *
  * @author amit bhayani
- * 
+ *
  */
 public interface RoutingKey extends Parameter {
 
