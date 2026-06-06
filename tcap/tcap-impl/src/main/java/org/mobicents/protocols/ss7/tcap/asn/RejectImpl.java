@@ -141,7 +141,7 @@ public class RejectImpl implements Reject {
             }
             switch (tag) {
                 case _TAG_IID:
-                    this.invokeId = (int) localAis.readInteger();
+                    this.setInvokeId((int) localAis.readInteger());
                     break;
                 case Tag.NULL:
                     localAis.readNull();
@@ -163,6 +163,8 @@ public class RejectImpl implements Reject {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while decoding Reject: " + e.getMessage(), e);
         } catch (AsnException e) {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while decoding Reject: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "Invalid InvokeID while decoding Reject: " + e.getMessage(), e);
         }
 
     }

@@ -215,12 +215,12 @@ public class InvokeImpl implements Invoke {
                 throw new ParseException(null, GeneralProblemType.MistypedComponent, "Error while decoding Invoke: bad tag or tag class for InvokeID: tag="
                         + tag + ", tagClass = " + localAis.getTagClass());
             }
-            this.invokeId = (int) localAis.readInteger();
+            this.setInvokeId((int) localAis.readInteger());
 
             tag = localAis.readTag();
             if (tag == _TAG_LID && localAis.getTagClass() == Tag.CLASS_CONTEXT_SPECIFIC) {
                 // linkedId - optional
-                this.linkedId = (int) localAis.readInteger();
+                this.setLinkedId((int) localAis.readInteger());
                 tag = localAis.readTag();
             }
 
@@ -241,6 +241,8 @@ public class InvokeImpl implements Invoke {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while decoding Invoke: " + e.getMessage(), e);
         } catch (AsnException e) {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while decoding Invoke: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "Invalid InvokeID while decoding Invoke: " + e.getMessage(), e);
         } catch (ParseException e) {
             e.setInvokeId(this.invokeId);
             throw e;

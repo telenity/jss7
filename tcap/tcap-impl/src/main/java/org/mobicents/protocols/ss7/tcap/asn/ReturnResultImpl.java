@@ -147,7 +147,7 @@ public class ReturnResultImpl implements ReturnResult {
                         + tag + ", tagClass = " + localAis.getTagClass());
             }
 
-            this.invokeId = (int) localAis.readInteger();
+            this.setInvokeId((int) localAis.readInteger());
 
             if (localAis.available() <= 0)
                 return;
@@ -175,6 +175,8 @@ public class ReturnResultImpl implements ReturnResult {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while decoding ReturnResult: " + e.getMessage(), e);
         } catch (AsnException e) {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while decoding ReturnResult: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "Invalid InvokeID while decoding ReturnResult: " + e.getMessage(), e);
         } catch (ParseException e) {
             e.setInvokeId(this.invokeId);
             throw e;

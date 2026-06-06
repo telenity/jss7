@@ -413,6 +413,7 @@ public class SccpManagement {
                             (remoteSpc.isRemoteSpcProhibited() ? SignallingPointStatus.inaccessible
                                     : SignallingPointStatus.accessible), 0, remoteSccpStatus);
                 } catch (Exception ee) {
+                    logger.error("Exception while invoking onPcState", ee);
                 }
             }
         }
@@ -435,6 +436,7 @@ public class SccpManagement {
                 try {
                     listener.onPcState(affectedPc, SignallingPointStatus.accessible, 0, remoteSccpStatus);
                 } catch (Exception ee) {
+                    logger.error("Exception while invoking onPcState", ee);
                 }
             }
         }
@@ -479,6 +481,7 @@ public class SccpManagement {
             try {
                 listener.onState(remoteSsn.getRemoteSpc(), remoteSsn.getRemoteSsn(), isEnabled, 0);
             } catch (Exception ee) {
+                logger.error("Exception while invoking onState", ee);
             }
         }
     }

@@ -146,7 +146,7 @@ public class ReturnResultLastImpl implements ReturnResultLast {
                         "Error while decoding ReturnResultLast: bad tag or tag class for InvokeID: tag=" + tag + ", tagClass = " + localAis.getTagClass());
             }
 
-            this.invokeId = (int) localAis.readInteger();
+            this.setInvokeId((int) localAis.readInteger());
 
             if (localAis.available() <= 0)
                 return;
@@ -174,6 +174,8 @@ public class ReturnResultLastImpl implements ReturnResultLast {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while decoding ReturnResultLast: " + e.getMessage(), e);
         } catch (AsnException e) {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while decoding ReturnResultLast: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "Invalid InvokeID while decoding ReturnResultLast: " + e.getMessage(), e);
         } catch (ParseException e) {
             e.setInvokeId(this.invokeId);
             throw e;

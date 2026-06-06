@@ -100,6 +100,9 @@ public class ReturnErrorImpl implements ReturnError {
      * .lang.Long)
      */
     public void setInvokeId(Integer i) {
+        if ((i == null) || (i < -128 || i > 127)) {
+            throw new IllegalArgumentException("Invoke ID out of range: <-128,127>: " + i);
+        }
         this.invokeId = i;
 
     }
@@ -144,7 +147,7 @@ public class ReturnErrorImpl implements ReturnError {
                 throw new ParseException(null, GeneralProblemType.MistypedComponent,
                         "Error while decoding ReturnError: bad tag or tag class for InvokeID: tag=" + tag + ", tagClass = " + localAis.getTagClass());
             }
-            this.invokeId = (int) localAis.readInteger();
+            this.setInvokeId((int) localAis.readInteger());
 
             if (localAis.available() == 0) {
                 // next parameter (errorCode) is mandatory but it sometimes absent in live trace
@@ -177,6 +180,8 @@ public class ReturnErrorImpl implements ReturnError {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "IOException while decoding ReturnError: " + e.getMessage(), e);
         } catch (AsnException e) {
             throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "AsnException while decoding ReturnError: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ParseException(null, GeneralProblemType.BadlyStructuredComponent, "Invalid InvokeID while decoding ReturnError: " + e.getMessage(), e);
         } catch (ParseException e) {
             e.setInvokeId(this.invokeId);
             throw e;
@@ -218,6 +223,5 @@ public class ReturnErrorImpl implements ReturnError {
     }
 
 }
-
 
 

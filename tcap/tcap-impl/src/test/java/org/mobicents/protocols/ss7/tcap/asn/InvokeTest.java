@@ -34,10 +34,12 @@ import org.mobicents.protocols.asn.AsnOutputStream;
 import org.mobicents.protocols.asn.Tag;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Component;
 import org.mobicents.protocols.ss7.tcap.asn.comp.ComponentType;
+import org.mobicents.protocols.ss7.tcap.asn.comp.GeneralProblemType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Invoke;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCode;
 import org.mobicents.protocols.ss7.tcap.asn.comp.OperationCodeType;
 import org.mobicents.protocols.ss7.tcap.asn.comp.Parameter;
+import org.mobicents.protocols.ss7.tcap.asn.comp.Reject;
 
 /**
  * The trace is from nad1053.pcap wirehsark trace
@@ -126,6 +128,21 @@ public class InvokeTest {
         encodedData = asnos.toByteArray();
         assertTrue(Arrays.equals(expected, encodedData));
 
+    }
+
+    @Test
+    public void testDecodeRejectsOutOfRangeInvokeId() throws IOException, ParseException {
+        byte[] data = new byte[]{
+                (byte) 0xa1, 0x07,
+                0x02, 0x02, 0x00, (byte) 0x80,
+                0x02, 0x01, 0x01};
+
+        Component comp = TcapFactory.createComponent(new AsnInputStream(data));
+
+        assertEquals(ComponentType.Reject, comp.getType());
+        Reject reject = (Reject) comp;
+        assertTrue(reject.isLocalOriginated());
+        assertEquals(GeneralProblemType.BadlyStructuredComponent, reject.getProblem().getGeneralProblemType());
     }
 
     @Test
