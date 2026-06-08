@@ -179,6 +179,12 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
     }
 
     public void setMaxAsForRoute(int maxAsForRoute) {
+        if (maxAsForRoute < 1) {
+            maxAsForRoute = 1;
+        } else if (maxAsForRoute > 4) {
+            maxAsForRoute = 4;
+        }
+
         this.maxAsForRoute = maxAsForRoute;
     }
 
@@ -360,7 +366,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         FSM peerFSM = ((AsImpl) as).getPeerFSM();
         this.m3uaScheduler.execute(peerFSM);
 
-        appServers.add(as);
+        appServers.addLast(as);
 
         this.store();
 
@@ -385,15 +391,9 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
             throw new Exception(String.format(M3UAOAMMessages.DESTROY_AS_FAILED_ASP_ASSIGNED, asName));
         }
 
-        for (RouteMap.Entry<RouteKey, As[]> e = this.routeManagement.route.head(), end = this.routeManagement.route
-                .tail(); (e = e.getNext()) != end; ) {
-            As[] asList = e.getValue();
-            for (int count = 0; count < asList.length; count++) {
-                AsImpl asTemp = (AsImpl) asList[count];
-                if (asTemp != null && asTemp.equals(as)) {
-                    throw new Exception(String.format(M3UAOAMMessages.AS_USED_IN_ROUTE_ERROR, asName, e.getKey()));
-                }
-            }
+        RouteKey routeKey = this.routeManagement.findRouteKeyForAs(as);
+        if (routeKey != null) {
+            throw new Exception(String.format(M3UAOAMMessages.AS_USED_IN_ROUTE_ERROR, asName, routeKey));
         }
 
         FSM asLocalFSM = as.getLocalFSM();
@@ -496,7 +496,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         factory.setAssociation(association);
         factory.setTransportManagement(this.transportManagement);
 
-        aspfactories.add(factory);
+        aspfactories.addLast(factory);
 
         this.store();
 
@@ -752,16 +752,16 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         this.routeManagement.removeAllResourses();
 
         // Unassign asp from as
-        FastMap<String, FastList<String>> lstAsAsp = new FastMap<>();
+        FastMap<String, FastList<String>> lstAsAsp = new FastMap<>(this.appServers.size());
 
         for (As as : this.appServers) {
             AsImpl asImpl = (AsImpl) as;
-            FastList<String> lstAsps = new FastList<>();
+            FastList<String> lstAsps = new FastList<>(asImpl.appServerProcs.size());
 
             for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n
                     .getNext()) != end; ) {
                 AspImpl aspImpl = (AspImpl) n.getValue();
-                lstAsps.add(aspImpl.getName());
+                lstAsps.addLast(aspImpl.getName());
             }
             lstAsAsp.put(asImpl.getName(), lstAsps);
         }
@@ -876,12 +876,12 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
             writer.close();
         } catch (Exception e) {
-            logger.error("Error while persisting the Rule state in file", e);
+            logger.error("Error while persisting the M3UA state in file", e);
         }
     }
 
     /**
-     * Load and create LinkSets and Link from persisted file
+     * Load and create ASPs from persisted file
      *
      * @throws Exception
      */
@@ -909,8 +909,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
                 m3uaScheduler.execute(asPeerFSM);
 
                 // All the Asp's for this As added in temp list
-                FastList<Asp> tempAsp = new FastList<>();
-                tempAsp.addAll(asImpl.appServerProcs);
+                FastList<Asp> tempAsp = new FastList<>(asImpl.appServerProcs);
 
                 // Clear Asp's from this As
                 asImpl.appServerProcs.clear();

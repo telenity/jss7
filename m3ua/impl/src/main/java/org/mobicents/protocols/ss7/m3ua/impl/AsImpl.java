@@ -542,7 +542,7 @@ public class AsImpl implements XMLSerializable, As {
      */
     protected void addAppServerProcess(AspImpl aspImpl) throws Exception {
         aspImpl.setAs(this);
-        appServerProcs.add(aspImpl);
+        appServerProcs.addLast(aspImpl);
 
         this.resetSlsVsAspTable();
     }

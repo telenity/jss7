@@ -9,6 +9,7 @@ import javolution.util.FastMap;
  * @author amit bhayani
  */
 public class RouteMap<K, V> extends FastMap<K, V> {
-
-
+    public RouteMap() {
+        this.shared();
+    }
 }

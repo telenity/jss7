@@ -73,13 +73,15 @@ public class M3UARouteManagement {
 
     private M3UAManagementImpl m3uaManagement = null;
 
+    private final Object routeLock = new Object();
+
     private final int asSelectionMask;
     private int asSlsShiftPlaces = 0x00;
 
     /**
      * persists key vs corresponding As that servers for this key
      */
-    protected RouteMap<RouteKey, As[]> route = new RouteMap<>();
+    protected volatile RouteMap<RouteKey, As[]> route = new RouteMap<>();
 
     /**
      * Persists DPC vs As's serving this DPC. Used for notifying M3UA-user of
@@ -158,7 +160,8 @@ public class M3UARouteManagement {
      * from xml file.
      */
     protected void reset() {
-        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end; ) {
+        RouteMap<RouteKey, As[]> route = this.route;
+        for (RouteMap.Entry<RouteKey, As[]> e = route.head(), end = route.tail(); (e = e.getNext()) != end; ) {
             RouteKey key = e.getKey();
             As[] asList = e.getValue();
 
@@ -187,14 +190,22 @@ public class M3UARouteManagement {
      *                   {@link AsImpl} already added
      */
     protected void addRoute(int dpc, int opc, int si, String asName) throws Exception {
-        AsImpl asImpl = this.findAsOrThrow(asName);
+        synchronized (this.routeLock) {
+            AsImpl asImpl = this.findAsOrThrow(asName);
 
-        RouteKey key = new RouteKey(dpc, opc, si);
+            RouteKey key = new RouteKey(dpc, opc, si);
+            RouteMap<RouteKey, As[]> route = this.route;
+            As[] asArray = route.get(key);
 
-        As[] asArray = route.get(key);
+            if (asArray == null) {
+                As[] newAsArray = new AsImpl[this.m3uaManagement.maxAsForRoute];
+                newAsArray[0] = asImpl;
+                route.put(key, newAsArray);
+                this.m3uaManagement.store();
+                this.addAsToDPC(dpc, asImpl);
+                return;
+            }
 
-        if (asArray != null) {
-            // check is this As is already added
             for (int i = 0; i < asArray.length; i++) {
                 AsImpl asTemp = (AsImpl) asArray[i];
                 if (asTemp != null && asImpl.equals(asTemp)) {
@@ -202,23 +213,21 @@ public class M3UARouteManagement {
                             dpc, opc, si));
                 }
             }
-        } else {
-            asArray = new AsImpl[this.m3uaManagement.maxAsForRoute];
-            route.put(key, asArray);
-        }
 
-        // Add to first empty slot
-        for (int i = 0; i < asArray.length; i++) {
-            if (asArray[i] == null) {
-                asArray[i] = asImpl;
-                this.m3uaManagement.store();
-
-                this.addAsToDPC(dpc, asImpl);
-                return;
+            for (int i = 0; i < asArray.length; i++) {
+                if (asArray[i] == null) {
+                    // Publish a new array so readers can safely finish with the previous snapshot.
+                    As[] newAsArray = asArray.clone();
+                    newAsArray[i] = asImpl;
+                    route.put(key, newAsArray);
+                    this.m3uaManagement.store();
+                    this.addAsToDPC(dpc, asImpl);
+                    return;
+                }
             }
-        }
 
-        throw new Exception(String.format("dpc=%d opc=%d si=%d combination already has maximum possible As", dpc, opc, si));
+            throw new Exception(String.format("dpc=%d opc=%d si=%d combination already has maximum possible As", dpc, opc, si));
+        }
     }
 
     /**
@@ -232,33 +241,54 @@ public class M3UARouteManagement {
      *
      */
     protected void removeRoute(int dpc, int opc, int si, String asName) throws Exception {
-        AsImpl asImpl = this.findAsOrThrow(asName);
+        synchronized (this.routeLock) {
+            AsImpl asImpl = this.findAsOrThrow(asName);
 
-        RouteKey key = new RouteKey(dpc, opc, si);
+            RouteKey key = new RouteKey(dpc, opc, si);
+            RouteMap<RouteKey, As[]> route = this.route;
 
-        As[] asArray = route.get(key);
+            As[] asArray = route.get(key);
 
-        if (asArray == null) {
-            throw new Exception(String.format("No AS=%s configured  for dpc=%d opc=%d si=%d", asImpl.getName(), dpc,
-                    opc, si));
-        }
-
-        for (int i = 0; i < asArray.length; i++) {
-            AsImpl asTemp = (AsImpl) asArray[i];
-            if (asTemp != null && asImpl.equals(asTemp)) {
-                asArray[i] = null;
-                this.m3uaManagement.store();
-
-                // Check if this AS is still used for the same DPC in ANY route before removing from DPC mapping
-                if (!isAsStillUsedForDpc(dpc, asImpl)) {
-                    this.removeAsFromDPC(dpc, asImpl);
-                }
-                return;
+            if (asArray == null) {
+                throw new Exception(String.format("No AS=%s configured  for dpc=%d opc=%d si=%d", asImpl.getName(), dpc,
+                        opc, si));
             }
-        }
 
-        throw new Exception(String.format("No AS=%s configured  for dpc=%d opc=%d si=%d", asImpl.getName(), dpc, opc,
-                si));
+            for (int i = 0; i < asArray.length; i++) {
+                AsImpl asTemp = (AsImpl) asArray[i];
+                if (asTemp != null && asImpl.equals(asTemp)) {
+                    As[] newAsArray = asArray.clone();
+                    newAsArray[i] = null;
+                    route.put(key, newAsArray);
+                    this.m3uaManagement.store();
+
+                    // Check if this AS is still used for the same DPC in ANY route before removing from DPC mapping
+                    if (!isAsStillUsedForDpc(dpc, asImpl)) {
+                        this.removeAsFromDPC(dpc, asImpl);
+                    }
+                    return;
+                }
+            }
+
+            throw new Exception(String.format("No AS=%s configured  for dpc=%d opc=%d si=%d", asImpl.getName(), dpc, opc,
+                    si));
+        }
+    }
+
+    protected RouteKey findRouteKeyForAs(AsImpl asImpl) {
+        synchronized (this.routeLock) {
+            RouteMap<RouteKey, As[]> route = this.route;
+            for (RouteMap.Entry<RouteKey, As[]> e = route.head(), end = route.tail(); (e = e.getNext()) != end; ) {
+                As[] asList = e.getValue();
+                for (int i = 0; i < asList.length; i++) {
+                    AsImpl asTemp = (AsImpl) asList[i];
+                    if (asTemp != null && asTemp.equals(asImpl)) {
+                        return e.getKey();
+                    }
+                }
+            }
+            return null;
+        }
     }
 
     /**
@@ -270,7 +300,8 @@ public class M3UARouteManagement {
      * @return true if the AsImpl is found in any route for the given DPC, false otherwise.
      */
     protected boolean isAsStillUsedForDpc(int dpc, AsImpl asImpl) {
-        for (RouteMap.Entry<RouteKey, As[]> e = this.route.head(), end = this.route.tail(); (e = e.getNext()) != end; ) {
+        RouteMap<RouteKey, As[]> route = this.route;
+        for (RouteMap.Entry<RouteKey, As[]> e = route.head(), end = route.tail(); (e = e.getNext()) != end; ) {
             RouteKey key = e.getKey();
             if (key.getDpc() == dpc) {
                 As[] asList = e.getValue();
@@ -321,6 +352,8 @@ public class M3UARouteManagement {
         As[] asArray = null;
 
         // Check specific route first
+        RouteMap<RouteKey, As[]> route = this.route;
+
         asArray = route.get(new RouteKey(dpc, opc, si));
 
         if (asArray == null) {
@@ -427,7 +460,9 @@ public class M3UARouteManagement {
     }
 
     public void removeAllResourses() throws Exception {
-        this.route.clear();
-        this.routeTable.clear();
+        synchronized (this.routeLock) {
+            this.route.clear();
+            this.routeTable.clear();
+        }
     }
 }
