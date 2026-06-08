@@ -164,7 +164,7 @@ public class PayloadData {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("PayloadData [dataLength=").append(dataLength).append(", complete=").append(complete).append(", unordered=")
                 .append(unordered).append(", payloadProtocolId=").append(payloadProtocolId).append(", streamNumber=")
                 .append(streamNumber).append("]");

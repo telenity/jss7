@@ -876,7 +876,7 @@ public class NettySctpManagementImpl implements Management {
 
             writer.close();
         } catch (Exception e) {
-            logger.error("Error while persisting the Rule state in file", e);
+            logger.error("Error while persisting the Association state in file", e);
         }
     }
 }

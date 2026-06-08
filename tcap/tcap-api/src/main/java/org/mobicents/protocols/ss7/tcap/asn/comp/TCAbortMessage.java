@@ -22,7 +22,6 @@
 
 package org.mobicents.protocols.ss7.tcap.asn.comp;
 
-import org.mobicents.protocols.asn.External;
 import org.mobicents.protocols.asn.Tag;
 import org.mobicents.protocols.ss7.tcap.asn.DialogPortion;
 import org.mobicents.protocols.ss7.tcap.asn.Encodable;

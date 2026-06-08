@@ -105,7 +105,7 @@ public class RemoteSignalingPointCodeImpl implements XMLSerializable, RemoteSign
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("rsp=").append(this.remoteSpc).append(" rsp-flag=").append(this.remoteSpcFlag).append(" mask=").append(this.mask).append(" rsp-prohibited=")
                 .append(this.remoteSpcProhibited).append(" rsccp-prohibited=").append(this.remoteSccpProhibited);
         return sb.toString();

@@ -24,8 +24,6 @@ package org.mobicents.protocols.ss7.mtp;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
-
 public class Utils {
     /////////////////////////
     // Some common statics //
@@ -118,7 +116,7 @@ public class Utils {
         final int brk = modulo / 2;
         int indent = (label == null) ? 0 : label.length();
 
-        StringBuffer sb = new StringBuffer(indent + 1);
+        StringBuilder sb = new StringBuilder(indent + 1);
 
         while (indent > 0) {
             sb.append(" ");
@@ -131,9 +129,9 @@ public class Utils {
             return null;
         }
 
-        sb = new StringBuffer(bytes.length * 4);
+        sb = new StringBuilder(bytes.length * 4);
 
-        StringBuffer cb = new StringBuffer(16);
+        StringBuilder cb = new StringBuilder(16);
         boolean nl = true;
         int i = 0;
 
@@ -176,7 +174,7 @@ public class Utils {
             if ((i % modulo) == 0) {
                 sb.append("|").append(cb).append("|\n");
                 nl = true;
-                cb = new StringBuffer(16);
+                cb = new StringBuilder(16);
             }
         }
 

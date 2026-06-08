@@ -68,7 +68,7 @@ public class M3UAXMLBinding extends XMLBinding {
 
                 xml.add(routeKey.toString(), "key", String.class);
 
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 for (int count = 0; count < asList.length; count++) {
                     AsImpl asImpl = asList[count];
                     if (asImpl != null) {

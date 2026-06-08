@@ -32,7 +32,7 @@ public class SCTPShellExecutor implements ShellExecutor {
             return SCTPOAMMessages.NO_SERVER_DEFINED_YET;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (Server server : servers) {
             sb.append(M3UAOAMMessages.NEW_LINE);
             sb.append("SERVER ").append(server.getIpChannelType().getType()).append(" name=").append(server.getName())
@@ -66,7 +66,7 @@ public class SCTPShellExecutor implements ShellExecutor {
             return SCTPOAMMessages.NO_ASSOCIATION_DEFINED_YET;
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String s : associations.keySet()) {
             Association asso = associations.get(s);
             sb.append(M3UAOAMMessages.NEW_LINE);

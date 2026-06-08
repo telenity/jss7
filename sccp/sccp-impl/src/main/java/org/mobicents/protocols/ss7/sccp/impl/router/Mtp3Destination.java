@@ -85,7 +85,7 @@ public class Mtp3Destination implements XMLSerializable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("firstDpc=").append(this.firstDpc).append(", lastDpc=").append(this.lastDpc).append(", firstSls=").append(this.firstSls).append(", lastSls=")
                 .append(this.lastSls).append(", slsMask=").append(this.slsMask);
         return sb.toString();
@@ -111,4 +111,3 @@ public class Mtp3Destination implements XMLSerializable {
         }
     };
 }
-

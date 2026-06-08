@@ -120,7 +120,7 @@ public class SccpDataMessageImpl extends SccpDataNoticeTemplateMessageImpl imple
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("Sccp Msg [Type=");
         switch (this.type) {
             case SccpMessage.MESSAGE_TYPE_UDT:
@@ -155,4 +155,3 @@ public class SccpDataMessageImpl extends SccpDataNoticeTemplateMessageImpl imple
         return sb.toString();
     }
 }
-

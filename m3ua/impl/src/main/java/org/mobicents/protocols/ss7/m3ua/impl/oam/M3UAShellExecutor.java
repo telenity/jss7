@@ -235,7 +235,7 @@ public class M3UAShellExecutor implements ShellExecutor {
         if (route.size() == 0) {
             return M3UAOAMMessages.NO_ROUTE_DEFINED_YET;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<RouteKey, As[]> entry : route.entrySet()) {
             RouteKey key = entry.getKey();

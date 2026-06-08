@@ -124,7 +124,7 @@ public class SccpAddress implements Parameter, XMLSerializable { // impl? pfff
     }
 
     public String toString() {
-        return ((new StringBuffer()).append("pc=").append(pc).append(",ssn=").append(ssn).append(",AI=")
+        return ((new StringBuilder()).append("pc=").append(pc).append(",ssn=").append(ssn).append(",AI=")
                 .append(ai.getValue()).append(",gt=").append(gt)).toString();
     }
 

@@ -111,7 +111,7 @@ public class RemoteSubSystemImpl implements XMLSerializable, RemoteSubSystem {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("rsp=").append(this.remoteSpc).append(" rss=").append(this.remoteSsn).append(" rss-flag=")
                 .append(this.remoteSsnFlag).append(" rss-prohibited=").append(this.remoteSsnProhibited);
         if (this.markProhibitedWhenSpcResuming)

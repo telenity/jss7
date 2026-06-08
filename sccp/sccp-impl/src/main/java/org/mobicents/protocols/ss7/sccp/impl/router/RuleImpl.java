@@ -490,7 +490,7 @@ public class RuleImpl implements Rule, Serializable {
     }
 
     private String translateDigits(String digits, String[] masks, String[] patternDigits, String[] addressDigits) {
-        StringBuffer translatedDigits = new StringBuffer();
+        StringBuilder translatedDigits = new StringBuilder();
         String[] digitComponents = new String[patternDigits.length];
         int offset = 0;
         for (int count = 0; count < patternDigits.length; count++) {
