@@ -211,11 +211,11 @@ public class RouterImpl implements Router {
 
     private final RuleComparator ruleComparator = new RuleComparator();
     // rule list
-    private RuleMap<Integer, Rule> rulesMap = new RuleMap<>();
-    private SccpAddressMap<Integer, SccpAddress> primaryAddresses = new SccpAddressMap<>();
-    private SccpAddressMap<Integer, SccpAddress> backupAddresses = new SccpAddressMap<>();
-    private LongMessageRuleMap<Integer, LongMessageRule> longMessageRules = new LongMessageRuleMap<>();
-    private Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> saps = new Mtp3ServiceAccessPointMap<>();
+    private volatile RuleMap<Integer, Rule> rulesMap = new RuleMap<>();
+    private volatile SccpAddressMap<Integer, SccpAddress> primaryAddresses = new SccpAddressMap<>();
+    private volatile SccpAddressMap<Integer, SccpAddress> backupAddresses = new SccpAddressMap<>();
+    private volatile LongMessageRuleMap<Integer, LongMessageRule> longMessageRules = new LongMessageRuleMap<>();
+    private volatile Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> saps = new Mtp3ServiceAccessPointMap<>();
 
     private final String name;
     private final SccpStack sccpStack;
@@ -280,7 +280,8 @@ public class RouterImpl implements Router {
      */
     public Rule findRule(SccpAddress calledParty, boolean isMtpOriginated) {
 
-        for (FastMap.Entry<Integer, Rule> e = this.rulesMap.head(), end = this.rulesMap.tail(); (e = e.getNext()) != end; ) {
+        RuleMap<Integer, Rule> rulesMap = this.rulesMap;
+        for (FastMap.Entry<Integer, Rule> e = rulesMap.head(), end = rulesMap.tail(); (e = e.getNext()) != end; ) {
             Rule rule = e.getValue();
             if (rule.matches(calledParty, isMtpOriginated)) {
                 return rule;
@@ -290,8 +291,8 @@ public class RouterImpl implements Router {
     }
 
     public LongMessageRule findLongMessageRule(int dpc) {
-        for (FastMap.Entry<Integer, LongMessageRule> e = this.longMessageRules.head(), end = this.longMessageRules
-                .tail(); (e = e.getNext()) != end; ) {
+        LongMessageRuleMap<Integer, LongMessageRule> longMessageRules = this.longMessageRules;
+        for (FastMap.Entry<Integer, LongMessageRule> e = longMessageRules.head(), end = longMessageRules.tail(); (e = e.getNext()) != end; ) {
             LongMessageRule rule = e.getValue();
             if (rule.matches(dpc)) {
                 return rule;
@@ -301,8 +302,8 @@ public class RouterImpl implements Router {
     }
 
     public Mtp3ServiceAccessPoint findMtp3ServiceAccessPoint(int dpc, int sls) {
-        for (FastMap.Entry<Integer, Mtp3ServiceAccessPoint> e = this.saps.head(), end = this.saps.tail(); (e = e
-                .getNext()) != end; ) {
+        Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> saps = this.saps;
+        for (FastMap.Entry<Integer, Mtp3ServiceAccessPoint> e = saps.head(), end = saps.tail(); (e = e.getNext()) != end; ) {
             Mtp3ServiceAccessPoint sap = e.getValue();
             if (sap.matches(dpc, sls)) {
                 return sap;
@@ -332,8 +333,8 @@ public class RouterImpl implements Router {
     }
 
     public boolean spcIsLocal(int spc) {
-        for (FastMap.Entry<Integer, Mtp3ServiceAccessPoint> e = this.saps.head(), end = this.saps.tail(); (e = e
-                .getNext()) != end; ) {
+        Mtp3ServiceAccessPointMap<Integer, Mtp3ServiceAccessPoint> saps = this.saps;
+        for (FastMap.Entry<Integer, Mtp3ServiceAccessPoint> e = saps.head(), end = saps.tail(); (e = e.getNext()) != end; ) {
             Mtp3ServiceAccessPoint sap = e.getValue();
             if (sap.getOpc() == spc) {
                 return true;
@@ -343,23 +344,23 @@ public class RouterImpl implements Router {
     }
 
     public Map<Integer, Rule> getRules() {
-        return rulesMap.unmodifiable();
+        return this.rulesMap.unmodifiable();
     }
 
     public Map<Integer, SccpAddress> getPrimaryAddresses() {
-        return primaryAddresses.unmodifiable();
+        return this.primaryAddresses.unmodifiable();
     }
 
     public Map<Integer, SccpAddress> getBackupAddresses() {
-        return backupAddresses.unmodifiable();
+        return this.backupAddresses.unmodifiable();
     }
 
     public Map<Integer, LongMessageRule> getLongMessageRules() {
-        return longMessageRules.unmodifiable();
+        return this.longMessageRules.unmodifiable();
     }
 
     public Map<Integer, Mtp3ServiceAccessPoint> getMtp3ServiceAccessPoints() {
-        return saps.unmodifiable();
+        return this.saps.unmodifiable();
     }
 
     public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
@@ -427,8 +428,7 @@ public class RouterImpl implements Router {
             Arrays.sort(rulesArray, ruleComparator);
 
             RuleMap<Integer, Rule> newRule = new RuleMap<>();
-            for (int i = 0; i < rulesArray.length; i++) {
-                RuleImpl ruleTemp = rulesArray[i];
+            for (RuleImpl ruleTemp : rulesArray) {
                 newRule.put(ruleTemp.getRuleId(), ruleTemp);
             }
             this.rulesMap = newRule;
@@ -498,8 +498,7 @@ public class RouterImpl implements Router {
             Arrays.sort(rulesArray, ruleComparator);
 
             RuleMap<Integer, Rule> newRule = new RuleMap<>();
-            for (int i = 0; i < rulesArray.length; i++) {
-                RuleImpl ruleTemp = rulesArray[i];
+            for (RuleImpl ruleTemp : rulesArray) {
                 newRule.put(ruleTemp.getRuleId(), ruleTemp);
             }
             this.rulesMap = newRule;

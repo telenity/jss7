@@ -42,7 +42,7 @@ public class Mtp3ServiceAccessPoint implements XMLSerializable {
     private int opc;
     private int ni;
 
-    private Mtp3DestinationMap<Integer, Mtp3Destination> dpcList = new Mtp3DestinationMap<Integer, Mtp3Destination>();
+    private volatile Mtp3DestinationMap<Integer, Mtp3Destination> dpcList = new Mtp3DestinationMap<>();
 
     public Mtp3ServiceAccessPoint() {
     }
@@ -75,7 +75,7 @@ public class Mtp3ServiceAccessPoint implements XMLSerializable {
 
     public void addMtp3Destination(int destId, Mtp3Destination dest) {
         synchronized (this) {
-            Mtp3DestinationMap<Integer, Mtp3Destination> newDpcList = new Mtp3DestinationMap<Integer, Mtp3Destination>();
+            Mtp3DestinationMap<Integer, Mtp3Destination> newDpcList = new Mtp3DestinationMap<>();
             newDpcList.putAll(this.dpcList);
             newDpcList.put(destId, dest);
             this.dpcList = newDpcList;
@@ -84,7 +84,7 @@ public class Mtp3ServiceAccessPoint implements XMLSerializable {
 
     public void removeMtp3Destination(int destId) {
         synchronized (this) {
-            Mtp3DestinationMap<Integer, Mtp3Destination> newDpcList = new Mtp3DestinationMap<Integer, Mtp3Destination>();
+            Mtp3DestinationMap<Integer, Mtp3Destination> newDpcList = new Mtp3DestinationMap<>();
             newDpcList.putAll(this.dpcList);
             newDpcList.remove(destId);
             this.dpcList = newDpcList;
@@ -92,7 +92,8 @@ public class Mtp3ServiceAccessPoint implements XMLSerializable {
     }
 
     public boolean matches(int dpc, int sls) {
-        for (FastMap.Entry<Integer, Mtp3Destination> e = this.dpcList.head(), end = this.dpcList.tail(); (e = e.getNext()) != end; ) {
+        Mtp3DestinationMap<Integer, Mtp3Destination> dpcList = this.dpcList;
+        for (FastMap.Entry<Integer, Mtp3Destination> e = dpcList.head(), end = dpcList.tail(); (e = e.getNext()) != end; ) {
             if (e.getValue().match(dpc, sls))
                 return true;
         }
@@ -101,11 +102,12 @@ public class Mtp3ServiceAccessPoint implements XMLSerializable {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("mtp3Id=").append(this.mtp3Id).append(", opc=").append(this.opc).append(", ni=").append(this.ni).append(", dpcList=[");
 
         boolean isFirst = true;
-        for (FastMap.Entry<Integer, Mtp3Destination> e = this.dpcList.head(), end = this.dpcList.tail(); (e = e.getNext()) != end; ) {
+        Mtp3DestinationMap<Integer, Mtp3Destination> dpcList = this.dpcList;
+        for (FastMap.Entry<Integer, Mtp3Destination> e = dpcList.head(), end = dpcList.tail(); (e = e.getNext()) != end; ) {
             Integer id = e.getKey();
             Mtp3Destination dest = e.getValue();
             if (isFirst)
@@ -145,4 +147,3 @@ public class Mtp3ServiceAccessPoint implements XMLSerializable {
         }
     };
 }
-

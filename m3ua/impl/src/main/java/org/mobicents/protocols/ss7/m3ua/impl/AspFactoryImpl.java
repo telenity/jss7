@@ -457,9 +457,9 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
     }
 
     protected void write(M3UAMessage message) {
+        ByteBuf byteBuf = null;
         try {
             ByteBufAllocator byteBufAllocator = this.association.getByteBufAllocator();
-            ByteBuf byteBuf;
             if (byteBufAllocator != null) {
                 byteBuf = byteBufAllocator.buffer();
             } else {
@@ -496,6 +496,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
             this.association.send(payloadData);
         } catch (Throwable e) {
             logger.error(String.format("Error while trying to send PayloadData to SCTP layer. M3UAMessage=%s", message), e);
+            ReferenceCountUtil.release(byteBuf);
         }
     }
 

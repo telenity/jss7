@@ -127,8 +127,8 @@ public class Mtp3ServiceAccessPointImpl implements Mtp3ServiceAccessPoint, XMLSe
     }
 
     public boolean matches(int dpc, int sls) {
-        for (FastMap.Entry<Integer, Mtp3Destination> e = this.dpcList.head(), end = this.dpcList.tail(); (e = e
-                .getNext()) != end; ) {
+        Mtp3DestinationMap<Integer, Mtp3Destination> dpcList = this.dpcList;
+        for (FastMap.Entry<Integer, Mtp3Destination> e = dpcList.head(), end = dpcList.tail(); (e = e.getNext()) != end; ) {
             if (e.getValue().match(dpc, sls))
                 return true;
         }
@@ -137,13 +137,13 @@ public class Mtp3ServiceAccessPointImpl implements Mtp3ServiceAccessPoint, XMLSe
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("mtp3Id=").append(this.mtp3Id).append(", opc=").append(this.opc).append(", ni=").append(this.ni)
                 .append(", dpcList=[");
 
         boolean isFirst = true;
-        for (FastMap.Entry<Integer, Mtp3Destination> e = this.dpcList.head(), end = this.dpcList.tail(); (e = e
-                .getNext()) != end; ) {
+        Mtp3DestinationMap<Integer, Mtp3Destination> dpcList = this.dpcList;
+        for (FastMap.Entry<Integer, Mtp3Destination> e = dpcList.head(), end = dpcList.tail(); (e = e.getNext()) != end; ) {
             Integer id = e.getKey();
             Mtp3Destination dest = e.getValue();
             if (isFirst)

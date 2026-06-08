@@ -64,9 +64,9 @@ public class SccpResourceImpl implements SccpResource {
 
     private String persistDir;
 
-    protected RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = new RemoteSubSystemMap<>();
-    private RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = new RemoteSignalingPointCodeMap<>();
-    protected ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> concernedSpcs = new ConcernedSignalingPointCodeMap<>();
+    protected volatile RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = new RemoteSubSystemMap<>();
+    protected volatile RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = new RemoteSignalingPointCodeMap<>();
+    protected volatile ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> concernedSpcs = new ConcernedSignalingPointCodeMap<>();
 
     private final String name;
 
@@ -146,7 +146,7 @@ public class SccpResourceImpl implements SccpResource {
         }
 
         // TODO check if RemoteSignalingPointCode corresponds to remoteSpc
-        // exist?
+        //  exist?
 
         synchronized (this) {
             rsscObj.setRemoteSsn(remoteSsn);
@@ -179,7 +179,8 @@ public class SccpResourceImpl implements SccpResource {
 
     public RemoteSubSystem getRemoteSsn(int spc, int remoteSsn) {
 
-        for (FastMap.Entry<Integer, RemoteSubSystem> e = this.remoteSsns.head(), end = this.remoteSsns.tail(); (e = e
+        RemoteSubSystemMap<Integer, RemoteSubSystem> remoteSsns = this.remoteSsns;
+        for (FastMap.Entry<Integer, RemoteSubSystem> e = remoteSsns.head(), end = remoteSsns.tail(); (e = e
                 .getNext()) != end; ) {
             RemoteSubSystem remoteSubSystem = e.getValue();
             if (remoteSubSystem.getRemoteSpc() == spc && remoteSsn == remoteSubSystem.getRemoteSsn()) {
@@ -191,7 +192,7 @@ public class SccpResourceImpl implements SccpResource {
     }
 
     public Map<Integer, RemoteSubSystem> getRemoteSsns() {
-        return remoteSsns.unmodifiable();
+        return this.remoteSsns.unmodifiable();
     }
 
     public void addRemoteSpc(int remoteSpcId, int remoteSpc, int remoteSpcFlag, int mask) throws Exception {
@@ -246,7 +247,8 @@ public class SccpResourceImpl implements SccpResource {
     }
 
     public RemoteSignalingPointCode getRemoteSpcByPC(int remotePC) {
-        for (FastMap.Entry<Integer, RemoteSignalingPointCode> e = this.remoteSpcs.head(), end = this.remoteSpcs.tail(); (e = e
+        RemoteSignalingPointCodeMap<Integer, RemoteSignalingPointCode> remoteSpcs = this.remoteSpcs;
+        for (FastMap.Entry<Integer, RemoteSignalingPointCode> e = remoteSpcs.head(), end = remoteSpcs.tail(); (e = e
                 .getNext()) != end; ) {
             RemoteSignalingPointCode remoteSignalingPointCode = e.getValue();
             if (remoteSignalingPointCode.getRemoteSpc() == remotePC) {
@@ -258,7 +260,7 @@ public class SccpResourceImpl implements SccpResource {
     }
 
     public Map<Integer, RemoteSignalingPointCode> getRemoteSpcs() {
-        return remoteSpcs.unmodifiable();
+        return this.remoteSpcs.unmodifiable();
     }
 
     public void addConcernedSpc(int concernedSpcId, int remoteSpc) throws Exception {
@@ -313,8 +315,8 @@ public class SccpResourceImpl implements SccpResource {
     }
 
     public ConcernedSignalingPointCode getConcernedSpcByPC(int remotePC) {
-        for (FastMap.Entry<Integer, ConcernedSignalingPointCode> e = this.concernedSpcs.head(), end = this.concernedSpcs
-                .tail(); (e = e.getNext()) != end; ) {
+        ConcernedSignalingPointCodeMap<Integer, ConcernedSignalingPointCode> concernedSpcs = this.concernedSpcs;
+        for (FastMap.Entry<Integer, ConcernedSignalingPointCode> e = concernedSpcs.head(), end = concernedSpcs.tail(); (e = e.getNext()) != end; ) {
             ConcernedSignalingPointCode concernedSubSystem = e.getValue();
             if (concernedSubSystem.getRemoteSpc() == remotePC) {
                 return concernedSubSystem;
@@ -325,7 +327,7 @@ public class SccpResourceImpl implements SccpResource {
     }
 
     public Map<Integer, ConcernedSignalingPointCode> getConcernedSpcs() {
-        return concernedSpcs.unmodifiable();
+        return this.concernedSpcs.unmodifiable();
     }
 
     public void removeAllResourses() {
@@ -349,13 +351,9 @@ public class SccpResourceImpl implements SccpResource {
      */
     public void store() {
 
-        // TODO : Should we keep reference to Objects rather than recreating
-        // every time?
         try {
             XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
             writer.setBinding(binding);
-            // Enables cross-references.
-            // writer.setReferenceResolver(new XMLReferenceResolver());
             writer.setIndentation(TAB_INDENT);
             writer.write(remoteSsns, REMOTE_SSN, RemoteSubSystemMap.class);
             writer.write(remoteSpcs, REMOTE_SPC, RemoteSignalingPointCodeMap.class);
@@ -383,8 +381,7 @@ public class SccpResourceImpl implements SccpResource {
             remoteSpcs = reader.read(REMOTE_SPC, RemoteSignalingPointCodeMap.class);
             concernedSpcs = reader.read(CONCERNED_SPC, ConcernedSignalingPointCodeMap.class);
         } catch (XMLStreamException ex) {
-            // this.logger.info(
-            // "Error while re-creating Linksets from persisted file", ex);
+            // no-op
         }
     }
 }
