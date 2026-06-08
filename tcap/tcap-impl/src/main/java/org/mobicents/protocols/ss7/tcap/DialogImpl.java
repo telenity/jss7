@@ -1180,6 +1180,13 @@ public class DialogImpl implements Dialog {
         try {
             this.dialogLock.lock();
 
+            if (state == TRPseudoState.Expunged) {
+                if (logger.isEnabledFor(Level.WARN)) {
+                    logger.warn("Received TC-CONTINUE for already closed dialog: " + this);
+                }
+                return;
+            }
+
             if (state == TRPseudoState.InitialSent) {
                 restartIdleTimer();
                 tcContinueIndication = (TCContinueIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider

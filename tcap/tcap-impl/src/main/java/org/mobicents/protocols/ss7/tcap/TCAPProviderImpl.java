@@ -373,7 +373,11 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
         this.doRelease(d);
 
         synchronized (dialogsLock) {
-            if (this.dialogs.remove(did) != null) {
+            // Identity-based remove: release() always runs under the dialog's dialogLock (via
+            // DialogImpl.setState(Expunged)), so a concurrent inbound handler is either blocked on
+            // that lock or holds this same DialogImpl reference and no-ops once it sees Expunged.
+            // The two-arg remove also guards against an already-recycled id being reassigned.
+            if (this.dialogs.remove(did, d)) {
                 freeDialogs.addLast(did);
             }
         }
@@ -442,6 +446,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
         long end = this.stack.getDialogIdRangeEnd();
 
         synchronized (dialogsLock) {
+            dialogs.clear();
             freeDialogs.clear();
             for (long id = start; id <= end; id++) {
                 freeDialogs.addLast(id);
@@ -573,8 +578,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                     }
 
                     long dialogId = Utils.decodeTransactionId(tcm.getDestinationTransactionId());
-                    DialogImpl di;
-                    di = this.dialogs.get(dialogId);
+                    DialogImpl di = this.dialogs.get(dialogId);
                     if (di == null) {
                         logger.warn("TC-CONTINUE: No dialog/transaction for id: " + dialogId);
                         this.sendProviderAbort(PAbortCauseType.UnrecognizedTxID, tcm.getOriginatingTransactionId(), remoteAddress, localAddress,
