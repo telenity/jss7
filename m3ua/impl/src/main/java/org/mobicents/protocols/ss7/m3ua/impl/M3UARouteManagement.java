@@ -317,9 +317,7 @@ public class M3UARouteManagement {
     }
 
     private AsImpl findAsOrThrow(String asName) throws Exception {
-        for (FastList.Node<As> n = this.m3uaManagement.appServers.head(), end = this.m3uaManagement.appServers.tail();
-             (n = n.getNext()) != end; ) {
-            As as = n.getValue();
+        for (As as : this.m3uaManagement.appServers) {
             if (as.getName().compareTo(asName) == 0) {
                 return (AsImpl) as;
             }

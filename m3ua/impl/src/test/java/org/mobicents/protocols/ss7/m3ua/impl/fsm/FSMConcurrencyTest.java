@@ -3,6 +3,7 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl.fsm;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
@@ -154,5 +156,86 @@ public class FSMConcurrencyTest {
 
         start.countDown();
         assertTrue(done.await(30, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testConcurrentSignalLostUpdate() throws Exception {
+        final FSM fsm = new FSM("lost-update");
+        fsm.createState("A");
+        fsm.createState("B");
+
+        final AtomicInteger processCount = new AtomicInteger(0);
+        final AtomicInteger onEnterCount = new AtomicInteger(0);
+        final AtomicInteger onExitCount = new AtomicInteger(0);
+        final CountDownLatch handlerEntered = new CountDownLatch(2);
+        final CountDownLatch handlerGate = new CountDownLatch(1);
+
+        fsm.createState("B").setOnEnter(new FSMStateEventHandler() {
+            @Override
+            public void onEvent(FSMState state) {
+                onEnterCount.incrementAndGet();
+            }
+        });
+        fsm.createState("A").setOnExit(new FSMStateEventHandler() {
+            @Override
+            public void onEvent(FSMState state) {
+                onExitCount.incrementAndGet();
+            }
+        });
+
+        fsm.setStart("A");
+        fsm.setEnd("B");
+        fsm.createTransition("toB", "A", "B").setHandler(new TransitionHandler() {
+            @Override
+            public boolean process(FSMState state) {
+                processCount.incrementAndGet();
+                handlerEntered.countDown();
+                try {
+                    handlerGate.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                return true;
+            }
+        });
+
+        m3uaScheduler.execute(fsm);
+
+        workers.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    fsm.signal("toB");
+                } catch (Exception e) {
+                }
+            }
+        });
+        workers.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    fsm.signal("toB");
+                } catch (Exception e) {
+                }
+            }
+        });
+
+        handlerEntered.await(5, TimeUnit.SECONDS);
+        handlerGate.countDown();
+        Thread.sleep(500);
+
+        // If FSM.signal() were properly synchronized, only one thread would
+        // transition (processCount==1). The second thread would read B and throw
+        // UnknownTransitionException. With the current unsynchronized
+        // read-modify-write, both threads read A before either writes B,
+        // resulting in processCount==2. This assertion FAILS on buggy code.
+        assertEquals("FSM lost-update race: process() called " + processCount.get()
+                + " times instead of 1 — signal() has unsynchronized read-modify-write",
+                1, processCount.get());
+        assertEquals("onEnter called " + onEnterCount.get() + " times instead of 1",
+                1, onEnterCount.get());
+        assertEquals("onExit called " + onExitCount.get() + " times instead of 1",
+                1, onExitCount.get());
+        assertEquals("B", fsm.getState().getName());
     }
 }

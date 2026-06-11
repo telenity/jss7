@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
@@ -66,9 +64,8 @@ public class THLocalAsActToPendRemAspDwn implements TransitionHandler {
             if (this.asImpl.getTrafficModeType().getMode() == TrafficModeType.Loadshare) {
                 this.lbCount = 0;
 
-                for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n
-                        .getNext()) != end; ) {
-                    AspImpl remAspImpl = (AspImpl) n.getValue();
+                for (Asp asp : this.asImpl.appServerProcs) {
+                    AspImpl remAspImpl = (AspImpl) asp;
 
                     FSM aspPeerFSM = remAspImpl.getPeerFSM();
                     AspState aspState = AspState.getState(aspPeerFSM.getState().getName());
@@ -91,9 +88,8 @@ public class THLocalAsActToPendRemAspDwn implements TransitionHandler {
                     // But we are below threshold. Send "Ins. ASPs" to INACTIVE
                     // ASP's but not to ASP that caused this transition as it is
                     // already DOWN
-                    for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs
-                            .tail(); (n = n.getNext()) != end; ) {
-                        AspImpl remAspTemp = (AspImpl) n.getValue();
+                    for (Asp asp : this.asImpl.appServerProcs) {
+                        AspImpl remAspTemp = (AspImpl) asp;
 
                         FSM aspPeerFSM = remAspTemp.getPeerFSM();
                         AspState aspState = AspState.getState(aspPeerFSM.getState().getName());
@@ -113,9 +109,8 @@ public class THLocalAsActToPendRemAspDwn implements TransitionHandler {
             // We have reached here means AS is transitioning to be PENDING.
             // Send new AS STATUS to all INACTIVE APS's
 
-            for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n
-                    .getNext()) != end; ) {
-                remAsp = (AspImpl) n.getValue();
+            for (Asp asp : this.asImpl.appServerProcs) {
+                remAsp = (AspImpl) asp;
 
                 FSM aspPeerFSM = remAsp.getPeerFSM();
                 AspState aspState = AspState.getState(aspPeerFSM.getState().getName());

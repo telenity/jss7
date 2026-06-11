@@ -22,8 +22,6 @@
 
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import java.util.Set;
 
 import org.apache.log4j.Level;
@@ -82,9 +80,8 @@ public class AsStatePenTimeout implements FSMStateEventHandler {
 
         // check if there are any ASP's who are INACTIVE, transition to
         // INACTIVE else DOWN
-        for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-            AspImpl aspImpl = (AspImpl) n.getValue();
-
+        for (Asp asp : this.asImpl.appServerProcs) {
+            AspImpl aspImpl = (AspImpl) asp;
             FSM aspLocalFSM = aspImpl.getLocalFSM();
 
             if (AspState.getState(aspLocalFSM.getState().getName()) == AspState.INACTIVE) {

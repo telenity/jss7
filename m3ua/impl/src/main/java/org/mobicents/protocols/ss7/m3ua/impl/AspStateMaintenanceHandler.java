@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
@@ -328,8 +326,8 @@ public class AspStateMaintenanceHandler extends MessageHandler {
             return true;
         } else if (asImpl.getTrafficModeType().getMode() == TrafficModeType.Override) {
 
-            for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-                AspImpl asptemp = (AspImpl) n.getValue();
+            for (Asp asp : asImpl.appServerProcs) {
+                AspImpl asptemp = (AspImpl) asp;
                 FSM fsm = asptemp.getLocalFSM();
                 AspState aspState = AspState.getState(fsm.getState().getName());
 

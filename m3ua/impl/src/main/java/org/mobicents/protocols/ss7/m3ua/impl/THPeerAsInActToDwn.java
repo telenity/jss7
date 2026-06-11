@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
@@ -51,9 +49,8 @@ public class THPeerAsInActToDwn implements TransitionHandler {
 
         // check if there is atleast one other ASP in INACTIVE state. If
         // yes this AS remains in INACTIVE state else goes in DOWN state.
-        for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n
-                .getNext()) != end; ) {
-            AspImpl aspImpl = (AspImpl) n.getValue();
+        for (Asp asp : this.asImpl.appServerProcs) {
+            AspImpl aspImpl = (AspImpl) asp;
 
             FSM aspLocalFSM = aspImpl.getLocalFSM();
             AspState aspState = AspState.getState(aspLocalFSM.getState().getName());

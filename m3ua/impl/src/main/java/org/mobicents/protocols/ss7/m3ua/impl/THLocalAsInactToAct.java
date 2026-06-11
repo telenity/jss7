@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -72,9 +70,8 @@ public class THLocalAsInactToAct implements TransitionHandler {
                 lbCount = this.asImpl.getMinAspActiveForLb();
 
                 // Find out how many ASP's are ACTIVE now
-                for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n
-                        .getNext()) != end; ) {
-                    AspImpl remAspImpl = (AspImpl) n.getValue();
+                for (Asp asp : this.asImpl.appServerProcs) {
+                    AspImpl remAspImpl = (AspImpl) asp;
                     FSM aspPeerFSM = remAspImpl.getPeerFSM();
                     AspState aspState = AspState.getState(aspPeerFSM.getState().getName());
 
@@ -94,9 +91,8 @@ public class THLocalAsInactToAct implements TransitionHandler {
             if (asImpl.getFunctionality() != Functionality.IPSP) {
                 // Send Notify only for ASP or SGW
 
-                for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n
-                        .getNext()) != end; ) {
-                    AspImpl remAspImpl = (AspImpl) n.getValue();
+                for (Asp asp : this.asImpl.appServerProcs) {
+                    AspImpl remAspImpl = (AspImpl) asp;
 
                     FSM aspPeerFSM = remAspImpl.getPeerFSM();
                     AspState aspState = AspState.getState(aspPeerFSM.getState().getName());

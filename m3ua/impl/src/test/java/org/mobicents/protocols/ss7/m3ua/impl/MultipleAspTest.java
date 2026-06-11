@@ -1,8 +1,9 @@
 package org.mobicents.protocols.ss7.m3ua.impl;
 
+import java.util.ArrayList;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import javolution.util.FastList;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.mobicents.protocols.api.Association;
@@ -805,12 +806,12 @@ public class MultipleAspTest {
     }
 
     private class Mtp3UserPartListenerImpl implements Mtp3UserPartListener {
-        private FastList<Mtp3TransferPrimitive> receivedData = new FastList<Mtp3TransferPrimitive>();
+        private ArrayList<Mtp3TransferPrimitive> receivedData = new ArrayList<>();
         private Mtp3ResumePrimitive mtp3ResumePrimitive;
         private Mtp3PausePrimitive mtp3PausePrimitive;
         private Mtp3StatusPrimitive mtp3StatusPrimitive;
 
-        public FastList<Mtp3TransferPrimitive> getReceivedData() {
+        public ArrayList<Mtp3TransferPrimitive> getReceivedData() {
             return receivedData;
         }
 

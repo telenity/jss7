@@ -24,10 +24,12 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javolution.util.FastList;
 import javolution.xml.XMLFormat;
@@ -77,7 +79,7 @@ public class AsImpl implements XMLSerializable, As {
     protected int minAspActiveForLb = 1;
 
     // List of all the ASP's for this AS
-    protected FastList<Asp> appServerProcs = new FastList<>();
+    protected List<Asp> appServerProcs = new CopyOnWriteArrayList<>();
 
     // List of As state listeners
     private Set<AsStateListener> asStateListeners = ConcurrentHashMap.newKeySet();
@@ -110,8 +112,6 @@ public class AsImpl implements XMLSerializable, As {
     private ExchangeType exchangeType = null;
     private IPSPType ipspType = null;
     private NetworkAppearance networkAppearance = null;
-
-    private final int[] slsVsAspTable = new int[256];
 
     private int aspSlsMask = 0x07;
     private int aspSlsShiftPlaces = 0x00;
@@ -443,7 +443,7 @@ public class AsImpl implements XMLSerializable, As {
      * @return
      */
     public List<Asp> getAspList() {
-        return this.appServerProcs.unmodifiable();
+        return Collections.unmodifiableList(this.appServerProcs);
     }
 
     public FSM getPeerFSM() {
@@ -538,19 +538,16 @@ public class AsImpl implements XMLSerializable, As {
      * Add new {@link AspImpl} for this As.
      *
      * @param aspImpl
-     * @throws Exception throws exception if the Asp with same name already exist
      */
     protected void addAppServerProcess(AspImpl aspImpl) throws Exception {
         aspImpl.setAs(this);
-        appServerProcs.addLast(aspImpl);
-
-        this.resetSlsVsAspTable();
+        appServerProcs.add(aspImpl);
     }
 
     protected AspImpl removeAppServerProcess(String aspName) throws Exception {
         AspImpl aspImpl = null;
-        for (FastList.Node<Asp> n = this.appServerProcs.head(), end = this.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-            AspImpl aspTemp = (AspImpl) n.getValue();
+        for (Asp asp : this.appServerProcs) {
+            AspImpl aspTemp = (AspImpl) asp;
             if (aspTemp.getName().equals(aspName)) {
                 aspImpl = aspTemp;
                 break;
@@ -594,8 +591,6 @@ public class AsImpl implements XMLSerializable, As {
             aspPeerFSM.cancel();
         }
 
-        this.resetSlsVsAspTable();
-
         return aspImpl;
     }
 
@@ -631,10 +626,11 @@ public class AsImpl implements XMLSerializable, As {
 
                 int aspIndex = (sls & this.aspSlsMask);
                 aspIndex = (aspIndex >> this.aspSlsShiftPlaces);
+                Object[] aspArray = this.appServerProcs.toArray();
 
-                for (int i = 0; i < this.appServerProcs.size(); i++) {
-
-                    AspImpl aspTemp = (AspImpl) this.appServerProcs.get(this.slsVsAspTable[aspIndex++]);
+                for (int i = 0; i < aspArray.length; i++) {
+                    AspImpl aspTemp = (AspImpl) aspArray[aspIndex % aspArray.length];
+                    aspIndex++;
 
                     FSM aspFsm = null;
 
@@ -650,7 +646,7 @@ public class AsImpl implements XMLSerializable, As {
                         aspFound = true;
                         break;
                     }
-                }// for
+                }
 
                 if (!aspFound) {
                     // This should never happen.
@@ -705,7 +701,7 @@ public class AsImpl implements XMLSerializable, As {
             asImpl.networkAppearance = xml.get(NETWORK_APPEARANCE, NetworkAppearanceImpl.class);
             asImpl.trMode = xml.get(TRAFFIC_MODE, TrafficModeTypeImpl.class);
             asImpl.defaultTrafModType = xml.get(DEFAULT_TRAFFIC_MODE, TrafficModeTypeImpl.class);
-            asImpl.appServerProcs = xml.get(ASP_LIST, FastList.class);
+            asImpl.appServerProcs = new CopyOnWriteArrayList<>(xml.get(ASP_LIST, FastList.class));
             asImpl.init();
         }
 
@@ -723,7 +719,7 @@ public class AsImpl implements XMLSerializable, As {
             xml.add((NetworkAppearanceImpl) asImpl.networkAppearance, NETWORK_APPEARANCE, NetworkAppearanceImpl.class);
             xml.add((TrafficModeTypeImpl) asImpl.trMode, TRAFFIC_MODE, TrafficModeTypeImpl.class);
             xml.add((TrafficModeTypeImpl) asImpl.defaultTrafModType, DEFAULT_TRAFFIC_MODE, TrafficModeTypeImpl.class);
-            xml.add(asImpl.appServerProcs, ASP_LIST, FastList.class);
+            xml.add(new FastList<>(asImpl.appServerProcs), ASP_LIST, FastList.class);
 
         }
     };
@@ -761,8 +757,8 @@ public class AsImpl implements XMLSerializable, As {
         sb.append(M3UAOAMMessages.NEW_LINE);
         sb.append(M3UAOAMMessages.SHOW_ASSIGNED_TO);
 
-        for (FastList.Node<Asp> n = this.appServerProcs.head(), end = this.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-            AspImpl aspTemp = (AspImpl) n.getValue();
+        for (Asp asp : this.appServerProcs) {
+            AspImpl aspTemp = (AspImpl) asp;
             AspFactoryImpl aspFactoryImpl = aspTemp.getAspFactory();
             sb.append(M3UAOAMMessages.TAB).append(M3UAOAMMessages.SHOW_ASP_NAME).append(aspFactoryImpl.getName())
                     .append(M3UAOAMMessages.SHOW_STARTED).append(aspFactoryImpl.getStatus());
@@ -792,13 +788,4 @@ public class AsImpl implements XMLSerializable, As {
         return asStateListeners;
     }
 
-    private void resetSlsVsAspTable() {
-        int aspNumber = 0;
-        for (int count = 0; count < 256; count++) {
-            if (aspNumber >= this.appServerProcs.size()) {
-                aspNumber = 0;
-            }
-            this.slsVsAspTable[count] = aspNumber++;
-        }
-    }
 }

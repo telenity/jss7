@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
@@ -50,9 +48,8 @@ public class SEHPeerAsStateEnterPen extends SEHAsStateEnterPen {
         super.onEvent(state);
 
         // If there is even one ASP in INACTIVE state for this AS, ACTIVATE it
-        for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-            AspImpl aspImpl = (AspImpl) n.getValue();
-
+        for (Asp asp : asImpl.appServerProcs) {
+            AspImpl aspImpl = (AspImpl) asp;
             FSM aspLocalFSM = aspImpl.getLocalFSM();
 
             if (AspState.getState(aspLocalFSM.getState().getName()) == AspState.INACTIVE) {

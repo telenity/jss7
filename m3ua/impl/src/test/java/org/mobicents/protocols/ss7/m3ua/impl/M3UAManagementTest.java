@@ -31,8 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.HashMap;
+
 import io.netty.buffer.ByteBufAllocator;
-import javolution.util.FastMap;
 
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.AssociationListener;
@@ -339,7 +340,7 @@ public class M3UAManagementTest {
 
     class TransportManagement implements Management {
 
-        private FastMap<String, TestAssociation> associations = new FastMap<String, TestAssociation>();
+        private HashMap<String, TestAssociation> associations = new HashMap<>();
 
         @Override
         public Association addAssociation(String hostAddress, int hostPort, String peerAddress, int peerPort, String assocName)

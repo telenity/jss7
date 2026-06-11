@@ -27,11 +27,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import javolution.util.FastMap;
 
 import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.indicator.RoutingIndicator;
@@ -460,7 +459,7 @@ public class RouterTest {
 
     private class TestSccpStackImpl implements SccpStack {
 
-        protected FastMap<Integer, Mtp3UserPart> mtp3UserParts = new FastMap<Integer, Mtp3UserPart>();
+        protected HashMap<Integer, Mtp3UserPart> mtp3UserParts = new HashMap<>();
 
         TestSccpStackImpl() {
             Mtp3UserPartImpl mtp3UserPartImpl1 = new Mtp3UserPartImpl();

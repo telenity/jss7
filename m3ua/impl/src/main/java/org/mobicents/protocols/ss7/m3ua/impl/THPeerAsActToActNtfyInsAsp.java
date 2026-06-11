@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
@@ -53,9 +51,8 @@ public class THPeerAsActToActNtfyInsAsp implements TransitionHandler {
 
         // Iterate through all the ASP for this AS and activate if they are
         // inactive
-        for (FastList.Node<Asp> n = this.asImpl.appServerProcs.head(), end = this.asImpl.appServerProcs.tail(); (n = n
-                .getNext()) != end; ) {
-            AspImpl aspTemp = (AspImpl) n.getValue();
+        for (Asp asp : this.asImpl.appServerProcs) {
+            AspImpl aspTemp = (AspImpl) asp;
             AspFactoryImpl factory = aspTemp.getAspFactory();
 
             FSM aspLocalFSM = aspTemp.getLocalFSM();

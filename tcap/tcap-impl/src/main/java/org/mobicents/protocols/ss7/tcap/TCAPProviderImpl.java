@@ -108,9 +108,9 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
     private transient TCAPStackImpl stack;
 
     private transient ConcurrentMap<Long, DialogImpl> dialogs = new ConcurrentHashMap<>();
-    private final ArrayDeque<Long> freeDialogs = new ArrayDeque<>();
+    private transient final ArrayDeque<Long> freeDialogs = new ArrayDeque<>();
 
-    private final Object dialogsLock = new Object();
+    private transient final Object dialogsLock = new Object();
 
     private AtomicInteger seqControl = new AtomicInteger();
     private int ssn;

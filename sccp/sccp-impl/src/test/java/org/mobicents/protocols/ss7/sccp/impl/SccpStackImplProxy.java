@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
-import javolution.util.FastMap;
 
 import org.mobicents.protocols.ss7.Util;
 import org.mobicents.protocols.ss7.mtp.Mtp3UserPart;

@@ -21,8 +21,6 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import javolution.util.FastList;
-
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
@@ -428,9 +426,8 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
                 if (asImpl.getTrafficModeType().getMode() == TrafficModeType.Loadshare) {
                     // If it is loadshare and if there is atleast one other ASP
                     // who ACTIVE, dont transition AS to INACTIVE
-                    for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-                        AspImpl remAspImpl = (AspImpl) n.getValue();
-
+                    for (Asp asp : asImpl.appServerProcs) {
+                        AspImpl remAspImpl = (AspImpl) asp;
                         FSM aspPeerFSM = remAspImpl.getPeerFSM();
                         AspState aspState = AspState.getState(aspPeerFSM.getState().getName());
 

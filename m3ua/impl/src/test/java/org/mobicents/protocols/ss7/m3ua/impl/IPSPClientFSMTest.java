@@ -32,8 +32,9 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import java.util.HashMap;
+
 import io.netty.buffer.ByteBufAllocator;
-import javolution.util.FastMap;
 
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.AssociationListener;
@@ -248,7 +249,7 @@ public class IPSPClientFSMTest {
 
         private AssociationListener associationListener = null;
         private String name = null;
-        private LinkedList<M3UAMessage> messageRxFromUserPart = new LinkedList<M3UAMessage>();
+        private LinkedList<M3UAMessage> messageRxFromUserPart = new LinkedList<>();
 
         TestAssociation(String name) {
             this.name = name;
@@ -378,7 +379,7 @@ public class IPSPClientFSMTest {
 
     class TransportManagement implements Management {
 
-        private FastMap<String, Association> associations = new FastMap<String, Association>();
+        private HashMap<String, Association> associations = new HashMap<>();
 
         @Override
         public Association addAssociation(String hostAddress, int hostPort, String peerAddress, int peerPort, String assocName)
@@ -408,7 +409,7 @@ public class IPSPClientFSMTest {
 
         @Override
         public Map<String, Association> getAssociations() {
-            return associations.unmodifiable();
+            return java.util.Collections.unmodifiableMap(associations);
         }
 
         @Override
@@ -582,8 +583,8 @@ public class IPSPClientFSMTest {
     }
 
     class Mtp3UserPartListenerimpl implements Mtp3UserPartListener {
-        private LinkedList<Mtp3Primitive> mtp3Primitives = new LinkedList<Mtp3Primitive>();
-        private LinkedList<Mtp3TransferPrimitive> mtp3TransferPrimitives = new LinkedList<Mtp3TransferPrimitive>();
+        private LinkedList<Mtp3Primitive> mtp3Primitives = new LinkedList<>();
+        private LinkedList<Mtp3TransferPrimitive> mtp3TransferPrimitives = new LinkedList<>();
 
         Mtp3Primitive rxMtp3PrimitivePoll() {
             return this.mtp3Primitives.poll();

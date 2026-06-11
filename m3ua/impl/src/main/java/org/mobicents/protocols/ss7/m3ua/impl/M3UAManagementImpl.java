@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -36,7 +38,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javolution.util.FastList;
-import javolution.util.FastMap;
 import javolution.xml.XMLObjectReader;
 import javolution.xml.XMLObjectWriter;
 import javolution.xml.stream.XMLStreamException;
@@ -94,8 +95,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
     protected static final int MAX_SEQUENCE_NUMBER = 256;
 
-    protected FastList<As> appServers = new FastList<>();
-    protected FastList<AspFactory> aspfactories = new FastList<>();
+    protected List<As> appServers = new CopyOnWriteArrayList<>();
+    protected List<AspFactory> aspfactories = new CopyOnWriteArrayList<>();
 
     protected M3UAScheduler m3uaScheduler = new M3UAScheduler();
     protected M3UACounterProviderImpl m3uaCounterProvider;
@@ -294,11 +295,11 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
     }
 
     public List<As> getAppServers() {
-        return appServers.unmodifiable();
+        return Collections.unmodifiableList(appServers);
     }
 
     public List<AspFactory> getAspfactories() {
-        return aspfactories.unmodifiable();
+        return Collections.unmodifiableList(aspfactories);
     }
 
     public Map<RouteKey, As[]> getRoute() {
@@ -310,8 +311,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
     }
 
     protected As getAs(String asName) {
-        for (FastList.Node<As> n = appServers.head(), end = appServers.tail(); (n = n.getNext()) != end; ) {
-            As as = n.getValue();
+        for (As as : appServers) {
             if (as.getName().equals(asName)) {
                 return as;
             }
@@ -366,7 +366,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         FSM peerFSM = ((AsImpl) as).getPeerFSM();
         this.m3uaScheduler.execute(peerFSM);
 
-        appServers.addLast(as);
+        appServers.add(as);
 
         this.store();
 
@@ -484,8 +484,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
             throw new Exception(String.format(M3UAOAMMessages.ASSOCIATION_IS_ASSOCIATED, associationName));
         }
 
-        for (FastList.Node<AspFactory> n = aspfactories.head(), end = aspfactories.tail(); (n = n.getNext()) != end; ) {
-            AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) n.getValue();
+        for (AspFactory aspFactory : aspfactories) {
+            AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) aspFactory;
             if (aspid == aspFactoryImpl.getAspid().getAspId()) {
                 throw new Exception(String.format(M3UAOAMMessages.ASP_ID_TAKEN, aspid));
             }
@@ -496,7 +496,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         factory.setAssociation(association);
         factory.setTransportManagement(this.transportManagement);
 
-        aspfactories.addLast(factory);
+        aspfactories.add(factory);
 
         this.store();
 
@@ -558,8 +558,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         }
 
         // If ASP already assigned to AS we don't want to re-assign
-        for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n.getNext()) != end; ) {
-            AspImpl aspImpl = (AspImpl) n.getValue();
+        for (Asp asp : asImpl.appServerProcs) {
+            AspImpl aspImpl = (AspImpl) asp;
             if (aspImpl.getName().equals(aspName)) {
                 throw new Exception(String.format(M3UAOAMMessages.ADD_ASP_TO_AS_FAIL_ALREADY_ASSIGNED_TO_THIS_AS,
                         aspName, asName));
@@ -752,26 +752,24 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         this.routeManagement.removeAllResourses();
 
         // Unassign asp from as
-        FastMap<String, FastList<String>> lstAsAsp = new FastMap<>(this.appServers.size());
+        Map<String, List<String>> lstAsAsp = new LinkedHashMap<>(this.appServers.size());
 
         for (As as : this.appServers) {
             AsImpl asImpl = (AsImpl) as;
-            FastList<String> lstAsps = new FastList<>(asImpl.appServerProcs.size());
+            List<String> lstAsps = new ArrayList<>(asImpl.appServerProcs.size());
 
-            for (FastList.Node<Asp> n = asImpl.appServerProcs.head(), end = asImpl.appServerProcs.tail(); (n = n
-                    .getNext()) != end; ) {
-                AspImpl aspImpl = (AspImpl) n.getValue();
-                lstAsps.addLast(aspImpl.getName());
+            for (Asp asp : asImpl.appServerProcs) {
+                AspImpl aspImpl = (AspImpl) asp;
+                lstAsps.add(aspImpl.getName());
             }
             lstAsAsp.put(asImpl.getName(), lstAsps);
         }
 
-        for (FastMap.Entry<String, FastList<String>> e = lstAsAsp.head(), end = lstAsAsp.tail(); (e = e.getNext()) != end; ) {
+        for (Map.Entry<String, List<String>> e : lstAsAsp.entrySet()) {
             String asName = e.getKey();
-            FastList<String> lstAsps = e.getValue();
+            List<String> lstAsps = e.getValue();
 
-            for (FastList.Node<String> n = lstAsps.head(), end1 = lstAsps.tail(); (n = n.getNext()) != end1; ) {
-                String aspName = n.getValue();
+            for (String aspName : lstAsps) {
                 this.unassignAspFromAs(asName, aspName);
             }
 
@@ -852,8 +850,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
     }
 
     private AspFactoryImpl getAspFactory(String aspName) {
-        for (FastList.Node<AspFactory> n = aspfactories.head(), end = aspfactories.tail(); (n = n.getNext()) != end; ) {
-            AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) n.getValue();
+        for (AspFactory aspFactory : aspfactories) {
+            AspFactoryImpl aspFactoryImpl = (AspFactoryImpl) aspFactory;
             if (aspFactoryImpl.getName().equals(aspName)) {
                 return aspFactoryImpl;
             }
@@ -870,8 +868,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
             XMLObjectWriter writer = XMLObjectWriter.newInstance(Files.newOutputStream(Paths.get(persistFile.toString())));
             writer.setBinding(binding);
             writer.setIndentation(TAB_INDENT);
-            writer.write(aspfactories, ASP_FACTORY_LIST, FastList.class);
-            writer.write(appServers, AS_LIST, FastList.class);
+            writer.write(new FastList<>(aspfactories), ASP_FACTORY_LIST, FastList.class);
+            writer.write(new FastList<>(appServers), AS_LIST, FastList.class);
             writer.write(this.routeManagement.route, DPC_VS_AS_LIST, RouteMap.class);
 
             writer.close();
@@ -892,15 +890,17 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
             reader = XMLObjectReader.newInstance(Files.newInputStream(Paths.get(persistFile.toString())));
 
             reader.setBinding(binding);
-            aspfactories = reader.read(ASP_FACTORY_LIST, FastList.class);
-            appServers = reader.read(AS_LIST, FastList.class);
+            FastList<AspFactory> persistedAspFactories = reader.read(ASP_FACTORY_LIST, FastList.class);
+            FastList<As> persistedAppServers = reader.read(AS_LIST, FastList.class);
+            aspfactories = new CopyOnWriteArrayList<>(persistedAspFactories);
+            appServers = new CopyOnWriteArrayList<>(persistedAppServers);
             this.routeManagement.route = reader.read(DPC_VS_AS_LIST, RouteMap.class);
 
             this.routeManagement.reset();
 
             // Create Asp's and assign to each of the AS. Schedule the FSM's
-            for (FastList.Node<As> n = appServers.head(), end = appServers.tail(); (n = n.getNext()) != end; ) {
-                AsImpl asImpl = (AsImpl) n.getValue();
+            for (As as : appServers) {
+                AsImpl asImpl = (AsImpl) as;
                 asImpl.setM3UAManagement(this);
                 FSM asLocalFSM = asImpl.getLocalFSM();
                 m3uaScheduler.execute(asLocalFSM);
@@ -909,13 +909,13 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
                 m3uaScheduler.execute(asPeerFSM);
 
                 // All the Asp's for this As added in temp list
-                FastList<Asp> tempAsp = new FastList<>(asImpl.appServerProcs);
+                List<Asp> tempAsp = new ArrayList<>(asImpl.appServerProcs);
 
                 // Clear Asp's from this As
                 asImpl.appServerProcs.clear();
 
-                for (FastList.Node<Asp> n1 = tempAsp.head(), end1 = tempAsp.tail(); (n1 = n1.getNext()) != end1; ) {
-                    AspImpl aspImpl = (AspImpl) n1.getValue();
+                for (Asp asp : tempAsp) {
+                    AspImpl aspImpl = (AspImpl) asp;
 
                     try {
                         // Now let the Asp's be created from respective AspFactory and added to As
@@ -927,8 +927,8 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
             }
 
             // Set the transportManagement
-            for (FastList.Node<AspFactory> n = aspfactories.head(), end = aspfactories.tail(); (n = n.getNext()) != end; ) {
-                AspFactoryImpl factory = (AspFactoryImpl) n.getValue();
+            for (AspFactory aspFactory : aspfactories) {
+                AspFactoryImpl factory = (AspFactoryImpl) aspFactory;
                 factory.setTransportManagement(this.transportManagement);
                 factory.setM3UAManagement(this);
                 try {
