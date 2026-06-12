@@ -11,7 +11,7 @@
     <name>Mobicents SS7 :: ${project.artifactId}</name>
 
     <properties>
-        <revision>2.0.0.21</revision>
+        <revision>2.0.1.0</revision>
         <compile.source>1.8</compile.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -23,7 +23,7 @@
         <!-- dependencies -->
         <log4j.version>1.2.26</log4j.version>
         <javolution.version>5.5.1</javolution.version>
-        <netty.version>4.0.56.Final</netty.version>
+        <netty.version>4.1.135.Final</netty.version>
         <junit.version>4.13.2</junit.version>
     </properties>
 
