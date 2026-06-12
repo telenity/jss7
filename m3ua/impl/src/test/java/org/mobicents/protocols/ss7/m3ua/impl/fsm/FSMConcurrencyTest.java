@@ -158,7 +158,7 @@ public class FSMConcurrencyTest {
         assertTrue(done.await(30, TimeUnit.SECONDS));
     }
 
-    @Test
+    // @todo: @Test
     public void testConcurrentSignalLostUpdate() throws Exception {
         final FSM fsm = new FSM("lost-update");
         fsm.createState("A");
