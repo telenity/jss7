@@ -121,6 +121,7 @@ public class MessageFactoryImpl implements MessageFactory {
                     case MessageType.DEREG_RESPONSE:
                         return new DeregistrationResponseImpl();
                 }
+                break;
 
             case MessageClass.MANAGEMENT:
                 switch (messageType) {

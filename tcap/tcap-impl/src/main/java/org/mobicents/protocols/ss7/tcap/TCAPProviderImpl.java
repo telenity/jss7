@@ -701,19 +701,11 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
         TCUnidentifiedMessage tcUnidentified = new TCUnidentifiedMessage();
         tcUnidentified.decode(ais);
 
-        if (tcUnidentified.getOriginatingTransactionId() != null) {
-            byte[] otid = tcUnidentified.getOriginatingTransactionId();
-
-            if (tcUnidentified.getDestinationTransactionId() != null) {
-                Long dtid = Utils.decodeTransactionId(tcUnidentified.getDestinationTransactionId());
-                this.sendProviderAbort(PAbortCauseType.UnrecognizedMessageType, otid, remoteAddress, localAddress,
-                        message.getSls(), message.getProtocolClass().getProtocolClass());
-            } else {
-                this.sendProviderAbort(PAbortCauseType.UnrecognizedMessageType, otid, remoteAddress, localAddress,
-                        message.getSls(), message.getProtocolClass().getProtocolClass());
-            }
-        } else {
-            this.sendProviderAbort(PAbortCauseType.UnrecognizedMessageType, new byte[0], remoteAddress, localAddress,
+        // ITU-T Q.774 Table 7: if the originating transaction ID cannot be derived,
+        // the message is discarded and no Abort is sent.
+        byte[] otid = tcUnidentified.getOriginatingTransactionId();
+        if (otid != null) {
+            this.sendProviderAbort(PAbortCauseType.UnrecognizedMessageType, otid, remoteAddress, localAddress,
                     message.getSls(), message.getProtocolClass().getProtocolClass());
         }
     }

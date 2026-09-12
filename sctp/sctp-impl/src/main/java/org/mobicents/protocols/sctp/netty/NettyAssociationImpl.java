@@ -603,6 +603,9 @@ public class NettyAssociationImpl implements Association {
             localAddress = new InetSocketAddress(this.initPrimaryHostAddress, this.hostPort);
         } catch (Exception e) {
             logger.error(String.format("Exception while creating connection for Association=%s", this.getName()), e);
+            // clear the flag before scheduling, otherwise the scheduled retry (and every
+            // later connect attempt) is rejected as "redundant" forever
+            connecting.set(false);
             this.scheduleConnect();
             return;
         }

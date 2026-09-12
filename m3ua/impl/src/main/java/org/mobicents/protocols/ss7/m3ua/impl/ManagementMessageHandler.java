@@ -122,17 +122,12 @@ public class ManagementMessageHandler extends MessageHandler {
     }
 
     public void handleError(Error error) {
+        // RFC 4666 Error messages are informational. Restarting the association on
+        // one - which peers routinely send without a routing context, e.g.
+        // Unexpected Message or Invalid Routing Context - tore down every ASP on
+        // the association and could loop if the peer answered the restart with
+        // another Error.
         logger.error(error);
-
-        RoutingContext rc = error.getRoutingContext();
-
-        if (rc == null) {
-            AspImpl asp = this.getAspForNullRc();
-            if (asp != null) {
-                this.aspFactoryImpl.onCommunicationRestart(asp.aspFactoryImpl.association);
-            }
-        }
-        // TODO: rc != null
     }
 
 }

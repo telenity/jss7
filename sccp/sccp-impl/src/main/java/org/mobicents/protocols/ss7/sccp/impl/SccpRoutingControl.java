@@ -210,7 +210,7 @@ public class SccpRoutingControl {
                 return erd.getReturnCause();
 
             default:
-                String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult(), message);
+                String em = String.format("Error %s when encoding a SccpMessage: %s", erd.getEncodingResult(), message);
                 if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(em);
                 }
@@ -263,7 +263,7 @@ public class SccpRoutingControl {
                 return erd.getReturnCause();
 
             default:
-                String em = String.format("Error %s when encoding a SccpMessage\n%s", erd.getEncodingResult(),
+                String em = String.format("Error %s when encoding a SccpMessage: %s", erd.getEncodingResult(),
                         message);
                 if (logger.isEnabledFor(Level.WARN)) {
                     logger.warn(em);
@@ -367,7 +367,7 @@ public class SccpRoutingControl {
         // checking for hop counter
         if (!msg.reduceHopCounter()) {
             if (logger.isEnabledFor(Level.WARN)) {
-                logger.warn(String.format("Received SccpMessage for Translation but hop counter violation detected\nSccpMessage=%s", msg));
+                logger.warn(String.format("Received SccpMessage for Translation but hop counter violation detected, SccpMessage=%s", msg));
             }
             this.sendSccpError(msg, ReturnCauseValue.HOP_COUNTER_VIOLATION);
             return;
@@ -378,7 +378,7 @@ public class SccpRoutingControl {
         Rule rule = this.sccpStackImpl.router.findRule(calledPartyAddress, msg.getIsMtpOriginated());
         if (rule == null) {
             if (logger.isEnabledFor(Level.WARN)) {
-                logger.warn(String.format("Received SccpMessage for Translation but no matching Rule found for local routing\nSccpMessage=%s", msg));
+                logger.warn(String.format("Received SccpMessage for Translation but no matching Rule found for local routing, SccpMessage=%s", msg));
             }
             // Translation failed return error
             this.sendSccpError(msg, ReturnCauseValue.NO_TRANSLATION_FOR_ADDRESS);

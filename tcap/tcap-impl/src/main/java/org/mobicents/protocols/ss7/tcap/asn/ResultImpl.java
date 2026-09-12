@@ -79,7 +79,7 @@ public class ResultImpl implements Result {
             AsnInputStream localAis = ais.readSequenceStream();
 
             int tag = localAis.readTag();
-            if (tag != Tag.INTEGER && localAis.getTagClass() != Tag.CLASS_UNIVERSAL)
+            if (tag != Tag.INTEGER || localAis.getTagClass() != Tag.CLASS_UNIVERSAL)
                 throw new ParseException(PAbortCauseType.IncorrectTxPortion, null, "Error while decoding AARE-apdu.result: bad tag or tag class: tag="
                         + tag + ", tagClass=" + localAis.getTagClass());
 

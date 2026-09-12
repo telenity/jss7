@@ -71,7 +71,7 @@ public class NettySctpChannelInboundHandlerAdapter extends ChannelInboundHandler
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("userEventTriggered event: association=%s \nevent=%s", this.association, evt));
+            logger.debug(String.format("userEventTriggered event: association=%s, event=%s", this.association, evt));
         }
 
         if (evt instanceof AssociationChangeNotification) {
@@ -85,7 +85,7 @@ public class NettySctpChannelInboundHandlerAdapter extends ChannelInboundHandler
                     }
                     if (logger.isInfoEnabled()) {
                         logger.info(String.format(
-                                "New association setup for Association=%s with %d outbound streams, and %d inbound streams.\n",
+                                "New association setup for Association=%s with %d outbound streams, and %d inbound streams.",
                                 association.getName(), this.maxOutboundStreams, this.maxInboundStreams));
                     }
                     this.association.markAssociationUp(this.maxInboundStreams, this.maxOutboundStreams);
