@@ -52,7 +52,10 @@ public class NettySctpClientHandler extends NettySctpChannelInboundHandlerAdapte
     @Override
     public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
         logger.warn(String.format("ChannelUnregistered event: association=%s", association));
-        this.association.setChannelHandler(null);
+        // a channel that is already inactive when it closes (e.g. after a peer abort) never fires channelInactive,
+        // leaving the association stuck "up" and connect() refusing to reconnect — clear it here (idempotent).
+        // Only if this channel still owns the association: a stale channel must not take down a newer one.
+        this.association.channelClosed(this);
 
         this.association.scheduleConnect();
     }

@@ -64,8 +64,9 @@ public class NettySctpChannelInboundHandlerAdapter extends ChannelInboundHandler
             logger.debug(String.format("channelInactive event: association=%s", this.association));
         }
 
+        // guarded like channelUnregistered: a stale channel closing late must not take down a newer one
         if (this.association != null)
-            this.association.markAssociationDown();
+            this.association.channelClosed(this);
     }
 
     @Override

@@ -512,8 +512,20 @@ public class NettyAssociationImpl implements Association {
         loop.schedule(() -> connect(), connectDelay, TimeUnit.MILLISECONDS);
     }
 
-    protected void setChannelHandler(NettySctpChannelInboundHandlerAdapter channelHandler) {
+    protected synchronized void setChannelHandler(NettySctpChannelInboundHandlerAdapter channelHandler) {
         this.channelHandler = channelHandler;
+    }
+
+    /**
+     * A channel went away: detach its handler and mark the association down, but only while that channel still owns
+     * the association. Holds the same lock as setChannelHandler, so a newer channel cannot take over (and be marked
+     * up) between the ownership check and the down transition; a stale channel's teardown is a no-op.
+     */
+    protected synchronized void channelClosed(NettySctpChannelInboundHandlerAdapter handler) {
+        if (this.channelHandler != handler)
+            return;
+        this.channelHandler = null;
+        this.markAssociationDown();
     }
 
     protected String getSecondaryPeerAddress() {

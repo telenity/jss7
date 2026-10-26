@@ -55,8 +55,11 @@ public class NettySctpServerHandler extends NettySctpChannelInboundHandlerAdapte
     @Override
     public void channelUnregistered(final ChannelHandlerContext ctx) throws Exception {
         logger.warn(String.format("ChannelUnregistered event: association=%s", association));
+        // a channel that is already inactive when it closes (e.g. after a peer abort) never fires channelInactive;
+        // without this the association stays "up" and the next incoming COMM_UP is swallowed as a duplicate.
+        // Only if this channel still owns the association: after a fast peer reconnect it belongs to the new channel.
         if (association != null) {
-            this.association.setChannelHandler(null);
+            this.association.channelClosed(this);
         }
     }
 

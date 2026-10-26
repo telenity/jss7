@@ -59,7 +59,7 @@ import org.junit.Test;
 public class NettySctpMultiHomeTransferTest {
     private static final String SERVER_NAME = "testserver";
     private static final String SERVER_HOST = "127.0.0.1";
-    private static final String SERVER_HOST1 = "10.2.50.194"; // "10.0.2.15"
+    private static final String SERVER_HOST1 = "127.0.0.2"; // second loopback address: Linux routes all of 127/8 to lo, no host setup needed
 
     private static final int SERVER_PORT = 2350;
 
@@ -67,7 +67,7 @@ public class NettySctpMultiHomeTransferTest {
     private static final String CLIENT_ASSOCIATION_NAME = "clientAssociation";
 
     private static final String CLIENT_HOST = "127.0.0.1";
-    private static final String CLIENT_HOST1 = "10.2.50.194"; // "10.0.2.15"
+    private static final String CLIENT_HOST1 = "127.0.0.2"; // second loopback address: Linux routes all of 127/8 to lo, no host setup needed
 
     private static final int CLIENT_PORT = 2351;
 
