@@ -96,7 +96,7 @@ public class M3UAShellExecutor implements ShellExecutor {
         NetworkAppearance na = null;
 
         if (functionality == null) {
-            return M3UAOAMMessages.INVALID_COMMAND;
+            return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "functionality", args[4], "AS, SGW, IPSP");
         }
 
         int count = 5;
@@ -111,21 +111,27 @@ public class M3UAShellExecutor implements ShellExecutor {
             if (key.equals("mode")) {
                 exchangeType = ExchangeType.getExchangeType(args[count++]);
                 if (exchangeType == null) {
-                    return M3UAOAMMessages.INVALID_COMMAND;
+                    return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "mode", args[count - 1], "SE, DE");
                 }
             } else if (key.equals("ipspType")) {
                 ipspType = IPSPType.getIPSPType(args[count++]);
+                if (ipspType == null) {
+                    return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "ipspType", args[count - 1], "CLIENT, SERVER");
+                }
             } else if (key.equals("rc")) {
                 long rcLong = Long.parseLong(args[count++]);
                 rc = parameterFactory.createRoutingContext(new long[]{rcLong});
             } else if (key.equals("traffic-mode")) {
                 trafficModeType = getTrafficModeType(args[count++]);
+                if (trafficModeType == null) {
+                    return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "traffic-mode", args[count - 1], "loadshare, override, broadcast");
+                }
             } else if (key.equals("network-appearance")) {
                 na = parameterFactory.createNetworkAppearance(Long.parseLong(args[count++]));
             } else if (key.equals("min-asp")) {
                 minAspActiveForLoadbalance = Integer.parseInt(args[count++]);
             } else {
-                return M3UAOAMMessages.INVALID_COMMAND;
+                return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "option", key, "mode, ipspType, rc, traffic-mode, network-appearance, min-asp");
             }
         }
 
@@ -343,7 +349,7 @@ public class M3UAShellExecutor implements ShellExecutor {
                             } else if (key.equals("heartbeat")) {
                                 isHeartBeatEnabled = Boolean.parseBoolean(args[count++]);
                             } else {
-                                return M3UAOAMMessages.INVALID_COMMAND;
+                                return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "option", key, "aspid, heartbeat");
                             }
                         }
                         if (aspid == -1) {
@@ -410,9 +416,12 @@ public class M3UAShellExecutor implements ShellExecutor {
 
                     dpc = Integer.parseInt(args[count++]);
 
-                    while (count < args.length) {
+                    // opc and si are optional but must be given together
+                    if (args.length == 7) {
                         opc = Integer.parseInt(args[count++]);
                         si = Integer.parseInt(args[count++]);
+                    } else if (args.length != 5) {
+                        return M3UAOAMMessages.INVALID_COMMAND;
                     }
 
                     this.m3uaManagement.addRoute(dpc, opc, si, asName);
@@ -438,9 +447,12 @@ public class M3UAShellExecutor implements ShellExecutor {
 
                     dpc = Integer.parseInt(args[count++]);
 
-                    while (count < args.length) {
+                    // opc and si are optional but must be given together
+                    if (args.length == 7) {
                         opc = Integer.parseInt(args[count++]);
                         si = Integer.parseInt(args[count++]);
+                    } else if (args.length != 5) {
+                        return M3UAOAMMessages.INVALID_COMMAND;
                     }
 
                     this.m3uaManagement.removeRoute(dpc, opc, si, asName);

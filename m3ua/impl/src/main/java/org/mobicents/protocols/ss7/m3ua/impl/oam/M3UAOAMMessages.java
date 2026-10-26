@@ -34,6 +34,8 @@ public interface M3UAOAMMessages {
      */
     public static final String INVALID_COMMAND = "Invalid Command";
 
+    public static final String UNKNOWN_VALUE = "Unknown %s '%s'. Expected: %s";
+
     public static final String ADD_ASP_TO_AS_SUCCESSFUL = "Successfully added ASP name=%s to AS name=%s";
 
     public static final String REMOVE_ASP_FROM_AS_SUCCESSFUL = "Successfully removed ASP name=%s from AS name=%s";

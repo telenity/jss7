@@ -96,6 +96,11 @@ public class SCTPShellExecutor implements ShellExecutor {
         return sb.toString();
     }
 
+    /** Optional socket-type argument: SCTP when absent, null when present but unknown. */
+    private static IpChannelType parseSocketType(String[] args, int idx) {
+        return args.length > idx ? IpChannelType.getInstance(args[idx]) : IpChannelType.SCTP;
+    }
+
     @Override
     public String execute(String[] args) {
         try {
@@ -142,14 +147,9 @@ public class SCTPShellExecutor implements ShellExecutor {
 
                     int hostPort = Integer.parseInt(args[5]);
 
-                    IpChannelType ipChnnelType = null;
-
-                    if (args.length > 6) {
-                        ipChnnelType = IpChannelType.getInstance(args[6]);
-                    }
-
+                    IpChannelType ipChnnelType = parseSocketType(args, 6);
                     if (ipChnnelType == null) {
-                        ipChnnelType = IpChannelType.SCTP;
+                        return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "socket-type", args[6], "SCTP, TCP");
                     }
 
                     this.sctpManagement.addServer(serverName, primaryAddress, hostPort, ipChnnelType, secondaryAddresses);
@@ -217,7 +217,7 @@ public class SCTPShellExecutor implements ShellExecutor {
                     String type = args[4];
                     if (type == null) {
                         return M3UAOAMMessages.INVALID_COMMAND;
-                    } else if (type.equals("CLIENT")) {
+                    } else if (type.equalsIgnoreCase("CLIENT")) {
                         if (args.length < 9) {
                             return M3UAOAMMessages.INVALID_COMMAND;
                         }
@@ -240,34 +240,24 @@ public class SCTPShellExecutor implements ShellExecutor {
 
                         int hostPort = Integer.parseInt(args[8]);
 
-                        IpChannelType ipChnnelType = null;
-
-                        if (args.length > 9) {
-                            ipChnnelType = IpChannelType.getInstance(args[9]);
-                        }
-
+                        IpChannelType ipChnnelType = parseSocketType(args, 9);
                         if (ipChnnelType == null) {
-                            ipChnnelType = IpChannelType.SCTP;
+                            return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "socket-type", args[9], "SCTP, TCP");
                         }
 
                         this.sctpManagement.addAssociation(primaryAddress, hostPort, peerIp, peerPort, assocName, ipChnnelType,
                                 secondaryAddresses);
 
                         return String.format(SCTPOAMMessages.ADD_CLIENT_ASSOCIATION_SUCCESS, assocName);
-                    } else if (type.equals("SERVER")) {
+                    } else if (type.equalsIgnoreCase("SERVER")) {
                         String serverName = args[5];
 
                         String peerIp = args[6];
                         int peerPort = Integer.parseInt(args[7]);
 
-                        IpChannelType ipChnnelType = null;
-
-                        if (args.length > 8) {
-                            ipChnnelType = IpChannelType.getInstance(args[8]);
-                        }
-
+                        IpChannelType ipChnnelType = parseSocketType(args, 8);
                         if (ipChnnelType == null) {
-                            ipChnnelType = IpChannelType.SCTP;
+                            return String.format(M3UAOAMMessages.UNKNOWN_VALUE, "socket-type", args[8], "SCTP, TCP");
                         }
 
                         this.sctpManagement.addServerAssociation(peerIp, peerPort, serverName, assocName, ipChnnelType);

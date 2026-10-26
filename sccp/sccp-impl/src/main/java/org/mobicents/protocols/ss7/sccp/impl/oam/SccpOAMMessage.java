@@ -32,6 +32,8 @@ public interface SccpOAMMessage {
 
     public static final String INVALID_COMMAND = "Invalid Command";
 
+    public static final String UNKNOWN_VALUE = "Unknown %s '%s'. Expected: %s";
+
     public static final String RULE_ALREADY_EXIST = "Rule already exist";
 
     public static final String INVALID_MASK = "Invalid Mask";

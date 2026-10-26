@@ -24,7 +24,9 @@ package org.mobicents.protocols.ss7.sccp.impl.oam;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -54,6 +56,7 @@ import org.mobicents.protocols.ss7.sccp.SccpResource;
 import org.mobicents.protocols.ss7.sccp.impl.SccpStackImpl;
 import org.mobicents.protocols.ss7.sccp.parameter.GT0100;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
+import org.mobicents.protocols.ss7.sccp.OriginationType;
 import org.junit.AfterClass;
 import org.junit.After;
 import org.junit.BeforeClass;
@@ -234,6 +237,67 @@ public class SccpExecutorTest {
 //		assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, result);
 //		assertEquals(3, this.router.getRules().size());
 
+    }
+
+    @Test
+    public void testRuleTrailingArguments() {
+        this.sccpExecutor.execute("sccp primary_add create 1 71 2 8 0 0 3 123456789".split(" "));
+        this.sccpExecutor.execute("sccp backup_add create 1 71 3 8 0 0 3 123456789".split(" "));
+
+        // Sgls: origination type directly after the backup id, no placeholder needed
+        String result = this.sccpExecutor.execute("sccp rule create 1 R 71 2 8 0 0 3 123456789 sgls 1 1 remoteOriginated".split(" "));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, result);
+        assertEquals(RuleType.Sgls, this.router.getRule(1).getRuleType());
+        assertEquals(OriginationType.REMOTE, this.router.getRule(1).getOriginationType());
+
+        // Solitary with an origination type
+        result = this.sccpExecutor.execute("sccp rule create 2 R 71 2 8 0 0 3 123456789 solitary 1 localOriginated".split(" "));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, result);
+        assertEquals(OriginationType.LOCAL, this.router.getRule(2).getOriginationType());
+
+        // Loadshared with algo and origination type
+        result = this.sccpExecutor.execute("sccp rule create 3 R 71 2 8 0 0 3 123456789 loadshared 1 1 bit4 remoteOriginated".split(" "));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, result);
+        assertEquals(OriginationType.REMOTE, this.router.getRule(3).getOriginationType());
+
+        // Solitary does not take a backup id: "-1" lands in the origination slot and is rejected
+        result = this.sccpExecutor.execute("sccp rule create 4 R 71 2 8 0 0 3 123456789 solitary 1 -1 remoteOriginated".split(" "));
+        assertNotEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, result);
+        assertNull(this.router.getRule(4));
+
+        // Extra trailing argument is rejected instead of silently ignored
+        result = this.sccpExecutor.execute("sccp rule create 5 R 71 2 8 0 0 3 123456789 dominant 1 1 remoteOriginated extra".split(" "));
+        assertEquals(SccpOAMMessage.INVALID_COMMAND, result);
+        assertNull(this.router.getRule(5));
+
+        // Unknown enumerated values name the value and the accepted set
+        result = this.sccpExecutor.execute("sccp rule create 6 R 71 2 8 0 0 3 123456789 broadcast 1 1".split(" "));
+        assertEquals("Unknown rule type 'broadcast'. Expected: Solitary, Dominant, Loadshared, Sgls", result);
+        result = this.sccpExecutor.execute("sccp rule create 6 R 71 2 8 0 0 3 123456789 loadshared 1 1 bit9".split(" "));
+        assertEquals("Unknown loadsharing algorithm 'bit9'. Expected: Bit0, Bit1, Bit2, Bit3, Bit4", result);
+        result = this.sccpExecutor.execute("sccp lmr create 1 201 201 xudtx".split(" "));
+        assertEquals("Unknown long message rule type 'xudtx'. Expected: udt, xudt, ludt, ludt_segm", result);
+        result = this.sccpExecutor.execute("sccp set noSuchParam 1".split(" "));
+        assertTrue(result.startsWith("Unknown parameter 'noSuchParam'. Expected: zMarginXudtMessage"));
+        result = this.sccpExecutor.execute("sccp rss create 3 6477 8 0 prohibited".split(" "));
+        assertEquals("Unknown flag 'prohibited'. Expected: prohibitedWhenSpcResuming", result);
+
+        // Sgls: extra backup ids after the secondary form the load-share table
+        this.sccpExecutor.execute("sccp backup_add create 2 71 4 8 0 0 3 123456789".split(" "));
+        this.sccpExecutor.execute("sccp backup_add create 3 71 5 8 0 0 3 123456789".split(" "));
+        result = this.sccpExecutor.execute("sccp rule create 7 R 71 2 8 0 0 3 123456789 sgls 1 1 2 3 remoteOriginated".split(" "));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, result);
+        assertEquals(java.util.Arrays.asList(2, 3), this.router.getRule(7).getLoadShareTable());
+        assertEquals(OriginationType.REMOTE, this.router.getRule(7).getOriginationType());
+        result = this.sccpExecutor.execute("sccp rule create 8 R 71 2 8 0 0 3 123456789 sgls 1 1 99".split(" "));
+        assertTrue(result.startsWith("No backup address defined for id=99"));
+        // rules without a table never expose null
+        assertTrue(this.router.getRule(2).getLoadShareTable().isEmpty());
+
+        // Same parser on modify
+        result = this.sccpExecutor.execute("sccp rule modify 1 R 71 2 8 0 0 3 123456789 sgls 1 1 localOriginated".split(" "));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_MODIFIED, result);
+        assertEquals(OriginationType.LOCAL, this.router.getRule(1).getOriginationType());
     }
 
     @Test
@@ -806,7 +870,7 @@ public class SccpExecutorTest {
 
         String rspCmd = "sccp set xxx 200";
         String res = this.sccpExecutor.execute(rspCmd.split(" "));
-        assertTrue(res.equals(SccpOAMMessage.INVALID_COMMAND));
+        assertTrue(res.startsWith("Unknown parameter 'xxx'. Expected: "));
 
         rspCmd = "sccp set zMarginXudtMessage 200";
         res = this.sccpExecutor.execute(rspCmd.split(" "));

@@ -43,6 +43,8 @@ import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.ss7.management.console.ShellExecutor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -151,7 +153,7 @@ public class SccpExecutor implements ShellExecutor {
             boolean markProhibitedWhenSpcResuming = false;
             if (options.length >= 8) {
                 if (!options[7].toLowerCase().equals("prohibitedwhenspcresuming")) {
-                    return SccpOAMMessage.INVALID_COMMAND;
+                    return String.format(SccpOAMMessage.UNKNOWN_VALUE, "flag", options[7], "prohibitedWhenSpcResuming");
                 } else {
                     markProhibitedWhenSpcResuming = true;
                 }
@@ -170,7 +172,7 @@ public class SccpExecutor implements ShellExecutor {
             boolean markProhibitedWhenSpcResuming = false;
             if (options.length >= 8) {
                 if (!options[7].toLowerCase().equals("prohibitedwhenspcresuming")) {
-                    return SccpOAMMessage.INVALID_COMMAND;
+                    return String.format(SccpOAMMessage.UNKNOWN_VALUE, "flag", options[7], "prohibitedWhenSpcResuming");
                 } else {
                     markProhibitedWhenSpcResuming = true;
                 }
@@ -450,9 +452,9 @@ public class SccpExecutor implements ShellExecutor {
         }
 
         if (command.equals("create")) {
-            return this.createRule(options);
+            return this.addOrModifyRule(options, false);
         } else if (command.equals("modify")) {
-            return this.modifyRule(options);
+            return this.addOrModifyRule(options, true);
         } else if (command.equals("delete")) {
             return this.deleteRule(options);
         } else if (command.equals("show")) {
@@ -495,8 +497,16 @@ public class SccpExecutor implements ShellExecutor {
      * @return
      * @throws Exception
      */
-    private String createRule(String[] options) throws Exception {
-        // Minimum is 14
+    /**
+     * sccp rule (create|modify) <id> <mask> <7 address args> <ruleType> <primAddrId> [<secAddrId>] [<algo>]
+     * [<sglsBackupId>...] [<origType>]
+     * <p>
+     * secAddrId is read for every rule type except Solitary; algo only for Loadshared; any further numeric arguments
+     * only for Sgls (extra backup addresses to loadshare over). The origination type is always the argument right after
+     * those, and any further argument is rejected instead of being silently ignored.
+     */
+    private String addOrModifyRule(String[] options, boolean modify) throws Exception {
+        // Minimum is 14: up to and including primary address id
         if (options.length < 14) {
             return SccpOAMMessage.INVALID_COMMAND;
         }
@@ -506,42 +516,36 @@ public class SccpExecutor implements ShellExecutor {
             return SccpOAMMessage.INVALID_MASK;
         }
 
-        int posOfOrigination = 14;
-
         RuleType ruleType;
         String s1 = options[12].toLowerCase();
         if (s1.equals("solitary")) {
             ruleType = RuleType.Solitary;
         } else if (s1.equals("dominant")) {
             ruleType = RuleType.Dominant;
-            posOfOrigination += 1; // 15
         } else if (s1.equals("loadshared")) {
             ruleType = RuleType.Loadshared;
-            posOfOrigination += 2; // 16
         } else if (s1.equals("sgls")) {
             ruleType = RuleType.Sgls;
-            posOfOrigination += 2; // 16
         } else {
-            return SccpOAMMessage.INVALID_COMMAND;
+            return String.format(SccpOAMMessage.UNKNOWN_VALUE, "rule type", options[12], "Solitary, Dominant, Loadshared, Sgls");
         }
 
         int pAddressId = Integer.parseInt(options[13]);
+        int next = 14;
 
+        // Missing secondary address for a non-Solitary rule is left to the router, which reports
+        // RULETYPE_NOT_SOLI_SEC_ADD_MANDATORY / NO_BACKUP_ADDRESS.
         int sAddressId = -1;
-        if (ruleType != RuleType.Solitary && options.length > 14) {
-            sAddressId = Integer.parseInt(options[14]);
-            SccpAddress sAddress = this.router.getBackupAddress(sAddressId);
-            if (sAddress == null) {
-                return String.format(SccpOAMMessage.NO_BACKUP_ADDRESS, sAddressId);
-            }
+        if (ruleType != RuleType.Solitary && options.length > next) {
+            sAddressId = Integer.parseInt(options[next++]);
         }
 
         LoadSharingAlgorithm algo = LoadSharingAlgorithm.Undefined;
         if (ruleType == RuleType.Loadshared) {
-            if (options.length < 16) {
+            if (options.length <= next) {
                 return SccpOAMMessage.INVALID_COMMAND;
             }
-            s1 = options[15].toLowerCase();
+            s1 = options[next++].toLowerCase();
             if (s1.equals("bit0")) {
                 algo = LoadSharingAlgorithm.Bit0;
             } else if (s1.equals("bit1")) {
@@ -553,92 +557,33 @@ public class SccpExecutor implements ShellExecutor {
             } else if (s1.equals("bit4")) {
                 algo = LoadSharingAlgorithm.Bit4;
             } else {
-                return SccpOAMMessage.INVALID_COMMAND;
+                return String.format(SccpOAMMessage.UNKNOWN_VALUE, "loadsharing algorithm", options[next - 1], "Bit0, Bit1, Bit2, Bit3, Bit4");
+            }
+        }
+
+        List<Integer> loadShareTable = new ArrayList<Integer>();
+        if (ruleType == RuleType.Sgls) {
+            while (options.length > next && options[next].matches("\\d+")) {
+                loadShareTable.add(Integer.parseInt(options[next++]));
             }
         }
 
         OriginationType originationType = OriginationType.ALL;
-
-        if (options.length == posOfOrigination + 1) {
-            originationType = OriginationType.getInstance(options[posOfOrigination]);
+        if (options.length > next) {
+            originationType = OriginationType.getInstance(options[next++]);
+        }
+        if (options.length > next) {
+            return SccpOAMMessage.INVALID_COMMAND;
         }
 
         SccpAddress pattern = this.createAddress(options, 5);
 
-        this.router.addRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
+        if (modify) {
+            this.router.modifyRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable);
+            return SccpOAMMessage.RULE_SUCCESSFULLY_MODIFIED;
+        }
+        this.router.addRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable);
         return SccpOAMMessage.RULE_SUCCESSFULLY_ADDED;
-    }
-
-    private String modifyRule(String[] options) throws Exception {
-        // Minimum is 13
-        if (options.length < 13) {
-            return SccpOAMMessage.INVALID_COMMAND;
-        }
-        int ruleId = Integer.parseInt(options[3]);
-
-        String mask = options[4];
-
-        if (mask == null) {
-            return SccpOAMMessage.INVALID_MASK;
-        }
-
-        int posOfOrigination = 14;
-
-        RuleType ruleType;
-        String s1 = options[12].toLowerCase();
-        if (s1.equals("solitary")) {
-            ruleType = RuleType.Solitary;
-        } else if (s1.equals("dominant")) {
-            ruleType = RuleType.Dominant;
-            posOfOrigination += 1; // 15
-        } else if (s1.equals("loadshared")) {
-            ruleType = RuleType.Loadshared;
-            posOfOrigination += 2; // 16
-        } else if (s1.equals("sgls")) {
-            ruleType = RuleType.Sgls;
-            posOfOrigination += 2; // 16
-        } else {
-            return SccpOAMMessage.INVALID_COMMAND;
-        }
-
-        int pAddressId = Integer.parseInt(options[13]);
-
-        int sAddressId = -1;
-        if (ruleType != RuleType.Solitary && options.length > 14) {
-            sAddressId = Integer.parseInt(options[14]);
-        }
-
-        LoadSharingAlgorithm algo = LoadSharingAlgorithm.Undefined;
-        if (ruleType == RuleType.Loadshared) {
-            if (options.length < 16) {
-                return SccpOAMMessage.INVALID_COMMAND;
-            }
-            s1 = options[15].toLowerCase();
-            if (s1.equals("bit0")) {
-                algo = LoadSharingAlgorithm.Bit0;
-            } else if (s1.equals("bit1")) {
-                algo = LoadSharingAlgorithm.Bit1;
-            } else if (s1.equals("bit2")) {
-                algo = LoadSharingAlgorithm.Bit2;
-            } else if (s1.equals("bit3")) {
-                algo = LoadSharingAlgorithm.Bit3;
-            } else if (s1.equals("bit4")) {
-                algo = LoadSharingAlgorithm.Bit4;
-            } else {
-                return SccpOAMMessage.INVALID_COMMAND;
-            }
-        }
-
-        OriginationType originationType = OriginationType.ALL;
-
-        if (options.length == posOfOrigination + 1) {
-            originationType = OriginationType.getInstance(options[posOfOrigination]);
-        }
-
-        SccpAddress pattern = this.createAddress(options, 5);
-
-        this.router.modifyRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
-        return SccpOAMMessage.RULE_SUCCESSFULLY_MODIFIED;
     }
 
     /**
@@ -786,7 +731,7 @@ public class SccpExecutor implements ShellExecutor {
             } else if (s1.equals("ludt_segm")) {
                 ruleType = LongMessageRuleType.LudtEnabled_WithSegmentationField;
             } else {
-                return SccpOAMMessage.INVALID_COMMAND;
+                return String.format(SccpOAMMessage.UNKNOWN_VALUE, "long message rule type", options[6], "udt, xudt, ludt, ludt_segm");
             }
             this.router.addLongMessageRule(lmrId, firstSpc, lastSpc, ruleType);
             return SccpOAMMessage.LMR_SUCCESSFULLY_ADDED;
@@ -809,7 +754,7 @@ public class SccpExecutor implements ShellExecutor {
             } else if (s1.equals("ludt_segm")) {
                 ruleType = LongMessageRuleType.LudtEnabled_WithSegmentationField;
             } else {
-                return SccpOAMMessage.INVALID_COMMAND;
+                return String.format(SccpOAMMessage.UNKNOWN_VALUE, "long message rule type", options[6], "udt, xudt, ludt, ludt_segm");
             }
             this.router.modifyLongMessageRule(lmrId, firstSpc, lastSpc, ruleType);
             return SccpOAMMessage.LMR_SUCCESSFULLY_MODIFIED;
@@ -1088,6 +1033,9 @@ public class SccpExecutor implements ShellExecutor {
         return SccpOAMMessage.INVALID_COMMAND;
     }
 
+    private static final String SCCP_PARAMETERS = "zMarginXudtMessage, reassemblyTimerDelay, maxDataMessage, removeSpc, "
+            + "sstTimerDuration_Min, sstTimerDuration_Max, sstTimerDuration_IncreaseFactor";
+
     private String manageSet(String[] options) throws Exception {
         // Minimum 4 needed. Show
         if (options.length < 4) {
@@ -1118,7 +1066,7 @@ public class SccpExecutor implements ShellExecutor {
             double val = Double.parseDouble(options[3]);
             this.sccpStack.setSstTimerDuration_IncreaseFactor(val);
         } else {
-            return SccpOAMMessage.INVALID_COMMAND;
+            return String.format(SccpOAMMessage.UNKNOWN_VALUE, "parameter", options[2], SCCP_PARAMETERS);
         }
 
         return SccpOAMMessage.PARAMETER_SUCCESSFULLY_SET;
@@ -1151,7 +1099,7 @@ public class SccpExecutor implements ShellExecutor {
             } else if (parName.equals("ssttimerduration_increasefactor")) {
                 sb.append(this.sccpStack.getSstTimerDuration_IncreaseFactor());
             } else {
-                return SccpOAMMessage.INVALID_COMMAND;
+                return String.format(SccpOAMMessage.UNKNOWN_VALUE, "parameter", options[2], SCCP_PARAMETERS);
             }
 
             return sb.toString();
