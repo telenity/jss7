@@ -1,0 +1,36 @@
+@page { size: A4; margin: 18mm 16mm 20mm 16mm;
+  @bottom-center { content: counter(page) " / " counter(pages); font-family: sans-serif; font-size: 9pt; color: #666; } }
+body { font-family: sans-serif; font-size: 10.5pt; line-height: 1.45; color: #222; margin: 0; }
+h1 { font-size: 24pt; color: #1f4e79; border-bottom: 3px solid #1f4e79; padding-bottom: 6px; margin-top: 0; }
+.chapter { page-break-before: always; }
+.cover { text-align: center; padding-top: 60mm; }
+.cover h1 { font-size: 34pt; border: none; }
+.cover ol { display: inline-block; text-align: left; font-size: 14pt; margin-top: 30mm; }
+.cover li { margin: 6px 0; }
+h2 { font-size: 17pt; color: #fff; background: #1f4e79; padding: 6px 10px; border-radius: 4px; margin-top: 28px; page-break-before: always; }
+h2.toc { page-break-before: auto; }
+h3 { font-size: 13pt; color: #1f4e79; border-left: 4px solid #2e75b6; padding-left: 8px; margin-top: 22px; }
+h4 { font-size: 11.5pt; color: #2e75b6; margin-top: 16px; }
+a { color: #2e75b6; text-decoration: none; }
+hr { display: none; }
+img { max-width: 100%; }
+code { font-family: monospace; font-size: 9.5pt; background: #eef3f8; color: #0b3d91; padding: 1px 4px; border-radius: 3px; }
+pre { background: #f6f8fa; border: 1px solid #dfe5ec; border-left: 4px solid #2e75b6; padding: 8px 10px; border-radius: 4px; white-space: pre-wrap; page-break-inside: avoid; font-size: 9pt; }
+pre code { background: none; color: inherit; padding: 0; font-size: 9pt; }
+pre .cmd { color: #0b3d91; font-weight: bold; }
+pre .resp { color: #5a6b7a; font-style: italic; }
+pre .cmt { color: #6b7f2a; }
+table { border-collapse: collapse; margin: 8px 0; font-size: 9.5pt; page-break-inside: avoid; width: 100%; }
+th, td { border: 1px solid #cfd8e3; padding: 4px 8px; text-align: left; vertical-align: top; }
+th { background: #1f4e79; color: #fff; }
+tr:nth-child(even) td { background: #f3f6fa; }
+.note, .tip, .warning, .important, .caution { border-left: 5px solid; border-radius: 4px; padding: 6px 12px; margin: 12px 0; page-break-inside: avoid; }
+.note { border-color: #2e75b6; background: #eaf2fb; }
+.tip { border-color: #2e8b57; background: #e9f6ee; }
+.warning { border-color: #d68a00; background: #fff6e5; }
+.important { border-color: #7b4ea3; background: #f3ecf9; }
+.caution { border-color: #c0392b; background: #fbeaea; }
+.title { font-weight: bold; text-transform: uppercase; font-size: 9pt; letter-spacing: 0.5px; margin: 0 0 4px 0; }
+.note .title { color: #2e75b6; } .tip .title { color: #2e8b57; } .warning .title { color: #b37400; } .important .title { color: #7b4ea3; }
+li { margin: 2px 0; }
+.xref { color: #444; font-style: italic; }
