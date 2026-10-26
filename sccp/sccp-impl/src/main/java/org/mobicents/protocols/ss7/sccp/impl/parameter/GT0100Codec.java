@@ -63,6 +63,8 @@ public class GT0100Codec extends GTCodec {
         int tt = b1;
 
         EncodingScheme es = EncodingScheme.valueOf(b2 & 0x0f);
+        if (es == null)
+            throw new IOException("Unsupported encoding scheme: " + (b2 & 0x0f));
         NumberingPlan np = NumberingPlan.valueOf((b2 & 0xf0) >> 4);
         NatureOfAddress na = NatureOfAddress.valueOf(b3 & 0x7f);
 

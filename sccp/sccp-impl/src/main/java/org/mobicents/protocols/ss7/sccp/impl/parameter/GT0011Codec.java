@@ -53,6 +53,8 @@ public class GT0011Codec extends GTCodec {
         b = in.read() & 0xff;
 
         EncodingScheme es = EncodingScheme.valueOf(b & 0x0f);
+        if (es == null)
+            throw new IOException("Unsupported encoding scheme: " + (b & 0x0f));
         NumberingPlan np = NumberingPlan.valueOf((b & 0xf0) >> 4);
 
         String digits = es.decodeDigits(in);

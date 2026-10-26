@@ -65,6 +65,8 @@ public class ImportanceImpl extends AbstractParameter implements Importance {
      */
 
     public void decode(byte[] buffer) throws IOException {
+        if (buffer.length < 1)
+            throw new IOException("Importance parameter is empty");
         this.importance = (byte) (buffer[0] & 0x07);
 
     }

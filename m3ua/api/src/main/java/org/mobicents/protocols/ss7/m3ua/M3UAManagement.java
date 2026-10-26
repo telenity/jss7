@@ -81,9 +81,10 @@ public interface M3UAManagement {
     public int getMaxAsForRoute();
 
     /**
-     * Set maximum AS that can be configured for given route
+     * Set maximum AS that can be configured for given route. Configure this before adding routes.
      *
      * @param maxAsForRoute
+     * @throws IllegalStateException if the effective limit changes while routes exist
      */
     public void setMaxAsForRoute(int maxAsForRoute);
 

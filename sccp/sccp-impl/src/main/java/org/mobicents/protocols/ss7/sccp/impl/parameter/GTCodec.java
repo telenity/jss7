@@ -59,6 +59,8 @@ public class GTCodec {
     }
 
     public static GlobalTitle decode(GlobalTitleIndicator gti, InputStream in) throws IOException {
+        if (gti == null)
+            throw new IOException("Unsupported global title indicator");
         GTCodec codec = null;
         switch (gti) {
             case GLOBAL_TITLE_INCLUDES_NATURE_OF_ADDRESS_INDICATOR_ONLY:

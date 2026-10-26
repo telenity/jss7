@@ -793,7 +793,11 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                                 msg));
             }
         } catch (IOException e) {
-            logger.error("IOException while decoding SCCP message: ", e);
+            // Malformed input from the network: one line per message, no stack trace, so it cannot flood the log.
+            logger.warn(String.format("Dropped malformed SCCP message from opc=%d: %s", mtp3Msg.getOpc(), e));
+        } catch (RuntimeException e) {
+            // Not a decode error (decoders report those as IOException): keep the stack trace for diagnosis.
+            logger.error(String.format("Error while processing SCCP message from opc=%d", mtp3Msg.getOpc()), e);
         }
     }
 

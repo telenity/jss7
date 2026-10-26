@@ -21,6 +21,7 @@
  */
 package org.mobicents.protocols.ss7.sccp;
 
+import java.util.List;
 import java.util.Map;
 
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
@@ -85,6 +86,25 @@ public interface Router {
 
     public void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
                            SccpAddress pattern, String mask, int pAddressId, int sAddressId) throws Exception;
+
+    /**
+     * Same as {@link #addRule} with the additional backup address ids an {@link RuleType#Sgls} rule loadshares over,
+     * on top of the primary and secondary address. Default so existing Router implementations keep compiling: an
+     * empty table delegates to the original method, a non-empty one needs an implementation that supports it.
+     */
+    default void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+                         SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable) throws Exception {
+        if (!loadShareTable.isEmpty())
+            throw new UnsupportedOperationException("Sgls load-share table not supported by " + getClass().getName());
+        addRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
+    }
+
+    default void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+                            SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable) throws Exception {
+        if (!loadShareTable.isEmpty())
+            throw new UnsupportedOperationException("Sgls load-share table not supported by " + getClass().getName());
+        modifyRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
+    }
 
     public Rule getRule(int id);
 

@@ -177,6 +177,8 @@ public class SegmentationImpl extends AbstractParameter implements Segmentation 
      */
 
     public void decode(byte[] buffer) throws IOException {
+        if (buffer.length < 4)
+            throw new IOException("Segmentation parameter too short: " + buffer.length + " bytes");
         int v = buffer[0];
         this.firstSegIndication = ((v >> 7) & 0x01) == _TRUE;
         this.class1Selected = ((v >> 6) & 0x01) == _TRUE;

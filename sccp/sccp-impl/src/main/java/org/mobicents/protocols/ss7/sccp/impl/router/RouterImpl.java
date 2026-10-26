@@ -26,7 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javolution.util.FastMap;
@@ -365,6 +368,11 @@ public class RouterImpl implements Router {
 
     public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
                         SccpAddress pattern, String mask, int pAddressId, int sAddressId) throws Exception {
+        this.addRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, Collections.<Integer>emptyList());
+    }
+
+    public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+                        SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable) throws Exception {
 
         Rule ruleTmp = this.getRule(id);
 
@@ -390,25 +398,19 @@ public class RouterImpl implements Router {
         }
 
         if (sAddressId != -1) {
-            SccpAddress sAddress = this.getBackupAddress(sAddressId);
-            if (sAddress == null) {
-                throw new Exception(String.format(SccpOAMMessage.NO_BACKUP_ADDRESS, sAddressId));
-            }
-
-            int secAddNumberOfSecs = (sAddress.getGlobalTitle().getDigits().split("/").length - 1);
-            if (maskNumberOfSecs != secAddNumberOfSecs) {
-                throw new Exception(SccpOAMMessage.SEC_MISMATCH_SECADDRESS);
-            }
+            this.checkBackupAddresses(maskNumberOfSecs, Collections.singletonList(sAddressId));
         }
 
         if (sAddressId == -1 && ruleType != RuleType.Solitary) {
             throw new Exception(SccpOAMMessage.RULETYPE_NOT_SOLI_SEC_ADD_MANDATORY);
         }
+        this.checkBackupAddresses(maskNumberOfSecs, loadShareTable);
 
         synchronized (this) {
             RuleImpl rule = new RuleImpl(ruleType, algo, originationType, pattern, mask);
             rule.setPrimaryAddressId(pAddressId);
             rule.setSecondaryAddressId(sAddressId);
+            rule.setLoadShareTable(new ArrayList<Integer>(loadShareTable));
 
             rule.setRuleId(id);
             RuleImpl[] rulesArray = new RuleImpl[(this.rulesMap.size() + 1)];
@@ -438,6 +440,11 @@ public class RouterImpl implements Router {
 
     public void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
                            SccpAddress pattern, String mask, int pAddressId, int sAddressId) throws Exception {
+        this.modifyRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, Collections.<Integer>emptyList());
+    }
+
+    public void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+                           SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable) throws Exception {
         Rule ruleTmp = this.getRule(id);
 
         if (ruleTmp == null) {
@@ -456,29 +463,24 @@ public class RouterImpl implements Router {
         if (pAddress == null) {
             throw new Exception(String.format(SccpOAMMessage.NO_PRIMARY_ADDRESS, pAddressId));
         }
-        int primAddNumberOfSecs = (pattern.getGlobalTitle().getDigits().split("/").length - 1);
+        int primAddNumberOfSecs = (pAddress.getGlobalTitle().getDigits().split("/").length - 1);
         if (maskNumberOfSecs != primAddNumberOfSecs) {
             throw new Exception(SccpOAMMessage.SEC_MISMATCH_PRIMADDRESS);
         }
 
         if (sAddressId != -1) {
-            SccpAddress sAddress = this.getBackupAddress(sAddressId);
-            if (sAddress == null) {
-                throw new Exception(String.format(SccpOAMMessage.NO_BACKUP_ADDRESS, sAddressId));
-            }
-            int secAddNumberOfSecs = (pattern.getGlobalTitle().getDigits().split("/").length - 1);
-            if (maskNumberOfSecs != secAddNumberOfSecs) {
-                throw new Exception(SccpOAMMessage.SEC_MISMATCH_SECADDRESS);
-            }
+            this.checkBackupAddresses(maskNumberOfSecs, Collections.singletonList(sAddressId));
         }
 
         if (sAddressId == -1 && ruleType != RuleType.Solitary) {
             throw new Exception(SccpOAMMessage.RULETYPE_NOT_SOLI_SEC_ADD_MANDATORY);
         }
+        this.checkBackupAddresses(maskNumberOfSecs, loadShareTable);
         synchronized (this) {
             RuleImpl rule = new RuleImpl(ruleType, algo, originationType, pattern, mask);
             rule.setPrimaryAddressId(pAddressId);
             rule.setSecondaryAddressId(sAddressId);
+            rule.setLoadShareTable(new ArrayList<Integer>(loadShareTable));
 
             rule.setRuleId(id);
             RuleImpl[] rulesArray = new RuleImpl[(this.rulesMap.size() + 1)];
@@ -503,6 +505,18 @@ public class RouterImpl implements Router {
             }
             this.rulesMap = newRule;
             this.store();
+        }
+    }
+
+    private void checkBackupAddresses(int maskNumberOfSecs, List<Integer> backupAddressIds) throws Exception {
+        for (Integer backupAddressId : backupAddressIds) {
+            SccpAddress backupAddress = this.getBackupAddress(backupAddressId);
+            if (backupAddress == null) {
+                throw new Exception(String.format(SccpOAMMessage.NO_BACKUP_ADDRESS, backupAddressId));
+            }
+            if (maskNumberOfSecs != (backupAddress.getGlobalTitle().getDigits().split("/").length - 1)) {
+                throw new Exception(SccpOAMMessage.SEC_MISMATCH_SECADDRESS);
+            }
         }
     }
 

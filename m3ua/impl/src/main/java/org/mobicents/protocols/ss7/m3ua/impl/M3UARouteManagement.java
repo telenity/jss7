@@ -73,10 +73,9 @@ public class M3UARouteManagement {
 
     private M3UAManagementImpl m3uaManagement = null;
 
-    private final Object routeLock = new Object();
+    // Also guards maxAsForRoute changes against concurrent route creation.
+    final Object routeLock = new Object();
 
-    private final int asSelectionMask;
-    private int asSlsShiftPlaces = 0x00;
 
     /**
      * persists key vs corresponding As that servers for this key
@@ -93,66 +92,14 @@ public class M3UARouteManagement {
     // for given DPC
     protected M3UARouteManagement(M3UAManagementImpl m3uaManagement) {
         this.m3uaManagement = m3uaManagement;
+    }
 
-        switch (this.m3uaManagement.getMaxAsForRoute()) {
-            case 1:
-            case 2:
-                if (this.m3uaManagement.isUseLsbForLinksetSelection()) {
-                    this.asSelectionMask = 0x01;
-                    this.asSlsShiftPlaces = 0x00;
-                } else {
-                    this.asSelectionMask = 0x80;
-                    this.asSlsShiftPlaces = 0x07;
-                }
-                break;
-            case 3:
-            case 4:
-                if (this.m3uaManagement.isUseLsbForLinksetSelection()) {
-                    this.asSelectionMask = 0x03;
-                    this.asSlsShiftPlaces = 0x00;
-                } else {
-                    this.asSelectionMask = 0xc0;
-                    this.asSlsShiftPlaces = 0x06;
-                }
-                break;
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-                if (this.m3uaManagement.isUseLsbForLinksetSelection()) {
-                    this.asSelectionMask = 0x07;
-                    this.asSlsShiftPlaces = 0x00;
-                } else {
-                    this.asSelectionMask = 0xe0;
-                    this.asSlsShiftPlaces = 0x05;
-                }
-                break;
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-            case 16:
-                if (this.m3uaManagement.isUseLsbForLinksetSelection()) {
-                    this.asSelectionMask = 0x0f;
-                    this.asSlsShiftPlaces = 0x00;
-                } else {
-                    this.asSelectionMask = 0xf0;
-                    this.asSlsShiftPlaces = 0x04;
-                }
-                break;
-            default:
-                if (this.m3uaManagement.isUseLsbForLinksetSelection()) {
-                    this.asSelectionMask = 0x01;
-                    this.asSlsShiftPlaces = 0x00;
-                } else {
-                    this.asSelectionMask = 0x80;
-                    this.asSlsShiftPlaces = 0x07;
-                }
-                break;
-        }
+    /**
+     * SLS bits pick the first AS slot; derived per call because maxAsForRoute/LSB are set after construction.
+     */
+    private int selectionStartIndex(int sls, int asCount) {
+        int bits = asCount <= 2 ? 1 : 2; // setMaxAsForRoute caps routes at 4 ASs
+        return this.m3uaManagement.isUseLsbForLinksetSelection() ? sls & ((1 << bits) - 1) : (sls & 0xFF) >> (8 - bits);
     }
 
     /**
@@ -368,9 +315,11 @@ public class M3UARouteManagement {
             return null; // No matching route found
         }
 
+        // Use the actual array length, including for routes loaded from persistence.
+        int maxAttempts = asArray.length;
+
         // Load sharing logic based on SLS
-        int startIndex = (sls & this.asSelectionMask) >> this.asSlsShiftPlaces;
-        int maxAttempts = this.m3uaManagement.getMaxAsForRoute();
+        int startIndex = selectionStartIndex(sls, maxAttempts);
 
         // Attempt to find an active AS, starting from the calculated index and wrapping around
         for (int i = 0; i < maxAttempts; i++) {
@@ -390,7 +339,7 @@ public class M3UARouteManagement {
      * @param asImpl The AsImpl to check.
      * @return true if the AsImpl is considered active for routing, false otherwise.
      */
-    private boolean isAsActive(AsImpl asImpl) {
+    boolean isAsActive(AsImpl asImpl) {
         if (asImpl == null) {
             return false;
         }

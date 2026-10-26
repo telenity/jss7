@@ -186,7 +186,26 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
             maxAsForRoute = 4;
         }
 
-        this.maxAsForRoute = maxAsForRoute;
+        synchronized (this.routeManagement.routeLock) {
+            if (this.maxAsForRoute != maxAsForRoute && !this.routeManagement.route.isEmpty()) {
+                throw new IllegalStateException("Cannot change maxAsForRoute while routes exist");
+            }
+            this.maxAsForRoute = maxAsForRoute;
+            this.refreshAspSlsMasks();
+        }
+    }
+
+    @Override
+    public void setUseLsbForLinksetSelection(boolean useLsbForLinksetSelection) {
+        super.setUseLsbForLinksetSelection(useLsbForLinksetSelection);
+        this.refreshAspSlsMasks();
+    }
+
+    // ASP masks are derived from these settings once per AS; recompute them so they never overlap the AS-selection bits
+    private void refreshAspSlsMasks() {
+        for (As as : this.appServers) {
+            ((AsImpl) as).setM3UAManagement(this);
+        }
     }
 
     public int getHeartbeatTime() {

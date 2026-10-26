@@ -99,7 +99,7 @@ public class RuleImpl implements Rule, Serializable {
 
     private int secondaryAddressId;
 
-    private List<Integer> loadShareTable;
+    private List<Integer> loadShareTable = new LinkedList<Integer>();
 
     private String mask;
 
@@ -295,7 +295,9 @@ public class RuleImpl implements Rule, Serializable {
             return false;
         }
 
-        // Routing on GTT
+        // Routing on GTT; a GT-routed address without a GT cannot match any rule
+        if (address.getGlobalTitle() == null)
+            return false;
         GlobalTitle patternGT = pattern.getGlobalTitle();
         char[] addressDigitsChars = address.getGlobalTitle().getDigits().toCharArray();
         switch (addressIndicator.getGlobalTitleIndicator()) {
@@ -531,7 +533,11 @@ public class RuleImpl implements Rule, Serializable {
                 // Pattern has more digits to match than digits;
 
                 //special case where pattern can be xxxxx/* and digits are xxxxx so this should match.
-                if (pattern[j] == CHAR_MASK_SEPARATOR && pattern[j + 1] == CHAR_WILD_CARD_ALL) {
+                // Index with the pattern cursor i, not the digit cursor j: every
+                // separator advances i without advancing j, so after the first
+                // section j points at the wrong character of the pattern.
+                if (i + 1 < pattern.length && pattern[i] == CHAR_MASK_SEPARATOR
+                        && pattern[i + 1] == CHAR_WILD_CARD_ALL) {
                     return true;
                 }
 

@@ -140,6 +140,47 @@ public class AsnBoundaryTest {
         new AsnInputStream(new byte[]{(byte) 0x82, 0x01}).readLength();
     }
 
+    // Untrusted BER lengths must never size an allocation beyond the data actually present.
+
+    @Test
+    public void acceptsLengthWithLeadingZeroOctets() throws Exception {
+        // BER (X.690 8.1.3.5) allows more length octets than needed: 5 octets encoding the value 1
+        AsnInputStream input = new AsnInputStream(new byte[]{Tag.STRING_OCTET, (byte) 0x85, 0x00, 0x00, 0x00, 0x00, 0x01, 0x41});
+        input.readTag();
+        assertArrayEquals(new byte[]{0x41}, input.readOctetString());
+    }
+
+    @Test(expected = IOException.class)
+    public void rejectsLengthThatOverflowsInt() throws Exception {
+        new AsnInputStream(new byte[]{(byte) 0x85, 0x01, 0x00, 0x00, 0x00, 0x00}).readLength();
+    }
+
+    @Test(expected = IOException.class)
+    public void rejectsNegativeLength() throws Exception {
+        new AsnInputStream(new byte[]{(byte) 0x84, (byte) 0x80, 0x00, 0x00, 0x00}).readLength();
+    }
+
+    @Test(expected = AsnException.class)
+    public void octetStringLengthBeyondDataIsRejectedBeforeAllocation() throws Exception {
+        AsnInputStream input = new AsnInputStream(new byte[]{Tag.STRING_OCTET, (byte) 0x84, 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff});
+        input.readTag();
+        input.readOctetString();
+    }
+
+    @Test(expected = AsnException.class)
+    public void objectIdentifierLengthBeyondDataIsRejectedBeforeAllocation() throws Exception {
+        AsnInputStream input = new AsnInputStream(new byte[]{Tag.OBJECT_IDENTIFIER, (byte) 0x84, 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff});
+        input.readTag();
+        input.readObjectIdentifier();
+    }
+
+    @Test(expected = AsnException.class)
+    public void stringLengthBeyondDataIsRejectedBeforeAllocation() throws Exception {
+        AsnInputStream input = new AsnInputStream(new byte[]{Tag.STRING_IA5, (byte) 0x84, 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff});
+        input.readTag();
+        input.readIA5String();
+    }
+
     @Test(expected = IOException.class)
     public void rejectsInvalidPosition() throws Exception {
         new AsnInputStream(new byte[1]).position(2);

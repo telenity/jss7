@@ -23,6 +23,9 @@
 package org.mobicents.protocols.ss7.sccp.impl.router;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import org.mobicents.protocols.ss7.sccp.impl.oam.SccpOAMMessage;
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -173,6 +176,73 @@ public class RouterTest {
         assertNotNull(dest);
         assertEquals(101, dest.getFirstDpc());
         assertEquals(1, sap.getMtp3Destinations().size());
+    }
+
+    @Test
+    public void testSglsLoadShareTable() throws Exception {
+        SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "333"), 0);
+        router.addPrimaryAddress(1, primaryAddr1);
+        router.addBackupAddress(1, primaryAddr2);
+        router.addBackupAddress(2, primaryAddr2);
+
+        // legacy signature: table present and empty, never null
+        router.addRule(1, RuleType.Sgls, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, 1);
+        assertTrue(router.getRule(1).getLoadShareTable().isEmpty());
+
+        router.modifyRule(1, RuleType.Sgls, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, 1,
+                java.util.Arrays.asList(2));
+        assertEquals(java.util.Arrays.asList(2), router.getRule(1).getLoadShareTable());
+
+        // table survives persistence
+        router.stop();
+        router.start();
+        assertEquals(java.util.Arrays.asList(2), router.getRule(1).getLoadShareTable());
+
+        try {
+            router.addRule(2, RuleType.Sgls, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, 1,
+                    java.util.Arrays.asList(7));
+            fail("unknown backup id in load-share table must be rejected");
+        } catch (Exception e) {
+            assertEquals(String.format(SccpOAMMessage.NO_BACKUP_ADDRESS, 7), e.getMessage());
+        }
+    }
+
+    @Test
+    public void testModifyRuleChecksAddressSections() throws Exception {
+        SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "333/*"), 0);
+        SccpAddress oneSection = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "444"), 0);
+        SccpAddress twoSections = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 123, GlobalTitle.getInstance(1, "444/-"), 0);
+        router.addPrimaryAddress(1, twoSections);
+        router.addPrimaryAddress(2, oneSection);
+        router.addBackupAddress(1, twoSections);
+        router.addBackupAddress(2, oneSection);
+        router.addRule(1, RuleType.Dominant, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K/R", 1, 1);
+
+        try {
+            router.modifyRule(1, RuleType.Dominant, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K/R", 2, 1);
+            fail("primary address with wrong section count must be rejected");
+        } catch (Exception e) {
+            assertEquals(SccpOAMMessage.SEC_MISMATCH_PRIMADDRESS, e.getMessage());
+        }
+        try {
+            router.modifyRule(1, RuleType.Dominant, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K/R", 1, 2);
+            fail("secondary address with wrong section count must be rejected");
+        } catch (Exception e) {
+            assertEquals(SccpOAMMessage.SEC_MISMATCH_SECADDRESS, e.getMessage());
+        }
+        assertEquals(1, router.getRule(1).getPrimaryAddressId());
+        assertEquals(1, router.getRule(1).getSecondaryAddressId());
+    }
+
+    @Test
+    public void testGtRoutedAddressWithoutGlobalTitleMatchesNoRule() throws Exception {
+        SccpAddress pattern = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, GlobalTitle.getInstance(1, "*"), 0);
+        router.addPrimaryAddress(1, primaryAddr1);
+        router.addRule(1, RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, pattern, "K", 1, -1);
+
+        // AI says route on GT, but the network sent no global title
+        SccpAddress calledParty = new SccpAddress(RoutingIndicator.ROUTING_BASED_ON_GLOBAL_TITLE, 0, null, 8);
+        assertNull(router.findRule(calledParty, true));
     }
 
     @Test

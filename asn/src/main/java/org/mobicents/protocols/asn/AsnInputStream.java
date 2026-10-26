@@ -215,10 +215,22 @@ public class AsnInputStream extends InputStream {
         length = 0;
         byte temp;
         for (int i = 0; i < b; i++) {
+            // BER allows leading zero octets, so bound the value, not the octet count
+            if (length > (Integer.MAX_VALUE >> 8))
+                throw new IOException("BER length does not fit an int");
             temp = (byte) read();
             length = (length << 8) | (0x00FF & temp);
         }
         return length;
+    }
+
+    /**
+     * Rejects a primitive content length that the remaining data cannot hold, before anything is allocated for it.
+     * The length comes from the peer, so allocating first lets a few bytes request a multi-gigabyte array.
+     */
+    private void checkLength(int length) throws AsnException {
+        if (length < 0 || length > available())
+            throw new AsnException("Content length " + length + " exceeds the remaining " + available() + " bytes");
     }
 
     /**
@@ -517,6 +529,7 @@ public class AsnInputStream extends InputStream {
         if (pCBit == 0) {
             if (length == Tag.Indefinite_Length)
                 throw new AsnException("Error while decoding the octet-string: primitive with Indefinite_Length");
+            checkLength(length);
             byte[] buf = new byte[length];
             int cnt = read(buf);
             if (cnt != length)
@@ -602,6 +615,7 @@ public class AsnInputStream extends InputStream {
     public long[] readObjectIdentifierData(int length) throws AsnException, IOException {
         if (pCBit != 0 || length == Tag.Indefinite_Length)
             throw new AsnException("Failed when parsing the ObjectIdentifier field: this field must be primitive and the length must be defined");
+        checkLength(length);
         byte[] data = new byte[length];
         read(data);
         length = 2;
@@ -659,6 +673,7 @@ public class AsnInputStream extends InputStream {
 
     private String readString(java.nio.charset.Charset charset, int tagValue, int length) throws IOException, AsnException {
         if (pCBit == 0) {
+            checkLength(length);
             byte[] buf = new byte[length];
             int readCnt = read(buf);
             if (readCnt < length)

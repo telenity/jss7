@@ -49,23 +49,6 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
         super(aspFactoryImpl);
     }
 
-    private boolean isSourceAuthorizedAndActiveForApc(int apc, AspImpl asp, String type) {
-        if (skipSourceCheck) {
-            logger.info(String.format("[%s] Source check skipped for APC=%d from ASP=%s (forced by system property)",
-                    type, apc, asp.getName()));
-            return true;
-        }
-        AsImpl sourceAs = (AsImpl) asp.getAs();
-        // @NOTE: getAsForRoute returns the *first* ACTIVE AS for this APC
-        AsImpl expectedAs = aspFactoryImpl.getM3UAManagement().getRouteManagement().getAsForRoute(apc, -1, -1, -1);
-        if (expectedAs == null || !expectedAs.getName().equalsIgnoreCase(sourceAs.getName())) {
-            logger.warn(String.format("[%s] Ignored for APC=%d from AS=%s; expected=%s", type, apc, sourceAs.getName(),
-                    expectedAs != null ? expectedAs.getName() : "null"));
-            return false;
-        }
-        return true;
-    }
-
     private boolean isSourceAuthorizedForApc(int apc, AspImpl asp, String type) {
         if (skipSourceCheck) {
             logger.info(String.format("[%s] Source check skipped for APC=%d from ASP=%s (forced by system property)",
@@ -85,13 +68,13 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
         for (int i = 0; i < pcs.length; i++) {
             int pc = pcs[i];
             AsImpl asImpl = (AsImpl) aspImpl.getAs();
-            if ("DAVA".equals(type)) {
-                if (isSourceAuthorizedAndActiveForApc(pc, aspImpl, type)) {
-                    asImpl.getM3UAManagement().sendResumeMessageToLocalUser(new Mtp3ResumePrimitive(pc));
-                }
-            }
             if (isSourceAuthorizedForApc(pc, aspImpl, type)) {
-                if ("DUNA".equals(type)) {
+                if ("DAVA".equals(type)) {
+                    // Resume only via an AS route selection can use; RouteRow resumes the DPC when the AS goes active.
+                    if (asImpl.getM3UAManagement().getRouteManagement().isAsActive(asImpl)) {
+                        asImpl.getM3UAManagement().sendResumeMessageToLocalUser(new Mtp3ResumePrimitive(pc));
+                    }
+                } else if ("DUNA".equals(type)) {
                     asImpl.getM3UAManagement().sendPauseMessageToLocalUser(new Mtp3PausePrimitive(pc));
                 } else if ("SCON".equals(type)) {
                     int cong = 0;

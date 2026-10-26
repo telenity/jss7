@@ -142,6 +142,17 @@ public class TcBeginTest {
 
     }
 
+    /**
+     * 8-byte TC-BEGIN whose OTID claims a length of 0x7FFFFFFF: must fail to parse, not allocate ~2 GB.
+     */
+    @Test(expected = ParseException.class)
+    public void testBeginWithHugeOtidLengthIsRejected() throws Exception {
+        byte[] b = new byte[]{0x62, 0x06, 0x48, (byte) 0x84, 0x7f, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+        AsnInputStream ais = new AsnInputStream(b);
+        ais.readTag();
+        TcapFactory.createTCBeginMessage(ais);
+    }
+
     @Test
     public void testBasicTCBegin() throws IOException, EncodeException, ParseException {
 

@@ -46,7 +46,7 @@ public class Utils {
             sb.append(cTBCDSymbols[b & 0x0f]).append(cTBCDSymbols[(b & 0xf0) >> 4]);
         }
 
-        if (isOdd) {
+        if (isOdd && sb.length() > 0) {
             sb.setLength(sb.length() - 1);
         }
 

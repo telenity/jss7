@@ -147,7 +147,7 @@ public class RuleComparator implements Comparator<RuleImpl> {
             return comapreLength(digits1, digits2);
         } else if (index1 == index2) {
             // Keep comparing occurrence of "?" till difference is reached
-            compareQuestionMarksIndex(digits1, index1 + 1, digits2, index2 + 1);
+            return compareQuestionMarksIndex(digits1, index1 + 1, digits2, index2 + 1);
         } else if (index1 < index2) {
             return 1;
         }
