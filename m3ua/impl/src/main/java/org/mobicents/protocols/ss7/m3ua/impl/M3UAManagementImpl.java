@@ -188,7 +188,12 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
         synchronized (this.routeManagement.routeLock) {
             if (this.maxAsForRoute != maxAsForRoute && !this.routeManagement.route.isEmpty()) {
-                throw new IllegalStateException("Cannot change maxAsForRoute while routes exist");
+                if (this.routeManagement.hasBoundAs()) {
+                    throw new IllegalStateException("Cannot change maxAsForRoute while routes exist");
+                }
+                // only keys emptied by removeRoute are left; drop them so new routes get the new size
+                this.routeManagement.route.clear();
+                this.store();
             }
             this.maxAsForRoute = maxAsForRoute;
             this.refreshAspSlsMasks();

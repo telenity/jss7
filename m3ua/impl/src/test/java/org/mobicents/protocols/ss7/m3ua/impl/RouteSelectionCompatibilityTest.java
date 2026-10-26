@@ -24,6 +24,8 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 
 import org.junit.Test;
 import org.mobicents.protocols.ss7.m3ua.As;
+import org.mobicents.protocols.ss7.m3ua.ExchangeType;
+import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.RouteKey;
 
 import java.lang.reflect.Method;
@@ -139,6 +141,32 @@ public class RouteSelectionCompatibilityTest {
                             index % asCount, index % asCount);
                 }
             }
+        }
+    }
+
+    /** removeRoute keeps the emptied key as an all-null array; that alone must not block a new limit. */
+    @Test
+    public void routeLimitCanChangeAfterAllRoutesAreRemoved() throws Exception {
+        M3UAManagementImpl management = new M3UAManagementImpl("route-limit-remove-test");
+        management.setMaxAsForRoute(2);
+        AsImpl as = new AsImpl("as1", null, null, 0, Functionality.AS, ExchangeType.SE, null, null);
+        as.setM3UAManagement(management);
+        management.appServers.add(as);
+        M3UARouteManagement routes = management.getRouteManagement();
+
+        routes.addRoute(123, -1, -1, "as1");
+        routes.removeRoute(123, -1, -1, "as1");
+        management.setMaxAsForRoute(4);
+        assertEquals(4, management.getMaxAsForRoute());
+
+        // the stale two-slot entry is gone, so the re-added route gets the new size
+        routes.addRoute(123, -1, -1, "as1");
+        assertEquals(4, routes.route.get(new RouteKey(123, -1, -1)).length);
+        try {
+            management.setMaxAsForRoute(2);
+            fail("Changing the limit with a bound AS must still be rejected");
+        } catch (IllegalStateException expected) {
+            assertEquals(4, management.getMaxAsForRoute());
         }
     }
 

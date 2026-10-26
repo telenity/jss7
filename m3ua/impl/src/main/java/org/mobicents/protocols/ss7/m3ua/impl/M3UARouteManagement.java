@@ -263,6 +263,18 @@ public class M3UARouteManagement {
         return false;
     }
 
+    /** True if any route still binds an AS; removeRoute leaves an emptied key behind as an all-null array. */
+    boolean hasBoundAs() {
+        for (As[] asArray : this.route.values()) {
+            for (As as : asArray) {
+                if (as != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private AsImpl findAsOrThrow(String asName) throws Exception {
         for (As as : this.m3uaManagement.appServers) {
             if (as.getName().compareTo(asName) == 0) {
