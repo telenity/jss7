@@ -213,6 +213,20 @@ public interface Dialog {
     public void send(TCUniRequest event) throws TCAPSendException;
 
     /**
+     * Transaction forward: relays the received TC-BEGIN unchanged (same originating transaction id
+     * and components) to another TCAP application and releases this dialog without answering it.
+     * The dialogue then carries on directly between the originator and the new destination.
+     * Valid only before anything was sent on a dialog created by an incoming TC-BEGIN, and only with
+     * {@link org.mobicents.protocols.ss7.tcap.api.TCAPStack#setForwardEnabled} on.
+     *
+     * @param destinationAddress new called party address, mandatory (null throws TCAPSendException)
+     * @param originatingAddress new calling party address, null keeps the originator so that the
+     *            destination answers it directly
+     * @throws TCAPSendException
+     */
+    public void forward(SccpAddress destinationAddress, SccpAddress originatingAddress) throws TCAPSendException;
+
+    /**
      * Programmer hook to release.
      */
     public void release();

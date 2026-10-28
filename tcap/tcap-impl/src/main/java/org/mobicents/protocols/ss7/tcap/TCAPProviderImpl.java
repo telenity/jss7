@@ -633,7 +633,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                         logger.error("Too many registered current dialogs when receiving TCBeginMessage", e);
                         return;
                     }
-                    di.processBegin(tcb, localAddress, remoteAddress);
+                    di.processBegin(tcb, data, localAddress, remoteAddress);
                     break;
 
                 case TCEndMessage._TAG:

@@ -132,4 +132,12 @@ public interface TCAPStack {
 
     boolean getDoNotSendProtocolVersion();
 
+    /**
+     * Enables {@link org.mobicents.protocols.ss7.tcap.api.tc.dialog.Dialog#forward}: a dialog created by an incoming
+     * TC-BEGIN keeps the received message until it is answered. Off by default, nothing is kept then.
+     */
+    void setForwardEnabled(boolean val);
+
+    boolean getForwardEnabled();
+
 }

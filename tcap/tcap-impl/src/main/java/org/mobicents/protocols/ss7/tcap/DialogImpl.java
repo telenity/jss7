@@ -22,6 +22,7 @@
 
 package org.mobicents.protocols.ss7.tcap;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -158,6 +159,11 @@ public class DialogImpl implements Dialog {
     // the first backward Continue must contain AARE.
     private boolean dpSentInBegin;
 
+    // the received TC-BEGIN as it came from SCCP, kept for forward() while nothing was sent back
+    private byte[] receivedBegin;
+    // its calling party as received: forward() keeps it even if the application changes the remote address
+    private SccpAddress receivedBeginCalling;
+
     private static int getIndexFromInvokeId(Integer l) {
         int tmp = l.intValue();
         return tmp + _INVOKE_TABLE_SHIFT;
@@ -218,6 +224,29 @@ public class DialogImpl implements Dialog {
         }
 
         this.setState(TRPseudoState.Expunged);
+    }
+
+    public void forward(SccpAddress destinationAddress, SccpAddress originatingAddress) throws TCAPSendException {
+        try {
+            this.dialogLock.lock();
+            if (!this.provider.getStack().getForwardEnabled()) {
+                throw new TCAPSendException("Forwarding is disabled, see TCAPStack.setForwardEnabled, dialog: " + this);
+            }
+            if (this.state != TRPseudoState.InitialReceived || this.receivedBegin == null) {
+                throw new TCAPSendException("Only a received TC-BEGIN can be forwarded, dialog: " + this);
+            }
+            if (destinationAddress == null) {
+                throw new TCAPSendException("Forward destination address is mandatory, dialog: " + this);
+            }
+            this.provider.send(this.receivedBegin, false, destinationAddress,
+                    originatingAddress != null ? originatingAddress : this.receivedBeginCalling,
+                    this.seqControl, this.protocolClass);
+            this.release();
+        } catch (IOException e) {
+            throw new TCAPSendException("Failed to forward TC-BEGIN", e);
+        } finally {
+            this.dialogLock.unlock();
+        }
     }
 
     /*
@@ -1119,7 +1148,7 @@ public class DialogImpl implements Dialog {
         }
     }
 
-    protected void processBegin(TCBeginMessage msg, SccpAddress localAddress, SccpAddress remoteAddress) {
+    protected void processBegin(TCBeginMessage msg, byte[] data, SccpAddress localAddress, SccpAddress remoteAddress) {
 
         TCBeginIndicationImpl tcBeginIndication = null;
         try {
@@ -1139,6 +1168,10 @@ public class DialogImpl implements Dialog {
             this.setRemoteAddress(remoteAddress);
             this.setLocalAddress(localAddress);
             this.setRemoteTransactionId(msg.getOriginatingTransactionId());
+            if (this.provider.getStack().getForwardEnabled()) {   // kept only for forward()
+                this.receivedBegin = data;
+                this.receivedBeginCalling = remoteAddress;
+            }
             tcBeginIndication = (TCBeginIndicationImpl) ((DialogPrimitiveFactoryImpl) this.provider
                     .getDialogPrimitiveFactory()).createBeginIndication(this);
 
@@ -1613,6 +1646,10 @@ public class DialogImpl implements Dialog {
                 return;
             }
             this.state = newState;
+            if (newState != TRPseudoState.InitialReceived) {
+                this.receivedBegin = null; // answered or gone, it can no longer be forwarded
+                this.receivedBeginCalling = null;
+            }
             if (newState == TRPseudoState.Expunged) {
                 stopIdleTimer();
                 provider.release(this);

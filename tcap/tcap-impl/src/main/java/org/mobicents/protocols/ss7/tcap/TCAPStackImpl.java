@@ -60,6 +60,7 @@ public class TCAPStackImpl implements TCAPStack {
     private int corePoolSize = 4;
 
     private boolean doNotSendProtocolVersion;
+    private volatile boolean forwardEnabled;
 
     public TCAPStackImpl() {
         super();
@@ -236,6 +237,16 @@ public class TCAPStackImpl implements TCAPStack {
     @Override
     public boolean getDoNotSendProtocolVersion() {
         return doNotSendProtocolVersion;
+    }
+
+    @Override
+    public void setForwardEnabled(boolean val) {
+        forwardEnabled = val;
+    }
+
+    @Override
+    public boolean getForwardEnabled() {
+        return forwardEnabled;
     }
 
 }

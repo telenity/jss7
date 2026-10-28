@@ -6,6 +6,7 @@ The Transaction Capabilities Application Part (TCAP, ITU-T Q.771 to Q.775) lets 
 
 - [Objects](#objects)
 - [Dialog lifecycle](#dialog-lifecycle)
+- [Transaction forward](#transaction-forward)
 - [Components](#components)
 - [Timers and limits](#timers-and-limits)
 - [Client example](#client-example)
@@ -34,6 +35,33 @@ Every incoming `Invoke` should be answered in one of three ways; an invoke that 
 - a result: `ReturnResultLast`, optionally preceded by `ReturnResult` segments,
 - an error: `ReturnError` or `Reject`,
 - or `dialog.processInvokeWithoutAnswer(invokeId)` when the operation has no result by design.
+
+## Transaction forward
+
+A TCAP user that decides a received TC-BEGIN belongs to another TCAP application can hand it over with `dialog.forward(destinationAddress, originatingAddress)` instead of answering it. The stack re-sends the received TCAP message unchanged (same originating transaction id, dialogue portion and components) to the new destination and releases the local dialog without sending anything back. The originator's dialog is untouched: the new destination answers with a TC-CONTINUE, END or ABORT whose destination transaction id is the originator's, and the dialogue then carries on directly between the two.
+
+- Forwarding is off by default and is enabled with `tcapStack.setForwardEnabled(true)`. Only then does a dialog created by an incoming TC-BEGIN keep the received message until it is answered; when it is off nothing is kept and `forward` throws `TCAPSendException`.
+- `destinationAddress` is the called party of the forwarded message and is mandatory: `null` throws `TCAPSendException`, nothing is sent and the dialog is not released.
+- `originatingAddress` is the calling party; `null` keeps the originator's address so that the destination answers the originator directly. Set it only when the answers should come through another node.
+- The protocol class and the sequence control (SLS) of the received message are kept. The return-on-error option is not set.
+- Only a dialog in state `InitialReceived` can be forwarded: one created by an incoming TC-BEGIN on which nothing has been sent yet. Otherwise, and for TC-UNI dialogs, `forward` throws `TCAPSendException` and nothing is sent.
+- The forwarded message is sent without the return-on-error option, so SCCP routing failures (destination or subsystem prohibited, no matching rule, message too long for the destination) are not reported: `forward` returns normally and the dialog is released. Only a failure that raises an exception (`TCAPSendException`) leaves the dialog in place, to be answered or aborted.
+- `onDialogReleased` is called for the forwarded dialog, as for any release. Typically `forward` is called from `onTCBegin`, after looking at the components of the indication.
+
+```java
+@Override
+public void onTCBegin(TCBeginIndication ind) {
+    if (belongsElsewhere(ind)) {
+        try {
+            ind.getDialog().forward(otherNodeAddress, null);
+        } catch (TCAPSendException e) {
+            // not sent: answer or abort the dialog as usual
+        }
+        return;
+    }
+    // ... normal processing
+}
+```
 
 ## Components
 
