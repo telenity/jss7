@@ -30,28 +30,17 @@ import org.mobicents.protocols.ss7.sccp.RuleType;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Compatibility and regression cover for the two GTT routing corrections:
- * the matchPattern cursor fix in RuleImpl and the missing return in
- * RuleComparator.
- *
- * The point is twofold - confirm the patterns that already worked still match
- * exactly as before, and confirm the comparator now satisfies the contract
- * Arrays.sort requires.
+ * Compatibility and regression cover for the matchPattern cursor fix in
+ * RuleImpl: confirm the patterns that already worked still match exactly as
+ * before.
  *
  * @author alperc
  */
 public class RoutingChangeCompatibilityTest {
-
-    private final RuleComparator comparator = new RuleComparator();
 
     // ------------------------------------------------------------------
     // RuleImpl.matchPattern
@@ -127,65 +116,6 @@ public class RoutingChangeCompatibilityTest {
     }
 
     // ------------------------------------------------------------------
-    // RuleComparator
-    // ------------------------------------------------------------------
-
-    /**
-     * Arrays.sort throws "Comparison method violates its general contract" when
-     * a comparator is not antisymmetric. Dropping the recursive result made
-     * compare(a,b) and compare(b,a) both return -1 for rules whose wildcards sit
-     * at the same positions.
-     */
-    @Test
-    public void comparatorIsAntisymmetric() throws Exception {
-        List<RuleImpl> rules = sampleRules();
-        for (RuleImpl a : rules) {
-            for (RuleImpl b : rules) {
-                int ab = comparator.compare(a, b);
-                int ba = comparator.compare(b, a);
-                if (a == b) {
-                    continue;
-                }
-                assertTrue("compare(" + digits(a) + "," + digits(b) + ")=" + ab
-                                + " and compare(" + digits(b) + "," + digits(a) + ")=" + ba
-                                + " must have opposite signs",
-                        (ab < 0 && ba > 0) || (ab > 0 && ba < 0) || (ab == 0 && ba == 0));
-            }
-        }
-    }
-
-    /** Sorting must not throw, and must be stable across repeated input orders. */
-    @Test
-    public void sortingIsConsistentRegardlessOfInputOrder() throws Exception {
-        List<RuleImpl> rules = sampleRules();
-
-        RuleImpl[] ascending = rules.toArray(new RuleImpl[0]);
-        Arrays.sort(ascending, comparator);
-
-        List<RuleImpl> reversedInput = new ArrayList<RuleImpl>(rules);
-        java.util.Collections.reverse(reversedInput);
-        RuleImpl[] fromReversed = reversedInput.toArray(new RuleImpl[0]);
-        Arrays.sort(fromReversed, comparator);
-
-        assertEquals("sort order must not depend on input order",
-                digitsOf(ascending), digitsOf(fromReversed));
-    }
-
-    /**
-     * The documented tie-break case: equal wildcard positions fall through to a
-     * length comparison, so the shorter pattern sorts first. Previously both
-     * directions returned -1 and the order was arbitrary.
-     */
-    @Test
-    public void equalWildcardPositionsFallBackToLength() throws Exception {
-        RuleImpl shorter = rule("80/??/9");
-        RuleImpl longer = rule("80/??/999");
-        assertTrue("shorter pattern must sort above longer one",
-                comparator.compare(shorter, longer) < 0);
-        assertTrue(comparator.compare(longer, shorter) > 0);
-    }
-
-    // ------------------------------------------------------------------
     // helpers
     // ------------------------------------------------------------------
 
@@ -214,30 +144,5 @@ public class RoutingChangeCompatibilityTest {
         }
         return new RuleImpl(RuleType.Solitary, LoadSharingAlgorithm.Undefined, OriginationType.ALL, address,
                 mask.toString());
-    }
-
-    private List<RuleImpl> sampleRules() throws Exception {
-        return Arrays.asList(
-                rule("800/????/9"),
-                rule("*"),
-                rule("9/?/9/*"),
-                rule("80/??/0/???/9"),
-                rule("800/?????/9"),
-                rule("80/??/9"),
-                rule("80/??/999"),
-                rule("123456"),
-                rule("1234??"));
-    }
-
-    private static String digits(RuleImpl rule) {
-        return rule.getPattern().getGlobalTitle().getDigits();
-    }
-
-    private static List<String> digitsOf(RuleImpl[] rules) {
-        List<String> out = new ArrayList<String>();
-        for (RuleImpl r : rules) {
-            out.add(digits(r));
-        }
-        return out;
     }
 }

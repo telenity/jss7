@@ -40,6 +40,8 @@ public interface SccpOAMMessage {
 
     public static final String RULE_DOESNT_EXIST = "Rule doesn't exist";
 
+    public static final String BEFORE_RULE_DOESNT_EXIST = "No rule defined for before id=%d";
+
     public static final String RULE_SUCCESSFULLY_ADDED = "Rule successfully added";
 
     public static final String RULE_SUCCESSFULLY_MODIFIED = "Rule successfully modified";

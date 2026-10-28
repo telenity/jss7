@@ -95,7 +95,7 @@ Recommended configuration order:
 | rss delete / show | `sccp rss delete <id>`, `sccp rss show [<id>]` |
 | primary_add / backup_add create / modify | `sccp primary_add create <id> <ai> <pc> <ssn> <tt> <np> <nai> <digits>` |
 | primary_add / backup_add delete / show | `sccp primary_add delete <id>`, `sccp backup_add show [<id>]` |
-| rule create / modify | `sccp rule create <id> <mask> <ai> <pc> <ssn> <tt> <np> <nai> <digits> <rule-type> <primary-address-id> [<backup-address-id>] [<loadsharing-algorithm>] [<sgls-backup-id>...] [<origination-type>]` |
+| rule create / modify | `sccp rule create <id> <mask> <ai> <pc> <ssn> <tt> <np> <nai> <digits> <rule-type> <primary-address-id> [<backup-address-id>] [<loadsharing-algorithm>] [<sgls-backup-id>...] [<origination-type>] [before <rule-id>]` |
 | rule delete / show | `sccp rule delete <id>`, `sccp rule show [<id>]` |
 | lmr create / modify | `sccp lmr create <id> <first-spc> <last-spc> <long-message-rule-type>` |
 | lmr delete / show | `sccp lmr delete <id>`, `sccp lmr show [<id>]` |
@@ -880,7 +880,7 @@ sccp rule show
 > Configure primary (and backup) addresses before creating rules. A rule that references a missing address is rejected.
 
 ```
-sccp rule create <id> <mask> <address-indicator> <point-code> <subsystem-number> <translation-type> <numbering-plan> <nature-of-address-indicator> <digits> <rule-type> <primary-address-id> [<backup-address-id>] [<loadsharing-algorithm>] [<sgls-backup-id>...] [<origination-type>]
+sccp rule create <id> <mask> <address-indicator> <point-code> <subsystem-number> <translation-type> <numbering-plan> <nature-of-address-indicator> <digits> <rule-type> <primary-address-id> [<backup-address-id>] [<loadsharing-algorithm>] [<sgls-backup-id>...] [<origination-type>] [before <rule-id>]
 ```
 
 All arguments are positional. Which of the optional trailing arguments are present depends on `<rule-type>`; see the templates below.
@@ -923,6 +923,7 @@ Where:
 
 - `<sgls-backup-id>...` `Sgls` only. Zero or more additional `backup_add` ids to loadshare over, on top of the primary and backup address. Each must exist and match the mask sections.
 - `<origination-type>` **Optional**, case-insensitive. `LocalOriginated` applies the rule only to messages from local SCCP users (for example a local TCAP stack). `RemoteOriginated` applies it only to messages from the SS7 network. When absent the rule applies to all messages.
+- `before <rule-id>` **Optional**, always last. Places the new rule directly before the existing rule `<rule-id>` instead of in id order. Returns `No rule defined for before id=<rule-id>` if that rule does not exist. Not accepted by `modify`.
 
 Templates per rule type. The argument after those the rule type takes is read as `<origination-type>`, so a leftover value there (for example `-1` after a `Solitary` primary id) returns `Wrong value: '<value>'`; any argument after the origination type returns `Invalid Command`. For `Sgls` every numeric argument after `<backup-address-id>` is read as an `<sgls-backup-id>`, so do not put a placeholder there.
 
@@ -933,7 +934,7 @@ sccp rule create <id> <mask> <7 address args> Loadshared <primary-address-id> <b
 sccp rule create <id> <mask> <7 address args> Sgls       <primary-address-id> <backup-address-id> [<sgls-backup-id>...] [<origination-type>]
 ```
 
-Rule ordering: when a message is translated, rules are evaluated from the top of a sorted list. Rules with `LocalOriginated` or `RemoteOriginated` come before rules with origination type `All`. Within the same origination type, patterns without wildcards come first (shortest first), then patterns with `?`, then patterns with `*`. Among patterns with `?`, fewer wildcards rank higher, and for an equal count the pattern whose first `?` appears later ranks higher.
+Rule ordering: when a message is translated, rules are evaluated top to bottom in list order and the first match wins. The rule id sets the position: `create` inserts the new rule before the first rule with a greater id, or before `<rule-id>` when `before` is given. `modify` keeps the rule where it is, `delete` leaves the others in place, and on restart the list is loaded in the order of the persisted file. Leave gaps between ids (10, 20, 30) so rules can be inserted later. `sccp rule show` lists rules in this order. Rule files written by earlier versions are in the old specificity order, not id order, and are loaded as is; on such a list a new rule placed by id can land after a wildcard or catch-all rule that already matches it, so check `sccp rule show` and use `before <rule-id>` to place it.
 
 Examples:
 

@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -212,7 +211,6 @@ public class RouterImpl implements Router {
 
     private String persistDir = null;
 
-    private final RuleComparator ruleComparator = new RuleComparator();
     // rule list
     private volatile RuleMap<Integer, Rule> rulesMap = new RuleMap<>();
     private volatile SccpAddressMap<Integer, SccpAddress> primaryAddresses = new SccpAddressMap<>();
@@ -373,11 +371,25 @@ public class RouterImpl implements Router {
 
     public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
                         SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable) throws Exception {
+        this.addRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable, -1);
+    }
+
+    /**
+     * Rules are matched in list order, which load() takes as is from the persisted file. A new rule goes directly before
+     * the rule with id beforeId or, when beforeId is -1, before the first rule with a greater id.
+     */
+    public void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+                        SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable,
+                        int beforeId) throws Exception {
 
         Rule ruleTmp = this.getRule(id);
 
         if (ruleTmp != null) {
             throw new Exception(SccpOAMMessage.RULE_ALREADY_EXIST);
+        }
+
+        if (beforeId != -1 && this.getRule(beforeId) == null) {
+            throw new Exception(String.format(SccpOAMMessage.BEFORE_RULE_DOESNT_EXIST, beforeId));
         }
 
         int maskNumberOfSecs = (mask.split("/").length - 1);
@@ -413,25 +425,21 @@ public class RouterImpl implements Router {
             rule.setLoadShareTable(new ArrayList<Integer>(loadShareTable));
 
             rule.setRuleId(id);
-            RuleImpl[] rulesArray = new RuleImpl[(this.rulesMap.size() + 1)];
-            int count = 0;
+            RuleMap<Integer, Rule> newRule = new RuleMap<>();
+            boolean added = false;
 
             for (FastMap.Entry<Integer, Rule> e = this.rulesMap.head(), end = this.rulesMap.tail(); (e = e.getNext()) != end; ) {
                 Integer ruleId = e.getKey();
                 RuleImpl ruleTemp1 = (RuleImpl) e.getValue();
                 ruleTemp1.setRuleId(ruleId);
-                rulesArray[count++] = ruleTemp1;
+                if (!added && (beforeId != -1 ? ruleId == beforeId : ruleId > id)) {
+                    newRule.put(id, rule);
+                    added = true;
+                }
+                newRule.put(ruleId, ruleTemp1);
             }
-
-            // add latest rule
-            rulesArray[count++] = rule;
-
-            // Sort
-            Arrays.sort(rulesArray, ruleComparator);
-
-            RuleMap<Integer, Rule> newRule = new RuleMap<>();
-            for (RuleImpl ruleTemp : rulesArray) {
-                newRule.put(ruleTemp.getRuleId(), ruleTemp);
+            if (!added) {
+                newRule.put(id, rule);
             }
             this.rulesMap = newRule;
             this.store();
@@ -483,26 +491,10 @@ public class RouterImpl implements Router {
             rule.setLoadShareTable(new ArrayList<Integer>(loadShareTable));
 
             rule.setRuleId(id);
-            RuleImpl[] rulesArray = new RuleImpl[(this.rulesMap.size() + 1)];
-            int count = 0;
-
-            for (FastMap.Entry<Integer, Rule> e = this.rulesMap.head(), end = this.rulesMap.tail(); (e = e.getNext()) != end; ) {
-                Integer ruleId = e.getKey();
-                RuleImpl ruleTemp1 = (RuleImpl) e.getValue();
-                ruleTemp1.setRuleId(ruleId);
-                rulesArray[count++] = ruleTemp1;
-            }
-
-            // add latest rule
-            rulesArray[count++] = rule;
-
-            // Sort
-            Arrays.sort(rulesArray, ruleComparator);
-
+            // keeps the rule's position: put on an existing key replaces the value in place
             RuleMap<Integer, Rule> newRule = new RuleMap<>();
-            for (RuleImpl ruleTemp : rulesArray) {
-                newRule.put(ruleTemp.getRuleId(), ruleTemp);
-            }
+            newRule.putAll(this.rulesMap);
+            newRule.put(id, rule);
             this.rulesMap = newRule;
             this.store();
         }

@@ -30,7 +30,7 @@ The called party digits are compared with the rule's `digits` pattern. The patte
 
 `800/????/9` matches an eight-digit number that starts with `800` and ends with `9`. `800800/*` matches anything starting with `800800`. A pattern without wildcards must match the whole number.
 
-Rules are kept sorted, and the first match wins. Rules with an origination type (`LocalOriginated` or `RemoteOriginated`) come before rules that apply to all messages; within the same origination type, exact patterns come before patterns with `?`, and those before patterns with `*`. The address indicator of the pattern (routing indicator, GTI, presence of PC and SSN) must also match the called party address.
+Rules are evaluated in list order and the first match wins. A new rule is placed by its id (before the first rule with a greater id) unless `before <rule-id>` is given; `modify` keeps the rule in place, and on restart the persisted order is kept as is. The address indicator of the pattern (routing indicator, GTI, presence of PC and SSN) must also match the called party address.
 
 ### Translating the address
 
@@ -119,7 +119,7 @@ sccp rule create 4 K 16 0 0 0 1 4 * Solitary 4
 ```
 
 > [!TIP]
-> Because rules are sorted by specificity, the catch-all of example 4 can coexist with the more specific rules above it; it is only consulted when nothing else matches.
+> Rules are matched in list order, so the catch-all of example 4 can coexist with the more specific rules above it only because it has the highest id and sits last; it is consulted only when nothing else matches. A catch-all placed before more specific rules shadows them.
 
 ## Using the stack
 

@@ -240,6 +240,24 @@ public class SccpExecutorTest {
     }
 
     @Test
+    public void testRuleCreateOrder() {
+        this.sccpExecutor.execute("sccp primary_add create 1 71 2 8 0 0 3 123456789".split(" "));
+        String rule = " R 71 2 8 0 0 3 123456789 solitary 1";
+
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, this.sccpExecutor.execute(("sccp rule create 30" + rule).split(" ")));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, this.sccpExecutor.execute(("sccp rule create 10" + rule).split(" ")));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, this.sccpExecutor.execute(("sccp rule create 20" + rule + " RemoteOriginated").split(" ")));
+        assertEquals(SccpOAMMessage.RULE_SUCCESSFULLY_ADDED, this.sccpExecutor.execute(("sccp rule create 40" + rule + " before 10").split(" ")));
+        assertEquals(java.util.Arrays.asList(40, 10, 20, 30), new java.util.ArrayList<Integer>(this.router.getRules().keySet()));
+        assertEquals(OriginationType.REMOTE, this.router.getRule(20).getOriginationType());
+
+        assertEquals(String.format(SccpOAMMessage.BEFORE_RULE_DOESNT_EXIST, 99),
+                this.sccpExecutor.execute(("sccp rule create 50" + rule + " LocalOriginated before 99").split(" ")));
+        assertEquals(SccpOAMMessage.INVALID_COMMAND, this.sccpExecutor.execute(("sccp rule modify 10" + rule + " before 30").split(" ")));
+        assertEquals(4, this.router.getRules().size());
+    }
+
+    @Test
     public void testRuleTrailingArguments() {
         this.sccpExecutor.execute("sccp primary_add create 1 71 2 8 0 0 3 123456789".split(" "));
         this.sccpExecutor.execute("sccp backup_add create 1 71 3 8 0 0 3 123456789".split(" "));

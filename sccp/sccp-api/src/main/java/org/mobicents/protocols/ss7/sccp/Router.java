@@ -99,6 +99,18 @@ public interface Router {
         addRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId);
     }
 
+    /**
+     * Same as {@link #addRule} but places the new rule directly before the rule with id <code>beforeId</code> instead of
+     * in id order. -1 means id order. Default so existing Router implementations keep compiling.
+     */
+    default void addRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
+                         SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable,
+                         int beforeId) throws Exception {
+        if (beforeId != -1)
+            throw new UnsupportedOperationException("Rule placement not supported by " + getClass().getName());
+        addRule(id, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable);
+    }
+
     default void modifyRule(int id, RuleType ruleType, LoadSharingAlgorithm algo, OriginationType originationType,
                             SccpAddress pattern, String mask, int pAddressId, int sAddressId, List<Integer> loadShareTable) throws Exception {
         if (!loadShareTable.isEmpty())

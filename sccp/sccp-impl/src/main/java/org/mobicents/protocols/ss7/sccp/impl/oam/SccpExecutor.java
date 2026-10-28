@@ -44,6 +44,7 @@ import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
 import org.mobicents.ss7.management.console.ShellExecutor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -499,13 +500,23 @@ public class SccpExecutor implements ShellExecutor {
      */
     /**
      * sccp rule (create|modify) <id> <mask> <7 address args> <ruleType> <primAddrId> [<secAddrId>] [<algo>]
-     * [<sglsBackupId>...] [<origType>]
+     * [<sglsBackupId>...] [<origType>] [before <ruleId>]
      * <p>
      * secAddrId is read for every rule type except Solitary; algo only for Loadshared; any further numeric arguments
      * only for Sgls (extra backup addresses to loadshare over). The origination type is always the argument right after
-     * those, and any further argument is rejected instead of being silently ignored.
+     * those, and any further argument is rejected instead of being silently ignored. "before" is create only and is
+     * taken off the end before the positional arguments are read.
      */
     private String addOrModifyRule(String[] options, boolean modify) throws Exception {
+        int beforeId = -1;
+        if (options.length >= 2 && options[options.length - 2].equalsIgnoreCase("before")) {
+            if (modify) {
+                return SccpOAMMessage.INVALID_COMMAND;
+            }
+            beforeId = Integer.parseInt(options[options.length - 1]);
+            options = Arrays.copyOf(options, options.length - 2);
+        }
+
         // Minimum is 14: up to and including primary address id
         if (options.length < 14) {
             return SccpOAMMessage.INVALID_COMMAND;
@@ -582,7 +593,7 @@ public class SccpExecutor implements ShellExecutor {
             this.router.modifyRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable);
             return SccpOAMMessage.RULE_SUCCESSFULLY_MODIFIED;
         }
-        this.router.addRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable);
+        this.router.addRule(ruleId, ruleType, algo, originationType, pattern, mask, pAddressId, sAddressId, loadShareTable, beforeId);
         return SccpOAMMessage.RULE_SUCCESSFULLY_ADDED;
     }
 
