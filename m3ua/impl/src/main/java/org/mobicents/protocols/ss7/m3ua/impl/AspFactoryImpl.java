@@ -753,6 +753,9 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
             try {
                 // TODO where is streamNumber stored?
                 m3UAMessage = this.messageFactory.createMessage(byteBuf);
+                if (m3UAMessage == null) {
+                    return; // unknown (logged by the factory) or incomplete
+                }
                 if (this.isHeartBeatEnabled()) {
                     this.heartBeatTimer.reset();
                 }

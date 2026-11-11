@@ -66,6 +66,29 @@ public class AspFactoryImplTest {
         ReferenceCountUtil.release(association.byteBuf);
     }
 
+    /** A message of unknown class or type is dropped and skipped, without an exception, on SCTP and on TCP. */
+    @Test
+    public void unknownMessagesAreDroppedWithoutException() {
+        final java.util.List<M3UAMessage> sent = new java.util.ArrayList<>();
+        AspFactoryImpl factory = new AspFactoryImpl() {
+            @Override
+            protected void write(M3UAMessage message) {
+                sent.add(message);
+            }
+        };
+        factory.setM3UAManagement(new M3UAManagementImpl("AspFactoryImplTest"));
+
+        factory.processPayload(IpChannelType.SCTP, header(1, 5, 1));    // class 5 is not M3UA
+        factory.processPayload(IpChannelType.SCTP, header(1, 3, 9));    // ASPSM type 9 is not defined
+        factory.processPayload(IpChannelType.TCP, header(1, 3, 9));
+        assertEquals(0, sent.size());
+    }
+
+    /** An 8-byte M3UA common header without parameters. */
+    private static ByteBuf header(int version, int messageClass, int messageType) {
+        return io.netty.buffer.Unpooled.wrappedBuffer(new byte[]{(byte) version, 0, (byte) messageClass, (byte) messageType, 0, 0, 0, 8});
+    }
+
     private static AspFactoryImpl newFactory(TestAssociation association) {
         AspFactoryImpl factory = new AspFactoryImpl();
         factory.association = association;

@@ -49,6 +49,8 @@ import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
 import org.mobicents.protocols.ss7.m3ua.message.MessageFactory;
 import org.mobicents.protocols.ss7.m3ua.message.MessageType;
 
+import org.apache.log4j.Logger;
+
 import io.netty.buffer.ByteBuf;
 
 /**
@@ -56,6 +58,8 @@ import io.netty.buffer.ByteBuf;
  * @author kulikov
  */
 public class MessageFactoryImpl implements MessageFactory {
+
+    private static final Logger logger = Logger.getLogger(MessageFactoryImpl.class);
 
     public M3UAMessageImpl createMessage(int messageClass, int messageType) {
         switch (messageClass) {
@@ -156,6 +160,12 @@ public class MessageFactoryImpl implements MessageFactory {
 
         // construct new message instance
         M3UAMessageImpl messageTemp = this.createMessage(messageClass, messageType);
+        if (messageTemp == null) {
+            // unknown class or type: skip it so the next message can be read
+            logger.warn(String.format("Rx : unknown M3UA message class=%d type=%d dropped", messageClass, messageType));
+            message.skipBytes(dataLen);
+            return null;
+        }
 
         // parsing params of this message
         message.markWriterIndex();
