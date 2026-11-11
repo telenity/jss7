@@ -206,9 +206,15 @@ public class AsImpl implements XMLSerializable, As {
                 AsState.INACTIVE.toString());
         this.peerFSM.createTransition(TransitionState.ASP_DOWN, AsState.DOWN.toString(), AsState.DOWN.toString());
 
-        // NTFY hack for Huawei
+        // RFC 4666 3.8.2: "Insufficient ASP resources" is not an AS state change. An SGP whose AS is already
+        // active via another ASP may send it instead of AS-ACTIVE; we activate on our ASP Active Ack.
         this.peerFSM.createTransition(TransitionState.OTHER_INSUFFICIENT_ASP, AsState.DOWN.toString(),
-                AsState.ACTIVE.toString()).setHandler(new THPeerAsInActToAct(this, this.peerFSM));
+                AsState.DOWN.toString()).setHandler(new THNoTrans());
+
+        // RFC 4666 4.3.4.5: after ASP Up the SGP may report the AS PENDING. With no active ASP of ours there is
+        // nothing to queue; PENDING would only start T(r) and a PAUSE.
+        this.peerFSM.createTransition(TransitionState.AS_STATE_CHANGE_PENDING, AsState.DOWN.toString(),
+                AsState.DOWN.toString()).setHandler(new THNoTrans());
 
         this.peerFSM.createTransition(TransitionState.AS_STATE_CHANGE_ACTIVE, AsState.DOWN.toString(),
                 AsState.ACTIVE.toString()).setHandler(new THPeerAsInActToAct(this, this.peerFSM));
@@ -220,6 +226,12 @@ public class AsImpl implements XMLSerializable, As {
 
         this.peerFSM.createTransition(TransitionState.AS_STATE_CHANGE_ACTIVE, AsState.INACTIVE.toString(),
                 AsState.ACTIVE.toString()).setHandler(new THPeerAsInActToAct(this, this.peerFSM));
+
+        this.peerFSM.createTransition(TransitionState.OTHER_INSUFFICIENT_ASP, AsState.INACTIVE.toString(),
+                AsState.INACTIVE.toString()).setHandler(new THNoTrans());
+
+        this.peerFSM.createTransition(TransitionState.AS_STATE_CHANGE_PENDING, AsState.INACTIVE.toString(),
+                AsState.INACTIVE.toString()).setHandler(new THNoTrans());
 
         this.peerFSM.createTransition(TransitionState.ASP_DOWN, AsState.INACTIVE.toString(), AsState.DOWN.toString())
                 .setHandler(new THPeerAsInActToDwn(this, this.peerFSM));
@@ -265,6 +277,9 @@ public class AsImpl implements XMLSerializable, As {
 
         this.peerFSM.createTransition(TransitionState.ASP_DOWN, AsState.PENDING.toString(), AsState.PENDING.toString())
                 .setHandler(new THNoTrans());
+
+        this.peerFSM.createTransition(TransitionState.OTHER_INSUFFICIENT_ASP, AsState.PENDING.toString(),
+                AsState.PENDING.toString()).setHandler(new THNoTrans());
     }
 
     /**
@@ -306,6 +321,10 @@ public class AsImpl implements XMLSerializable, As {
                 .createTransition(TransitionState.ASP_UP, AsState.INACTIVE.toString(), AsState.INACTIVE.toString())
                 .setHandler(new THLocalAsInactToInact(this, this.localFSM));
 
+        // RFC 4666 4.3.4.4: ASP Inactive from an ASP that is not active is acked and changes no AS state
+        this.localFSM.createTransition(TransitionState.ASP_INACTIVE, AsState.INACTIVE.toString(),
+                AsState.INACTIVE.toString()).setHandler(new THNoTrans());
+
         // ******************************************************************/
         // STATE ACTIVE /
         // ******************************************************************/
@@ -330,6 +349,9 @@ public class AsImpl implements XMLSerializable, As {
 
         this.localFSM.createTransition(TransitionState.ASP_UP, AsState.PENDING.toString(), AsState.INACTIVE.toString())
                 .setHandler(new THNoTrans());
+
+        this.localFSM.createTransition(TransitionState.ASP_INACTIVE, AsState.PENDING.toString(),
+                AsState.PENDING.toString()).setHandler(new THNoTrans());
 
         this.localFSM.createTransition(TransitionState.ASP_ACTIVE, AsState.PENDING.toString(),
                 AsState.ACTIVE.toString()).setHandler(new THLocalAsPendToAct(this, this.localFSM));
@@ -786,6 +808,18 @@ public class AsImpl implements XMLSerializable, As {
 
     public Set<AsStateListener> getAsStateListeners() {
         return asStateListeners;
+    }
+
+    /** Tells the routes this AS can carry traffic; RouteRow sends RESUME only if the DPC is not resumed yet. */
+    protected void notifyAsActive() {
+        for (AsStateListener listener : this.asStateListeners) {
+            try {
+                listener.onAsActive(this);
+            } catch (Exception e) {
+                logger.error(String.format("Error while calling AsStateListener=%s onAsActive method for As=%s",
+                        listener, this), e);
+            }
+        }
     }
 
 }

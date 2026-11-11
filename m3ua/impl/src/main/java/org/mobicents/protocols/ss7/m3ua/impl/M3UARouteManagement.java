@@ -21,21 +21,32 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javolution.util.FastList;
 
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.As;
+import org.mobicents.protocols.ss7.m3ua.Asp;
 import org.mobicents.protocols.ss7.m3ua.ExchangeType;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.IPSPType;
 import org.mobicents.protocols.ss7.m3ua.RouteKey;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.mobicents.protocols.ss7.m3ua.impl.oam.M3UAOAMMessages;
+import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
+import org.mobicents.protocols.ss7.m3ua.message.MessageType;
+import org.mobicents.protocols.ss7.m3ua.message.ssnm.DestinationStateAudit;
 import org.mobicents.protocols.ss7.m3ua.parameter.TrafficModeType;
+import org.mobicents.protocols.ss7.mtp.Mtp3PausePrimitive;
+import org.mobicents.protocols.ss7.mtp.Mtp3Primitive;
+import org.mobicents.protocols.ss7.mtp.Mtp3ResumePrimitive;
 
 /**
  * <p>
@@ -263,6 +274,12 @@ public class M3UARouteManagement {
         return false;
     }
 
+    /** Configured route DPCs equal to pc in all but the mask low-order bits. */
+    List<Integer> getDpcsMatching(int pc, int mask) {
+        return this.routeTable.keySet().stream().filter(dpc -> (dpc >>> mask) == (pc >>> mask))
+                .collect(Collectors.toList());
+    }
+
     /** True if any route still binds an AS; removeRoute leaves an emptied key behind as an all-null array. */
     boolean hasBoundAs() {
         for (As[] asArray : this.route.values()) {
@@ -327,6 +344,8 @@ public class M3UARouteManagement {
             return null; // No matching route found
         }
 
+        RouteRow row = this.routeTable.get(dpc);
+
         // Use the actual array length, including for routes loaded from persistence.
         int maxAttempts = asArray.length;
 
@@ -337,12 +356,55 @@ public class M3UARouteManagement {
         for (int i = 0; i < maxAttempts; i++) {
             int currentIndex = (startIndex + i) % maxAttempts;
             AsImpl asImpl = (AsImpl) asArray[currentIndex];
-            if (this.isAsActive(asImpl)) {
-                return asImpl; // Found an active AS
+            if (this.isAsActive(asImpl) && (row == null || !row.getUnreachableVia().contains(asImpl))) {
+                return asImpl; // Found an active AS that has not sent DUNA for this DPC
             }
         }
 
         return null; // No active AS found for the route
+    }
+
+    /**
+     * DUNA for dpc from asImpl: only the (dpc, asImpl) pair becomes unreachable. PAUSE/RESUME are queued under
+     * routeLock, so the user sees them in the order they were decided. MTP-PAUSE only when no routing-active AS of
+     * the DPC can still reach it.
+     */
+    void onDestinationUnavailable(int dpc, AsImpl asImpl) {
+        synchronized (this.routeLock) {
+            RouteRow row = this.routeTable.get(dpc);
+            if (row == null || !row.isServedBy(asImpl)) {
+                return; // route removed after the source check: ignore, as the source check would
+            }
+            if (!row.getUnreachableVia().add(asImpl)) {
+                return; // repeated DUNA (e.g. the answer to a DAUD): nothing changed, RFC 4666 1.3.2.5
+            }
+            if (row.isReachableViaActiveAs()) {
+                logger.info(String.format("[DUNA] APC=%d unreachable via AS=%s only; still reachable via another AS, no PAUSE",
+                        dpc, asImpl.getName()));
+                return;
+            }
+            row.mtp3Status = Mtp3Primitive.PAUSE;
+            this.m3uaManagement.sendPauseMessageToLocalUser(new Mtp3PausePrimitive(dpc));
+        }
+    }
+
+    /** DAVA for dpc from asImpl: the (dpc, asImpl) pair is reachable again; RESUME if the DPC status changes. */
+    void onDestinationAvailable(int dpc, AsImpl asImpl) {
+        synchronized (this.routeLock) {
+            RouteRow row = this.routeTable.get(dpc);
+            // Inactive AS: RouteRow resumes when it goes active. RFC 4666 1.3.2.5: inform only on change (SGs re-send
+            // DAVA unsolicited); no PAUSE counterpart, as the initial PAUSE status is never sent to the user.
+            boolean resume = this.isAsActive(asImpl) && (row == null || row.mtp3Status != Mtp3Primitive.RESUME);
+            if (row != null) {
+                row.getUnreachableVia().remove(asImpl);
+                if (resume) {
+                    row.mtp3Status = Mtp3Primitive.RESUME;
+                }
+            }
+            if (resume) {
+                this.m3uaManagement.sendResumeMessageToLocalUser(new Mtp3ResumePrimitive(dpc));
+            }
+        }
     }
 
     /**
@@ -352,24 +414,12 @@ public class M3UARouteManagement {
      * @return true if the AsImpl is considered active for routing, false otherwise.
      */
     boolean isAsActive(AsImpl asImpl) {
-        if (asImpl == null) {
+        if (asImpl == null || this.lacksActiveAsp(asImpl)) {
             return false;
         }
 
-        FSM fsm = null;
-        Functionality functionality = asImpl.getFunctionality();
-        ExchangeType exchangeType = asImpl.getExchangeType();
-        IPSPType ipspType = asImpl.getIpspType();
-
         // Determine which FSM to check based on functionality and exchange type
-        if (functionality == Functionality.AS
-                || (functionality == Functionality.SGW && exchangeType == ExchangeType.DE)
-                || (functionality == Functionality.IPSP && exchangeType == ExchangeType.DE)
-                || (functionality == Functionality.IPSP && exchangeType == ExchangeType.SE && ipspType == IPSPType.CLIENT)) {
-            fsm = asImpl.getPeerFSM();
-        } else {
-            fsm = asImpl.getLocalFSM();
-        }
+        FSM fsm = usesPeerFsm(asImpl) ? asImpl.getPeerFSM() : asImpl.getLocalFSM();
 
         if (fsm != null) {
             // Get the state name and compare with AsState.ACTIVE
@@ -378,6 +428,59 @@ public class M3UARouteManagement {
         }
 
         return false; // No FSM found, not active
+    }
+
+    private static boolean usesPeerFsm(AsImpl asImpl) {
+        Functionality functionality = asImpl.getFunctionality();
+        ExchangeType exchangeType = asImpl.getExchangeType();
+        return functionality == Functionality.AS
+                || (functionality == Functionality.SGW && exchangeType == ExchangeType.DE)
+                || (functionality == Functionality.IPSP && exchangeType == ExchangeType.DE)
+                || (functionality == Functionality.IPSP && exchangeType == ExchangeType.SE && asImpl.getIpspType() == IPSPType.CLIENT);
+    }
+
+    /**
+     * RFC 4666 4.5.3, ETSI TS 102 142 (T10): DAUD for the DPCs still marked unavailable by DUNA, to the AS that
+     * reported them, via its active ASP. A lost DAVA otherwise leaves the route paused until the ASP flaps.
+     */
+    void auditUnavailableDestinations() {
+        Map<AsImpl, List<Integer>> dpcsByAs = new HashMap<>();
+        for (RouteRow row : this.routeTable.values()) {
+            for (AsImpl asImpl : row.getUnreachableVia()) {
+                dpcsByAs.computeIfAbsent(asImpl, k -> new ArrayList<>()).add(row.getDpc());
+            }
+        }
+        dpcsByAs.forEach((asImpl, dpcs) -> {
+            AspImpl asp = activeAsp(asImpl);
+            if (asp != null) {
+                AspFactoryImpl factory = asp.getAspFactory();
+                int[] pcs = dpcs.stream().mapToInt(Integer::intValue).toArray();
+                DestinationStateAudit daud = (DestinationStateAudit) factory.messageFactory.createMessage(
+                        MessageClass.SIGNALING_NETWORK_MANAGEMENT, MessageType.DESTINATION_STATE_AUDIT);
+                daud.setRoutingContexts(asImpl.getRoutingContext());
+                daud.setAffectedPointCodes(factory.parameterFactory.createAffectedPointCode(pcs, new short[pcs.length]));
+                factory.write(daud);
+            }
+        });
+    }
+
+    /**
+     * The SG may report the AS active with none of our ASPs active (RFC 4666 4.3.4.5, 4.3.4.4), but AsImpl.write
+     * needs an ACTIVE ASP.
+     */
+    boolean lacksActiveAsp(AsImpl asImpl) {
+        return usesPeerFsm(asImpl) && activeAsp(asImpl) == null;
+    }
+
+    /** One of our ASPs of the AS whose local FSM is ACTIVE, or null. */
+    private static AspImpl activeAsp(AsImpl asImpl) {
+        for (Asp asp : asImpl.appServerProcs) {
+            FSM fsm = ((AspImpl) asp).getLocalFSM();
+            if (fsm != null && AspState.getState(fsm.getState().getName()) == AspState.ACTIVE) {
+                return (AspImpl) asp;
+            }
+        }
+        return null;
     }
 
     /**
@@ -396,6 +499,9 @@ public class M3UARouteManagement {
             }
         }
         row.addServedByAs(asImpl);
+        if (this.isAsActive(asImpl)) {
+            row.onAsActive(asImpl); // route added at runtime to an AS already up: RESUME, unless already resumed
+        }
     }
 
     /**
@@ -414,6 +520,10 @@ public class M3UARouteManagement {
             row.removeServedByAs(asImpl);
             if (row.servedByAsSize() == 0) {
                 this.routeTable.remove(dpc, row);
+            } else if (row.mtp3Status == Mtp3Primitive.RESUME && !row.isReachableViaActiveAs()) {
+                // the removed AS was the last usable path, e.g. the remaining one has sent DUNA
+                row.mtp3Status = Mtp3Primitive.PAUSE;
+                this.m3uaManagement.sendPauseMessageToLocalUser(new Mtp3PausePrimitive(dpc));
             }
         }
     }

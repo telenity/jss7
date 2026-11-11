@@ -24,6 +24,8 @@ package org.mobicents.protocols.ss7.m3ua.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -131,7 +133,8 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
     protected ExchangeType exchangeType = null;
 
     private long aspupSentTime = 0l;
-    private long aspactiveSentTime = 0l;
+    // Per AS: ASP Active is sent per Routing Context (RFC 4666 4.3.4.3), several AS may share this association
+    private final Map<As, Long> aspactiveSentTime = new ConcurrentHashMap<>();
 
     private int maxSequenceNumber = M3UAManagementImpl.MAX_SEQUENCE_NUMBER;
     private int[] slsTable = null;
@@ -200,9 +203,7 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
                 || (this.functionality == Functionality.IPSP && this.exchangeType == ExchangeType.SE && this.ipspType == IPSPType.CLIENT)) {
 
             if (this.association.isConnected()) {
-                ASPDown aspDown = (ASPDown) this.messageFactory.createMessage(MessageClass.ASP_STATE_MAINTENANCE,
-                        MessageType.ASP_DOWN);
-                this.write(aspDown);
+                // Take the ASPs out of service before ASPDN goes out, so no DATA follows it on the wire
                 for (Asp asp : aspList) {
                     AspImpl aspImpl = (AspImpl) asp;
 
@@ -220,6 +221,9 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
                         logger.error("ASP_DOWN failed", e);
                     }
                 }
+                ASPDown aspDown = (ASPDown) this.messageFactory.createMessage(MessageClass.ASP_STATE_MAINTENANCE,
+                        MessageType.ASP_DOWN);
+                this.write(aspDown);
 
                 // Start the timer to kill the underlying transport Association
                 aspFactoryStopTimer = new AspFactoryStopTimer(this);
@@ -535,13 +539,13 @@ public class AspFactoryImpl implements AssociationListener, XMLSerializable, Asp
 
     protected void sendAspActive(As asImpl) {
         long now = System.currentTimeMillis();
-        if ((now - aspactiveSentTime) > 2000) {
+        if ((now - aspactiveSentTime.getOrDefault(asImpl, 0L)) > 2000) {
             ASPActive aspActive = (ASPActive) this.messageFactory.createMessage(MessageClass.ASP_TRAFFIC_MAINTENANCE,
                     MessageType.ASP_ACTIVE);
             aspActive.setRoutingContext(asImpl.getRoutingContext());
             aspActive.setTrafficModeType(asImpl.getTrafficModeType());
             this.write(aspActive);
-            aspactiveSentTime = now;
+            aspactiveSentTime.put(asImpl, now);
         }
     }
 

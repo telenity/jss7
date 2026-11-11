@@ -31,6 +31,8 @@ import org.mobicents.protocols.api.AssociationListener;
 import org.mobicents.protocols.api.AssociationType;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.PayloadData;
+import org.mobicents.protocols.ss7.m3ua.ExchangeType;
+import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.impl.message.MessageFactoryImpl;
 import org.mobicents.protocols.ss7.m3ua.message.M3UAMessage;
 import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
@@ -66,6 +68,45 @@ public class AspFactoryImplTest {
         ReferenceCountUtil.release(association.byteBuf);
     }
 
+    /** Capture taken 23-07-2024: DATA went out after ASPDN while the ASP still looked ACTIVE to other threads. */
+    @Test
+    public void stop_takesTheAspOutOfServiceBeforeAspDownIsWritten() throws Exception {
+        final String[] stateAtAspDown = new String[1];
+        M3UAManagementImpl management = new M3UAManagementImpl("AspFactoryImplTest");
+        AsImpl as = new AsImpl("as1", null, null, 1, Functionality.AS, ExchangeType.SE, null, null);
+        as.setM3UAManagement(management);
+        AspFactoryImpl factory = new AspFactoryImpl() {
+            final AspImpl[] asp = new AspImpl[1];
+
+            @Override
+            public AspImpl createAsp() {
+                return asp[0] = super.createAsp();
+            }
+
+            @Override
+            protected void write(M3UAMessage message) {
+                if (message.getMessageType() == MessageType.ASP_DOWN) {
+                    stateAtAspDown[0] = asp[0].getLocalFSM().getState().getName();
+                }
+            }
+        };
+        factory.association = new TestAssociation(false);
+        factory.setFunctionality(Functionality.AS);
+        factory.setM3UAManagement(management);
+        factory.started = true;
+        AspImpl asp = factory.createAsp();
+        asp.setAs(as);
+        as.appServerProcs.add(asp);
+        asp.getLocalFSM().signal(TransitionState.COMM_UP);
+        asp.getLocalFSM().signal(TransitionState.ASP_ACTIVE_SENT);
+        asp.getLocalFSM().signal(TransitionState.ASP_ACTIVE_ACK);
+        as.getPeerFSM().signal(TransitionState.AS_STATE_CHANGE_ACTIVE);
+
+        factory.stop();
+
+        assertEquals(AspState.DOWN_SENT.toString(), stateAtAspDown[0]);
+    }
+
     /** A message of unknown class or type is dropped and skipped, without an exception, on SCTP and on TCP. */
     @Test
     public void unknownMessagesAreDroppedWithoutException() {
@@ -87,6 +128,33 @@ public class AspFactoryImplTest {
     /** An 8-byte M3UA common header without parameters. */
     private static ByteBuf header(int version, int messageClass, int messageType) {
         return io.netty.buffer.Unpooled.wrappedBuffer(new byte[]{(byte) version, 0, (byte) messageClass, (byte) messageType, 0, 0, 0, 8});
+    }
+
+    /** ASP Active is per Routing Context; a second AS on the association is not throttled. */
+    @Test
+    public void sendAspActive_throttlesPerAsNotPerAssociation() {
+        final java.util.List<Long> sentRcs = new java.util.ArrayList<>();
+        M3UAManagementImpl management = new M3UAManagementImpl("AspFactoryImplTest");
+        AspFactoryImpl factory = new AspFactoryImpl() {
+            @Override
+            protected void write(M3UAMessage message) {
+                sentRcs.add(((org.mobicents.protocols.ss7.m3ua.message.asptm.ASPActive) message).getRoutingContext()
+                        .getRoutingContexts()[0]);
+            }
+        };
+        factory.setM3UAManagement(management);
+        AsImpl as1 = new AsImpl("as1", management.parameterFactory.createRoutingContext(new long[]{1}), null, 1,
+                Functionality.AS, ExchangeType.SE, null, null);
+        AsImpl as2 = new AsImpl("as2", management.parameterFactory.createRoutingContext(new long[]{2}), null, 1,
+                Functionality.AS, ExchangeType.SE, null, null);
+        as1.setM3UAManagement(management);
+        as2.setM3UAManagement(management);
+
+        factory.sendAspActive(as1);
+        factory.sendAspActive(as2);
+        factory.sendAspActive(as1);                 // retry within 2 s: throttled
+
+        assertEquals(java.util.Arrays.asList(1L, 2L), sentRcs);
     }
 
     private static AspFactoryImpl newFactory(TestAssociation association) {

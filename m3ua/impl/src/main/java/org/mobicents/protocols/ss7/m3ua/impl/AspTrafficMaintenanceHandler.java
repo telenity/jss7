@@ -226,9 +226,10 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
         try {
             aspLocalFSM.signal(TransitionState.ASP_ACTIVE_ACK);
 
-            if (aspFactoryImpl.getFunctionality() == Functionality.IPSP) {
-                // If its IPSP, we know NTFY will not be received,
-                // so transition AS FSM here
+            if (aspFactoryImpl.getFunctionality() == Functionality.IPSP
+                    || aspFactoryImpl.getFunctionality() == Functionality.AS) {
+                // IPSP: no NTFY comes. AS: with the Ack the SGP is ready for traffic on this RC (RFC 4666 4.3.4.3),
+                // and if the AS was already active via another ASP no AS-ACTIVE NTFY comes. A later one is a no-op.
                 FSM asPeerFSM = asImpl.getPeerFSM();
 
                 if (asPeerFSM == null) {
@@ -239,6 +240,11 @@ public class AspTrafficMaintenanceHandler extends MessageHandler {
 
                 asPeerFSM.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
                 asPeerFSM.signal(TransitionState.AS_STATE_CHANGE_ACTIVE);
+            }
+            // If the AS was already ACTIVE (NTFY before our Ack), RouteRow held the RESUME back (no ACTIVE ASP yet),
+            // also for a DAVA in between: tell the routes now. RouteRow skips DPCs already resumed.
+            if (asImpl.getM3UAManagement().getRouteManagement().isAsActive(asImpl)) {
+                asImpl.notifyAsActive();
             }
         } catch (UnknownTransitionException e) {
             logger.error("AS_STATE_CHANGE_ACTIVE failed", e);

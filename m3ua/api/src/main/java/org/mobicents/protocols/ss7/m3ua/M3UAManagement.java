@@ -103,6 +103,14 @@ public interface M3UAManagement {
      */
     public void setHeartbeatTime(int timeBetweenHeartbeat);
 
+    /**
+     * Enables the periodic DAUD audit (RFC 4666 4.5.3, ETSI TS 102 142 T10 = 30 s) of destinations reported
+     * unavailable by DUNA. Off by default; can be changed at runtime.
+     */
+    void setDaudAuditEnabled(boolean enabled);
+
+    boolean isDaudAuditEnabled();
+
     M3UACounterProvider getCounterProvider();
 
     void setStatisticsEnabled(boolean val) throws Exception;

@@ -76,8 +76,9 @@ public class ManagementMessageHandler extends MessageHandler {
                     }
                     fsm.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
                     fsm.signal(TransitionState.getTransition(notify));
+                    notifyRoutesIfActive((AsImpl) aspImpl.getAs());
                 } catch (UnknownTransitionException e) {
-                    logger.error("NTFY transition failed", e);
+                    logger.error("NTFY transition failed: " + e.getMessage());
                 }
             } else {
                 long[] rcs = notify.getRoutingContext().getRoutingContexts();
@@ -108,8 +109,9 @@ public class ManagementMessageHandler extends MessageHandler {
                         }
                         fsm.setAttribute(AsImpl.ATTRIBUTE_ASP, aspImpl);
                         fsm.signal(TransitionState.getTransition(notify));
+                        notifyRoutesIfActive((AsImpl) aspImpl.getAs());
                     } catch (UnknownTransitionException e) {
-                        logger.error("NTFY transition failed", e);
+                        logger.error("NTFY transition failed: " + e.getMessage());
                     }
                 }// end of for
             }// if (rc == null) {
@@ -119,6 +121,16 @@ public class ManagementMessageHandler extends MessageHandler {
             sendError(rc, errorCodeObj);
         }
 
+    }
+
+    /**
+     * After the FSM signal returns the AS state is visible to other threads: a DUNA handled meanwhile may have paused a
+     * DPC this AS reaches, RouteRow resumes it (and skips DPCs already resumed).
+     */
+    private static void notifyRoutesIfActive(AsImpl asImpl) {
+        if (asImpl.getM3UAManagement().getRouteManagement().isAsActive(asImpl)) {
+            asImpl.notifyAsActive();
+        }
     }
 
     public void handleError(Error error) {

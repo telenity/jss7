@@ -21,16 +21,18 @@
  */
 package org.mobicents.protocols.ss7.m3ua.impl;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.mobicents.protocols.ss7.m3ua.Functionality;
 import org.mobicents.protocols.ss7.m3ua.impl.fsm.FSM;
 import org.mobicents.protocols.ss7.m3ua.message.ssnm.*;
+import org.mobicents.protocols.ss7.m3ua.parameter.AffectedPointCode;
 import org.mobicents.protocols.ss7.m3ua.parameter.CongestedIndication;
 import org.mobicents.protocols.ss7.m3ua.parameter.ErrorCode;
 import org.mobicents.protocols.ss7.m3ua.parameter.RoutingContext;
 import org.mobicents.protocols.ss7.m3ua.parameter.UserCause;
-import org.mobicents.protocols.ss7.mtp.Mtp3PausePrimitive;
-import org.mobicents.protocols.ss7.mtp.Mtp3ResumePrimitive;
 import org.mobicents.protocols.ss7.mtp.Mtp3StatusCause;
 import org.mobicents.protocols.ss7.mtp.Mtp3StatusPrimitive;
 
@@ -41,20 +43,11 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
 
     private static final Logger logger = Logger.getLogger(SignalingNetworkManagementHandler.class);
 
-    private static final boolean skipSourceCheck = Boolean.parseBoolean(
-            System.getProperty("ss7.m3ua.ssnm.skipSourceCheck", "false")
-    );
-
     public SignalingNetworkManagementHandler(AspFactoryImpl aspFactoryImpl) {
         super(aspFactoryImpl);
     }
 
     private boolean isSourceAuthorizedForApc(int apc, AspImpl asp, String type) {
-        if (skipSourceCheck) {
-            logger.info(String.format("[%s] Source check skipped for APC=%d from ASP=%s (forced by system property)",
-                    type, apc, asp.getName()));
-            return true;
-        }
         AsImpl sourceAs = (AsImpl) asp.getAs();
         boolean rc = aspFactoryImpl.getM3UAManagement().getRouteManagement().isAsStillUsedForDpc(apc, sourceAs);
         if (!rc) {
@@ -64,18 +57,38 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
         return true;
     }
 
+    /**
+     * RFC 4666 3.4.1: a non-zero mask wildcards that many low-order bits of the Affected Point Code; a masked entry
+     * expands to the matching route DPCs. A mask of the PC width or more means SG isolation, so it is capped at
+     * 24 bits (a Java shift of 32 or more would wrap around).
+     */
+    private int[] affectedDpcs(AffectedPointCode apc) {
+        int[] pcs = apc.getPointCodes();
+        short[] masks = apc.getMasks();
+        M3UARouteManagement routes = aspFactoryImpl.getM3UAManagement().getRouteManagement();
+        Set<Integer> dpcs = new LinkedHashSet<>();
+        for (int i = 0; i < pcs.length; i++) {
+            int mask = masks[i] & 0xFF;
+            if (mask == 0) {
+                dpcs.add(pcs[i]);
+            } else {
+                dpcs.addAll(routes.getDpcsMatching(pcs[i], Math.min(mask, 24)));
+            }
+        }
+        return dpcs.stream().mapToInt(Integer::intValue).toArray();
+    }
+
     private void handleAffectedPointCodes(AspImpl aspImpl, int[] pcs, String type, Object msg) {
         for (int i = 0; i < pcs.length; i++) {
             int pc = pcs[i];
             AsImpl asImpl = (AsImpl) aspImpl.getAs();
             if (isSourceAuthorizedForApc(pc, aspImpl, type)) {
+                M3UARouteManagement routes = asImpl.getM3UAManagement().getRouteManagement();
                 if ("DAVA".equals(type)) {
                     // Resume only via an AS route selection can use; RouteRow resumes the DPC when the AS goes active.
-                    if (asImpl.getM3UAManagement().getRouteManagement().isAsActive(asImpl)) {
-                        asImpl.getM3UAManagement().sendResumeMessageToLocalUser(new Mtp3ResumePrimitive(pc));
-                    }
+                    routes.onDestinationAvailable(pc, asImpl);
                 } else if ("DUNA".equals(type)) {
-                    asImpl.getM3UAManagement().sendPauseMessageToLocalUser(new Mtp3PausePrimitive(pc));
+                    routes.onDestinationUnavailable(pc, asImpl);
                 } else if ("SCON".equals(type)) {
                     int cong = 0;
                     if (msg instanceof SignallingCongestion) {
@@ -100,6 +113,12 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
         }
     }
 
+    /** RFC 4666 4.5.1: the SGP may report destination state after ASP Active and before the Ack. */
+    private static boolean acceptsSsnm(FSM aspLocalFsm) {
+        AspState state = AspState.getState(aspLocalFsm.getState().getName());
+        return state == AspState.ACTIVE || state == AspState.ACTIVE_SENT;
+    }
+
     private void handleCommonMessage(RoutingContext rc, int[] pcs, Object msg, String type) {
         if (aspFactoryImpl.getFunctionality() != Functionality.AS && !("SCON".equals(type))) {
             logger.error(String.format("Rx : %s=%s But AppServer Functionality is not AS.", type, msg));
@@ -119,7 +138,7 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
                 logger.error(String.format("Rx : %s=%s but FSM is null", type, msg));
                 return;
             }
-            if (AspState.getState(fsm.getState().getName()) == AspState.ACTIVE) {
+            if (acceptsSsnm(fsm)) {
                 handleAffectedPointCodes(aspImpl, pcs, type, msg);
             } else {
                 logger.error(String.format("Rx : %s for null RoutingContext. But ASP State not ACTIVE. Message=%s",
@@ -141,7 +160,7 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
                             type, msg, aspFactoryImpl.getName()));
                     return;
                 }
-                if (AspState.getState(fsm.getState().getName()) == AspState.ACTIVE) {
+                if (acceptsSsnm(fsm)) {
                     handleAffectedPointCodes(aspImpl, pcs, type, msg);
                 } else {
                     logger.error(String.format("Rx : %s for RC=%d. But ASP State not ACTIVE. Message=%s",
@@ -152,26 +171,32 @@ public class SignalingNetworkManagementHandler extends MessageHandler {
     }
 
     public void handleDestinationUnavailable(DestinationUnavailable duna) {
-        handleCommonMessage(duna.getRoutingContexts(), duna.getAffectedPointCodes().getPointCodes(), duna, "DUNA");
+        handleCommonMessage(duna.getRoutingContexts(), affectedDpcs(duna.getAffectedPointCodes()), duna, "DUNA");
     }
 
     public void handleDestinationAvailable(DestinationAvailable dava) {
-        handleCommonMessage(dava.getRoutingContexts(), dava.getAffectedPointCodes().getPointCodes(), dava, "DAVA");
+        handleCommonMessage(dava.getRoutingContexts(), affectedDpcs(dava.getAffectedPointCodes()), dava, "DAVA");
     }
 
     public void handleSignallingCongestion(SignallingCongestion scon) {
-        handleCommonMessage(scon.getRoutingContexts(), scon.getAffectedPointCodes().getPointCodes(), scon, "SCON");
+        handleCommonMessage(scon.getRoutingContexts(), affectedDpcs(scon.getAffectedPointCodes()), scon, "SCON");
     }
 
     public void handleDestinationUPUnavailable(DestinationUPUnavailable dupu) {
+        // RFC 4666 3.4.5: DUPU carries a single DPC and does not use the mask
+        if (dupu.getAffectedPointCode().getMasks()[0] != 0) {
+            sendError(dupu.getRoutingContext(), aspFactoryImpl.parameterFactory.createErrorCode(ErrorCode.Invalid_Parameter_Value));
+            return;
+        }
         handleCommonMessage(dupu.getRoutingContext(), dupu.getAffectedPointCode().getPointCodes(), dupu, "DUPU");
     }
 
     public void handleDestinationStateAudit(DestinationStateAudit daud) {
         if (aspFactoryImpl.getFunctionality() == Functionality.SGW) {
             logger.warn(String.format("Received DAUD=%s. Not yet implemented.", daud));
-        } else {
-            logger.error(String.format("Rx : DAUD=%s But AppServer Functionality is not SGW.", daud));
+        } else if (logger.isDebugEnabled()) {
+            // RFC 4666 3.4.3: DAUD goes from ASP to SGP. SGs routinely audit our own PC at activation; not answered.
+            logger.debug(String.format("Rx : DAUD=%s ignored, Functionality is not SGW.", daud));
         }
     }
 

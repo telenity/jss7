@@ -1,11 +1,11 @@
 package org.mobicents.protocols.ss7.m3ua.impl;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.mobicents.protocols.api.Association;
 import org.mobicents.protocols.api.IpChannelType;
 import org.mobicents.protocols.api.Management;
@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-@Ignore("Manual test")
 public class MultipleAspTest {
     private static final Logger logger = Logger.getLogger(MultipleAspTest.class);
 
@@ -91,8 +90,6 @@ public class MultipleAspTest {
 
     @Before
     public void setup() throws Exception {
-        System.setProperty("ss7.m3ua.ssnm.skipSourceCheck", "false");
-
         mtp3UserPartListener = new Mtp3UserPartListenerImpl();
 
         client = new Client();
@@ -145,30 +142,27 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 link goes down
         serverStp1.stop();
-
-        Thread.sleep(1000);
+        waitFor("STP1 AS out of service", () -> !isActive(client.localAsStp1));
 
         // send test messages
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
     }
 
@@ -178,20 +172,17 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
-
-        Thread.sleep(1000);
 
         client.sendDunaFromStp1(4060);
 
@@ -199,8 +190,7 @@ public class MultipleAspTest {
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNull(mtp3UserPartListener.getMtp3PausePrimitive());
     }
@@ -211,30 +201,27 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 sends DUNA itself, link is UP
         client.sendDunaFromStp1(DPC1);
-
-        Thread.sleep(1000);
+        waitFor("PAUSE", () -> mtp3UserPartListener.getMtp3PausePrimitive() != null);
 
         // send test messages
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNotNull(mtp3UserPartListener.getMtp3PausePrimitive());
         assertEquals(mtp3UserPartListener.getMtp3PausePrimitive().getAffectedDpc(), DPC1);
@@ -246,30 +233,27 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 sends SCON itself, link is UP
         client.sendSconFromStp1(DPC1);
-
-        Thread.sleep(1000);
+        waitFor("STATUS", () -> mtp3UserPartListener.getMtp3StatusPrimitive() != null);
 
         // send test messages
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNotNull(mtp3UserPartListener.getMtp3StatusPrimitive());
         assertEquals(mtp3UserPartListener.getMtp3StatusPrimitive().getAffectedDpc(), DPC1);
@@ -281,30 +265,27 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 sends DUPU itself, link is UP
         client.sendDupuFromStp1(DPC1);
-
-        Thread.sleep(1000);
+        waitFor("STATUS", () -> mtp3UserPartListener.getMtp3StatusPrimitive() != null);
 
         // send test messages
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNotNull(mtp3UserPartListener.getMtp3StatusPrimitive());
         assertEquals(mtp3UserPartListener.getMtp3StatusPrimitive().getAffectedDpc(), DPC1);
@@ -316,30 +297,26 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 sends DUNA for stp2, link is UP
         client.sendDunaFromStp1(DPC2);
 
-        Thread.sleep(1000);
-
         // send test messages
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNull(mtp3UserPartListener.getMtp3PausePrimitive());
     }
@@ -350,23 +327,21 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 link goes down
         serverStp1.stop();
-
-        Thread.sleep(1000);
+        waitFor("STP1 AS out of service", () -> !isActive(client.localAsStp1));
 
         client.sendDavaFromStp2(DPC1);
 
@@ -374,8 +349,7 @@ public class MultipleAspTest {
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNull(mtp3UserPartListener.getMtp3ResumePrimitive());
     }
@@ -386,23 +360,21 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 link goes down
         serverStp1.stop();
-
-        Thread.sleep(1000);
+        waitFor("STP1 AS out of service", () -> !isActive(client.localAsStp1));
 
         client.sendDunaFromStp2(DPC1);
 
@@ -410,8 +382,7 @@ public class MultipleAspTest {
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNull(mtp3UserPartListener.getMtp3PausePrimitive());
     }
@@ -422,23 +393,21 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 link goes down
         serverStp1.stop();
-
-        Thread.sleep(1000);
+        waitFor("STP1 AS out of service", () -> !isActive(client.localAsStp1));
 
         client.sendSconFromStp2(DPC1);
 
@@ -446,8 +415,7 @@ public class MultipleAspTest {
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(5);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
         assertNull(mtp3UserPartListener.getMtp3StatusPrimitive());
     }
@@ -458,36 +426,33 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
         // stp1 link goes down
         serverStp1.stop();
-
-        Thread.sleep(1000);
+        waitFor("T(r) expiry pauses DPC1", () -> mtp3UserPartListener.getMtp3PausePrimitive() != null);
 
         // stp1 link goes up
         serverStp1.start();
-
-        Thread.sleep(10000);
+        waitFor("STP1 back", () -> isActive(client.localAsStp1)
+                && mtp3UserPartListener.getMtp3ResumePrimitive() != null);
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
-
+        waitForReceived(6);
         assertEquals(mtp3UserPartListener.getReceivedData().size(), 6);
         // not null, because internal DUNA was sent
         assertNotNull(mtp3UserPartListener.getMtp3PausePrimitive());
@@ -501,16 +466,15 @@ public class MultipleAspTest {
         serverStp2.start();
         serverStp3.start();
 
-        Thread.sleep(1000);
-
         client.start();
-
-        Thread.sleep(11000);
+        waitFor("client ASes active", () -> isActive(client.localAsStp1) && isActive(client.localAsStp2)
+                && isActive(client.localAsStp3));
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
         client.sendPayload(DPC3);
+        waitForReceived(3);
 
         mtp3UserPartListener.reset();
 
@@ -519,32 +483,48 @@ public class MultipleAspTest {
         m3uaMgmt.addRoute(DPC2, -1, -1, "localAsStp1");
         m3uaMgmt.addRoute(DPC3, -1, -1, "localAsStp2");
 
-        Thread.sleep(1000);
-
         // stp1 link goes down
         serverStp1.stop();
-
-        Thread.sleep(1000);
+        waitFor("STP1 AS out of service", () -> !isActive(client.localAsStp1));
 
         // DPC1 -> STP1 + STP2
         // DPC2 -> STP2 + STP1
         // DPC3 -> STP3 + STP2
-        // stp2 sends DUNA for DPC3
+        // stp2 sends DUNA for DPC3: unreachable via STP2 only (RFC 4666 3.4.1)
         // DPC1 -> STP2
         // DPC2 -> STP2
-        // DPC3 -> N/A
+        // DPC3 -> STP3
         client.sendDunaFromStp2(DPC3);
-
-        Thread.sleep(10000);
+        waitFor("STP1's T(r) expired", () -> AsState.getState(client.localAsStp1.getPeerFSM().getState().getName())
+                != AsState.PENDING);
 
         // send test messages
         client.sendPayload(DPC1);
         client.sendPayload(DPC2);
+        client.sendPayload(DPC3);
 
-        Thread.sleep(1000);
+        waitForReceived(6);
+        assertEquals(mtp3UserPartListener.getReceivedData().size(), 6);
+        assertNull("DPC3 is still reachable via STP3", mtp3UserPartListener.getMtp3PausePrimitive());
+    }
 
-        assertEquals(mtp3UserPartListener.getReceivedData().size(), 5);
-        assertNotNull(mtp3UserPartListener.getMtp3PausePrimitive());
+    private boolean isActive(AsImpl as) {
+        return m3uaMgmt.getRouteManagement().isAsActive(as);
+    }
+
+    private void waitForReceived(int n) throws InterruptedException {
+        waitFor(n + " messages received", () -> mtp3UserPartListener.getReceivedData().size() >= n);
+    }
+
+    /** Polls instead of fixed sleeps; fails after 20 s. */
+    private static void waitFor(String what, java.util.function.BooleanSupplier condition) throws InterruptedException {
+        long end = System.currentTimeMillis() + 20000;
+        while (!condition.getAsBoolean()) {
+            if (System.currentTimeMillis() > end) {
+                fail("Timed out waiting for " + what);
+            }
+            Thread.sleep(20);
+        }
     }
 
     private class Client {
@@ -806,12 +786,12 @@ public class MultipleAspTest {
     }
 
     private class Mtp3UserPartListenerImpl implements Mtp3UserPartListener {
-        private ArrayList<Mtp3TransferPrimitive> receivedData = new ArrayList<>();
-        private Mtp3ResumePrimitive mtp3ResumePrimitive;
-        private Mtp3PausePrimitive mtp3PausePrimitive;
-        private Mtp3StatusPrimitive mtp3StatusPrimitive;
+        private final List<Mtp3TransferPrimitive> receivedData = new CopyOnWriteArrayList<>();
+        private volatile Mtp3ResumePrimitive mtp3ResumePrimitive;
+        private volatile Mtp3PausePrimitive mtp3PausePrimitive;
+        private volatile Mtp3StatusPrimitive mtp3StatusPrimitive;
 
-        public ArrayList<Mtp3TransferPrimitive> getReceivedData() {
+        public List<Mtp3TransferPrimitive> getReceivedData() {
             return receivedData;
         }
 

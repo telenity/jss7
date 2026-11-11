@@ -60,6 +60,7 @@ public class THPeerAsPendToAct implements TransitionHandler {
         AspImpl causeAsp = (AspImpl) this.fsm.getAttribute(AsImpl.ATTRIBUTE_ASP);
         this.asImpl.sendPendingPayloadData(causeAsp);
 
+        // routes are told after the transition, once the AS is visibly ACTIVE (see ManagementMessageHandler)
         return true;
     }
 

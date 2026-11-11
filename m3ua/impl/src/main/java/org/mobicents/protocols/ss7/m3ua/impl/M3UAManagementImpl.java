@@ -60,6 +60,7 @@ import org.mobicents.protocols.ss7.m3ua.impl.message.MessageFactoryImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.oam.M3UAOAMMessages;
 import org.mobicents.protocols.ss7.m3ua.impl.parameter.ParameterFactoryImpl;
 import org.mobicents.protocols.ss7.m3ua.impl.scheduler.M3UAScheduler;
+import org.mobicents.protocols.ss7.m3ua.impl.scheduler.M3UATask;
 import org.mobicents.protocols.ss7.m3ua.message.MessageClass;
 import org.mobicents.protocols.ss7.m3ua.message.MessageFactory;
 import org.mobicents.protocols.ss7.m3ua.message.MessageType;
@@ -114,6 +115,21 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
     private ScheduledExecutorService fsmTicker;
 
+    // ETSI TS 102 142 T10: period of the DAUD audit of destinations reported unavailable (DUNA)
+    static final long DAUD_AUDIT_PERIOD = 30000;
+    private volatile boolean daudAuditEnabled = false;
+    private final M3UATask daudAudit = new M3UATask() {
+        private long last = System.currentTimeMillis();
+
+        @Override
+        public void tick(long now) {
+            if (daudAuditEnabled && now - last >= DAUD_AUDIT_PERIOD) {
+                last = now;
+                routeManagement.auditUnavailableDestinations();
+            }
+        }
+    };
+
     protected int maxAsForRoute = 2;
 
     protected int timeBetweenHeartbeat = 5000; // 5 sec default
@@ -139,6 +155,7 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
         binding.setAlias(AspImpl.class, "asp");
 
         this.routeManagement = new M3UARouteManagement(this);
+        this.m3uaScheduler.execute(this.daudAudit); // once: the scheduler outlives stop()/start(); it ticks while started
     }
 
     public String getName() {
@@ -219,6 +236,14 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
 
     public void setHeartbeatTime(int timeBetweenHeartbeat) {
         this.timeBetweenHeartbeat = timeBetweenHeartbeat;
+    }
+
+    public void setDaudAuditEnabled(boolean enabled) {
+        this.daudAuditEnabled = enabled;
+    }
+
+    public boolean isDaudAuditEnabled() {
+        return this.daudAuditEnabled;
     }
 
     public Management getTransportManagement() {

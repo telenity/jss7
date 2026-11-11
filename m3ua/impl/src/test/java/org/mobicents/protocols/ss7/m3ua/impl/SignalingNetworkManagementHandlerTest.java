@@ -51,6 +51,7 @@ public class SignalingNetworkManagementHandlerTest {
         factory.setM3UAManagement(management);
         AspImpl asp = factory.createAsp();
         asp.setAs(as);
+        as.appServerProcs.add(asp);
         asp.getLocalFSM().signal(TransitionState.COMM_UP);
         asp.getLocalFSM().signal(TransitionState.ASP_ACTIVE_SENT);
         asp.getLocalFSM().signal(TransitionState.ASP_ACTIVE_ACK);
