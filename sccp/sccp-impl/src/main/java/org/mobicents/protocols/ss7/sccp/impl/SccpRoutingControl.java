@@ -49,10 +49,12 @@ import org.mobicents.protocols.ss7.sccp.impl.message.SccpAddressedMessageImpl;
 import org.mobicents.protocols.ss7.sccp.impl.message.SccpDataMessageImpl;
 import org.mobicents.protocols.ss7.sccp.impl.message.SccpMessageImpl;
 import org.mobicents.protocols.ss7.sccp.impl.message.SccpNoticeMessageImpl;
+import org.mobicents.protocols.ss7.sccp.impl.parameter.HopCounterImpl;
 import org.mobicents.protocols.ss7.sccp.impl.parameter.ParameterFactoryImpl;
 import org.mobicents.protocols.ss7.sccp.message.SccpDataMessage;
 import org.mobicents.protocols.ss7.sccp.message.SccpNoticeMessage;
 import org.mobicents.protocols.ss7.sccp.parameter.GlobalTitle;
+import org.mobicents.protocols.ss7.sccp.parameter.HopCounter;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCause;
 import org.mobicents.protocols.ss7.sccp.parameter.ReturnCauseValue;
 import org.mobicents.protocols.ss7.sccp.parameter.SccpAddress;
@@ -752,8 +754,13 @@ public class SccpRoutingControl {
         ReturnCause returnCause = ((ParameterFactoryImpl) this.sccpProviderImpl.getParameterFactory()).createReturnCause(returnCauseInt);
         if (msg instanceof SccpDataMessageImpl) {
             SccpDataMessageImpl msgData = (SccpDataMessageImpl) msg;
+            HopCounter hopCounter = msgData.getHopCounter();
+            if (hopCounter != null && hopCounter.getValue() <= HopCounter.COUNT_LOW) {
+                // Q.713 3.18: 15 to 1; the exhausted counter of a hop counter violation would make the XUDTS invalid
+                hopCounter = new HopCounterImpl(HopCounter.COUNT_HIGH);
+            }
             ans = (SccpNoticeMessageImpl) messageFactory.createNoticeMessage(msg.getType(), returnCause, msg.getCallingPartyAddress(),
-                    msg.getCalledPartyAddress(), msgData.getData(), msgData.getHopCounter(), msgData.getImportance());
+                    msg.getCalledPartyAddress(), msgData.getData(), hopCounter, msgData.getImportance());
         } else {
             // TODO: Implement return errors for connection-oriented messages
         }

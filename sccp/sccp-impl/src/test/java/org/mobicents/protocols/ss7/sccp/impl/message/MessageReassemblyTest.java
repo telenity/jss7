@@ -155,7 +155,8 @@ public class MessageReassemblyTest extends SccpHarness {
         Thread.sleep(5000);  // waiting for timeout - current timeout is 3 sec
         assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemblyCacheSize());
         assertEquals(1, u2.getMessages().size());
-        assertEquals(ReturnCauseValue.CANNOT_REASEMBLE, ((SccpNoticeMessage) u2.getMessages().get(0)).getReturnCause().getValue());
+        // Q.714 4.1.1.2.3.2: T(reass) expiry is an error in message transport
+        assertEquals(ReturnCauseValue.ERR_IN_MSG_TRANSPORT, ((SccpNoticeMessage) u2.getMessages().get(0)).getReturnCause().getValue());
 
         // Receiving an only the second segment of 3--segmented chain of 3 XUDT segments -> error
         assertEquals(0, ((SccpStackImplProxy) this.sccpStack1).getReassemblyCacheSize());

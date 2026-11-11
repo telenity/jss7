@@ -743,7 +743,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
                                 if (logger.isEnabledFor(Level.WARN)) {
                                     logger.warn(String.format("Reassembly failed: next segment order is missing. SccpMessageSegment=%s", msg));
                                 }
-                                this.sccpRoutingControl.sendSccpError(sgmMsgFst, ReturnCauseValue.CANNOT_REASEMBLE);
+                                // Q.714 4.1.1.2.3.2: mis-sequencing is an error in message transport
+                                this.sccpRoutingControl.sendSccpError(sgmMsgFst, ReturnCauseValue.ERR_IN_MSG_TRANSPORT);
                                 return;
                             }
 
@@ -855,7 +856,8 @@ public class SccpStackImpl implements SccpStack, Mtp3UserPartListener {
             }
 
             try {
-                sccpRoutingControl.sendSccpError(msg, ReturnCauseValue.CANNOT_REASEMBLE);
+                // Q.714 4.1.1.2.3.2: T(reass) expiry is an error in message transport
+                sccpRoutingControl.sendSccpError(msg, ReturnCauseValue.ERR_IN_MSG_TRANSPORT);
             } catch (IOException e) {
                 logger.warn("IOException when sending an error message", e);
             }
