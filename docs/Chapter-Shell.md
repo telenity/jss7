@@ -562,7 +562,7 @@ Where:
   | 3 | National significant number |
   | 4 | International number |
 
-- `<digits>` Global title digits. In a rule this is the pattern to match; in an address it is the translation target. May be split into sections with `/`. See the `mask` description under `sccp rule create` for how sections are used.
+- `<digits>` Global title digits. In a rule this is the pattern to match; in an address it is the translation target. May be split into sections with `/`. See the `mask` description under `sccp rule create` for how sections are used. In a pattern, write `*` as a section of its own (`4455/*`, not `4455*`); see [Matching a rule](Chapter-SCCP.md#matching-a-rule).
 
   | Value | Meaning |
   |-------|---------|

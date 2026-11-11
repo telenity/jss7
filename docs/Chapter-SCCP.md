@@ -26,9 +26,11 @@ The called party digits are compared with the rule's `digits` pattern. The patte
 |-------|---------|
 | `1234` | Exactly these digits |
 | `?` | Any single digit |
-| `*` | Any number of digits, including none. Only meaningful as the last section. |
+| `*` | Any number of digits, including none. Write it as a section of its own, and only as the last section. |
 
 `800/????/9` matches an eight-digit number that starts with `800` and ends with `9`. `800800/*` matches anything starting with `800800`. A pattern without wildcards must match the whole number.
+
+To match a prefix, put `*` in its own section: `4455/*` with mask `K/K`, not `4455*`. A section that mixes digits and `*` such as `4455*` is accepted and matches the same numbers, but translation takes only as many digits for that section as it has characters: with mask `K`, `445566` becomes `44556`.
 
 Rules are evaluated in list order and the first match wins. A new rule is placed by its id (before the first rule with a greater id) unless `before <rule-id>` is given; `modify` keeps the rule in place, and on restart the persisted order is kept as is. The address indicator of the pattern (routing indicator, GTI, presence of PC and SSN) must also match the called party address.
 
