@@ -23,6 +23,7 @@
 package org.mobicents.protocols.sctp.netty;
 
 import static org.mobicents.protocols.sctp.netty.SctpTestSupport.await;
+import static org.mobicents.protocols.sctp.netty.SctpTestSupport.freePort;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -49,14 +50,10 @@ public class NettyByteBufLifecycleTest {
 
     private static final String SERVER_NAME = "bytebuf-server";
     private static final String SERVER_HOST = "127.0.0.1";
-    private static final int SERVER_PORT = 2360;
-
     private static final String SERVER_ASSOCIATION_NAME = "bytebufServerAssoc";
     private static final String CLIENT_ASSOCIATION_NAME = "bytebufClientAssoc";
 
     private static final String CLIENT_HOST = "127.0.0.1";
-    private static final int CLIENT_PORT = 2361;
-
     private static final byte[] CLIENT_MESSAGE = "Client ByteBuf Hi".getBytes();
     private static final byte[] SERVER_MESSAGE = "Server ByteBuf Hi".getBytes();
 
@@ -86,14 +83,14 @@ public class NettyByteBufLifecycleTest {
 
     @Test
     public void testByteBufRoundTripTcp() throws Exception {
-        runByteBufRoundTrip(IpChannelType.TCP, "netty-bytebuf-management", SERVER_NAME, SERVER_PORT, CLIENT_PORT,
+        runByteBufRoundTrip(IpChannelType.TCP, "netty-bytebuf-management", SERVER_NAME, freePort(), freePort(),
                 SERVER_ASSOCIATION_NAME, CLIENT_ASSOCIATION_NAME);
     }
 
     @Test
     public void testByteBufRoundTripSctp() throws Exception {
         if (NettySctpTransferTest.checkSctpEnabled()) {
-            runByteBufRoundTrip(IpChannelType.SCTP, "netty-bytebuf-sctp-management", "bytebuf-sctp-server", 2370, 2371,
+            runByteBufRoundTrip(IpChannelType.SCTP, "netty-bytebuf-sctp-management", "bytebuf-sctp-server", freePort(), freePort(),
                     "bytebufSctpServerAssoc", "bytebufSctpClientAssoc");
         }
     }
@@ -104,7 +101,7 @@ public class NettyByteBufLifecycleTest {
         mgmt.setPersistDir("target");
 
         try {
-            runConnectCycle(mgmt, IpChannelType.TCP, "restart-server", 2362, 2363, "restartServerAssoc",
+            runConnectCycle(mgmt, IpChannelType.TCP, "restart-server", freePort(), freePort(), "restartServerAssoc",
                     "restartClientAssoc");
 
             assertTrue(hasThreadNamedPrefix("Sctp-BossGroup-" + MANAGEMENT_RESTART_NAME));
@@ -115,7 +112,7 @@ public class NettyByteBufLifecycleTest {
             mgmt.start();
             mgmt.removeAllResourses();
 
-            runConnectCycle(mgmt, IpChannelType.TCP, "restart-server-2", 2364, 2365, "restartServerAssoc2",
+            runConnectCycle(mgmt, IpChannelType.TCP, "restart-server-2", freePort(), freePort(), "restartServerAssoc2",
                     "restartClientAssoc2");
         } finally {
             if (mgmt.isStarted()) {
@@ -132,7 +129,7 @@ public class NettyByteBufLifecycleTest {
             mgmt.setPersistDir("target");
 
             try {
-                runConnectCycle(mgmt, IpChannelType.SCTP, "restart-sctp-server", 2372, 2373, "restartSctpServerAssoc",
+                runConnectCycle(mgmt, IpChannelType.SCTP, "restart-sctp-server", freePort(), freePort(), "restartSctpServerAssoc",
                         "restartSctpClientAssoc");
 
                 assertTrue(hasThreadNamedPrefix("Sctp-BossGroup-ByteBufLifecycleSctpTest"));
@@ -143,7 +140,7 @@ public class NettyByteBufLifecycleTest {
                 mgmt.start();
                 mgmt.removeAllResourses();
 
-                runConnectCycle(mgmt, IpChannelType.SCTP, "restart-sctp-server-2", 2374, 2375,
+                runConnectCycle(mgmt, IpChannelType.SCTP, "restart-sctp-server-2", freePort(), freePort(),
                         "restartSctpServerAssoc2", "restartSctpClientAssoc2");
             } finally {
                 if (mgmt.isStarted()) {
@@ -156,15 +153,15 @@ public class NettyByteBufLifecycleTest {
 
     @Test
     public void testClientReconnectsAfterServerAssociationRestartTcp() throws Exception {
-        runReconnectAfterServerAssociationRestart(IpChannelType.TCP, "netty-reconnect-management", "reconnect-server", 2366,
-                2367, "reconnectServerAssoc", "reconnectClientAssoc");
+        runReconnectAfterServerAssociationRestart(IpChannelType.TCP, "netty-reconnect-management", "reconnect-server", freePort(),
+                freePort(), "reconnectServerAssoc", "reconnectClientAssoc");
     }
 
     @Test
     public void testClientReconnectsAfterServerAssociationRestartSctp() throws Exception {
         if (NettySctpTransferTest.checkSctpEnabled()) {
             runReconnectAfterServerAssociationRestart(IpChannelType.SCTP, "netty-reconnect-sctp-management",
-                    "reconnect-sctp-server", 2376, 2377, "reconnectSctpServerAssoc", "reconnectSctpClientAssoc");
+                    "reconnect-sctp-server", freePort(), freePort(), "reconnectSctpServerAssoc", "reconnectSctpClientAssoc");
         }
     }
 

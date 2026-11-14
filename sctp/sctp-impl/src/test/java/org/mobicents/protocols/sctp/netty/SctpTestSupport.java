@@ -1,5 +1,7 @@
 package org.mobicents.protocols.sctp.netty;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.function.BooleanSupplier;
 
 public final class SctpTestSupport {
@@ -16,6 +18,13 @@ public final class SctpTestSupport {
                 return;
             }
             Thread.sleep(POLL_INTERVAL_MS);
+        }
+    }
+
+    // a fixed client port stays in TIME_WAIT after the client closes, so a rerun within that time cannot bind it
+    public static int freePort() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
         }
     }
 }
