@@ -1597,9 +1597,10 @@ public class DialogImpl implements Dialog {
                 case Reject:
                     Reject rej = (Reject) ci;
                     if (invoke != null) {
-                        // Remote invoke problems complete the matching local invoke.
+                        // Remote invoke and general problems complete the matching local invoke (Q.787 2.1.3.1.1-2).
                         Problem problem = rej.getProblem();
-                        if (!rej.isLocalOriginated() && problem.getInvokeProblemType() != null)
+                        if (!rej.isLocalOriginated()
+                                && (problem.getInvokeProblemType() != null || problem.getGeneralProblemType() != null))
                             invoke.onReject();
                     }
                     if (rej.isLocalOriginated() && this.isStructured()) {
