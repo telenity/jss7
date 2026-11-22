@@ -491,7 +491,19 @@ public class M3UAManagementImpl extends Mtp3UserPartBaseImpl implements M3UAMana
      * @throws Exception
      */
     public AspFactory createAspFactory(String aspName, String associationName, boolean isHeartBeatEnabled) throws Exception {
-        long aspid = AspFactoryImpl.generateId();
+        // Skip ids already used, e.g. by factories loaded from the persisted file
+        long aspid;
+        boolean taken;
+        do {
+            aspid = AspFactoryImpl.generateId();
+            taken = false;
+            for (AspFactory aspFactory : aspfactories) {
+                if (aspid == ((AspFactoryImpl) aspFactory).getAspid().getAspId()) {
+                    taken = true;
+                    break;
+                }
+            }
+        } while (taken);
         return this.createAspFactory(aspName, associationName, aspid, isHeartBeatEnabled);
     }
 

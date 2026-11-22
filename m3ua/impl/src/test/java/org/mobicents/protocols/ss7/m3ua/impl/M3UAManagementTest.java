@@ -517,4 +517,21 @@ public class M3UAManagementTest {
         }
 
     }
+
+    /**
+     * A generated ASP id skips ids already in use, e.g. by factories loaded from the persisted file with explicit ids.
+     */
+    @Test
+    public void testGeneratedAspIdSkipsIdInUse() throws Exception {
+        this.transportManagement.addAssociation(null, 0, null, 0, "IdAssoc1");
+        this.transportManagement.addAssociation(null, 0, null, 0, "IdAssoc2");
+        this.transportManagement.addAssociation(null, 0, null, 0, "IdAssoc3");
+
+        long first = ((AspFactoryImpl) this.m3uaMgmt.createAspFactory("IdASP1", "IdAssoc1", false)).getAspid().getAspId();
+        // the next id the generator would hand out is taken explicitly
+        this.m3uaMgmt.createAspFactory("IdASP2", "IdAssoc2", first + 1, false);
+
+        long third = ((AspFactoryImpl) this.m3uaMgmt.createAspFactory("IdASP3", "IdAssoc3", false)).getAspid().getAspId();
+        assertTrue("generated id " + third + " collides", third != first && third != first + 1);
+    }
 }
