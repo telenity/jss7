@@ -183,6 +183,7 @@ public class DialogIdleEndTest extends SccpHarness {
         client.waitFor(_WAIT);
         client.sendBegin();
         latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+        acceptProviderAbortFirst(clientExpectedEvents, client.getObserverdEvents());
         client.compareEvents(clientExpectedEvents);
         server.compareEvents(serverExpectedEvents);
     }
@@ -256,6 +257,7 @@ public class DialogIdleEndTest extends SccpHarness {
         client.waitFor(_WAIT);
         server.sendContinue();
         latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+        acceptProviderAbortFirst(clientExpectedEvents, client.getObserverdEvents());
         client.compareEvents(clientExpectedEvents);
         server.compareEvents(serverExpectedEvents);
     }
@@ -335,6 +337,7 @@ public class DialogIdleEndTest extends SccpHarness {
         client.waitFor(_WAIT);
         client.sendContinue();
         latch.await(_LATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+        acceptProviderAbortFirst(clientExpectedEvents, client.getObserverdEvents());
         client.compareEvents(clientExpectedEvents);
         server.compareEvents(serverExpectedEvents);
     }
@@ -540,5 +543,50 @@ public class DialogIdleEndTest extends SccpHarness {
         server.compareEvents(serverExpectedEvents);
     }
 
-}
+    /**
+     * The server's TC-U-ABORT from onDialogTimeout is followed by the stack's own P-Abort; the two may reach the client
+     * in either order, the first one ends the client's dialogue.
+     */
+    private static void acceptProviderAbortFirst(List<TestEvent> expected, List<TestEvent> observed) {
+        for (int i = 0; i < expected.size() && i < observed.size(); i++) {
+            TestEvent e = expected.get(i);
+            if (e.getEventType() == EventType.UAbort && observed.get(i).getEventType() == EventType.PAbort) {
+                expected.set(i, TestEvent.createReceivedEvent(EventType.PAbort, null, e.getSequence(), e.getTimestamp()));
+            }
+        }
+    }
 
+    /**
+     * A TC-user that only releases the dialog locally in onDialogTimeout tells the peer nothing; the stack's P-Abort
+     * must still reach the peer, or the peer's dialogue stays open.
+     */
+    @Test
+    public void testLocalReleaseOnTimeout_PeerGetsPAbort() throws Exception {
+        this.client = new Client(tcapStack1, peer1Address, peer2Address);
+        this.server = new Server(tcapStack2, peer2Address, peer1Address) {
+            @Override
+            public void onDialogTimeout(Dialog d) {
+                super.onDialogTimeout(d);
+                d.release();
+            }
+        };
+
+        client.startClientDialog(0);
+        client.sendBegin();
+        client.waitFor(_WAIT);
+        server.sendContinue();
+        client.waitFor(_DIALOG_TIMEOUT + 200); // the client's own idle timeout (2 x) is still ahead
+
+        boolean pAbort = false;
+        for (TestEvent e : client.getObserverdEvents()) {
+            if (e.getEventType() == EventType.DialogTimeout) {
+                fail("Own timeout, not the peer's P-Abort: " + client.getObserverdEvents());
+            }
+            pAbort |= e.getEventType() == EventType.PAbort;
+        }
+        if (!pAbort) {
+            fail("Peer was not told: " + client.getObserverdEvents());
+        }
+    }
+
+}

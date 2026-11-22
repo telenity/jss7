@@ -1163,7 +1163,6 @@ public class DialogImpl implements Dialog {
                 this.sendAbnormalDialog();
                 return;
             }
-            restartIdleTimer();
 
             this.setRemoteAddress(remoteAddress);
             this.setLocalAddress(localAddress);

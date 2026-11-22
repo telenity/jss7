@@ -460,8 +460,10 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
     }
 
     void stop() {
-        this._EXECUTOR.shutdown();
+        // stop taking messages first: SCCP then answers the SSN with UDTS/SSP instead of handing it to a stack
+        // whose executor is already shut down
         this.sccpProvider.deregisterSccpListener(ssn);
+        this._EXECUTOR.shutdown();
 
         synchronized (dialogsLock) {
             this.dialogs.clear();
