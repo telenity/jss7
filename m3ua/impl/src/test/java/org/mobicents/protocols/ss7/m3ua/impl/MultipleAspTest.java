@@ -756,6 +756,9 @@ public class MultipleAspTest {
         public void stop() throws Exception {
             if (m3uaMgmt.getAs(SERVER_NAME + "_as") != null) {
                 m3uaMgmt.stopAsp(SERVER_NAME + "_asp");
+                // the peer FSM goes DOWN when the association closes, after stopAsp returns
+                waitFor(SERVER_NAME + " ASP peer FSM down",
+                        () -> AspState.getState(remAsp.getPeerFSM().getState().getName()) == AspState.DOWN);
                 m3uaMgmt.removeRoute(OPC, -1, -1, SERVER_NAME + "_as");
                 m3uaMgmt.unassignAspFromAs(SERVER_NAME + "_as", SERVER_NAME + "_asp");
                 m3uaMgmt.destroyAspFactory(SERVER_NAME + "_asp");
