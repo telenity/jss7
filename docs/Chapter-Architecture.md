@@ -9,6 +9,7 @@ jSS7 is a Java implementation of the SS7 protocol stack above the transport laye
 - [Wiring the stack](#wiring-the-stack)
 - [Management](#management)
 - [Persistence](#persistence)
+- [Performance and tuning](#performance-and-tuning)
 - [Building](#building)
 
 ## SS7 in brief
@@ -120,6 +121,27 @@ Each management object writes its configuration as an XML file in its persist di
 | `SccpStackImpl` resources | `sccpresource.xml` | `sccpresource.persist.dir` |
 
 If `setPersistDir` is not called, each component reads its own system property from the table and falls back to `user.dir`.
+
+## Performance and tuning
+
+jSS7 sets no `SO_RCVBUF` / `SO_SNDBUF` on SCTP associations, so the kernel defaults apply. At high TPS these buffers, not CPU, are the first limit.
+
+| Setting | Recommendation |
+|---------|----------------|
+| `net.core.rmem_default`, `net.core.wmem_default` | 4 MB (`4194304`) was enough in the lab: with the common default `212992` a lab SGW dropped SCTP DATA chunks and retransmitted under load; with 4 MB the same load ran clean. |
+| `net.core.rmem_max`, `net.core.wmem_max` | At least the default values above. |
+
+> [!NOTE]
+> Linux starts an SCTP association with an advertised receive window of half the socket receive buffer, so a window of `106496` goes with `rmem_default=212992`. Check the buffer itself with the sysctls below.
+
+Checking a running host:
+
+```
+sysctl net.core.rmem_default net.core.wmem_default net.core.rmem_max net.core.wmem_max
+nstat -az | grep -E 'SctpInDataChunkDiscards|SctpT3RtxExpireds'
+```
+
+A rising `SctpInDataChunkDiscards` under load is a signal to investigate. The counter also counts other discards (duplicate TSNs, invalid streams), so on its own it does not prove the receive buffer is too small.
 
 ## Building
 

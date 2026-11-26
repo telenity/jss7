@@ -71,6 +71,12 @@ public class NettySctpServerHandler extends NettySctpChannelInboundHandlerAdapte
 
         Channel channel = ctx.channel();
         InetSocketAddress sockAdd = ((InetSocketAddress) channel.remoteAddress());
+        if (sockAdd == null) {
+            // the peer's association already ended before the accepted channel was registered: nothing to bind
+            logger.warn("Accepted channel has no peer address, its association is already gone: closing it");
+            channel.close();
+            return;
+        }
         String host = sockAdd.getAddress().getHostAddress();
         int port = sockAdd.getPort();
 
@@ -189,7 +195,8 @@ public class NettySctpServerHandler extends NettySctpChannelInboundHandlerAdapte
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
-        logger.error("Exception Caught for Association: " + this.association.getName(), cause);
+        logger.error("Exception Caught for Association: " + (this.association == null ? null : this.association.getName()),
+                cause);
         ctx.close();
     }
 

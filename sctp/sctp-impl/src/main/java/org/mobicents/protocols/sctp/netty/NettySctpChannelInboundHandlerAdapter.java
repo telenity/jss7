@@ -96,8 +96,8 @@ public class NettySctpChannelInboundHandlerAdapter extends ChannelInboundHandler
                     break;
                 case COMM_LOST:
                     logger.warn(String.format("Communication lost for Association=%s", association.getName()));
+                    association.channelLost(this);
                     // Close the Socket
-                    association.getAssociationListener().onCommunicationLost(association);
                     ctx.close();
                     break;
                 case RESTART:

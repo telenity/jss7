@@ -127,6 +127,33 @@ public class NettyChannelUnregisteredTest {
         assertFalse(association.isUp());
     }
 
+    /** An exception on a server channel not bound to an association yet: logged and the channel closed, no NPE. */
+    @Test
+    public void exceptionBeforeAssociationIsBoundClosesChannel() throws Exception {
+        NettyServerImpl server = (NettyServerImpl) management.addServer("srv", "127.0.0.1", 12348);
+        EmbeddedChannel channel = new EmbeddedChannel();
+        channel.pipeline().addLast(new NettySctpServerHandler(server, management)); // added after registration: no binding
+        channel.pipeline().fireExceptionCaught(new RuntimeException("test"));
+
+        channel.checkException();
+        assertFalse(channel.isOpen());
+    }
+
+    /** An accepted channel whose association ended before registration has no peer address: closed, no NPE. */
+    @Test
+    public void acceptedChannelWithoutPeerAddressIsClosed() throws Exception {
+        NettyServerImpl server = (NettyServerImpl) management.addServer("srv", "127.0.0.1", 12347);
+        EmbeddedChannel channel = new EmbeddedChannel(new NettySctpServerHandler(server, management)) {
+            @Override
+            protected java.net.SocketAddress remoteAddress0() {
+                return null;
+            }
+        };
+
+        channel.checkException(); // a handler exception would be rethrown here
+        assertFalse(channel.isOpen());
+    }
+
     /**
      * The old channel's ownership check, detach and down transition must be one step: a new channel trying to take over
      * meanwhile waits until the teardown is finished, so it cannot be marked up and then knocked down by the old one.

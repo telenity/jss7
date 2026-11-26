@@ -513,6 +513,10 @@ public class NettyAssociationImpl implements Association {
     }
 
     protected synchronized void setChannelHandler(NettySctpChannelInboundHandlerAdapter channelHandler) {
+        // a new channel replacing a live one (the old one's COMM_LOST not seen yet): the user hears the old one go
+        // down, so the new COMM_UP gets through with its own stream counts; the old channel's late events are no-ops
+        if (this.channelHandler != null && this.channelHandler != channelHandler)
+            this.markAssociationDown();
         this.channelHandler = channelHandler;
     }
 
@@ -524,6 +528,19 @@ public class NettyAssociationImpl implements Association {
     protected synchronized void channelClosed(NettySctpChannelInboundHandlerAdapter handler) {
         if (this.channelHandler != handler)
             return;
+        this.channelHandler = null;
+        this.markAssociationDown();
+    }
+
+    /**
+     * COMM_LOST on a channel: like channelClosed, but the user hears about the loss first. Marks the association down
+     * at once rather than at channelInactive, so a peer that reconnects before the old channel is torn down gets its
+     * COMM_UP through. A stale channel's loss (a newer channel already owns the association) is ignored.
+     */
+    protected synchronized void channelLost(NettySctpChannelInboundHandlerAdapter handler) {
+        if (this.channelHandler != handler)
+            return;
+        this.getAssociationListener().onCommunicationLost(this);
         this.channelHandler = null;
         this.markAssociationDown();
     }

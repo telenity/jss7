@@ -9,7 +9,7 @@ Each chapter is a GitHub-flavoured Markdown file that renders directly on GitHub
 
 | Chapter | Content |
 |---------|---------|
-| [Chapter-Architecture.md](Chapter-Architecture.md) | Layers and modules, wiring the stack in Java, management, persistence |
+| [Chapter-Architecture.md](Chapter-Architecture.md) | Layers and modules, wiring the stack in Java, management, persistence, performance tuning |
 | [Chapter-M3UA.md](Chapter-M3UA.md) | Roles, AS/ASP, routes, load sharing, state machines, heartbeat |
 | [Chapter-SCCP.md](Chapter-SCCP.md) | Global title translation, rule types, worked examples, SCCP user API |
 | [Chapter-TCAP.md](Chapter-TCAP.md) | Dialogs, components, timers, client example |
