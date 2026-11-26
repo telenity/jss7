@@ -23,7 +23,6 @@
 package org.mobicents.protocols.ss7.tcap;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -108,7 +107,11 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
     private transient TCAPStackImpl stack;
 
     private transient ConcurrentMap<Long, DialogImpl> dialogs = new ConcurrentHashMap<>();
-    private transient final ArrayDeque<Long> freeDialogs = new ArrayDeque<>();
+    // free dialog ids, FIFO (a released id is reused last): a primitive ring, not ~1M boxed Longs in the old generation;
+    // int: ids are at most Integer.MAX_VALUE (TCAPStackImpl.checkDialogIdRangeValues)
+    private transient int[] freeDialogs = new int[0];
+    private transient int freeHead;
+    private transient int freeCount;
 
     private transient final Object dialogsLock = new Object();
 
@@ -241,11 +244,13 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
                 throw new TCAPException("Current dialog count exceeds its maximum value");
             }
 
-            if (freeDialogs.isEmpty()) {
+            if (freeCount == 0) {
                 throw new TCAPException("No free dialog id available");
             }
 
-            id = freeDialogs.removeFirst();
+            id = (long) freeDialogs[freeHead];
+            freeHead = (freeHead + 1) % freeDialogs.length;
+            freeCount--;
 
             di = new DialogImpl(localAddress, remoteAddress, id, structured, this._EXECUTOR, this,
                     seqControl, false, protocolClass);
@@ -378,7 +383,7 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
             // that lock or holds this same DialogImpl reference and no-ops once it sees Expunged.
             // The two-arg remove also guards against an already-recycled id being reassigned.
             if (this.dialogs.remove(did, d)) {
-                freeDialogs.addLast(did);
+                addFreeDialog(did);
             }
         }
     }
@@ -447,13 +452,15 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
         synchronized (dialogsLock) {
             dialogs.clear();
-            freeDialogs.clear();
+            freeDialogs = new int[(int) (end - start + 1)];
+            freeHead = 0;
+            freeCount = 0;
             for (long id = start; id <= end; id++) {
-                freeDialogs.addLast(id);
+                addFreeDialog(id);
             }
         }
 
-        logger.info("Initialized " + this.freeDialogs.size() + " dialog ids for TCAP Provider");
+        logger.info("Initialized " + this.freeCount + " dialog ids for TCAP Provider");
 
         this.sccpProvider.registerSccpListener(ssn, this);
         logger.info("Registered SCCP listener with address " + ssn);
@@ -467,8 +474,17 @@ public class TCAPProviderImpl implements TCAPProvider, SccpListener {
 
         synchronized (dialogsLock) {
             this.dialogs.clear();
-            this.freeDialogs.clear();
+            this.freeDialogs = new int[0];
+            this.freeHead = 0;
+            this.freeCount = 0;
         }
+    }
+
+    // under dialogsLock; an id only comes back after it was taken, so the ring never overflows
+    private void addFreeDialog(long id) {
+        // long sum: head + count can pass Integer.MAX_VALUE for a range above 2^30 ids
+        freeDialogs[(int) (((long) freeHead + freeCount) % freeDialogs.length)] = (int) id;
+        freeCount++;
     }
 
     protected void sendProviderAbort(PAbortCauseType pAbortCause, byte[] remoteTransactionId, SccpAddress remoteAddress, SccpAddress localAddress,

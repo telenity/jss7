@@ -24,6 +24,7 @@ package org.mobicents.protocols.ss7.tcap;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -134,16 +135,16 @@ public class DialogImpl implements Dialog {
     private TRPseudoState state = TRPseudoState.Idle;
     private boolean structured = true;
     // Invoke ID space.
-    private static final boolean _INVOKEID_TAKEN = true;
-    private static final boolean _INVOKEID_FREE = false;
     private static final int _INVOKE_TABLE_SHIFT = 128;
+    private static final int _INVOKE_TABLE_SIZE = 256;
 
-    private boolean[] invokeIDTable = new boolean[256];
-    private int freeCount = invokeIDTable.length;
+    // a set bit is a taken invoke id
+    private final BitSet invokeIDTable = new BitSet(_INVOKE_TABLE_SIZE);
     private int lastInvokeIdIndex = _INVOKE_TABLE_SHIFT - 1;
 
     // only originating side keeps FSM, see: Q.771 - 3.1.5
-    protected InvokeImpl[] operationsSent = new InvokeImpl[invokeIDTable.length];
+    // a list searched by invoke id, not a 256 slot table per dialog: most traffic carries one or two components
+    private final List<InvokeImpl> operationsSent = new ArrayList<>();
     private Set<Integer> incomingInvokeList = new HashSet<>();
     private final ScheduledExecutorService executor;
 
@@ -215,12 +216,11 @@ public class DialogImpl implements Dialog {
     }
 
     public void release() {
-        for (InvokeImpl invokeImpl : this.operationsSent) {
-            if (invokeImpl != null) {
-                invokeImpl.setState(OperationState.Idle);
-                // Dialog release does not notify invoke timeout listeners.
-                // operationTimedOut(invokeImpl);
-            }
+        // a copy: setState(Idle) ends the invoke, which removes it from operationsSent
+        for (InvokeImpl invokeImpl : new ArrayList<>(this.operationsSent)) {
+            invokeImpl.setState(OperationState.Idle);
+            // Dialog release does not notify invoke timeout listeners.
+            // operationTimedOut(invokeImpl);
         }
 
         this.setState(TRPseudoState.Expunged);
@@ -279,17 +279,16 @@ public class DialogImpl implements Dialog {
     public Integer getNewInvokeId() throws TCAPException {
         try {
             this.dialogLock.lock();
-            if (this.freeCount == 0) {
+            if (this.invokeIDTable.cardinality() == _INVOKE_TABLE_SIZE) {
                 throw new TCAPException("No free invokeId");
             }
 
             int tryCnt = 0;
             while (true) {
-                if (++this.lastInvokeIdIndex >= this.invokeIDTable.length)
+                if (++this.lastInvokeIdIndex >= _INVOKE_TABLE_SIZE)
                     this.lastInvokeIdIndex = 0;
-                if (this.invokeIDTable[this.lastInvokeIdIndex] == _INVOKEID_FREE) {
-                    freeCount--;
-                    this.invokeIDTable[this.lastInvokeIdIndex] = _INVOKEID_TAKEN;
+                if (!this.invokeIDTable.get(this.lastInvokeIdIndex)) {
+                    this.invokeIDTable.set(this.lastInvokeIdIndex);
                     return getInvokeIdFromIndex(this.lastInvokeIdIndex);
                 }
                 if (++tryCnt >= 256)
@@ -313,7 +312,7 @@ public class DialogImpl implements Dialog {
         try {
             this.dialogLock.lock();
             int index = getIndexFromInvokeId(invokeId);
-            if (index < 0 || index >= this.operationsSent.length) {
+            if (index < 0 || index >= _INVOKE_TABLE_SIZE) {
                 throw new TCAPException("Wrong invoke id passed.");
             }
 
@@ -340,10 +339,7 @@ public class DialogImpl implements Dialog {
     private void freeInvokeId(Integer i) {
         try {
             this.dialogLock.lock();
-            int index = getIndexFromInvokeId(i);
-            if (this.invokeIDTable[index] == _INVOKEID_TAKEN)
-                this.freeCount++;
-            this.invokeIDTable[index] = _INVOKEID_FREE;
+            this.invokeIDTable.clear(getIndexFromInvokeId(i));
         } finally {
             this.dialogLock.unlock();
         }
@@ -881,8 +877,10 @@ public class DialogImpl implements Dialog {
             if (componentRequest.getType() == ComponentType.Invoke) {
                 InvokeImpl invoke = (InvokeImpl) componentRequest;
 
-                int invokeIndex = getIndexFromInvokeId(invoke.getInvokeId());
-                if (this.operationsSent[invokeIndex] != null) {
+                if (invoke.getInvokeId() == null) {
+                    throw new TCAPSendException("Invoke id is not set");
+                }
+                if (getOperationSent(invoke.getInvokeId()) != null) {
                     throw new TCAPSendException("There is already operation with such invoke id!");
                 }
 
@@ -909,11 +907,29 @@ public class DialogImpl implements Dialog {
         this.removeIncomingInvokeId(invokeId);
     }
 
+    private InvokeImpl getOperationSent(Integer invokeId) {
+        for (InvokeImpl in : this.operationsSent) {
+            if (in.getInvokeId().equals(invokeId))
+                return in;
+        }
+        return null;
+    }
+
+    // replaces a sent invoke with the same id, like the old table slot did
+    private void putOperationSent(InvokeImpl invoke) {
+        removeOperationSent(invoke.getInvokeId());
+        this.operationsSent.add(invoke);
+    }
+
+    private void removeOperationSent(Integer invokeId) {
+        this.operationsSent.removeIf(in -> in.getInvokeId().equals(invokeId));
+    }
+
     private void prepareComponents(List<Component> res) {
         for (Component c : this.getScheduledComponentList()) {
             if (c.getType() == ComponentType.Invoke) {
                 InvokeImpl in = (InvokeImpl) c;
-                this.operationsSent[getIndexFromInvokeId(in.getInvokeId())] = in;
+                putOperationSent(in);
                 in.setState(OperationState.Sent);
             }
             res.add(c);
@@ -1492,10 +1508,8 @@ public class DialogImpl implements Dialog {
             else
                 invokeId = ci.getInvokeId();
             InvokeImpl invoke = null;
-            int index = 0;
             if (invokeId != null) {
-                index = getIndexFromInvokeId(invokeId);
-                invoke = this.operationsSent[index];
+                invoke = getOperationSent(invokeId);
             }
 
             switch (ci.getType()) {
@@ -1742,9 +1756,8 @@ public class DialogImpl implements Dialog {
     public void operationEnded(InvokeImpl tcInvokeRequestImpl) {
         try {
             this.dialogLock.lock();
-            int index = getIndexFromInvokeId(tcInvokeRequestImpl.getInvokeId());
             freeInvokeId(tcInvokeRequestImpl.getInvokeId());
-            this.operationsSent[index] = null;
+            removeOperationSent(tcInvokeRequestImpl.getInvokeId());
         } finally {
             this.dialogLock.unlock();
         }
@@ -1760,9 +1773,8 @@ public class DialogImpl implements Dialog {
     public void operationTimedOut(InvokeImpl invoke) {
         try {
             this.dialogLock.lock();
-            int index = getIndexFromInvokeId(invoke.getInvokeId());
             freeInvokeId(invoke.getInvokeId());
-            this.operationsSent[index] = null;
+            removeOperationSent(invoke.getInvokeId());
             this.provider.operationTimedOut(invoke);
         } finally {
             this.dialogLock.unlock();
@@ -1773,8 +1785,7 @@ public class DialogImpl implements Dialog {
     public void resetTimer(Integer invokeId) throws TCAPException {
         try {
             this.dialogLock.lock();
-            int index = getIndexFromInvokeId(invokeId);
-            InvokeImpl invoke = operationsSent[index];
+            InvokeImpl invoke = getOperationSent(invokeId);
             if (invoke == null) {
                 throw new TCAPException("No operation with this ID");
             }

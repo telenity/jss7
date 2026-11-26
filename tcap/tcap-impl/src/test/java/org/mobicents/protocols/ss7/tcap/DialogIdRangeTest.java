@@ -328,4 +328,259 @@ public class DialogIdRangeTest extends SccpHarness {
         assertTrue(d2.isStructured());
     }
 
+
+    // freed ids go to the back: an id is reused only after all others, also across the ring's wrap
+    @Test
+    public void testFreedIdsAreReusedInFifoOrder() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(10);
+        this.tcapStack1.setDialogIdRangeEnd(20); // 11 ids
+        this.tcapStack1.setMaxDialogs(5);
+        this.tcapStack1.start();
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        for (int i = 0; i < 30; i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(10 + i % 11, d.getLocalDialogId().longValue());
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+        // next is 18; release out of order: 20 after the rest, then 18
+        Dialog d18 = provider.getNewDialog(peer1Address, peer2Address);
+        Dialog d19 = provider.getNewDialog(peer1Address, peer2Address);
+        Dialog d20 = provider.getNewDialog(peer1Address, peer2Address);
+        ((DialogImpl) d20).setState(TRPseudoState.Expunged);
+        ((DialogImpl) d18).setState(TRPseudoState.Expunged);
+        for (long id = 10; id <= 17; id++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(id, d.getLocalDialogId().longValue());
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+        assertEquals(20L, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+        assertEquals(18L, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+        assertEquals(19L, d19.getLocalDialogId().longValue());
+    }
+
+    // maxDialogs is normally below the range size; set the field past it to reach the "no free id" path
+    @Test
+    public void testNoFreeDialogIdWhenRangeExhausted() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(10);
+        this.tcapStack1.setDialogIdRangeEnd(14); // 5 ids
+        this.tcapStack1.setMaxDialogs(2);
+        this.tcapStack1.start();
+        this.tcapStack1.maxDialogs = 100;
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        Dialog[] d = new Dialog[5];
+        for (int i = 0; i < 5; i++) {
+            d[i] = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(10L + i, d[i].getLocalDialogId().longValue());
+        }
+        assertNoFreeDialogId(provider);
+        assertNoFreeDialogId(provider);
+        assertEquals(5, provider.getCurrentDialogsCount());
+
+        ((DialogImpl) d[3]).setState(TRPseudoState.Expunged);
+        ((DialogImpl) d[1]).setState(TRPseudoState.Expunged);
+        ((DialogImpl) d[1]).setState(TRPseudoState.Expunged); // twice: freed once
+        assertEquals(13L, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+        assertEquals(11L, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+        assertNoFreeDialogId(provider);
+    }
+
+    // maxDialogs is checked before the free ids
+    @Test
+    public void testMaxDialogsCheckedFirst() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(1);
+        this.tcapStack1.setDialogIdRangeEnd(3);
+        this.tcapStack1.setMaxDialogs(1);
+        this.tcapStack1.start();
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        // smallest range: 3 ids, one dialog at a time, ids go round 1,2,3,1,..
+        for (int i = 0; i < 10; i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(1L + i % 3, d.getLocalDialogId().longValue());
+            try {
+                provider.getNewDialog(peer1Address, peer2Address);
+                fail("maxDialogs is 1");
+            } catch (TCAPException e) {
+                assertEquals("Current dialog count exceeds its maximum value", e.getMessage());
+            }
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+    }
+
+    // ids at the top of the allowed range
+    @Test
+    public void testRangeAtIntegerMax() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(Integer.MAX_VALUE - 4L);
+        this.tcapStack1.setDialogIdRangeEnd(Integer.MAX_VALUE);
+        this.tcapStack1.setMaxDialogs(3);
+        this.tcapStack1.start();
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        for (int i = 0; i < 12; i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(Integer.MAX_VALUE - 4L + i % 5, d.getLocalDialogId().longValue());
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+    }
+
+    // stop drops all ids; start refills the configured range from its start, also with a new range
+    @Test
+    public void testStopStartResetsIds() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(10);
+        this.tcapStack1.setDialogIdRangeEnd(20);
+        this.tcapStack1.setMaxDialogs(5);
+        this.tcapStack1.start();
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        for (int i = 0; i < 7; i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+        Dialog live = provider.getNewDialog(peer1Address, peer2Address);
+        assertEquals(17L, live.getLocalDialogId().longValue());
+
+        this.tcapStack1.stop();
+        assertEquals(0, provider.getCurrentDialogsCount());
+        assertNoFreeDialogId(provider); // stopped: no ids at all
+        ((DialogImpl) live).setState(TRPseudoState.Expunged); // released after stop: not given back
+        assertNoFreeDialogId(provider);
+
+        this.tcapStack1.start();
+        for (long id = 10; id <= 20; id++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(id, d.getLocalDialogId().longValue());
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+        assertEquals(10L, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(100);
+        this.tcapStack1.setDialogIdRangeEnd(103);
+        this.tcapStack1.setMaxDialogs(2);
+        this.tcapStack1.start();
+        for (int i = 0; i < 9; i++) {
+            Dialog d = provider.getNewDialog(peer1Address, peer2Address);
+            assertEquals(100L + i % 4, d.getLocalDialogId().longValue());
+            ((DialogImpl) d).setState(TRPseudoState.Expunged);
+        }
+
+        // a larger range after a smaller one
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(1);
+        this.tcapStack1.setDialogIdRangeEnd(1000);
+        this.tcapStack1.setMaxDialogs(10);
+        this.tcapStack1.start();
+        this.tcapStack1.maxDialogs = 2000;
+        for (int i = 0; i < 1000; i++) {
+            assertEquals(i + 1L, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+        }
+        assertNoFreeDialogId(provider);
+    }
+
+    // a dialog from before a stop/start, released after the restart while its id belongs to a new dialog:
+    // the id is not freed again, so it is never handed out twice
+    @Test
+    public void testDialogFromBeforeRestartReleasedLater() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(10);
+        this.tcapStack1.setDialogIdRangeEnd(14); // 5 ids
+        this.tcapStack1.setMaxDialogs(2);
+        this.tcapStack1.start();
+        TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+        Dialog old = provider.getNewDialog(peer1Address, peer2Address);
+        assertEquals(10L, old.getLocalDialogId().longValue());
+
+        this.tcapStack1.stop();
+        this.tcapStack1.start();
+        this.tcapStack1.maxDialogs = 100;
+        Dialog current = provider.getNewDialog(peer1Address, peer2Address);
+        assertEquals(10L, current.getLocalDialogId().longValue());
+
+        ((DialogImpl) old).setState(TRPseudoState.Expunged);
+        for (long id = 11; id <= 14; id++) {
+            assertEquals(id, provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId().longValue());
+        }
+        assertNoFreeDialogId(provider);
+        assertEquals(5, provider.getCurrentDialogsCount());
+    }
+
+    // threads allocate and release at once: a live id is never given twice, and afterwards
+    // the whole range is still there exactly once
+    @Test
+    public void testConcurrentAllocateReleaseNoDuplicates() throws Exception {
+        this.tcapStack1.stop();
+        this.tcapStack1.setDialogIdRangeStart(1);
+        this.tcapStack1.setDialogIdRangeEnd(40);
+        this.tcapStack1.setMaxDialogs(30);
+        this.tcapStack1.start();
+        final TCAPProviderImpl provider = (TCAPProviderImpl) this.tcapStack1.getProvider();
+
+        final int threads = 8;
+        final int cycles = 3000;
+        final Set<Long> live = Collections.newSetFromMap(new ConcurrentHashMap<Long, Boolean>());
+        final AtomicInteger duplicates = new AtomicInteger();
+        final AtomicInteger outOfRange = new AtomicInteger();
+        final java.util.concurrent.CountDownLatch go = new java.util.concurrent.CountDownLatch(1);
+        ExecutorService exec = Executors.newFixedThreadPool(threads);
+        List<Future<Void>> futures = new ArrayList<>();
+        for (int t = 0; t < threads; t++) {
+            futures.add(exec.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    go.await();
+                    java.util.ArrayDeque<Dialog> held = new java.util.ArrayDeque<>();
+                    for (int j = 0; j < cycles; j++) {
+                        Dialog d = provider.getNewDialog(peer1Address, peer2Address); // at most 8*3 live < 30
+                        long id = d.getLocalDialogId();
+                        if (id < 1 || id > 40)
+                            outOfRange.incrementAndGet();
+                        if (!live.add(id))
+                            duplicates.incrementAndGet();
+                        held.addLast(d);
+                        if (held.size() == 3 || j == cycles - 1) {
+                            while (!held.isEmpty()) {
+                                Dialog r = held.removeFirst();
+                                live.remove(r.getLocalDialogId()); // before release, so the id is not yet reusable
+                                ((DialogImpl) r).setState(TRPseudoState.Expunged);
+                            }
+                        }
+                    }
+                    return null;
+                }
+            }));
+        }
+        go.countDown();
+        for (Future<Void> f : futures) {
+            f.get(60, java.util.concurrent.TimeUnit.SECONDS);
+        }
+        exec.shutdownNow();
+
+        assertEquals(0, duplicates.get());
+        assertEquals(0, outOfRange.get());
+        assertEquals(0, provider.getCurrentDialogsCount());
+
+        this.tcapStack1.maxDialogs = 100;
+        Set<Long> ids = new java.util.HashSet<>();
+        for (int i = 0; i < 40; i++) {
+            assertTrue(ids.add(provider.getNewDialog(peer1Address, peer2Address).getLocalDialogId()));
+        }
+        assertEquals(40, ids.size());
+        assertNoFreeDialogId(provider);
+    }
+
+    private void assertNoFreeDialogId(TCAPProviderImpl provider) {
+        try {
+            provider.getNewDialog(peer1Address, peer2Address);
+            fail("no free dialog id");
+        } catch (TCAPException e) {
+            assertEquals("No free dialog id available", e.getMessage());
+        }
+    }
 }
